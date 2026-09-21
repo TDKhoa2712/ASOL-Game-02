@@ -1,0 +1,2228 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.codegraph/
+  .gitignore
+design-reviews/
+  01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md
+  02-danh-gia-ban-thiet-ke-v04.md
+  README.md
+GDD/
+  data/
+    interactions.sample.json
+    levels.sample.json
+  tools/
+    test_interaction_contract.py
+    test_validate_levels.py
+    validate_levels.py
+  01-tam-nhin-va-pham-vi.md
+  02-luat-choi-va-trang-thai.md
+  03-luong-man-hinh-va-ux.md
+  04-thiet-ke-level.md
+  05-kien-truc-va-du-lieu.md
+  06-my-thuat-va-am-thanh.md
+  07-kiem-thu-va-tieu-chi-nghiem-thu.md
+  08-ke-hoach-trien-khai-cho-agent.md
+  09-ra-soat-thiet-ke.md
+  10-nghien-cuu-quy-tac-suy-luan.md
+  11-ke-hoach-meta-va-sinh-level.md
+  README.md
+AGENTS.md
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".codegraph/.gitignore">
+# CodeGraph data files — local to each machine, not for committing.
+# Ignore everything in .codegraph/ except this file itself, so transient
+# files (the database, daemon.pid, sockets, logs) never show up in git.
+*
+!.gitignore
+</file>
+
+<file path="design-reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md">
+# 01 — Rà soát & Đánh giá Toàn diện Thiết kế và Kiến trúc Game "Vườn Mèo"
+
+**Ngày lập:** 2026-09-18  
+**Tác giả đánh giá:** Senior Game Programmer & Lead Game Designer  
+**Đối tượng sử dụng:** Các Coding Agent, Game Designer, Developer tiếp nhận dự án  
+**Tài liệu đối chiếu:** Toàn bộ đặc tả GDD v0.3 (`GDD/01` đến `GDD/09`)
+
+---
+
+## 1. Mục đích tài liệu
+Tài liệu này ghi nhận các **thiếu sót, điểm nghẽn trải nghiệm người dùng (UX bottleneck), mâu thuẫn cơ chế gameplay và rủi ro kỹ thuật tiềm ẩn** trong bản đặc tả GDD v0.3. 
+
+Mục tiêu nhằm giúp các Agent/Developer tham gia phát triển:
+1. Nhìn thấy các rủi ro trước khi bắt tay vào hiện thực hóa code (tránh đập đi xây lại).
+2. Có căn cứ đề xuất chỉnh sửa luật hoặc cấu trúc kỹ thuật theo đúng quy trình (sửa GDD, schema, validator và test đồng bộ theo quy định tại `AGENTS.md`).
+3. Theo dõi tiến độ giải quyết từng vấn đề thông qua bảng mã định danh.
+
+---
+
+## 2. Bảng tổng hợp vấn đề (Issue Matrix)
+
+| Mã ID | Phân loại | Mức độ | Điều khoản GDD liên quan | Vấn đề cốt lõi | Trạng thái đề xuất |
+| :--- | :--- | :---: | :--- | :--- | :---: |
+| **REV-UX-01** | Input / UX | **Nghiêm trọng** | `GR-09..14`, `UX-09..11`, `TECH-14` | Độ trễ 280ms chặn X tức thì gây cảm giác game bị đơ/lag cảm ứng. | Chờ duyệt giải pháp |
+| **REV-GD-01** | Game Feel / Rules | **Cao** | `GR-13`, `GR-16`, `GR-17`, `D-04` | 3 tim + phạt điểm + không Undo gây ức chế khi bấm nhầm; ma sát thao tác thừa với `x_error`. | Đề xuất sửa luật |
+| **REV-GD-02** | Motivation / Loop | **Trung bình** | `GR-18`, `UX-03`, `GDD 01 §2` | Điểm số là chỉ số chết (Dead Metric), không kích thích cạnh tranh hay mở khóa. | Đề xuất bổ sung |
+| **REV-GD-03** | Retention / Meta | **Cao** | `D-01`, `GR-26..28`, `UX-01` | Tuyến tính 24 level không có lý do quay lại (D1/D7 Retention = 0); thiếu yếu tố "Vườn Mèo". | Đề xuất bổ sung |
+| **REV-TECH-01**| Performance / Engine | **Nghiêm trọng** | `D-06`, `TECH-18..19`, `ART-09` | Godot 4 `SubViewport` 3D lồng trong 2D UI gây tụt FPS, shader compilation stutter trên mobile yếu. | Chốt quyết định M0 |
+| **REV-TECH-02**| Input Physics | **Trung bình** | `UX-11`, `TECH-03` | Chưa xử lý Touch Slop (độ trượt ngón tay) và Multi-touch / Palm Rejection. | Đề xuất bổ sung spec |
+| **REV-TECH-03**| Scalability / UI | **Cao** | `LV-01`, `UX-18`, `QA-35` | N=12 khiến ô chạm chỉ còn ~26pt (vi phạm chuẩn HIG 44pt); Zoom & Pan xung đột cử chỉ Double-tap. | Đề xuất hạ trần |
+| **REV-TECH-04**| Logic Depth / Pacing | **Trung bình** | `LV-02..03`, `TECH-04`, `GDD 04 §2`| Giới hạn S1/S2 khiến puzzle ở N=5, 6 dễ rơi vào tầm thường hoặc phải dùng quá nhiều given. | Đề xuất mở sớm S3 |
+
+---
+
+## 3. Chi tiết phân tích và phương án cải tiến
+
+### REV-UX-01: Độ trễ cảm giác (Input Lag) do cửa sổ 280ms nhận diện chạm đôi
+* **Hiện trạng GDD:** [GR-09..14](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L28-L34) và [UX-10](file:///D:/Work/Alpaca_Solution/Game-test/GDD/03-luong-man-hinh-va-ux.md#L51) quy định 1 chạm chỉ được xác nhận sau khi hết cửa sổ 280ms (để tránh ghi X trung gian nếu người dùng chạm lần hai).
+* **Phân tích rủi ro:**
+  * 70–80% thao tác trong game puzzle dạng lưới là **đánh dấu loại trừ (X)**. Người chơi thường lướt gõ liên tục vào 3–5 ô trống.
+  * Việc mỗi dấu X bị "ém" lại 280ms mới xuất hiện tạo cảm giác phản hồi cực kỳ chậm chạp, như thể máy bị treo hoặc màn hình cảm ứng bị liệt.
+* **Phương án đề xuất:**
+  * **Phương án 1 (Khuyến nghị cao nhất): Phản hồi lạc quan (Optimistic Feedback).** Chạm lần 1 hiện X ngay lập tức (<50ms). Nếu chạm lần 2 trong vòng 280ms tại cùng ô, chuyển đổi ngay từ X sang Mèo (`TryCat`). Về mặt thị giác người chơi thấy X nháy nhẹ rồi hóa Mèo, cảm giác tương tác cực kỳ nhạy và tự nhiên.
+  * **Phương án 2: Chuyển đổi chế độ bút (Tool Toggle).** Đặt 2 nút chế độ dưới bàn: `[Chế độ X]` và `[Chế độ Mèo]`. Ở chế độ nào thì 1 chạm là thực thi ngay trạng thái đó, triệt tiêu hoàn toàn sự phụ thuộc vào thời gian 280ms.
+  * **Phương án 3: Long Press cho Mèo.** 1 chạm = Đánh/Xóa X ngay; Nhấn giữ (Long press ~250ms) = Thử đặt Mèo.
+
+---
+
+### REV-GD-01: Cơ chế phạt tim khắc nghiệt & ma sát thừa từ `x_error`
+* **Hiện trạng GDD:** [GR-16](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L42) phạt mất 1/3 tim và trừ 25 điểm khi thử mèo sai; [GR-13](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L32) bắt buộc phải bấm xóa X đỏ rồi mới được thao tác tiếp; [D-04](file:///D:/Work/Alpaca_Solution/Game-test/GDD/README.md#L28) cấm hoàn toàn Undo.
+* **Phân tích rủi ro:**
+  * Mobile có hiện tượng bấm nhầm tự nhiên do ngón tay che khuất hoặc chạm lệch (fat-finger). Bị phạt mất tim và trừ điểm vì một cú bấm nhầm gây ức chế tâm lý nặng nề, làm mất đi tính "thư giãn, ấm áp" của chủ đề Vườn Mèo.
+  * Về mặt tư duy logic: Khi một ô thành X đỏ (đã thử và sai), bản thân X đỏ đã là một ghi chú loại trừ. Bắt người chơi phải tốn thêm một thao tác chạm vào ô đó để "xóa X đỏ về empty" rồi mới làm việc khác là một nấc cản trở (friction) vô lý.
+* **Phương án đề xuất:**
+  * Bổ sung tính năng **Undo tối thiểu 1–3 bước gần nhất**.
+  * Cho phép người chơi giữ nguyên X đỏ trên bàn như một dấu X đặc biệt (hoặc coi X đỏ như X thường), không cấm thao tác ở các ô khác.
+  * Tách biệt chế độ: **Thư giãn (Casual - Không giới hạn tim, tự do suy luận)** và **Thử thách (Challenge / Timed - Giữ 3 tim cho đối tượng thích hardcore)**.
+
+---
+
+### REV-GD-02: Điểm số hiện tại là chỉ số chết (Dead Metric)
+* **Hiện trạng GDD:** [GR-18](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L44) tính điểm theo công thức `max(0, 100 × correctPlaced − 25 × mistakeCount)`. Điểm chỉ hiển thị khi kết thúc màn, không cộng dồn, không xếp hạng, không dùng để mua sắm.
+* **Phân tích rủi ro:**
+  * Người chơi sẽ nhanh chóng bỏ qua điểm số vì nó không mang lại giá trị nào trong game. Mất đi một công cụ quan trọng để kích thích người chơi hoàn thiện (perfectionist drive).
+* **Phương án đề xuất:**
+  * Chuyển đổi hoặc bổ sung hệ thống **Đánh giá 3 Sao**:
+    * ⭐⭐⭐: Giải đúng 100% không mắc lỗi, không dùng gợi ý.
+    * ⭐⭐: Mắc 1–2 lỗi hoặc có dùng 1 gợi ý.
+    * ⭐: Hoàn thành màn chơi.
+  * Sao tích lũy được dùng làm đơn vị mở khóa nội dung mới trong Vườn Mèo (mở thêm loài mèo, phụ kiện vườn).
+
+---
+
+### REV-GD-03: Thiếu Meta-Game và Động lực giữ chân (Day 1 / Day 7 Retention)
+* **Hiện trạng GDD:** [D-01](file:///D:/Work/Alpaca_Solution/Game-test/GDD/README.md#L25) chỉ có đúng 24 level tuyến tính, không có màn chọn lại level cũ, hoàn thành xong là hết game.
+* **Phân tích rủi ro:**
+  * Thời gian hoàn thành 24 level chỉ mất khoảng 30–60 phút. Sau đó tỷ lệ gỡ cài đặt (churn rate) là 100%.
+  * Tên game là "Vườn Mèo" nhưng người chơi chỉ thấy bàn cờ lưới hình học, không có yếu tố "Vườn" để chăm sóc hay ngắm nhìn.
+* **Phương án đề xuất:**
+  * **Sổ tay giống mèo / Album sưu tập (Cat Compendium):** Mỗi level vượt qua sẽ giải cứu/thu hút một chú mèo về vườn. Màn hình Home là một khu vườn nhỏ ấm cúng với các chú mèo đã sưu tập được đang nằm ngủ/chơi đùa.
+  * **Câu đố hàng ngày (Daily Puzzle):** Mỗi ngày một bài toán mới với lịch điểm danh (Calendar streak) để kéo người chơi mở game đều đặn mỗi ngày.
+  * **Cho phép chơi lại các level đã hoàn thành** để săn đủ 3 sao.
+
+---
+
+### REV-TECH-01: Rủi ro hiệu năng của Godot 4 `SubViewport` 3D trên Mobile
+* **Hiện trạng GDD:** [D-06](file:///D:/Work/Alpaca_Solution/Game-test/GDD/README.md#L30) và [GDD 05 §1](file:///D:/Work/Alpaca_Solution/Game-test/GDD/05-kien-truc-va-du-lieu.md#L10) định hướng dùng Godot 4, dựng UI 2D và lồng một cảnh 3D bằng `SubViewport` / `ViewportTexture`.
+* **Phân tích rủi ro:**
+  * **Băng thông bộ nhớ (Memory Bandwidth):** Render target kép (FBO pass sang CanvasTexture pass) khiến GPU mobile đời thấp (Mali G52/G57, Adreno cũ) bị tụt xung, tụt FPS và gây nóng máy, hao pin.
+  * **Khựng hình (Shader Stuttering):** Lúc màn Thắng bật SubViewport lên, việc biên dịch shader 3D lần đầu gây giật khung hình (>100ms), vi phạm [TECH-19](file:///D:/Work/Alpaca_Solution/Game-test/GDD/05-kien-truc-va-du-lieu.md#L114).
+  * **Lỗi hiển thị Alpha:** ViewportTexture trong suốt trong Godot thường bị viền đen (dark fringing) do vấn đề premultiplied alpha khi vẽ đè lên 2D Control Node.
+* **Phương án đề xuất:**
+  * **Chiến lược ưu tiên số 1:** Thiết kế 3D trong Blender nhưng **xuất ra Sprite-Sheet 2D chất lượng cao** (Render 60fps frame sequence kèm shadow). Vừa giữ được độ đáng yêu 3D, vừa siêu nhẹ (~30MB), đảm bảo 60 FPS mượt mà trên 100% điện thoại giá rẻ.
+  * **Chiến lược nếu giữ 3D:** Biến màn Thắng/Vườn thành một **Scene 3D độc lập**, chuyển cảnh hoàn toàn từ Scene Puzzle 2D sang Scene Win 3D thay vì lồng SubViewport vào giữa cây giao diện 2D.
+
+---
+
+### REV-TECH-02: Bổ sung xử lý vật lý cảm ứng (Touch Slop & Multi-touch)
+* **Hiện trạng GDD:** [UX-11](file:///D:/Work/Alpaca_Solution/Game-test/GDD/03-luong-man-hinh-va-ux.md#L52) và [TECH-03](file:///D:/Work/Alpaca_Solution/Game-test/GDD/05-kien-truc-va-du-lieu.md#L20) chỉ mô tả logic trừu tượng, chưa có thông số vật lý cảm ứng.
+* **Phân tích rủi ro:**
+  * Khi chạm ngón tay, luôn có độ xê dịch vi mô (micro-movement). Không có ngưỡng dung sai (`touch_slop`) sẽ khiến engine nhận diện nhầm Tap thành Drag.
+  * Người dùng tì lòng bàn tay vào mép màn hình (Palm contact) dễ gây kích hoạt nhầm tọa độ chạm.
+* **Phương án đề xuất:**
+  * Bổ sung quy chuẩn kỹ thuật cho Gesture Layer:
+    * `TOUCH_SLOP_RADIUS = 12.0` (pixels logic). Mọi di chuyển trong bán kính này vẫn tính là đứng yên tại ô.
+    * Khóa đa điểm trên bàn cờ: Chỉ tiếp nhận sự kiện từ `event.index == 0` (ngón tay chạm đầu tiên). Bỏ qua các ngón tay phụ.
+
+---
+
+### REV-TECH-03: Kích thước vùng chạm khi mở rộng N=12 trên Mobile Dọc
+* **Hiện trạng GDD:** [LV-01](file:///D:/Work/Alpaca_Solution/Game-test/GDD/04-thiet-ke-level.md#L7) hỗ trợ schema N=4..12; [UX-18](file:///D:/Work/Alpaca_Solution/Game-test/GDD/03-luong-man-hinh-va-ux.md#L80) đặt điều kiện chạm 44×44pt cho N≤6.
+* **Phân tích rủi ro:**
+  * Màn hình điện thoại có bề ngang hữu dụng ~360pt. Với bàn cờ 12×12, mỗi ô chỉ rộng khoảng **~26pt**, thấp hơn nhiều so với tiêu chuẩn công thái học tối thiểu 44pt (Apple HIG) và 48dp (Google Material Design).
+  * Nếu dùng cơ chế Thu phóng & Trượt (Zoom & Pan): Cử chỉ **Double-Tap (Đang dùng để đặt mèo)** sẽ xung đột trực tiếp với cử chỉ Double-Tap-to-Zoom kinh điển trên mobile.
+* **Phương án đề xuất:**
+  * Khống chế kích thước tối đa trên Mobile Portrait là **N=8 hoặc N=9**.
+  * Quy định rõ: N=10..12 chỉ dành cho phiên bản Tablet / iPad hoặc chế độ màn hình ngang (Landscape).
+
+---
+
+### REV-TECH-04: Chiều sâu câu đố và sự phụ thuộc vào S1/S2
+* **Hiện trạng GDD:** [GDD 04 §2](file:///D:/Work/Alpaca_Solution/Game-test/GDD/04-thiet-ke-level.md#L16-L25) chỉ công nhận S1 (loại trừ) và S2 (ứng viên duy nhất). Các kỹ thuật nâng cao S3–S5 bị hoãn lại sau bản đầu.
+* **Phân tích rủi ro:**
+  * Ở bàn 5×5 và 6×6, các bài toán chỉ giải được bằng S1/S2 thường quá đơn giản (luôn có vùng 1 ô hoặc hàng trống lộ liễu), thiếu đi cảm giác thử thách trí tuệ. Để giữ nghiệm duy nhất bằng S1/S2, người tạo màn buộc phải cấp nhiều mèo cho sẵn (`givens`), làm giảm tính hấp dẫn.
+  * Kỹ thuật giao thoa (Intersection / Subsets - S3) là "linh hồn" của dòng game Queens/Star Battle.
+* **Phương án đề xuất:**
+  * Đưa **S3 (Nhóm khóa giao thoa / Intersection Elimination)** vào phạm vi nghiên cứu sớm hơn (ngay trong giai đoạn M1/M2) để nâng cao chất lượng biên tập 24 level phát hành.
+
+---
+
+## 4. Hướng dẫn hành động cho các Agent tiếp theo
+
+1. **Khi thực hiện Gói A (Spike M0):**
+   * Đọc kỹ mục `REV-TECH-01` để đo lường hiệu năng 3D SubViewport so với phương án Sprite-Sheet 2D trước khi quyết định kiến trúc đồ họa cố định.
+   * Tham chiếu `REV-UX-01` và `REV-TECH-02` khi xây dựng Gesture Layer nguyên mẫu.
+2. **Khi thực hiện Gói B (Core & Rules):**
+   * Kiểm tra tính khả thi của việc cho phép Undo và giảm hình phạt với `x_error` theo `REV-GD-01`.
+3. **Khi thực hiện Gói C & H (Validator & Level Design):**
+   * Tham chiếu `REV-TECH-04` để cân nhắc độ sâu suy luận cho các level từ 13 đến 24.
+4. **Khi cập nhật quy chuẩn GDD:**
+   * Mọi thay đổi về luật và dữ liệu bắt buộc phải tuân thủ quy trình tại [AGENTS.md](file:///D:/Work/Alpaca_Solution/Game-test/AGENTS.md) (sửa đồng bộ GDD, sample data, validator và unit test).
+</file>
+
+<file path="design-reviews/02-danh-gia-ban-thiet-ke-v04.md">
+# 02 — Rà soát & Đánh giá Chuyên sâu Bản thiết kế GDD v0.4
+
+**Ngày lập:** 2026-09-18  
+**Tác giả đánh giá:** Senior Game Programmer & Lead Game Designer  
+**Đối tượng sử dụng:** Các Coding Agent, Game Designer, Developer tiếp nhận dự án  
+**Tài liệu đối chiếu:** GDD v0.4 (đặc biệt là `GDD/10`, `GDD/11`, `interactions.sample.json`, `test_interaction_contract.py`)
+
+**Quyết định sau góp ý 2026-09-18:** [GDD v0.4.2](../GDD/README.md) và [bảng quyết định](../GDD/09-ra-soat-thiet-ke.md) là nguồn triển khai. Phân tích và phương án trong bản review dưới đây được giữ để lưu lịch sử; các điểm mua hint, Garden Lobby, mèo tự về vườn và tô mèo theo màu vùng đã được thay bằng quyết định mới.
+
+---
+
+## 1. Mục đích và bối cảnh
+
+Bản cập nhật GDD v0.4 đã có những bước tiến rất lớn so với v0.3, trực tiếp phản hồi các góp ý tại [01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md](01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md). 
+
+Tài liệu này đóng vai trò là **Bản đánh giá lần 2 (Second-Pass Review)** nhằm:
+1. Ghi nhận các giải pháp xuất sắc đã được đưa vào v0.4.
+2. Cảnh báo **4 vấn đề tiềm ẩn mới phát sinh** về mặt kinh tế game (Game Economy), hiệu năng bộ nhớ texture (VRAM), tâm lý người chơi khi thua cuộc và bản sắc meta-game của trò chơi.
+3. Cung cấp giải pháp kỹ thuật cụ thể để các Agent triển khai Gói A, B, G, H áp dụng ngay mà không làm xáo trộn kiến trúc cốt lõi.
+
+---
+
+## 2. Bảng tổng hợp vấn đề mới (New Issue Matrix)
+
+| Mã ID | Phân loại | Mức độ | Tài liệu liên quan | Vấn đề cốt lõi | Trạng thái đề xuất |
+| :--- | :--- | :---: | :--- | :--- | :---: |
+| **REV-ECO-01** | Game Economy | **Nghiêm trọng** | `GDD 11 §2`, `QA-46/47` | Nghịch lý kinh tế "Bẫy nghèo đói": Người chơi yếu cần hint lại kiếm được ít vàng nhất, dẫn đến kẹt màn và gỡ game. | Đã điều chỉnh trong GDD v0.4.2: hint miễn phí, vàng cứu lượt/mua mèo |
+| **REV-TECH-05**| GPU Memory / VRAM | **Cao** | `D-06`, `TECH-18/19`, `ART-02` | Xuất riêng Sprite Sheet cho từng màu mèo gây phình to VRAM (hàng trăm MB), dẫn đến Out-Of-Memory trên mobile yếu. | Đã điều chỉnh: mèo không tô theo vùng; mỗi mèo một bộ clip, kiểm cache/VRAM |
+| **REV-GD-04**  | Player Frustration | **Cao** | `D-08`, `GR-16/17/19`, `QA-14` | Hết 3 tim phạt thua và reset trắng bàn cờ gây ức chế tột độ ở các bàn 6×6 khi chỉ vì một cú chạm nhầm vô ý. | Đặc tả mở rộng sau MVP: vàng hoặc quảng cáo thưởng khi thiếu vàng; Retry miễn phí |
+| **REV-META-01**| Retention / Theme | **Trung bình** | `GDD 01 §1`, `UX-01`, `GDD 11` | Game thiếu hoàn toàn yếu tố "Vườn Mèo" thực sự; màn Home đơn điệu, thiếu tương tác cảm xúc để giữ chân người chơi. | Đã chốt: Vườn mèo là danh sách mèo mua bằng vàng để chọn |
+
+---
+
+## 3. Ghi nhận các điểm tiến bộ vượt bậc ở bản v0.4
+
+Trước khi phân tích các điểm cần hoàn thiện, đội ngũ kỹ thuật và thiết kế đánh giá rất cao 4 thay đổi lớn trong v0.4:
+1. **Cử chỉ Optimistic Preview & Drag Stroke ([GR-29/30](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L34-L35)):** Cho phép 1 chạm hiện X ngay trên hình và kéo để đánh/xóa X hàng loạt là giải pháp chuẩn mực, giải quyết triệt để cảm giác trễ 280ms mà vẫn giữ được logic chạm đôi an toàn.
+2. **Quyết định Engine 2D Sprite Sheet từ Model 3D ([D-06](file:///D:/Work/Alpaca_Solution/Game-test/GDD/README.md#L33)):** Tránh được cạm bẫy hiệu năng của `SubViewport` 3D runtime trong Godot 4, đảm bảo độ mượt 60 FPS trên 100% thiết bị Android/iOS mục tiêu.
+3. **Cơ sở toán học bài bản cho S3–S5 ([GDD 10](file:///D:/Work/Alpaca_Solution/Game-test/GDD/10-nghien-cuu-quy-tac-suy-luan.md)):** Thiết lập hệ thống tiên đề và điều kiện tập hợp chuẩn xác cho quy tắc Khóa giao thoa (S3), đồng thời hoãn S5 (phản chứng) để tránh hint bị biến thành bài giảng toán dài dòng.
+4. **Bộ test vector cử chỉ có thể thực thi ([interactions.sample.json](file:///D:/Work/Alpaca_Solution/Game-test/GDD/data/interactions.sample.json)):** Chuẩn hóa 16 ca kiểm thử cảm ứng (touch slop, jitter, multi-touch rejection) ngay từ đầu giúp việc lập trình Gesture Controller sau này có hợp đồng kỹ thuật rõ ràng.
+
+---
+
+## 4. Chi tiết 4 vấn đề tiềm ẩn mới & Giải pháp đề xuất
+
+### REV-ECO-01: Nghịch lý kinh tế "Bẫy nghèo đói" (The Poverty Trap) trong GDD 11
+* **Hiện trạng GDD 11:** 
+  * Điểm cuối lượt đổi thành vàng theo công thức `gold = floor(score / 50)` chỉ cấp 1 lần khi thắng.
+  * Dùng vàng để mua lượt Hint nâng cao (8 vàng) hoặc Trợ giúp nâng cao (12 vàng).
+* **Phân tích rủi ro thiết kế:**
+  * **Nghịch lý phân phối:**
+    * *Người chơi giỏi:* Giải nhanh, 0 lỗi, đạt điểm tối đa -> tích lũy lượng vàng khổng lồ nhưng **không bao giờ cần mua Hint**.
+    * *Người chơi mới / kỹ năng thấp (nhóm đối tượng casual chính):* Thử sai nhiều, bị trừ điểm, kiếm được rất ít vàng hoặc 0 vàng -> Khi đến các level khó (15–20), họ kẹt và **không đủ tiền mua Hint**.
+  * **Hậu quả:** Người cần sự trợ giúp nhất lại là người nghèo nhất. Họ không thể tự giải, không có vàng mua hint, không thể vượt qua level -> **Gỡ cài đặt (Churn rate 100%)**.
+* **Giải pháp đề xuất:**
+  1. **Tách biệt Trợ giúp khỏi Vàng:** Không bán Hint bằng vàng kiếm từ điểm số. Hint nên là **tài nguyên tự hồi phục theo thời gian** (ví dụ: mỗi 5–10 phút hồi 1 lượt, tích lũy tối đa 2–3 lượt) hoặc tặng miễn phí khi người chơi gặp chuỗi thất bại liên tiếp (Pity System).
+  2. **Tái định vị Vàng cho Metagame:** Vàng chỉ nên dùng cho các giá trị mong muốn (Aspirational Value) như: Mở khóa các giống mèo mới, trang trí sân vườn, mua phụ kiện vòng cổ cho mèo, hoặc dùng cho cơ chế Cứu nguy (`REV-GD-04`).
+
+---
+
+### REV-TECH-05: Nguy cơ tràn VRAM do bùng nổ Sprite Sheet đa màu
+* **Hiện trạng GDD 06 & D-06:** Hoạt ảnh mèo (idle, jump, celebrate, sad) được render từ model 3D thành Sprite Sheet 2D cho 6 màu vùng (A–F) và mở rộng 12 màu (A–L).
+* **Phân tích rủi ro kỹ thuật:**
+  * Một chuỗi animation mèo sắc nét (kích thước frame 256×256 px, 30–60 FPS, dài 2–3 giây) có thể cần atlas sprite sheet kích thước 2048×2048 px hoặc 4096×4096 px (~16MB đến 64MB uncompressed VRAM).
+  * Nếu xuất riêng sprite sheet cho 6 màu -> ngốn **~100MB – 200MB VRAM**. Nếu mở rộng 12 màu -> ngốn **~250MB – 400MB VRAM** chỉ riêng cho texture của mèo.
+  * Trên các thiết bị Android tầm thấp (RAM 2GB–3GB), bộ nhớ GPU dùng chung với RAM hệ thống, dung lượng VRAM lớn này sẽ kích hoạt cơ chế Low-Memory Killer làm sập ứng dụng (Crash OOM).
+* **Giải pháp đề xuất (Kỹ thuật Palette Swapping / Shader Tinting):**
+  1. Đội ngũ Art chỉ xuất **DUY NHẤT 1 BỘ SPRITE SHEET MÀU TRẮNG/XÁM (Grayscale Base Texture)** kèm texture mặt nạ (Mask Map nếu cần bảo vệ mắt mèo hoặc phụ kiện không bị đổi màu).
+  2. Trong Godot 4, viết một **CanvasItem Shader cực nhẹ**:
+     ```gdshader
+     shader_type canvas_item;
+     uniform vec4 region_color : source_color;
+     void fragment() {
+         vec4 tex = texture(TEXTURE, UV);
+         // Tô màu lông mèo theo mã màu vùng nhưng vẫn giữ nguyên độ sáng tối (shading)
+         COLOR = vec4(tex.rgb * region_color.rgb, tex.a);
+     }
+     ```
+  3. **Lợi ích:** Tiết kiệm **85% dung lượng file và bộ nhớ VRAM** (chỉ tốn ~15MB cho tất cả các màu mèo), giảm 90% công sức cho họa sĩ 3D.
+
+---
+
+### REV-GD-04: Sự tàn nhẫn của "3 Tim + Khóa X Đỏ + Không Undo"
+* **Hiện trạng GDD 02:** Thử sai mất 1 tim, ô biến thành `x_error` bị khóa vĩnh viễn, hết 3 tim là thua cuộc và bắt buộc phải Retry lại toàn bộ màn chơi từ đầu ([GR-16/17/19](file:///D:/Work/Alpaca_Solution/Game-test/GDD/02-luat-choi-va-trang-thai.md#L42-L49)).
+* **Phân tích rủi ro trải nghiệm:**
+  * Ở các level 5×5 hoặc 6×6, người chơi đã đầu tư 4–5 phút suy luận căng thẳng và tìm được 5/6 chú mèo. Chỉ vì ngón tay run hoặc vô ý chạm đúp nhầm vào 1 ô trống -> mất tim thứ 3 -> **toàn bộ 5 phút công sức bị xóa sạch, bàn cờ reset về đầu**.
+  * Cảm giác mất mát đột ngột này biến một tựa game "Thư giãn, chữa lành" thành trải nghiệm gây ức chế cực độ (Rage Quit).
+* **Giải pháp đề xuất (Cơ chế Cứu nguy - Second Chance / Revive):**
+  1. Khi tim về 0, hiển thị màn hình cảnh báo với lựa chọn:
+     * **Thử lại từ đầu (Miễn phí).**
+     * **Cứu lượt chơi (Dùng 5–10 Vàng):** Hồi phục lại 1 tim, mở khóa ô `x_error` vừa bấm nhầm thành ô `empty` và cho phép người chơi tiếp tục giải bàn cờ hiện tại.
+  2. Cơ chế này bảo vệ tâm lý người chơi, đồng thời giải quyết bài toán tiêu thụ vàng (Sink) rất hiệu quả cho nền kinh tế game.
+
+---
+
+### REV-META-01: Thiếu vắng bản sắc "Vườn Mèo" (The Missing Garden Lobby)
+* **Hiện trạng GDD 01 & 03:** Giao diện Home chỉ gồm các nút: `Chơi/Tiếp tục`, `Trợ giúp`, `Settings` ([UX-01](file:///D:/Work/Alpaca_Solution/Game-test/GDD/03-luong-man-hinh-va-ux.md#L30)). Bàn chơi là ma trận lưới hình học.
+* **Phân tích rủi ro sản phẩm:**
+  * Tên trò chơi là **Vườn Mèo**, nhưng người chơi không thấy "Vườn" ở đâu. Toàn bộ trải nghiệm bị bó hẹp trong một bàn cờ Sudoku khô khan.
+  * Thiếu sợi dây liên kết cảm xúc giữa người chơi và các nhân vật mèo – yếu tố cốt lõi tạo nên sự lan tỏa (viral) của dòng game cozy trên TikTok/Shorts.
+* **Giải pháp đề xuất (The Garden Lobby):**
+  1. **Biến màn Home thành một Khu Vườn Nhỏ:** 
+     * Thay vì nền menu tĩnh, Home là một bãi cỏ xanh ấm áp.
+     * Mỗi khi vượt qua một level, chú mèo tương ứng với level đó sẽ chạy ra khu vườn ở màn hình Home, nằm sưởi nắng, ngủ hoặc đi dạo.
+  2. **Tương tác đơn giản (Petting):** 
+     * Người chơi có thể chạm vào chú mèo trong vườn để nghe tiếng kêu "Meow", mèo nhảy lên hoặc cuộn tròn hạnh phúc.
+  3. Chi phí triển khai phần này rất thấp (tái sử dụng sprite sheet mèo đã có) nhưng giá trị gia tăng về mặt cảm xúc và tỷ lệ giữ chân (Retention) là khổng lồ.
+
+---
+
+## 5. Quyết định triển khai sau góp ý
+
+1. **Gói A/G — Art & Audio:** Bản đầu dùng một bộ clip mèo mặc định cho mọi ô `cat` và mọi vùng. Vùng nhận diện bằng nền/viền/nhãn/họa tiết; không cần shader tô mèo theo vùng. Mèo mua về sau có gói clip riêng, tải theo lựa chọn của người chơi (TECH-18/20/21, ART-12/13, QA-50/52).
+2. **Gói B/D — Core & Save:** Bản đầu giữ GR-17/19. Gói meta sau MVP thêm trạng thái chờ cứu lượt khi tim về 0, giao dịch vàng hoặc xác nhận quảng cáo thưởng, hồi 1 tim và xóa riêng X đỏ cuối; Retry miễn phí luôn dùng được (GDD 11, QA-47/53).
+3. **Gói F/K — UI & Meta:** Vườn mèo chỉ liệt kê `purchasedAppearanceIds` mua bằng vàng; mèo mặc định có nút chọn riêng. `selectedAppearanceId` là mèo mặc định hoặc một ID đã mua. Không lấy `completedLevelIds` để cấp mèo, không dựng Garden Lobby hoặc petting. Hình trên mọi ô `cat`/given và hoạt ảnh theo mèo đang chọn; hint cơ bản miễn phí (GDD 11, QA-52).
+</file>
+
+<file path="design-reviews/README.md">
+# Design Reviews & Architecture Backlog
+
+Thư mục này chứa các tài liệu rà soát, phản biện chuyên sâu và kiến nghị cải tiến về **Game Design**, **User Experience (UX)** và **Kiến trúc Kỹ thuật** cho dự án "Vườn Mèo".
+
+## Mục đích cho các Agent
+Trước khi bắt đầu bất kỳ gói việc nào (từ Gói A đến Gói I trong [GDD/08-ke-hoach-trien-khai-cho-agent.md](file:///D:/Work/Alpaca_Solution/Game-test/GDD/08-ke-hoach-trien-khai-cho-agent.md)), các Agent **cần đọc các tài liệu trong thư mục này** để nắm bắt các rủi ro tiềm ẩn và các giải pháp đã được đề xuất.
+
+## Danh mục tài liệu
+
+| Tài liệu | Ngày lập | Nội dung chính |
+| :--- | :---: | :--- |
+| [01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md](01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md) | 2026-09-18 | Rà soát toàn diện GDD v0.3: Độ trễ input 280ms (`REV-UX-01`), cơ chế phạt 3 tim & `x_error` (`REV-GD-01`), rủi ro SubViewport 3D trên mobile (`REV-TECH-01`), meta-game (`REV-GD-03`), v.v. |
+| [02-danh-gia-ban-thiet-ke-v04.md](02-danh-gia-ban-thiet-ke-v04.md) | 2026-09-18 | Rà soát GDD v0.4 và quyết định sau góp ý ở GDD v0.4.2: vàng cứu lượt/mua mèo, quảng cáo thưởng khi thiếu vàng, Vườn mèo là danh sách bộ sưu tập, mèo hiển thị theo lựa chọn người chơi. |
+
+## Quy tắc cho Agent khi cập nhật hoặc xử lý vấn đề
+1. Khi một đề xuất được chốt và đưa vào hiện thực, hãy cập nhật trạng thái của mã tương ứng (ví dụ: `REV-UX-01` -> `[Đã giải quyết trong GDD v0.4]`).
+2. Mọi thay đổi về luật chơi, cơ chế hoặc schema dữ liệu phải tuân thủ nghiêm ngặt quy định tại [AGENTS.md](file:///D:/Work/Alpaca_Solution/Game-test/AGENTS.md) (cập nhật đồng thời GDD, `levels.sample.json`, validator và unit tests).
+</file>
+
+<file path="GDD/data/interactions.sample.json">
+{
+  "contractVersion": 1,
+  "levelId": "T01",
+  "doubleTapWindowMs": 280,
+  "touchSlopLogicalPx": 12,
+  "cellLogicalPx": 100,
+  "cases": [
+    {
+      "id": "tap_empty_immediate_x",
+      "kind": "tap",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "tap_x_immediate_clear",
+      "kind": "tap",
+      "initial": {"0,0": "x"},
+      "cell": [0, 0],
+      "preview": "empty",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["ClearX"]
+    },
+    {
+      "id": "double_empty_correct_rolls_back_preview",
+      "kind": "double",
+      "initial": {},
+      "cell": [0, 1],
+      "intervalMs": 180,
+      "preview": "x",
+      "expected": {"0,1": "cat"},
+      "hearts": 3,
+      "actions": ["TryCat"]
+    },
+    {
+      "id": "double_x_wrong_becomes_locked_error",
+      "kind": "double",
+      "initial": {"0,0": "x"},
+      "cell": [0, 0],
+      "intervalMs": 180,
+      "preview": "empty",
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": ["TryCat"]
+    },
+    {
+      "id": "slow_double_is_two_single_taps",
+      "kind": "double",
+      "initial": {},
+      "cell": [0, 0],
+      "intervalMs": 281,
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["MarkX", "ClearX"]
+    },
+    {
+      "id": "fast_taps_on_different_cells_are_independent",
+      "kind": "different",
+      "initial": {},
+      "first": [0, 0],
+      "second": [0, 2],
+      "intervalMs": 180,
+      "expected": {"0,0": "x", "0,2": "x"},
+      "hearts": 3,
+      "actions": ["MarkX", "MarkX"]
+    },
+    {
+      "id": "second_contact_becomes_clear_stroke",
+      "kind": "second_drag",
+      "initial": {},
+      "cell": [0, 0],
+      "intervalMs": 180,
+      "to": [0, 2],
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["MarkX", "MarkStroke"]
+    },
+    {
+      "id": "jitter_below_slop_stays_tap",
+      "kind": "jitter",
+      "initial": {},
+      "cell": [0, 0],
+      "distanceLogicalPx": 11,
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "motion_over_slop_is_stroke",
+      "kind": "jitter",
+      "initial": {},
+      "cell": [0, 0],
+      "distanceLogicalPx": 13,
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "locked_error_ignores_tap_and_double",
+      "kind": "locked",
+      "initial": {"0,0": "x_error"},
+      "initialHearts": 2,
+      "cell": [0, 0],
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": []
+    },
+    {
+      "id": "locked_error_cannot_start_stroke",
+      "kind": "locked_drag",
+      "initial": {"0,0": "x_error"},
+      "initialHearts": 2,
+      "cell": [0, 0],
+      "to": [0, 3],
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": []
+    },
+    {
+      "id": "mark_drag_skips_locked_and_existing",
+      "kind": "drag",
+      "initial": {"0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "initialHearts": 2,
+      "from": [0, 0],
+      "to": [0, 3],
+      "returnTo": [0, 0],
+      "expected": {"0,0": "x", "0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "hearts": 2,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "clear_drag_skips_empty_and_error",
+      "kind": "drag",
+      "initial": {"1,0": "x", "1,1": "x", "1,2": "x_error"},
+      "initialHearts": 2,
+      "from": [1, 0],
+      "to": [1, 3],
+      "expected": {"1,2": "x_error"},
+      "hearts": 2,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "second_finger_does_not_add_stroke",
+      "kind": "secondary",
+      "initial": {},
+      "primary": [2, 0],
+      "secondaryFrom": [3, 0],
+      "secondaryTo": [3, 3],
+      "expected": {"2,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "background_flushes_released_single_tap",
+      "kind": "flush_pending",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "background_discards_unreleased_preview",
+      "kind": "cancel_active",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": []
+    }
+  ]
+}
+</file>
+
+<file path="GDD/data/levels.sample.json">
+{
+  "levels": [
+    {
+      "schemaVersion": 3,
+      "id": "T01",
+      "order": 1,
+      "size": 4,
+      "regions": ["CABB", "CCBB", "CCBB", "CCDD"],
+      "givens": [],
+      "solution": [1, 3, 0, 2],
+      "difficulty": "tutorial",
+      "tags": ["region-single", "row-column", "adjacency"],
+      "logicTrace": [
+        {"rule": "S2", "focus": {"type": "region", "id": "A"}, "conclusion": {"type": "place", "r": 0, "c": 1}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "row", "id": 1}, "conclusion": {"type": "place", "r": 1, "c": 3}, "textKey": "hint.single.row"},
+        {"rule": "S2", "focus": {"type": "region", "id": "D"}, "conclusion": {"type": "place", "r": 3, "c": 2}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "region", "id": "C"}, "conclusion": {"type": "place", "r": 2, "c": 0}, "textKey": "hint.single.region"}
+      ]
+    },
+    {
+      "schemaVersion": 3,
+      "id": "E01",
+      "order": 2,
+      "size": 5,
+      "regions": ["AAABB", "CABBB", "CEDDD", "EEDDD", "EEDDD"],
+      "givens": [{"r": 0, "c": 2}],
+      "solution": [2, 4, 0, 3, 1],
+      "difficulty": "easy",
+      "tags": ["given-cat", "region-single", "row-column"],
+      "logicTrace": [
+        {"rule": "S2", "focus": {"type": "region", "id": "B"}, "conclusion": {"type": "place", "r": 1, "c": 4}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "region", "id": "C"}, "conclusion": {"type": "place", "r": 2, "c": 0}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "row", "id": 3}, "conclusion": {"type": "place", "r": 3, "c": 3}, "textKey": "hint.single.row"},
+        {"rule": "S2", "focus": {"type": "row", "id": 4}, "conclusion": {"type": "place", "r": 4, "c": 1}, "textKey": "hint.single.row"}
+      ]
+    },
+    {
+      "schemaVersion": 3,
+      "id": "E02",
+      "order": 3,
+      "size": 6,
+      "regions": ["BBBBAA", "DEBBCA", "DEEECE", "DDEEEE", "DDFEEE", "DFFEEE"],
+      "givens": [{"r": 0, "c": 5}],
+      "solution": [5, 2, 4, 0, 3, 1],
+      "difficulty": "easy",
+      "tags": ["given-cat", "region-single", "chain"],
+      "logicTrace": [
+        {"rule": "S2", "focus": {"type": "region", "id": "C"}, "conclusion": {"type": "place", "r": 2, "c": 4}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "region", "id": "B"}, "conclusion": {"type": "place", "r": 1, "c": 2}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "region", "id": "F"}, "conclusion": {"type": "place", "r": 5, "c": 1}, "textKey": "hint.single.region"},
+        {"rule": "S2", "focus": {"type": "column", "id": 0}, "conclusion": {"type": "place", "r": 3, "c": 0}, "textKey": "hint.single.column"},
+        {"rule": "S2", "focus": {"type": "row", "id": 4}, "conclusion": {"type": "place", "r": 4, "c": 3}, "textKey": "hint.single.row"}
+      ]
+    },
+    {
+      "schemaVersion": 3,
+      "id": "N12",
+      "order": 4,
+      "size": 12,
+      "regions": ["AAAAAAAAAAAA", "BBBBBBBBBBBB", "CCCCCCCCCCCC", "DDDDDDDDDDDD", "EEEEEEEEEEEE", "FFFFFFFFFFFF", "GGGGGGGGGGGG", "HHHHHHHHHHHH", "IIIIIIIIIIII", "JJJJJJJJJJJJ", "KKKKKKKKKKKK", "LLLLLLLLLLLL"],
+      "givens": [{"r": 0, "c": 0}, {"r": 1, "c": 2}, {"r": 2, "c": 4}, {"r": 3, "c": 6}, {"r": 4, "c": 8}, {"r": 5, "c": 10}, {"r": 6, "c": 1}, {"r": 7, "c": 3}, {"r": 8, "c": 5}, {"r": 9, "c": 7}, {"r": 10, "c": 9}, {"r": 11, "c": 11}],
+      "solution": [0, 2, 4, 6, 8, 10, 1, 3, 5, 7, 9, 11],
+      "difficulty": "easy",
+      "tags": ["schema-boundary"],
+      "logicTrace": []
+    }
+  ]
+}
+</file>
+
+<file path="GDD/tools/test_interaction_contract.py">
+"""Executable design vectors for the future Godot gesture implementation.
+
+This is a small reference reducer, not a test of a game runtime that does not exist yet.
+QA-08..12/43..45 must later replay these vectors against the actual game.
+"""
+
+import json
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA = json.loads((ROOT / "data" / "interactions.sample.json").read_text(encoding="utf-8"))
+LEVELS = json.loads((ROOT / "data" / "levels.sample.json").read_text(encoding="utf-8"))["levels"]
+LEVEL = next(level for level in LEVELS if level["id"] == DATA["levelId"])
+
+
+def key(cell):
+    return f"{cell[0]},{cell[1]}"
+
+
+def state(cells, cell):
+    return cells.get(key(cell), "empty")
+
+
+def single(cells, cell):
+    before = state(cells, cell)
+    if before == "empty":
+        cells[key(cell)] = "x"
+        return "MarkX"
+    if before == "x":
+        cells.pop(key(cell))
+        return "ClearX"
+    return None
+
+
+def line_cells(start, end, cell_size):
+    """Sample the segment at one logical pixel to include skipped grid cells."""
+    x0, y0 = (start[1] + 0.5) * cell_size, (start[0] + 0.5) * cell_size
+    x1, y1 = (end[1] + 0.5) * cell_size, (end[0] + 0.5) * cell_size
+    steps = max(1, int(max(abs(x1 - x0), abs(y1 - y0))))
+    result = []
+    for i in range(steps + 1):
+        cell = (int((y0 + (y1 - y0) * i / steps) // cell_size),
+                int((x0 + (x1 - x0) * i / steps) // cell_size))
+        if not result or result[-1] != cell:
+            result.append(cell)
+    return result
+
+
+def run_case(case):
+    cells = dict(case["initial"])
+    actions = []
+    hearts = case.get("initialHearts", 3)
+    kind = case["kind"]
+    cell = case.get("cell")
+
+    if kind in ("tap", "jitter", "secondary"):
+        if kind == "secondary":
+            cell = case["primary"]  # secondary contact never owns the board
+        if kind == "jitter" and case["distanceLogicalPx"] > DATA["touchSlopLogicalPx"]:
+            single(cells, cell)
+            actions.append("MarkStroke")
+        else:
+            action = single(cells, cell)
+            if action:
+                actions.append(action)
+    elif kind == "double":
+        if state(cells, cell) in ("empty", "x"):
+            if case["intervalMs"] <= DATA["doubleTapWindowMs"]:
+                # The first tap was visual preview only, never a committed X.
+                if LEVEL["solution"][cell[0]] == cell[1]:
+                    cells[key(cell)] = "cat"
+                else:
+                    cells[key(cell)] = "x_error"
+                    hearts -= 1
+                actions.append("TryCat")
+            else:
+                actions.extend((single(cells, cell), single(cells, cell)))
+    elif kind == "different":
+        assert case["intervalMs"] <= DATA["doubleTapWindowMs"]
+        assert case["first"] != case["second"]
+        actions.extend((single(cells, case["first"]), single(cells, case["second"])))
+    elif kind == "second_drag":
+        assert case["intervalMs"] <= DATA["doubleTapWindowMs"]
+        actions.append(single(cells, cell))  # flush the first released tap
+        mode = state(cells, cell)  # now X, so the second stroke clears X
+        for target in line_cells(cell, case["to"], DATA["cellLogicalPx"]):
+            if state(cells, target) == mode:
+                single(cells, target)
+        actions.append("MarkStroke")
+    elif kind in ("locked", "locked_drag"):
+        pass  # tap/double on the locked x_error are both no-ops
+    elif kind == "flush_pending":
+        actions.append(single(cells, cell))  # the first tap was already released
+    elif kind == "cancel_active":
+        pass  # a press/stroke still held is discarded before commit
+    elif kind == "drag":
+        start = case["from"]
+        mode = state(cells, start)
+        assert mode in ("empty", "x")
+        path = line_cells(start, case["to"], DATA["cellLogicalPx"])
+        if "returnTo" in case:
+            path.extend(line_cells(case["to"], case["returnTo"], DATA["cellLogicalPx"]))
+        visited = set()
+        for target in path:
+            target_key = key(target)
+            if target_key in visited:
+                continue
+            visited.add(target_key)
+            if state(cells, target) == mode:
+                single(cells, target)
+        actions.append("MarkStroke")
+    else:
+        raise AssertionError(f"unknown kind: {kind}")
+    return cells, hearts, actions
+
+
+class InteractionContractTests(unittest.TestCase):
+    def test_vectors(self):
+        self.assertEqual(DATA["contractVersion"], 1)
+        self.assertEqual(LEVEL["size"], 4)
+        seen = set()
+        for case in DATA["cases"]:
+            with self.subTest(case=case["id"]):
+                self.assertNotIn(case["id"], seen)
+                seen.add(case["id"])
+                for position, value in case["initial"].items():
+                    self.assertIn(value, ("empty", "x", "x_error", "cat"))
+                    row, col = map(int, position.split(","))
+                    self.assertTrue(0 <= row < LEVEL["size"] and 0 <= col < LEVEL["size"])
+                    if value == "cat":
+                        self.assertEqual(LEVEL["solution"][row], col)
+                    if value == "x_error":
+                        self.assertNotEqual(LEVEL["solution"][row], col)
+                self.assertEqual(case.get("initialHearts", 3), 3 - sum(
+                    value == "x_error" for value in case["initial"].values()))
+                if "preview" in case:
+                    self.assertIn(case["preview"], ("empty", "x"))
+                    before = state(case["initial"], case["cell"])
+                    self.assertEqual(case["preview"], "x" if before == "empty" else "empty")
+                actual = run_case(case)
+                self.assertEqual(actual, (case["expected"], case["hearts"], case["actions"]))
+
+
+if __name__ == "__main__":
+    unittest.main()
+</file>
+
+<file path="GDD/tools/test_validate_levels.py">
+"""Focused contract tests for the level and S2 proof validator."""
+
+import copy
+import json
+import unittest
+from pathlib import Path
+
+from validate_levels import (
+    canonical_regions,
+    count_solutions,
+    exclusion_reason,
+    object_no_duplicates,
+    validate_document,
+    validate_level,
+)
+
+
+SAMPLE = Path(__file__).resolve().parents[1] / "data" / "levels.sample.json"
+
+
+class LevelValidatorTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.levels = json.loads(SAMPLE.read_text(encoding="utf-8"))["levels"]
+
+    def level(self, index=0):
+        return copy.deepcopy(self.levels[index])
+
+    def test_fixtures_have_independent_unique_solutions_and_s2_traces(self):
+        ordered, warnings = validate_document({"levels": copy.deepcopy(self.levels)})
+        self.assertEqual([level["id"] for level in ordered], ["T01", "E01", "E02", "N12"])
+        self.assertEqual(warnings, [])
+
+    def test_s1_witness_distinguishes_row_and_diagonal(self):
+        rows = self.level()["regions"]
+        self.assertEqual(exclusion_reason(rows, {0: 1}, (0, 0)),
+                         {"sourceCat": (0, 1), "reason": "row"})
+        self.assertEqual(exclusion_reason(rows, {0: 1}, (1, 0)),
+                         {"sourceCat": (0, 1), "reason": "diagonal"})
+        self.assertIsNone(exclusion_reason(rows, {0: 1}, (1, 3)))
+
+    def test_solver_rejects_multiple_and_zero_solutions(self):
+        stripes = ["AAAA", "BBBB", "CCCC", "DDDD"]
+        self.assertEqual(len(count_solutions(stripes, {}, limit=2)), 2)
+        self.assertEqual(count_solutions(stripes, {0: 0, 1: 1}), [])
+        with self.assertRaisesRegex(ValueError, "search budget exceeded"):
+            count_solutions(stripes, {}, max_nodes=0)
+
+    def test_n12_fixture_and_n13_limit(self):
+        self.assertIsInstance(validate_level(self.level(3)), str)
+        level = self.level(3)
+        level["size"] = 13
+        with self.assertRaisesRegex(ValueError, "4 to 12"):
+            validate_level(level)
+
+    def test_rejects_wrong_declared_solution(self):
+        level = self.level()
+        level["solution"] = [2, 0, 3, 1]
+        with self.assertRaisesRegex(ValueError, "declared solution differs"):
+            validate_level(level)
+
+    def test_rejects_disconnected_region(self):
+        level = self.level()
+        level["regions"][0] = "CABD"
+        with self.assertRaisesRegex(ValueError, "disconnected"):
+            validate_level(level)
+
+    def test_rejects_unproved_s2_step(self):
+        level = self.level()
+        level["logicTrace"][0]["focus"] = {"type": "row", "id": 0}
+        level["logicTrace"][0]["textKey"] = "hint.single.row"
+        with self.assertRaisesRegex(ValueError, "trace step 1: focus candidates"):
+            validate_level(level)
+
+    def test_rejects_wrong_hint_key_and_old_trace_field(self):
+        level = self.level()
+        level["logicTrace"][0]["textKey"] = "hint.single.row"
+        with self.assertRaisesRegex(ValueError, "textKey"):
+            validate_level(level)
+        level = self.level()
+        level["logicTrace"][0]["eliminatedCells"] = []
+        with self.assertRaisesRegex(ValueError, "extra.*eliminatedCells"):
+            validate_level(level)
+
+    def test_rejects_old_schema_bool_integer_and_unknown_field(self):
+        for field, value, message in (
+            ("schemaVersion", 1, "schemaVersion"),
+            ("size", True, "size"),
+            ("extra", 1, "extra"),
+            ("chapter", 1, "chapter"),
+        ):
+            with self.subTest(field=field):
+                level = self.level()
+                level[field] = value
+                with self.assertRaisesRegex(ValueError, message):
+                    validate_level(level)
+
+    def test_rejects_duplicate_json_keys(self):
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            json.loads('{"levels":[],"levels":[]}', object_pairs_hook=object_no_duplicates)
+
+    def test_duplicate_shape_is_warning_for_fixture(self):
+        first = self.level()
+        second = self.level()
+        second["id"] = "T02"
+        second["order"] = 2
+        _, warnings = validate_document({"levels": [first, second]})
+        self.assertEqual(len(warnings), 1)
+
+    def test_shape_canonicalization_handles_rotation_and_region_renaming(self):
+        rows = self.level()["regions"]
+        n = len(rows)
+        rotated = ["".join(rows[n - 1 - c][r] for c in range(n)) for r in range(n)]
+        renamed = [row.translate(str.maketrans("ABCD", "DCBA")) for row in rotated]
+        self.assertEqual(canonical_regions(rows), canonical_regions(renamed))
+
+    def test_release_gate_requires_all_24_slots(self):
+        levels = copy.deepcopy(self.levels[:3])
+        with self.assertRaisesRegex(ValueError, "orders 1..24"):
+            validate_document({"levels": levels}, release=True)
+
+    def test_release_gate_rejects_pre_solved_level(self):
+        level = self.level()
+        level["givens"] = [{"r": r, "c": c} for r, c in enumerate(level["solution"])]
+        level["logicTrace"] = []
+        with self.assertRaisesRegex(ValueError, "at least two playable cats"):
+            validate_document({"levels": [level]}, release=True)
+
+    def test_fixture_cannot_pass_release_gate(self):
+        with self.assertRaisesRegex(ValueError, "size 4..6"):
+            validate_document({"levels": copy.deepcopy(self.levels)}, release=True)
+
+
+if __name__ == "__main__":
+    unittest.main()
+</file>
+
+<file path="GDD/tools/validate_levels.py">
+"""Validate original Vườn Mèo levels with the Python standard library.
+
+Usage:
+    python GDD/tools/validate_levels.py GDD/data/levels.sample.json
+    python GDD/tools/validate_levels.py --release path/to/campaign.json
+
+Schema v3 supports N=4..12 and proof traces with S2. Add machine-checkable S3-S5 proof
+rules and tests before any content using them is published.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+import time
+from collections import deque
+from pathlib import Path
+
+LEVEL_KEYS = {
+    "schemaVersion", "id", "order", "size", "regions",
+    "givens", "solution", "difficulty", "tags", "logicTrace",
+}
+STEP_KEYS = {"rule", "focus", "conclusion", "textKey"}
+CELL_KEYS = {"r", "c"}
+
+
+def require_object(value, keys: set[str], label: str):
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be an object")
+    missing = keys - value.keys()
+    extra = value.keys() - keys
+    if missing or extra:
+        raise ValueError(f"{label} fields: missing {sorted(missing)}, extra {sorted(extra)}")
+
+
+def is_int(value):
+    return type(value) is int  # bool is a subclass of int in Python.
+
+
+def object_no_duplicates(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key {key!r}")
+        result[key] = value
+    return result
+
+
+def adjacent_cells(r: int, c: int, n: int):
+    for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        rr, cc = r + dr, c + dc
+        if 0 <= rr < n and 0 <= cc < n:
+            yield rr, cc
+
+
+def count_solutions(regions: list[str], givens: dict[int, int], limit: int = 2,
+                    max_nodes: int = 2_000_000, max_seconds: float = 5.0):
+    """Independent DFS: never reads the declared solution."""
+    n = len(regions)
+    found: list[tuple[int, ...]] = []
+    placement: list[int] = []
+    used_columns: set[int] = set()
+    used_regions: set[str] = set()
+    nodes = 0
+    deadline = time.monotonic() + max_seconds
+
+    def visit(r: int):
+        nonlocal nodes
+        nodes += 1
+        if nodes > max_nodes or time.monotonic() > deadline:
+            raise ValueError("solver search budget exceeded; uniqueness not proven")
+        if len(found) >= limit:
+            return
+        if r == n:
+            found.append(tuple(placement))
+            return
+        choices = [givens[r]] if r in givens else range(n)
+        for c in choices:
+            region = regions[r][c]
+            if c in used_columns or region in used_regions:
+                continue
+            if placement and abs(c - placement[-1]) <= 1:
+                continue
+            placement.append(c)
+            used_columns.add(c)
+            used_regions.add(region)
+            visit(r + 1)
+            used_regions.remove(region)
+            used_columns.remove(c)
+            placement.pop()
+
+    visit(0)
+    return found
+
+
+def validate_regions(rows: list[str], n: int):
+    expected = set("ABCDEFGHIJKL"[:n])
+    actual = set("".join(rows))
+    if actual != expected:
+        raise ValueError(f"regions must use exactly {sorted(expected)}; got {sorted(actual)}")
+    for label in sorted(expected):
+        cells = {(r, c) for r in range(n) for c in range(n) if rows[r][c] == label}
+        seen = {next(iter(cells))}
+        queue = deque(seen)
+        while queue:
+            r, c = queue.popleft()
+            for neighbor in adjacent_cells(r, c, n):
+                if neighbor in cells and neighbor not in seen:
+                    seen.add(neighbor)
+                    queue.append(neighbor)
+        if seen != cells:
+            raise ValueError(f"region {label} is disconnected")
+
+
+def exclusion_reason(rows: list[str], cats: dict[int, int], cell: tuple[int, int]):
+    """Return a reproducible S1 witness (source cat, relation), or None."""
+    r, c = cell
+    reasons = []
+    for rr, cc in sorted(cats.items()):
+        if r == rr:
+            reasons.append((0, (rr, cc), "row"))
+        if c == cc:
+            reasons.append((1, (rr, cc), "column"))
+        if rows[r][c] == rows[rr][cc]:
+            reasons.append((2, (rr, cc), "region"))
+        if abs(r - rr) == 1 and abs(c - cc) == 1:
+            reasons.append((3, (rr, cc), "diagonal"))
+    if not reasons:
+        return None
+    _, source, relation = min(reasons)
+    return {"sourceCat": source, "reason": relation}
+
+
+def possible_cells(rows: list[str], cats: dict[int, int]):
+    n = len(rows)
+    return {
+        (r, c)
+        for r in range(n) if r not in cats
+        for c in range(n)
+        if exclusion_reason(rows, cats, (r, c)) is None
+    }
+
+
+def focus_cells(rows: list[str], focus: dict):
+    n = len(rows)
+    require_object(focus, {"type", "id"}, "focus")
+    kind, unit_id = focus["type"], focus["id"]
+    if kind == "row" and is_int(unit_id) and 0 <= unit_id < n:
+        return {(unit_id, c) for c in range(n)}
+    if kind == "column" and is_int(unit_id) and 0 <= unit_id < n:
+        return {(r, unit_id) for r in range(n)}
+    if kind == "region" and type(unit_id) is str and unit_id in "ABCDEFGHIJKL"[:n]:
+        return {(r, c) for r in range(n) for c in range(n) if rows[r][c] == unit_id}
+    raise ValueError(f"invalid focus {focus!r}")
+
+
+def validate_trace(level: dict, given_by_row: dict[int, int]):
+    rows, n = level["regions"], level["size"]
+    cats = dict(given_by_row)
+    for index, step in enumerate(level["logicTrace"], 1):
+        label = f"trace step {index}"
+        try:
+            require_object(step, STEP_KEYS, label)
+            if step["rule"] != "S2":
+                raise ValueError(f"unsupported rule {step['rule']!r}")
+            focus = step["focus"]
+            unit = focus_cells(rows, focus)
+            kind = focus["type"]
+            if step["textKey"] != f"hint.single.{kind}":
+                raise ValueError("textKey does not match focus")
+            target = step["conclusion"]
+            require_object(target, {"type", "r", "c"}, "conclusion")
+            if target["type"] != "place":
+                raise ValueError("S2 conclusion must place a cat")
+            r, c = target["r"], target["c"]
+            if not (is_int(r) and is_int(c) and 0 <= r < n and 0 <= c < n):
+                raise ValueError("target out of bounds")
+            if any(cell in unit for cell in cats.items()):
+                raise ValueError("focus already contains a cat")
+            candidates = unit & possible_cells(rows, cats)
+            if candidates != {(r, c)}:
+                raise ValueError(f"focus candidates {sorted(candidates)}, expected only {(r, c)}")
+            # Every removed cell must have an actual S1 witness for UI explanation.
+            for cell in unit - candidates:
+                if exclusion_reason(rows, cats, cell) is None:
+                    raise ValueError(f"missing S1 witness for {cell}")
+            if level["solution"][r] != c:
+                raise ValueError("placement differs from solution")
+            cats[r] = c
+        except (TypeError, KeyError, ValueError) as exc:
+            raise ValueError(f"{label}: {exc}") from exc
+    if len(cats) != n:
+        raise ValueError(f"trace ends with {len(cats)}/{n} cats")
+
+
+def canonical_regions(rows: list[str]):
+    n = len(rows)
+    variants = []
+    for rotation in range(4):
+        for mirror in (False, True):
+            transformed = [[None for _ in range(n)] for _ in range(n)]
+            for r in range(n):
+                for c in range(n):
+                    rr, cc = r, c
+                    for _ in range(rotation):
+                        rr, cc = cc, n - 1 - rr
+                    if mirror:
+                        cc = n - 1 - cc
+                    transformed[rr][cc] = rows[r][c]
+            labels = {}
+            normalized = []
+            for row in transformed:
+                for label in row:
+                    if label not in labels:
+                        labels[label] = chr(ord("A") + len(labels))
+                    normalized.append(labels[label])
+            variants.append("".join(normalized))
+    return min(variants)
+
+
+def validate_level(level: dict):
+    require_object(level, LEVEL_KEYS, "level")
+    level_id = level["id"]
+    if type(level_id) is not str or not re.fullmatch(r"[A-Z0-9_-]+", level_id):
+        raise ValueError("invalid id")
+    if not is_int(level["schemaVersion"]) or level["schemaVersion"] != 3:
+        raise ValueError("schemaVersion must be 3")
+    order = level["order"]
+    if not is_int(order) or order < 1:
+        raise ValueError("order must be an integer >=1")
+    n = level["size"]
+    if not is_int(n) or not 4 <= n <= 12:
+        raise ValueError("size must be an integer from 4 to 12")
+    rows = level["regions"]
+    if not isinstance(rows, list) or len(rows) != n or any(type(row) is not str or len(row) != n for row in rows):
+        raise ValueError("regions must be N strings of length N")
+    validate_regions(rows, n)
+    solution = level["solution"]
+    if not isinstance(solution, list) or len(solution) != n or any(not is_int(c) for c in solution) or sorted(solution) != list(range(n)):
+        raise ValueError("solution must be a permutation of integer columns")
+    givens = level["givens"]
+    if not isinstance(givens, list):
+        raise ValueError("givens must be a list")
+    given_by_row = {}
+    for given in givens:
+        require_object(given, CELL_KEYS, "given")
+        r, c = given["r"], given["c"]
+        if not (is_int(r) and is_int(c) and 0 <= r < n and 0 <= c < n):
+            raise ValueError("given out of bounds")
+        if r in given_by_row or solution[r] != c:
+            raise ValueError("duplicate or incorrect given")
+        given_by_row[r] = c
+    found = count_solutions(rows, given_by_row)
+    if len(found) != 1:
+        raise ValueError(f"expected one solution; found {'at least two' if len(found) == 2 else 'zero'}")
+    if list(found[0]) != solution:
+        raise ValueError(f"declared solution differs from computed solution {found[0]}")
+    if type(level["difficulty"]) is not str or level["difficulty"] not in {"tutorial", "easy", "medium", "hard"}:
+        raise ValueError("invalid difficulty")
+    tags = level["tags"]
+    if not isinstance(tags, list) or any(type(tag) is not str or not tag for tag in tags) or len(tags) != len(set(tags)):
+        raise ValueError("tags must be unique nonempty strings")
+    if not isinstance(level["logicTrace"], list):
+        raise ValueError("logicTrace must be a list")
+    validate_trace(level, given_by_row)
+    return canonical_regions(rows)
+
+
+def validate_document(data: dict, release: bool = False):
+    require_object(data, {"levels"}, "root")
+    levels = data["levels"]
+    if not isinstance(levels, list) or not levels:
+        raise ValueError("levels must be a nonempty list")
+    ids, slots, shapes = set(), set(), {}
+    for level in levels:
+        level_id = level.get("id", "<missing id>") if isinstance(level, dict) else "<invalid level>"
+        try:
+            shape = validate_level(level)
+            if level_id in ids:
+                raise ValueError("duplicate id")
+            ids.add(level_id)
+            slot = level["order"]
+            if slot in slots:
+                raise ValueError(f"duplicate order {slot}")
+            slots.add(slot)
+            if release:
+                if not 1 <= level["order"] <= 24:
+                    raise ValueError("release order must be 1..24")
+                if level["size"] > 6 or level["difficulty"] == "hard":
+                    raise ValueError("release supports size 4..6 and no hard level")
+                if level["size"] - len(level["givens"]) < 2:
+                    raise ValueError("release needs at least two playable cats")
+            shapes[level_id] = shape
+        except (TypeError, ValueError, KeyError) as exc:
+            raise ValueError(f"{level_id}: {exc}") from exc
+    if release:
+        required = set(range(1, 25))
+        if slots != required:
+            raise ValueError(f"release needs exactly orders 1..24; missing {sorted(required - slots)}")
+    ordered = sorted(levels, key=lambda level: level["order"])
+    warnings = []
+    for index, level in enumerate(ordered):
+        for previous in ordered[max(0, index - 8):index]:
+            if shapes[level["id"]] == shapes[previous["id"]]:
+                message = f"{level['id']}: same region geometry as {previous['id']} within 8 levels"
+                if release:
+                    raise ValueError(message)
+                warnings.append(message)
+    return ordered, warnings
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("file", type=Path)
+    parser.add_argument("--release", action="store_true", help="enforce the 24-level linear MVP gate")
+    args = parser.parse_args()
+    try:
+        data = json.loads(args.file.read_text(encoding="utf-8"), object_pairs_hook=object_no_duplicates)
+        levels, warnings = validate_document(data, release=args.release)
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    for level in levels:
+        print(f"OK   {level['id']}: {level['size']}x{level['size']}, unique solution, connected regions, S2 trace")
+    for warning in warnings:
+        print(f"WARN {warning}")
+    print(f"Validated {len(levels)} level(s); {len(warnings)} duplicate geometry warning(s).")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+</file>
+
+<file path="GDD/01-tam-nhin-va-pham-vi.md">
+# 01 — Tầm nhìn và phạm vi
+
+## 1. Sản phẩm
+
+**Tên tạm:** Vườn Mèo. Game suy luận một người cho điện thoại dọc, chơi offline. Trên lưới N×N, người chơi tìm đúng một mèo trong mỗi hàng, cột và vùng màu; mèo không chạm nhau kể cả góc. Mỗi nước đặt mèo là một xác nhận có chủ ý bằng **hai chạm cùng ô**. Nhịp chơi ngắn, phản hồi sáng và vui, trong khi bàn cờ luôn dễ đọc.
+
+**Trụ cột:** luật dễ nhớ; level có một nghiệm và trace suy luận; tương tác chỉ X và mèo; nhân vật mèo gốc cùng hoạt ảnh chúc mừng. Màu giúp nhận diện vùng và luôn có nhãn hoặc họa tiết hỗ trợ; hình mèo không mã hóa vùng.
+
+Vòng lặp: `Mở game → vào level hiện tại → đánh/xóa X bằng chạm hoặc kéo → xác nhận mèo bằng hai chạm → nhận điểm/hoạt ảnh → thắng và sang level kế`. Thử sai tạo X đỏ khóa và mất tim; hết tim có màn thua và Retry miễn phí. Không có bản đồ/chương/chọn level đã qua trong bản đầu.
+
+## 2. Phạm vi phát hành đầu
+
+| Mảng | Bản đầu | Mở rộng có điều kiện |
+| --- | --- | --- |
+| Level | 24 level gốc liên tiếp, N=4–6, thứ tự `1..24` | N=7–12, thêm level ở cuối dãy |
+| Suy luận | S1 loại trừ và S2 ứng viên đơn, trace kiểm được, hint giải thích | S3–S5 khi tool và UX chứng minh được |
+| Ô | `empty`, `x`, `x_error`, `cat`; một chạm X/clear hiện ngay, rê tô/xóa X, hai chạm thử mèo; X đỏ khóa | Chế độ nhập hỗ trợ nếu playtest yêu cầu |
+| Tiến trình | Chỉ level hiện tại, tự lưu offline, thắng tiến một level, Retry vô hạn | Đồng bộ tài khoản sau quyết định riêng |
+| Điểm | `100 × số mèo đúng do người chơi đặt − 25 × lỗi`, sàn 0; hint miễn phí | Chốt công thức đổi điểm→vàng và giá sau playtest |
+| Hình ảnh | Vùng có 6 màu/nhãn/họa tiết; mọi ô mèo và hoạt ảnh dùng mèo mặc định từ sprite gốc, phản hồi “Nice/Great”, sticker thắng dựng bằng model 3D gốc | Tối đa 12 màu/họa tiết vùng; mèo được chọn và clip riêng theo gói asset |
+| Meta | Điểm chỉ số lượt; hint/trợ giúp cơ bản miễn phí, không ví vàng | Điểm→vàng; vàng cứu lượt và mua mèo; Vườn mèo là danh sách mèo đã mua để chọn, theo GDD 11 |
+| Vận hành | Android/iOS, tiếng Việt, offline, không quảng cáo/IAP | Quảng cáo thưởng khi thiếu vàng để cứu lượt, chỉ sau đánh giá riêng và luôn có Retry miễn phí |
+
+`score` là điểm **của lượt hiện tại**. Mèo cho sẵn không cho điểm; mỗi mèo đúng chỉ được cộng 100 một lần vì cat đúng cố định. Mỗi lần thử sai trừ 25 điểm nhưng không dưới 0. X, thời gian và hint không cộng/trừ điểm; X đỏ giữ lại để người chơi nhớ ô sai. Thắng lưu điểm kết quả; thất bại hiển thị điểm của lượt nhưng không cộng vào tiến trình. Kinh tế vàng và cứu lượt chưa chạy ở bản đầu.
+
+### Nhịp nội dung
+
+| Khoảng level | Kích thước chính | Bài học | Mục tiêu playtest |
+| --- | --- | --- | --- |
+| 1–4 | 4×4 | Chạm/kéo/chạm đôi, hàng/cột/vùng, không chạm, X đỏ | 1–3 phút/level |
+| 5–12 | 4×4–5×5 | Dùng mèo đã tìm để loại ô | 2–4 phút/level |
+| 13–24 | 5×5–6×6 | Chuỗi S1/S2 dài hơn, ít mèo cho sẵn hơn | 3–6 phút/level |
+
+Con số 24 và nhịp thời gian là cổng nội dung, không phải lý do hạ chuẩn. Level trùng lặp, khó đọc hoặc cần đoán phải được biên tập lại.
+Level 10 và 20 là mốc nội dung có motif/sticker và nhịp suy luận riêng, được duyệt trước khi phát hành vì ID/puzzle đã phát hành không đổi. Generator sau MVP phục vụ level mới và các mốc tiếp theo.
+
+## 3. Mở rộng N=12
+
+Core/schema/validator hỗ trợ N=4–12 và nhãn vùng `A..L` ngay từ đầu. **Không dùng zoom/pan** trong thiết kế điều khiển: chúng xung đột với chạm đôi/rê X. N>6 chỉ phát hành khi bàn ở kích thước thực vẫn chạm chính xác, 12 màu/nhãn/họa tiết đọc được và solver/trace đạt ngân sách trên thiết bị mục tiêu. Nếu N=12 trên điện thoại dọc không đạt, giữ N=12 ở dữ liệu/thử nghiệm và giới hạn nội dung phát hành theo thiết bị phù hợp; không hạ trần schema âm thầm.
+
+## 4. Cổng trải nghiệm
+
+- Ít nhất 8/10 người mới hoàn thành hướng dẫn chạm/kéo/chạm đôi và hiểu X đỏ là một lần thử sai bị khóa.
+- 100% level phát hành có vùng liên thông, nghiệm duy nhất và trace S2; một người giải không xem đáp án duyệt mỗi level.
+- Thắng/thua/Back To Home/đóng app không đưa người chơi về level cũ hoặc vượt qua level chưa thắng.
+- Bàn đọc được khi tắt âm, giảm chuyển động, ở thang xám và bằng trình đọc màn hình.
+- Màu, sticker và sprite render từ model 3D đều là asset gốc; phản hồi vui không che bàn hoặc làm chậm thao tác kế.
+
+Không sao chép level, nhân vật, icon, giao diện, âm thanh hoặc lời văn của Meowdoku. Tên phát hành cuối và art direction chi tiết được chốt trước khi tạo asset cuối.
+</file>
+
+<file path="GDD/02-luat-choi-va-trang-thai.md">
+# 02 — Luật chơi và trạng thái
+
+Tài liệu này là nguồn chuẩn. Tọa độ dữ liệu `(r,c)` dùng 0-based; UI đọc hàng/cột 1-based. Schema nhận N=4–12; bản đầu phát hành N=4–6.
+
+## 1. Bàn và nghiệm
+
+Lưới N×N có đúng N vùng, mỗi ô thuộc một vùng; vùng liên thông theo cạnh chung. `solution[r]=c` là mèo của hàng r.
+
+| ID | Luật | Kiểm tra |
+| --- | --- | --- |
+| GR-01 | Mỗi hàng đúng một mèo | N phần tử trong `solution` |
+| GR-02 | Mỗi cột đúng một mèo | Hoán vị `0..N-1` |
+| GR-03 | Mỗi vùng đúng một mèo | Nhãn vùng của các ô nghiệm không lặp |
+| GR-04 | Mèo không chạm nhau kể cả góc | Hàng kề có `abs(solution[r]-solution[r+1]) > 1` |
+| GR-05 | Đúng một nghiệm khi tính cả givens | Solver độc lập dừng ở nghiệm thứ hai; nghiệm duy nhất khớp JSON |
+| GR-06 | Mèo cho sẵn là cat cố định thuộc nghiệm | Không đổi trạng thái và không cho điểm |
+| GR-07 | Level phát hành có trace S2 hợp lệ đến đủ N mèo | Từng bước chứng minh từ trạng thái trước |
+| GR-08 | X là ghi chú tự đặt; `x_error` là ghi chú đỏ tạo bởi lần thử mèo sai | Cả hai không ràng buộc solver/hint hay điều kiện thắng |
+
+Hình mèo trên mọi ô `cat`, kể cả given, dùng mèo đang được chọn (bản đầu là mèo mặc định). Ô đáp án không gắn giống/màu lông mèo riêng. Mỗi vùng có một mèo đúng nên hàng trạng thái N vị trí dưới bàn tương ứng nhãn A..(N); **nền, viền, nhãn và họa tiết vùng** giúp nhận diện vị trí, độc lập với hình mèo. Màu không ảnh hưởng nghiệm.
+
+## 2. Bốn trạng thái và cử chỉ
+
+Ô chưa cho sẵn chỉ có `empty`, `x`, `x_error`, `cat`. `given` là cờ hiển thị cat từ level data, không phải trạng thái thứ năm. Mèo đúng đã đặt và given đều cố định cho đến khi Retry sau thất bại. Không có công cụ ứng viên, lựa chọn công cụ, Undo hoặc Restart giữa lượt ở bản đầu.
+
+| ID | Cử chỉ trên cùng một ô khi `Playing` | Kết quả |
+| --- | --- | --- |
+| GR-09 | Một chạm `empty` | `x` |
+| GR-10 | Một chạm `x` | `empty` |
+| GR-11 | Một chạm `cat`/given | Không đổi; thông báo ngắn nếu cần |
+| GR-12 | Hai chạm cùng ô `empty` hoặc `x` | Gọi đúng một `TryCat` |
+| GR-13 | Chạm hoặc kéo qua `x_error`, `cat` hoặc given | Không đổi, không mất tim; `x_error` bị khóa đến khi Retry |
+| GR-14 | Chạm ở hai ô khác nhau | Hai cử chỉ đơn độc lập; không được nhận là một `TryCat` |
+| GR-29 | Giữ chạm rồi kéo từ `empty` | Đánh X tức thì trên ô đầu và từng ô `empty` đi qua; bỏ qua ô X, X đỏ và cat |
+| GR-30 | Giữ chạm rồi kéo từ `x` | Xóa X tức thì trên ô đầu và từng ô `x` đi qua; bỏ qua ô empty, X đỏ và cat |
+
+X đổi **trên hình ngay khi chạm xuống**. Nếu nhấc ngón mà không kéo, lớp cử chỉ mở cửa sổ chạm đôi **280 ms tính từ lần nhấc thứ nhất đến lần chạm xuống thứ hai**; hết cửa sổ thì commit một chạm. Nếu chạm thứ hai nhanh lên **cùng ô** và cũng không kéo, hoàn tác preview của chạm đầu rồi gửi đúng một `TryCat` từ trạng thái đã commit trước đó. Nếu chạm ô khác, commit chạm đầu rồi mở cử chỉ mới. Hai chạm nhanh lên X cũng thử mèo, không cần xóa X trước. Preview không lưu vào session và không được dùng để chấm thắng/thua.
+
+Kéo chỉ được nhận khi ngón đầu di chuyển quá ngưỡng 12 điểm logic. Tại thời điểm đó, cử chỉ chuyển sang một nét X: chế độ đánh/xóa lấy từ **trạng thái ô đầu trước preview**, giữ nguyên đến khi nhấc ngón. Mỗi ô chỉ xử lý một lần trong một nét, kể cả đi ngược; đường đi nhanh phải nội suy qua các ô trung gian, không bỏ lỗ. Không nhận chạm đôi từ một nét kéo. Nét được commit thành một action khi nhấc ngón; preview từng ô vẫn hiện tức thì. Nếu chuyển màn/app vào nền **sau khi đã nhấc của chạm đơn đang chờ**, commit chạm đó rồi lưu; nếu vẫn đang giữ ngón hoặc kéo chưa nhấc, hủy preview chưa hoàn tất. Sau `Won`/`Failed` khóa input board. Trình đọc màn hình dùng action ngữ nghĩa “Đánh X/Xóa X” và “Thử đặt mèo”, không phụ thuộc tốc độ chạm vật lý.
+
+## 3. Đúng/sai, tim và điểm
+
+| ID | Quy tắc |
+| --- | --- |
+| GR-15 | `TryCat(r,c)` đúng `solution[r]`: chuyển `empty`/`x` thành `cat`, cố định ô, tăng `correctPlacedCount` một lần, kiểm thắng. |
+| GR-16 | `TryCat(r,c)` sai: chuyển ô `empty`/`x` thành `x_error`, giảm đúng 1 tim, tăng `mistakeCount` đúng một lần. `x_error` khóa mọi thao tác đến khi Retry; thử lại trên ô đó không tính thêm. |
+| GR-17 | Lượt mới có 3 tim. Tim không hồi trong lượt; Retry sau khi hết tim miễn phí. |
+| GR-18 | Điểm hiển thị được **tính lại** bằng `max(0, 100 × correctPlacedCount − 25 × mistakeCount)`; không cho điểm từ givens, X, hint hay animation. |
+| GR-19 | Tim về 0 → `Failed`, lưu kết quả thua và khóa board. Retry tạo lượt mới trên **cùng level**, reset ô/tim/điểm/hint/thời gian. |
+| GR-20 | Một ô sai có thể chưa xung đột với mèo hiện có; chỉ nêu lý do cục bộ có chứng cứ (hàng, cột, vùng, chạm chéo). Nếu không có, dùng lời trung tính. |
+
+Riêng hướng dẫn T1–T3, thao tác sai **trên ô được tô sáng** được nhắc mà không đặt `x_error`, trừ tim hoặc tăng lỗi; ô khác theo GR-16. Không dùng tutorial để dò nhiều ô miễn phí.
+
+## 4. Hint
+
+| ID | Quy tắc |
+| --- | --- |
+| GR-21 | Hint dùng given và cat đúng đã đặt; bỏ qua X và `x_error` khi tính ứng viên. |
+| GR-22 | Hint tìm S2 còn hiệu lực, tô sáng focus/ô bị loại và mèo nguồn chứng minh S1; không tự đặt mèo. |
+| GR-23 | Nếu ô đích đang là X, nhắc chạm đôi trực tiếp để thử mèo. Ô `x_error` không thể là đích đúng nếu dữ liệu level hợp lệ; không đề nghị xóa X đỏ. |
+| GR-24 | Tính lại hint từ trạng thái hiện tại, không dùng con trỏ trace; bỏ qua các bước đã hoàn thành. |
+
+Mỗi yêu cầu hint hợp lệ trong `Playing` tăng `hintCount` một lần, kể cả lặp lại; `NoHint` không tăng. Hint miễn phí về điểm và tim. Có thể đóng hint để tiếp tục chơi.
+
+## 5. Thắng và level hiện tại
+
+| ID | Quy tắc |
+| --- | --- |
+| GR-25 | Thắng ngay khi có đủ N cat đúng gồm given, kể cả còn X/`x_error` khác. |
+| GR-26 | Ghi điểm kết quả thắng một lần, đánh dấu hoàn thành và đặt level hiện tại thành `order+1` trước khi hiện màn thắng. Nếu vừa thắng level cuối, hiện trạng thái hết nội dung. |
+| GR-27 | Chỉ có **một** session cho level hiện tại. Back To Home/đóng app lưu board, tim, lỗi, hint, thời gian; Play mở đúng level đó. |
+| GR-28 | Không có chọn/chơi lại level đã qua trong bản đầu. Người chơi không thể bỏ qua level chưa thắng. Failed/Home/Retry đều ở level hiện tại. |
+
+Danh sách level phát hành sắp theo `order` liên tiếp từ 1. Khi cập nhật thêm nội dung ở cuối dãy, người đã hoàn thành tất cả sẽ bắt đầu level mới đầu tiên. ID và puzzle đã phát hành không đổi nghĩa.
+
+## 6. Máy trạng thái
+
+```text
+Home → Playing ──đủ mèo──→ Won/Result ──Tiếp tục──→ Playing(level kế)
+          │
+          ├──tim=0──→ Failed/Result ──Thử lại──→ Playing(cùng level)
+          └──Back To Home/app nền: lưu session, rồi Home/Paused
+```
+
+`Paused` chỉ là trạng thái giao diện; thời gian chơi không tăng ở nền, Help, Settings hoặc Result. Lượt thua khôi phục lại màn kết quả thua, không cấp tim ngầm. Lượt thắng đã được commit vào progress; nếu app đóng ở Result, lần Play sau vào level kế. Khi hết level, Home hiện thông báo hoàn thành nội dung hiện có.
+
+Cơ chế cứu lượt bằng vàng/quảng cáo thưởng ở [kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md) là **mở rộng chưa bật**. Khi triển khai sẽ thêm trạng thái chờ quyết định giữa tim=0 và `Failed`, cùng phiên bản session/QA mới; cho đến lúc đó GR-17/19 và sơ đồ trên vẫn là luật chạy.
+
+## 7. Hoạt ảnh và tình huống mép
+
+- Sau cat đúng, hiện feedback ngắn “Nice!”; khi đạt ít nhất một nửa số mèo do người chơi cần tìm, lần đầu hiện “Great!”. Câu chữ là khóa localization, không thay đổi score/luật. Mèo cuối ưu tiên màn thắng.
+- Sai: ô hiện X đỏ và tim/điểm cập nhật cùng một transaction; animation lỗi không nhận thêm input board cho đến khi kết thúc phản hồi ngắn.
+- Ba chạm rất nhanh không tạo hai lần `TryCat`; chạm thứ ba trong phản hồi đầu bị bỏ qua. Chạm đơn đã nhấc được commit khi app nền; nét đang kéo bị hủy, không tự ghi X lúc quay lại.
+- Cat đúng/given và `x_error` không thể xóa trong lượt. Hint vẫn dựa trên luật, không dùng X đỏ như sự thật.
+</file>
+
+<file path="GDD/03-luong-man-hinh-va-ux.md">
+# 03 — Luồng màn hình và UX
+
+## 1. Điều hướng tuyến tính
+
+```mermaid
+flowchart TD
+    A[Khởi động] --> B[Home]
+    B -->|Chơi/Tiếp tục| C[Level hiện tại]
+    B --> D[Trợ giúp/Luật]
+    B --> E[Settings]
+    C -->|Back To Home| B
+    C -->|Trợ giúp| D
+    C -->|Settings| E
+    D -->|Mở từ Home: trở lại| B
+    D -->|Mở từ level: trở lại| C
+    E -->|Mở từ Home: trở lại| B
+    E -->|Mở từ level: trở lại| C
+    C -->|Đủ mèo| F[Màn kết quả thắng]
+    F -->|Level tiếp theo| C
+    C -->|Hết tim| G[Màn kết quả thua]
+    G -->|Thử lại| C
+    G -->|Home| B
+    F -->|Home| B
+```
+
+Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` mở level hiện tại đã lưu; nếu vừa thắng, mở level kế; nếu đang thua, mở lại màn thua. Khi hoàn thành mọi level hiện có, Home báo “Bạn đã hoàn thành các level hiện có” và không dẫn vào bàn trống.
+
+| ID | Màn | Nội dung và hành động |
+| --- | --- | --- |
+| UX-01 | Home | Chơi/Tiếp tục, tên/số level hiện tại, Trợ giúp, Settings; trạng thái hết nội dung |
+| UX-03 | Puzzle | Tên level, **điểm**, tim, luật cơ bản dạng biểu tượng + chữ, bàn, **hàng N vị trí tiến độ có màu/nhãn/họa tiết vùng**, Back To Home, Hint, Trợ giúp, Settings |
+| UX-04 | Tutorial | Chỉ dẫn ngắn trên bàn cho chạm, kéo X, chạm đôi, X đỏ khóa và bốn luật; tiến theo hành động |
+| UX-05 | Kết quả thắng | Câu khích lệ, điểm, sticker chúc mừng/hoạt ảnh mèo, nút “Level tiếp theo” và Home |
+| UX-06 | Kết quả thua riêng | Thông điệp hết 3 tim, điểm lượt, “Thử lại” và Home; không dùng giao diện thắng đổi chữ |
+| UX-07 | Trợ giúp/Luật | Ví dụ hàng/cột/vùng/chạm chéo; chạm/kéo X, chạm đôi mèo, X đỏ khóa, hint; trở lại màn trước |
+| UX-08 | Settings | Âm, rung, giảm chuyển động, hỗ trợ phân biệt vùng; trở lại đúng màn gọi |
+
+Luật cơ bản trên puzzle là bốn icon/nhãn ngắn hoặc panel gấp được; người chơi mở Trợ giúp để xem ví dụ. Settings là màn riêng, không làm mất session. Nếu từ Home mở Trợ giúp/Settings, nút trở lại về Home; nếu từ puzzle, trở lại puzzle. Result không nhận thao tác bàn.
+
+## 2. Bố cục puzzle
+
+Header ở safe area: Back To Home, “Level n”, điểm, tim, Settings. Ngay dưới là luật gấp gọn, bàn vuông là vùng ưu tiên diện tích, tiếp đến hàng N vị trí theo thứ tự vùng A..(N), rồi Hint/Trợ giúp. Hàng này là **chỉ báo tiến độ**, không phải công cụ cần chọn: vị trí chưa tìm có viền/họa tiết nhạt, vị trí đã tìm sáng theo màu vùng; given hiển thị là đã tìm. Mỗi vị trí có nhãn vùng và trạng thái đọc được. Hình mèo trên ô `cat` và hoạt ảnh lấy từ mèo đang chọn, không từ nhãn vùng; nền/viền/nhãn/họa tiết vẫn cho biết vùng. Với N>6, hàng này cuộn ngang, không ép 12 icon vào chiều rộng màn.
+
+Trên bàn N=6, vùng chạm mỗi ô/nút ít nhất 44×44 điểm logic tại thiết bị mục tiêu. Bàn **không có thao tác phóng hoặc trượt** ở mọi N. Trần dữ liệu vẫn N=12; chỉ phát hành một cỡ bàn nếu ô, chữ và nhãn vùng còn đọc/chạm chính xác trên thiết bị mục tiêu ở kích thước thật. N>6 bị giữ sau cổng usability riêng; nếu N=12 không đạt, giảm cỡ bàn phát hành hoặc đổi bố cục trước khi mở nội dung, không âm thầm thêm zoom/pan.
+
+## 3. Nhận diện thao tác và phản hồi
+
+| ID | Yêu cầu |
+| --- | --- |
+| UX-09 | Một chạm trên empty hiện X tức thì; trên X hiện empty tức thì. Sau khi nhấc, đây là preview tối đa 280 ms rồi mới lưu. X đỏ/cat không đổi. |
+| UX-10 | Hai chạm nhanh **cùng ô** gọi một `TryCat`; bỏ preview X của chạm đầu trước khi chấm đúng/sai. Không có X lưu trung gian. |
+| UX-11 | Chạm hai ô khác nhau là hai chạm đơn. Nét kéo quá 12 điểm logic lấy chế độ đánh/xóa từ ô đầu, đi qua mỗi ô một lần và lưu một batch khi nhấc ngón. |
+| UX-12 | Mèo đúng: chỉ báo vùng tương ứng sáng lên trong hàng tiến độ, điểm đổi, hoạt ảnh của mèo đang chọn và “Nice!”/“Great!” không che ô lâu quá 0,7 giây. |
+| UX-13 | Sai: X đỏ có hình dấu/cảnh báo ngoài màu, tim/điểm đổi cùng lúc, lý do cục bộ có chứng cứ hoặc câu trung tính. |
+| UX-14 | Hint tô focus và chứng cứ, có nút đóng; Trợ giúp và Settings mở màn riêng rồi quay lại đúng puzzle. |
+| UX-15 | Back To Home lưu ngay, không hỏi; Home Play tiếp tục đúng board. |
+| UX-22 | Chỉ nhận `index=0` bắt đầu trong bàn làm ngón chính; ngón phụ/chạm lòng bàn tay phát sinh sau đó không được thêm nét, đặt mèo hay chiếm quyền. Tiếp xúc lòng bàn tay đầu tiên trong bàn vẫn cần thử trên thiết bị vì input thường không gắn nhãn palm. |
+| UX-23 | Nét kéo đi nhanh qua nhiều ô phải phủ đủ ô trung gian; ô X đỏ/cat/given là chướng ngại bất biến nhưng không dừng nét. |
+
+Cửa sổ 280 ms đo từ lần nhấc thứ nhất đến lần chạm xuống thứ hai; ngưỡng kéo 12 điểm logic là tham số playtest. Godot nhận vị trí theo viewport; phải quy đổi theo UI scale trước khi đo ngưỡng. X preview xuất hiện trong khung hình đầu tiên (mục tiêu dưới 50 ms). Nếu chạm thứ hai cùng ô chuyển thành kéo, commit chạm đầu rồi xử lý nét thứ hai riêng từ trạng thái đã commit; không đặt mèo. Nếu ngón chính nhấc ngoài bàn sau khi kéo, commit các ô đã đi qua. Nếu app nền/chuyển màn sau chạm đơn đã nhấc nhưng còn chờ, commit chạm đơn rồi lưu; nếu nét đang kéo/chạm chưa nhấc, hủy preview. `TryCat` phản hồi dưới 100 ms sau chạm thứ hai nếu save thành công. Khi người dùng chạm lên X đỏ, không đổi và không mất thêm tim. Cat/given bất biến.
+
+## 4. Tutorial
+
+Tutorial gắn level 1–4, script theo ID level và điều kiện bàn; không cần chương. Mốc đã thấy lưu vào progress. Làm nước đúng khác thứ tự phải bỏ qua mốc đã thỏa. Mở lại hướng dẫn từ Trợ giúp dùng bản thực hành riêng, không thay đổi campaign.
+
+| Mốc | Bài học | Hành động để qua |
+| --- | --- | --- |
+| T1 | Một chạm đặt X | Đánh X vào ô được mèo/gợi ý loại trừ |
+| T2 | Một chạm nữa xóa X | Xóa X đó sau khi chỉ dẫn T2 xuất hiện |
+| T3 | Hai chạm xác nhận mèo | Đặt đúng mèo tại ô S2 được tô sáng |
+| T4 | X đỏ là ô đã thử sai | Xem minh họa an toàn trong Trợ giúp; không bắt người mới mất tim để qua |
+| T5 | Hint và không chạm chéo | Mở hint hoặc tự đặt mèo đúng từ quy tắc không chạm |
+| T6 | Kéo để đánh/xóa nhiều X | Kéo qua ít nhất hai ô hợp lệ; chế độ do ô đầu quyết định |
+
+T1–T3 chỉ miễn tim cho thử mèo sai **trên ô đang tô sáng**; thao tác khác theo luật thường. Script phải được QA kiểm trên level thật. Khi app đóng giữa mốc, khôi phục board và `tutorialSeenIds`, rồi suy lại mốc chưa đạt; không phát sinh thao tác ảo.
+
+## 5. Tiếp cận, màu và chuyển động
+
+| ID | Yêu cầu |
+| --- | --- |
+| UX-16 | Vùng và hàng tiến độ cùng nhãn A..(N), viền/họa tiết riêng; hình mèo được chọn không phải mã vùng. X đỏ có dấu cảnh báo, không chỉ khác màu. |
+| UX-17 | Trình đọc màn hình đọc hàng/cột/vùng/trạng thái và cho hai action ngữ nghĩa “Đánh/Xóa X” và “Thử đặt mèo”. |
+| UX-18 | Ô/nút đạt vùng chạm tối thiểu 44×44 điểm ở N≤6 trên thiết bị mục tiêu; N lớn chỉ phát hành sau đo chính xác chạm và khả năng đọc ở kích thước thật. |
+| UX-19 | Giảm chuyển động thay nhảy/lắc/flash bằng fade ngắn hoặc chữ tĩnh; không tự phát video gây chói. |
+| UX-20 | Âm và rung độc lập; tắt cả hai vẫn đọc được đúng/sai, tim, điểm và level. |
+| UX-21 | Mọi chuỗi là khóa localization; layout thử với chữ dài hơn 30%, cỡ chữ lớn và safe area. |
+
+## 6. Phục hồi và kết quả
+
+Thắng phải ghi progress/level kế trước khi hiện màn thắng. Thua lưu `Failed` và hiện **màn kết quả thua** khi Play lại. Nếu session hỏng, báo lỗi và bắt đầu lại cùng level, không tiến level; progress hỏng thì dùng bản sao hợp lệ trước và không ghi đè dữ liệu hỏng bằng progress trống. App nền commit chạm đơn đã nhấc, hủy cử chỉ chưa nhấc, dừng đồng hồ và giữ màn hiện tại. Sticker hoạt ảnh 2D là phần thưởng hình ảnh; nút tiếp tục/thử lại luôn dùng được ngay cả khi animation chưa kết thúc.
+
+**UX mở rộng sau MVP (REV-GD-04/REV-META-01):** Home có lối vào “Vườn mèo” là danh sách chỉ gồm mèo đã mua; có nút riêng để chọn lại mèo mặc định, không có sân vườn tương tác. Danh mục mua cho xem giá và số dư trước khi xác nhận. Khi hết tim, màn chờ quyết định hiển thị giá cứu lượt, nút trả vàng nếu đủ, nút xem quảng cáo thưởng **chỉ khi không đủ vàng và quảng cáo sẵn có**, cùng nút Thử lại miễn phí. Hủy/quảng cáo lỗi giữ nguyên màn và board; đóng app rồi mở lại cũng trở về màn chờ. Chỉ hiển thị “Đã cứu lượt” sau khi ghi tim, board và giao dịch thành công. Luồng này không thuộc UX-06 của bản đầu cho đến khi bật gói meta.
+</file>
+
+<file path="GDD/04-thiet-ke-level.md">
+# 04 — Thiết kế level và quy trình nội dung
+
+## 1. Điều kiện phát hành
+
+| ID | Điều kiện |
+| --- | --- |
+| LV-01 | Schema N=4–12, bản đầu N=4–6; đúng N vùng không rỗng, mọi vùng liên thông 4 hướng; mỗi ô có đúng một nhãn vùng. |
+| LV-02 | Đúng một nghiệm khi áp dụng givens; nghiệm khai báo và givens khớp nghiệm do solver độc lập tìm. Bản phát hành còn ít nhất hai mèo để người chơi tự tìm. |
+| LV-03 | Trace S2 được kiểm chứng tuần tự từ givens đến đủ N mèo; mỗi hint runtime có bằng chứng loại trừ S1 dựng từ mèo hiện có. |
+| LV-04 | Hai level cách nhau không quá 8 vị trí campaign không có cùng hình vùng sau xoay/lật/đổi nhãn; cảnh báo để biên tập, build release chặn đến khi thay level. |
+| LV-05 | Mỗi level có `difficulty`, `tags`, biên bản thời gian và điểm kẹt của ít nhất một lượt giải thủ công không nhìn nghiệm. |
+| LV-06 | Vùng, dấu và mèo đọc được ở thang xám, chữ lớn và màn nhỏ; màu không mang luật duy nhất. |
+| LV-07 | Biên tập `order=10,20` trong 24 level đầu như mốc đặc biệt về bố cục, motif hình ảnh và nhịp suy luận; vẫn giữ toàn bộ GR và vượt cùng validator/playtest. Puzzle/ID phát hành bất biến, nên generator sau MVP chỉ hỗ trợ mốc mới như `30,40`, không sửa ngược 10/20. |
+
+Fixture `T01/E01/E02/N12` trong [levels.sample.json](data/levels.sample.json) là đầu vào kỹ thuật, **không** nằm trong 24 level phát hành. Campaign phải có đúng `order=1..24`, mỗi vị trí một ID và không có chương. N12 chỉ chứng minh biên schema/nhãn A–L với given đầy đủ; không chứng minh bàn 12×12 thú vị hoặc UI đạt chuẩn.
+
+## 2. Suy luận được hỗ trợ
+
+**S1 — loại trừ cơ bản:** từ một mèo đã biết, loại ô khác cùng hàng, cột, vùng hoặc ô chéo kề. Mỗi ô loại phải nêu ít nhất một mèo nguồn và loại quan hệ. S1 là chứng cứ được dựng từ trạng thái, không cần một bước riêng trong `logicTrace`.
+
+**S2 — ứng viên đơn:** trong một hàng/cột/vùng chưa có mèo, sau S1 chỉ còn đúng một ô chưa bị loại; ô ấy bắt buộc có mèo. Một bước trace ghi `focus` và ô đặt. Validator phải tự dựng lại tập ứng viên; không tin danh sách ô loại do người biên tập khai. Tại runtime, hint tính lại từ givens và mèo đang đặt, rồi hiển thị các ô cùng focus bị S1 loại và ít nhất một nguyên nhân cho từng ô. Nếu focus là vùng một ô, danh sách ô loại rỗng là hợp lệ.
+
+**Nghiên cứu từ M1:** [tài liệu S3–S5](10-nghien-cuu-quy-tac-suy-luan.md) đề xuất S3 giao thoa, S4 cặp khóa, S5 phản chứng ngắn với điều kiện hình thức và cổng QA. Chúng **chưa** thuộc schema bằng chứng/validator/hint chính thức. Ưu tiên thử S3 trong M1–M2 để đánh giá độ sâu level; chỉ đưa S3 vào bản đầu nếu đồng thời nâng schema, fixture, validator, runtime hint, tutorial và QA trước cổng content complete. Nếu không kịp đạt cổng, 24 level đầu vẫn dùng S2; S4/S5 chưa có cam kết bản đầu. Không ghi mã S3–S5 vào level phát hành trước khi có fixture level gốc dương/âm, chứng cứ máy kiểm được, trace validator, hint giải thích trên màn nhỏ và QA riêng.
+
+Uniqueness không chứng minh người chơi giải được bằng S1/S2. Nếu trace không đi hết, sửa vùng/givens hoặc giữ level cho đợt mở rộng; không chèn một bước đoán.
+
+## 3. Nhịp khó và tiêu chí biên tập
+
+| Nhãn | Đặc trưng mong muốn | Mục tiêu playtest |
+| --- | --- | --- |
+| `tutorial` | Mốc T1–T6, có bước S2 rõ | 1–3 phút |
+| `easy` | Nhiều focus S2 rõ, mèo cho sẵn nếu cần | 2–4 phút |
+| `medium` | Chuỗi S2 dài hơn, giao nhau hàng/cột/vùng | 3–6 phút |
+
+`hard` là enum dự trữ cho nội dung tương lai; validator `--release` từ chối `hard` ở bản đầu. Độ khó không dựa riêng vào N hoặc số givens. Ghi số bước, số focus có thể chọn, số lần người chơi dùng hint, thời gian trung vị và chỗ họ phải đoán. Trong dãy level, cho một level nghỉ sau 3–4 level tăng khó. Nếu người chơi liên tục chạm đôi để dò nghiệm, sửa level/hint/tutorial trước khi gắn nhãn khó hơn.
+
+## 4. Quy trình tạo và duyệt
+
+1. **Sinh nghiệm gốc:** hoán vị cột thỏa GR-04, chọn vùng liên thông quanh đúng một ô nghiệm mỗi vùng; không dựa trên level/screenshot của game khác.
+2. **Chọn givens:** tối thiểu đủ để đạt nhịp dạy; không dùng givens để che một bố cục vùng khó đọc.
+3. **Đếm nghiệm độc lập:** chạy solver với vùng và givens, dừng ở 2; so nghiệm duy nhất với JSON.
+4. **Dựng trace S2:** bước nào cũng phải có đúng một ứng viên trong focus ở thời điểm đó. Validator dựng bằng chứng S1 từ mèo đã biết.
+5. **Lọc trùng:** chuẩn hóa hình vùng dưới 8 phép xoay/lật và đổi nhãn; kiểm cửa sổ 8 level theo `order` liên tiếp.
+6. **Duyệt bằng người:** giải không xem nghiệm, ghi thời gian, hint, bước bất ngờ, khả năng đọc ở thang xám và vấn đề tutorial. Một lượt duyệt là tối thiểu; playtest 10 người ở cổng QA vẫn cần.
+7. **Đóng gói:** chạy validator `--release`, kiểm asset và script tutorial gắn với ID thực tế. Không thêm level lỗi vào build.
+
+Gói phát hành là 24 level gốc. Nếu một level không qua cổng, thay nó; không giảm tiêu chuẩn để đạt chỉ tiêu số lượng. [Kế hoạch sinh level sau MVP](11-ke-hoach-meta-va-sinh-level.md) dùng seed/phiên bản generator để **đề xuất ứng viên offline**, rồi vẫn qua các bước 3–7 và duyệt người. “Quy luật ẩn” chỉ là motif biên tập như đối xứng, mật độ vùng hoặc nhịp suy luận; không bổ sung luật thắng bí mật đối với người chơi.
+
+## 5. Fixture kỹ thuật
+
+| ID | Lưới | Nghiệm | Givens | Kiểm chính |
+| --- | --- | --- | --- | --- |
+| T01 | 4×4 | `[1,3,0,2]` | Không | Vùng A một ô, chuỗi S2 |
+| E01 | 5×5 | `[2,4,0,3,1]` | `(0,2)` | Loại trừ từ given |
+| E02 | 6×6 | `[5,2,4,0,3,1]` | `(0,5)` | Chuỗi S2 nhiều vùng |
+| N12 | 12×12 | `[0,2,4,6,8,10,1,3,5,7,9,11]` | Cả 12 ô | Biên N=12 và nhãn A–L; không tính là gameplay |
+
+T01 bắt đầu với vùng A chỉ gồm `(0,1)`. Sau khi đặt mèo ở đó, S1 loại cùng hàng/cột/vùng/ô chéo; trace tiếp tục bằng S2. Đây là dữ liệu gốc của dự án. Chữ A–L là nhãn vùng và khóa màu/mèo theo vùng; tên màu cụ thể nằm trong theme, không là luật.
+
+## 6. Hợp đồng hint cho người biên tập
+
+Trace lưu **kết luận cần chứng minh**, không lưu văn bản tự do hoặc một mảng `eliminatedCells` có thể sai. `textKey` chọn mẫu câu theo focus; runtime cung cấp nhãn vùng, tọa độ hiển thị, ô bị loại và mèo nguồn. Nếu X che ô đích, UI nhắc chạm đôi trực tiếp để thử mèo; X đỏ không thể che ô nghiệm trong level hợp lệ. Hint chỉ chỉ ra điều logic từ mèo đã biết và quy tắc; không khẳng định một ghi chú của người chơi là tiền đề.
+</file>
+
+<file path="GDD/05-kien-truc-va-du-lieu.md">
+# 05 — Kiến trúc và hợp đồng dữ liệu
+
+## 1. Chọn công nghệ
+
+| Lựa chọn | Phù hợp | Chi phí/rủi ro với thiết kế này |
+| --- | --- | --- |
+| Phaser | Prototype web nhanh cho bàn 2D, cử chỉ, điểm, hint | [Phaser chính thức là framework 2D/web](https://docs.phaser.io/); [Mesh](https://docs.phaser.io/phaser/concepts/gameobjects/mesh) chủ yếu cho hiệu ứng/sprite phức tạp, không là pipeline nhân vật 3D đầy đủ. Cần tích hợp thư viện 3D và lớp đóng gói mobile riêng. |
+| Godot 4.x + GDScript | UI/bàn 2D, sprite sheet nhân vật và export Android/iOS trong một project | Cần kiểm atlas, RAM/VRAM, tải asset và tương tác trên thiết bị thấp; iOS cần macOS/Xcode. |
+
+**Quyết định sản xuất (REV-TECH-01/05):** Godot 4.x/GDScript, khóa minor version ở M0. Mèo gốc được tạo/rig/animate trong Blender hoặc công cụ 3D tương đương, rồi **render sẵn thành sprite sheet 2D** cho `idle`, `jump`, `celebrate`, `sad`. Một mèo dùng **một bộ clip**, không nhân atlas theo 6/12 màu vùng; Godot phát bằng [AnimatedSprite2D/SpriteFrames](https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html). Màu/nhãn/họa tiết vùng vẽ ở bàn và hàng tiến độ, không tô lên mèo. File model/rig vẫn giữ làm nguồn để bổ sung clip, góc máy và mèo mới sau này. Runtime bản đầu không dựng mèo 3D bằng SubViewport. Cách này giảm độ phức tạp renderer nhưng **không tự bảo đảm 60 FPS hay mức tiết kiệm VRAM cố định**: M0 phải đo FPS, RAM/VRAM, thời gian tải và khựng trên Android/iPhone cấu hình thấp. Theo [tài liệu export iOS](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_ios.html), cần macOS với Xcode.
+
+Puzzle core là module dữ liệu thuần, không import scene/asset/audio. Python chuẩn dùng content validator; logic runtime và Python phải qua cùng [vector hành vi mẫu](data/interactions.sample.json) ở M0/M1. Bài test Python là mô hình tham chiếu cho đặc tả, chưa phải bằng chứng Godot đã xử lý đúng trên thiết bị.
+
+## 2. Module
+
+| ID | Module | Trách nhiệm |
+| --- | --- | --- |
+| TECH-01 | Level loader/validator | Schema v3, N≤12, vùng A–L, nghiệm, givens, trace, order |
+| TECH-02 | Puzzle core | Luật GR-01..08, chấm `TryCat`, trạng thái thắng/điểm |
+| TECH-03 | Gesture/session | Preview X tức thì, nhận chạm đôi/kéo một ngón, commit action tuần tự, tim, lỗi, thời gian, trạng thái phiên |
+| TECH-04 | Hint engine | S2 từ mèo đúng hiện tại; dựng bằng chứng S1; bỏ qua X/X đỏ |
+| TECH-05 | UI controller | Action → event/view model; điều hướng Home/Puzzle/Results/Help/Settings |
+| TECH-06 | Save repository | Một session hiện tại + progress độc lập, backup/atomic write |
+| TECH-07 | Content pipeline | Validator, lọc trùng, `--release`, báo cáo biên tập |
+| TECH-18 | Visual presenter | Ánh xạ nhãn vùng sang nền/viền/hàng tiến độ và `selectedAppearanceId` sang hình mèo/clip cho mọi ô `cat`, kể cả given; phát sprite sheet 2D, reduced motion; không chứa luật |
+| TECH-20 | Cat asset manager | Nạp một bộ clip của giống đang chọn khi cần, dùng chung texture giữa các mèo, đổi bộ clip an toàn, giới hạn cache theo ngân sách RAM/VRAM |
+
+## 3. Schema level v3
+
+Gốc file là `{ "levels": [...] }`. Mỗi level có đúng các trường sau; tọa độ 0-based, chuỗi UTF-8. Fixture và campaign dùng cùng schema. Bỏ `chapter`; `order` là thứ tự toàn cục.
+
+| Trường | Điều kiện |
+| --- | --- |
+| `schemaVersion` | Integer `3` |
+| `id` | String duy nhất, ổn định, `[A-Z0-9_-]+` |
+| `order` | Integer ≥1; release đúng 1..24, mỗi slot một level; fixture dùng thứ tự riêng, không đóng gói release |
+| `size` | Integer 4..12; release 4..6 |
+| `regions` | N chuỗi dài N, chỉ dùng đúng N nhãn `A..` liên tiếp, tối đa `L`, mỗi vùng liên thông 4 hướng |
+| `givens` | Mảng `{r:int,c:int}`, không trùng hàng, thuộc nghiệm |
+| `solution` | N cột, hoán vị `0..N-1`, thỏa bốn luật và nghiệm duy nhất |
+| `difficulty` | `tutorial`, `easy`, `medium`, `hard`; release chưa dùng `hard` |
+| `tags` | Mảng string không rỗng, không trùng; chỉ là metadata |
+| `logicTrace` | Các bước S2 tuần tự từ givens tới đủ N mèo |
+
+Step S2 vẫn có đúng `rule`, `focus`, `conclusion`, `textKey`, ví dụ:
+
+```json
+{"rule":"S2","focus":{"type":"region","id":"A"},"conclusion":{"type":"place","r":0,"c":1},"textKey":"hint.single.region"}
+```
+
+Validator tính lại mọi ứng viên và nguồn loại trừ; không lưu `eliminatedCells` tự khai. `textKey` phải khớp focus row/column/region. `countSolutions` duyệt ràng buộc độc lập `solution`, dừng ở nghiệm thứ hai. Với N=12, validator phải có ngân sách thời gian rõ; level vượt ngân sách bị từ chối/biên tập lại, không coi timeout là nghiệm duy nhất.
+
+Màu vùng là **theme mapping** từ nhãn A–L, không nằm trong level JSON. `cat` ở ô dùng `selectedAppearanceId` (mặc định ở bản đầu) để chọn hình mèo và clip, **không dùng nhãn vùng để chọn màu lông/giống mèo**. Nền/viền ô và hàng N vị trí tiến độ theo A–(N), có màu/nhãn/họa tiết vùng. Đổi palette hoặc mèo đang chọn không đổi nghiệm, trạng thái ô hoặc hash puzzle. Nhãn/họa tiết là kênh thông tin song song với màu.
+
+## 4. Progress và session
+
+`progress.json` chứa tiến trình tuyến tính; `session.json` chỉ chứa lượt của `currentLevelId`. Mỗi file ghi qua temp + replace nguyên tử, progress có một bản hợp lệ trước để phục hồi. Khi thắng, ghi progress với level kế và kết quả trước khi hiện màn thắng, rồi xóa session cũ. Sau crash giữa hai bước, `session.levelId` khác `progress.currentLevelId` thì bỏ session cũ. Khi thua, session `failed` được lưu và Home Play trở lại màn thua.
+
+```json
+{
+  "progressVersion": 2,
+  "currentLevelId": "L02",
+  "completedLevelIds": ["L01"],
+  "results": {"L01": {"score": 375, "mistakes": 1, "hints": 0, "elapsedMs": 84000}},
+  "tutorialSeenIds": ["T1", "T2"]
+}
+```
+
+```json
+{
+  "sessionVersion": 2,
+  "levelId": "L02",
+  "puzzleHash": "<sha256 of canonical puzzle data>",
+  "status": "playing",
+  "cells": ["empty", "x", "x_error", "cat"],
+  "hearts": 2,
+  "mistakeCount": 1,
+  "hintCount": 0,
+  "elapsedMs": 84000
+}
+```
+
+`cells` trên là ví dụ rút gọn; dữ liệu thật có N² ô theo hàng trước, cột sau. Given lưu `empty` trong session và được ghép từ level khi render. `correctPlacedCount` được suy từ các ô `cat` không phải given; `score` tính theo GR-18, không lưu hai nguồn điểm có thể lệch nhau. `puzzleHash` là SHA-256 của JSON compact UTF-8 cho `[size,regions,givens sắp theo (r,c),solution]`. Session sai hash/version/cell bất hợp lệ thì báo và tạo lại **cùng level**, không tiến level. `currentLevelId=null` nghĩa là hoàn thành toàn bộ nội dung hiện có. Khi append level mới, quét danh sách completed để xác định successor đầu tiên chưa xong. Không cho chọn ID đã qua trong UI.
+
+| ID | Quy tắc |
+| --- | --- |
+| TECH-08 | Preview X/kéo chỉ tồn tại trong UI; sau action đã xác nhận và đổi board/tim/hint, ghi session trước phản hồi bền vững. Preview chưa commit không lưu. |
+| TECH-09 | Progress tách session; session hỏng không xóa completed/results. Progress chính hỏng thử bản hợp lệ trước, không ghi đè bằng trống. |
+| TECH-10 | Kiểm version/hash khi load; chỉ cần migration save cũ sau khi có bản game đã phát hành. |
+| TECH-11 | Không dữ liệu cá nhân hoặc truyền analytics mạng trong bản đầu. |
+| TECH-12 | ID/puzzle đã phát hành bất biến; thêm level ở cuối, không chèn giữa level đã phát hành nếu chưa có migration thứ tự. |
+
+## 5. API và sự kiện
+
+```text
+validateLevel(level) -> ValidationResult
+countSolutions(regions,givens,limit=2) -> 0 | 1 | 2
+createSession(level) -> Session
+applyAction(level,session, MarkX(cell) | ClearX(cell) | MarkStroke(mode,cells) | TryCat(cell)) -> {session,events}
+getHint(level,session) -> HintEvidence | NoHint
+completeLevel(level,session) -> Progress | Error
+```
+
+Gesture layer quyết định một chạm/chạm đôi/nét kéo; core không đo thời gian chạm. UI áp preview từ bản sao trạng thái đã commit, rồi gửi action sau khi rõ cử chỉ. `MarkStroke` nhận danh sách ô đã đi qua theo thứ tự, loại trùng, áp cùng chế độ `mark` hoặc `clear` từ ô đầu; core bỏ qua các ô không hợp lệ và commit toàn bộ trong một transaction. Bắt đầu trên X đỏ/cat/given không mở nét. Core trả `XMarked`, `XCleared`, `CatPlaced(region)`, `Mistake(reason)`, `HeartLost`, `ScoreChanged`, `LevelWon`, `LevelFailed`. UI/animation chỉ dùng event; `x_error` là ô bất biến trong lượt. Input bị khóa trong chuyển result. Với action thắng, service commit progress trước `LevelWon`; nếu ghi lỗi, giữ state cũ và báo thử lại. Điểm được tính từ board/lỗi, nên save và UI có một nguồn chuẩn.
+
+Trình nhận cử chỉ chỉ chấp nhận ngón `event.index == 0` nếu điểm đầu ở trong bàn, rồi giữ ID này đến khi nhấc; bỏ qua mọi ngón phụ và điểm chạm bắt đầu ngoài bàn. Đây là chặn multi-touch/ngón phụ, không phải thuật toán nhận dạng palm đầu tiên trong bàn. Sau khi nhấn, X preview xuất hiện trong khung hình đầu. Chuyển sang kéo khi độ dịch chuyển từ điểm đầu vượt **12 điểm logic** sau quy đổi UI scale; các ô cắt bởi đoạn từ vị trí trước đến vị trí mới được lấy bằng phép quét lưới phủ đủ ô trung gian. Mỗi ô chỉ được ghé một lần. Sau chạm đầu đã nhấc, mở cửa sổ **280 ms đến lần chạm xuống thứ hai**. Nếu lần hai ở cùng ô và cả hai lần không vượt ngưỡng kéo, hoàn tác preview chạm đầu rồi gọi một `TryCat`. Chạm khác ô commit chạm đầu trước khi mở cử chỉ mới. Chạm thứ hai thành nét kéo cũng commit chạm đầu; nét hai lấy chế độ từ ô đầu **sau commit**, không gọi `TryCat`. Cửa sổ/ngưỡng là cấu hình cần playtest, không phụ thuộc hoàn toàn vào cờ `double_tap` của hệ điều hành; [Godot cung cấp `index` và `double_tap` trên sự kiện chạm](https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html). App nền/chuyển màn commit chạm đơn đã nhấc nhưng còn chờ; hủy preview của chạm/nét đang giữ. Có thể nhận action ngữ nghĩa riêng từ trình đọc màn hình.
+
+## 6. Ngân sách và cổng kỹ thuật
+
+| ID | Yêu cầu |
+| --- | --- |
+| TECH-13 | Mở level dưới 2 giây sau startup trên thiết bị mục tiêu M0. |
+| TECH-14 | X preview hiện trong khung hình đầu, mục tiêu dưới 50 ms; chạm đôi phản hồi dưới 100 ms sau chạm thứ hai và save thành công. Nét kéo xem được từng X ngay khi đi qua ô. |
+| TECH-15 | Action đã báo lưu phải khôi phục sau app bị tắt; thắng đã hiển thị phải mở level kế. |
+| TECH-16 | CI chạy validator fixture/test và `--release` trên campaign; N>6 hoặc thiếu order chặn build bản đầu. |
+| TECH-17 | Renderer/sprite không chứa luật; đổi asset/animation không đổi core. |
+| TECH-19 | M0 đo bản sprite sheet trên Android/iPhone mục tiêu: FPS ≥55 khi tương tác, không có khựng hình >100 ms khi mèo nhảy/sticker xuất hiện, RAM/VRAM và thời gian tải nằm trong ngân sách thiết bị đã chọn. Nếu không đạt, giảm khung hình/kích thước atlas/hiệu ứng rồi đo lại. |
+| TECH-21 | M0 đo một bộ clip mèo mặc định dùng trên mọi vùng; kiểm vùng vẫn phân biệt qua nền/nhãn/họa tiết, dung lượng texture thực và khựng khi nạp. Về sau đo đổi mèo, thu hồi gói cũ và khôi phục sau app nền trước khi mở bộ sưu tập. |
+
+Ngưỡng M0 là mục tiêu thiết kế, cần ghi thiết bị cụ thể và số đo thật trước khi chốt. N=12 là trần dữ liệu, không được phát hành trước QA kích thước chạm **không zoom/pan**, màu/họa tiết, trace và hiệu năng. Kế hoạch vàng và sinh level sau MVP ở [11](11-ke-hoach-meta-va-sinh-level.md); chưa thêm trường wallet/generator vào schema v3 hoặc progress v2.
+
+## 7. REV-TECH-05 — render một lần và quản lý bộ mèo
+
+Ý tưởng render một lần trong Godot **khả thi cho ảnh tĩnh**: `SubViewport.UPDATE_ONCE` cập nhật render target một lần rồi dừng. Một ảnh tĩnh không chứa được động tác nhảy/ngủ; muốn cache cả animation phải render **từng frame của từng clip** rồi giữ nhiều texture. `ViewportTexture` còn cần viewport sống và texture vẫn chiếm bộ nhớ; việc lấy frame bằng `Texture2D.get_image()` đọc dữ liệu từ GPU có thể gây chậm. Vì vậy runtime bake toàn bộ clip 3D lúc mở app hoặc mỗi lần đổi giống chỉ là nhánh thử nghiệm sau này, không là pipeline đã chốt. [Godot SubViewport](https://docs.godotengine.org/en/stable/classes/class_subviewport.html), [Texture2D.get_image](https://docs.godotengine.org/en/stable/classes/class_texture2d.html).
+
+Pipeline đã chốt cho bản đầu và nền tảng bộ sưu tập mèo về sau:
+
+1. Render offline **một bộ clip cho mỗi mèo thực sự khác hình dáng/động tác**. Màu/nhãn/họa tiết vùng là lớp UI riêng; không tạo atlas mèo riêng cho A–L hoặc dùng shader vùng trên lông mèo. Mặt nạ chỉ dùng nếu một biến thể ngoại hình của chính mèo đó cần đổi màu.
+2. M0 chỉ có mèo mặc định. Tải bộ clip khi vào màn cần hoạt ảnh, dùng chung một resource giữa các ô và màn; icon nhỏ có bản gọn. Không nạp trước mọi clip độ phân giải cao nếu chưa hiển thị.
+3. Khi mở bộ sưu tập, `selectedAppearanceId` trỏ tới gói asset của mèo đã sở hữu. Nạp gói mới bằng [ResourceLoader.load_threaded_request](https://docs.godotengine.org/en/stable/classes/class_resourceloader.html); chỉ gọi `load_threaded_get` sau khi trạng thái báo đã tải xong để tránh chặn luồng chính. Giữ hình cũ cho đến khi gói mới sẵn sàng, rồi đổi tất cả presenter tại một điểm chuyển an toàn. Gói đang chọn được dùng lại trong phiên. Gói cũ được thả tham chiếu khi vượt ngân sách; không hứa giữ mọi mèo đến lúc tắt app. [Resource của Godot được cache khi còn tham chiếu và có thể được giải phóng khi không còn dùng](https://docs.godotengine.org/en/stable/classes/class_resource.html).
+4. Nếu thiếu asset, lỗi nạp hoặc app khôi phục sau khi hệ điều hành thu hồi tài nguyên đồ họa, dùng mèo mặc định và báo nhẹ ở màn chọn; không làm hỏng level/session. Cache chỉ là tối ưu trong RAM/VRAM, không là nguồn dữ liệu tiến trình.
+
+Khóa cache đề xuất là `(appearanceId, assetVersion, clip, resolutionTier)`; **màu vùng không nằm trong khóa** vì vùng là lớp UI độc lập. `appearanceId` và danh sách mèo đã mua thuộc phiên bản **progress tương lai**, không thêm vào level schema v3/session v2 hiện tại. Việc chọn mèo không thay bốn luật, tim, điểm hoặc màu nhận diện vùng. Với atlas RGBA8, 2048² pixel chiếm khoảng 16 MiB và 4096² khoảng 64 MiB trước mipmap/buffer khác; dung lượng file nén không phải dung lượng VRAM thực. M0 phải chọn thiết bị thấp mục tiêu và công bố ngân sách/đo thật, không dùng tỷ lệ tiết kiệm 85% trong review như kết quả đã chứng minh. [Tài liệu import texture của Godot](https://docs.godotengine.org/en/stable/classes/class_resourceimportertexture.html) phân biệt kích thước file với bộ nhớ texture và khuyến nghị chế độ VRAM Compressed cho 3D, nên M0 cần thử các chế độ phù hợp cho sprite 2D thay vì mặc định chọn một chế độ nén.
+
+Meta sau MVP thêm `purchasedAppearanceIds`/`selectedAppearanceId` vào progress, wallet/ledger và trạng thái session chờ cứu lượt theo [11](11-ke-hoach-meta-va-sinh-level.md). Những trường này không thuộc level schema v3. Giao dịch cứu lượt phải khôi phục nguyên tử cả chi vàng hoặc xác nhận thưởng quảng cáo và tim/ô sai cuối; không được có trạng thái trừ tiền mà vẫn thua, hoặc cấp tim hai lần. Adapter quảng cáo chỉ báo đã thưởng sau xác nhận thành công, và không ảnh hưởng luồng Retry offline.
+
+Nếu về sau có nhiều phụ kiện tạo số tổ hợp quá lớn để render offline, làm spike riêng cho **một avatar/sticker được chọn**: render tĩnh một lần bằng `SubViewport.UPDATE_ONCE` hoặc bake các frame cần thiết khi đổi tổ hợp, đo thời gian đổi, readback, RAM/VRAM và khôi phục app. Chỉ chuyển pipeline khi nhánh đó qua QA-51 trên thiết bị thật; gameplay luôn có bộ sprite đóng gói sẵn để dùng nếu bake không hoàn tất.
+</file>
+
+<file path="GDD/06-my-thuat-va-am-thanh.md">
+# 06 — Mỹ thuật, hoạt ảnh và âm thanh
+
+## 1. Hướng hình ảnh bản chính thức
+
+Khu vườn tươi sáng, vui và có nhân vật mèo gốc. Mỗi vùng có màu/nền/họa tiết trong cùng bộ theme; **mèo trên ô đúng dùng hình mèo đang chọn**, không lấy màu lông hoặc giống theo ô. Bản đầu dùng mèo mặc định. Màu nhấn và hoạt ảnh khiến việc tìm mèo có phần thưởng cảm xúc, còn nền bàn, viền vùng, X/X đỏ phải đọc được trước trang trí. X đỏ là lỗi người chơi đã thử, **không** là vùng màu đỏ hay mèo màu đỏ.
+
+| ID | Nguyên tắc |
+| --- | --- |
+| ART-01 | Vùng có màu nền sáng vừa phải, viền rõ, nhãn A–(N) và họa tiết riêng; tối đa 12 cặp màu/họa tiết. |
+| ART-02 | Mèo đang chọn giữ ngoại hình riêng trên mọi ô `cat`; vùng được phân biệt bằng nền/viền/nhãn/họa tiết quanh mèo. Silhouette/icon vẫn đọc ở ô N=6; bản N=12 cần bộ icon và kích thước chạm thực tế được nghiệm thu lại. |
+| ART-03 | `x` là nét X trung tính; `x_error` đỏ đậm **kèm dấu cảnh báo/viền khác** và dấu khóa thao tác, không truyền lỗi chỉ bằng màu. |
+| ART-04 | Sticker/sparkle sprite 2D nằm ngoài vùng chạm bàn hoặc chỉ phủ ngắn, không che ô, điểm, tim hay điều hướng. |
+| ART-05 | Asset có manifest nguồn gốc, giấy phép, file nguồn và bản xuất; không dùng ảnh/model/âm thanh của game tham chiếu. |
+| ART-12 | Mỗi mèo mới có `appearanceId` ổn định, silhouette/chi tiết riêng và đủ clip `idle`/`jump`/`celebrate`/`sad` tương ứng trước khi bán. Màu vùng nằm ở bàn và chỉ báo tiến độ, độc lập với mèo. |
+| ART-13 | Một bộ atlas/clip cho mỗi mèo; không xuất 6/12 bản atlas theo vùng. Căn khung và alpha phải khớp từng frame; mặt nạ chỉ dùng nếu cần biến thể ngoại hình, không dùng để tô mèo theo vùng. |
+
+### Bảng màu định hướng
+
+| Nhãn | Màu nhấn vùng gợi ý | Họa tiết hỗ trợ |
+| --- | --- | --- |
+| A | san hô `#D76F5D` | chấm |
+| B | xanh ngọc `#328F83` | sọc ngang |
+| C | vàng mật `#A97617` | gạch chéo |
+| D | tím hoa `#8B6EB3` | ô vuông |
+| E | xanh trời `#397FAC` | sóng |
+| F | hồng mận `#AD6287` | vòng nhỏ |
+| G–L | sáu màu/họa tiết bổ sung trước đợt N>6 | không lặp cặp màu/họa tiết |
+
+Nền vùng là biến thể sáng nhạt của màu nhấn, không dùng mã màu vùng để tô mèo. Đây là token khởi đầu; QA kiểm tương phản chữ 4.5:1, icon/viền 3:1 và thử thang xám/chế độ hỗ trợ trước khi chốt. Palette 12 cần review bằng thiết bị và người chơi, không dựa vào mã hex tự chứng nhận khả năng phân biệt.
+
+## 2. Hoạt ảnh có chủ đích
+
+| ID | Sự kiện | Cách thể hiện |
+| --- | --- | --- |
+| ART-06 | Chạm/kéo X/clear | X đổi trong khung hình đầu, từng ô trên đường kéo đổi ngay; preview có thể hoàn tác sạch khi chạm đôi mà không nháy/giật |
+| ART-07 | Mèo đúng | Mèo đang chọn bật/nhảy ngắn, chỉ báo vùng sáng lên ở hàng tiến độ, chữ “Hay lắm!” (`Nice!` trong bản dịch); lần đầu đạt nửa số mèo cần tìm hiện “Tuyệt!” (`Great!`) |
+| ART-08 | Mèo sai | X đỏ/dấu cảnh báo và tim đổi cùng lúc; rung nhẹ nếu bật, không nhấp nháy mạnh |
+| ART-09 | Thắng | Sticker chúc mừng gốc và mèo nhảy/đùa bằng sprite sheet 2D render từ model 3D gốc, nút Level tiếp theo dùng được ngay |
+| ART-10 | Thua | Biểu cảm tiếc nhẹ, màn kết quả thua riêng; không dùng hiệu ứng trừng phạt/chói |
+| ART-11 | Giảm chuyển động | Chữ/viền/sticker tĩnh thay cho nhảy, lắc, particle; không bỏ thông tin luật |
+
+Hoạt ảnh trên bàn tối đa khoảng 0,7 giây và không khóa điều hướng. Màn thắng có thể chạy loop nhẹ nhưng dừng khi app nền/giảm chuyển động. Khi tính năng chọn mèo được bật, phản hồi đúng/thắng dùng clip của mèo đang chọn; mèo mặc định chỉ là fallback nếu gói asset lỗi tải. Sound đi kèm không phải nguồn thông tin duy nhất: tick X, mèo đúng vui ngắn, lỗi nhẹ, motif thắng dưới 2 giây; âm và rung có nút tắt riêng.
+
+## 3. Pipeline model 3D → sprite 2D
+
+Tạo **một model mèo mặc định gốc** trước, rig và clip `idle`, `jump`, `celebrate`, `sad`. Lưu file nguồn và, nếu hữu ích cho tái sử dụng, xuất glTF. Render mỗi clip với cùng góc máy/ánh sáng/nền trong suốt thành **một bộ frame của mèo mặc định**; không render lại cho từng vùng A–L. Runtime bản đầu chỉ phát sprite. Mèo nhỏ trên bàn dùng icon hoặc ít frame; màn thắng dùng clip dài hơn. Chốt kích thước frame, số frame, atlas và cách nén bằng đo trên thiết bị. 3D realtime hoặc bake clip lúc người chơi đổi mèo là spike tương lai theo TECH-21/QA-51.
+
+Về sau, mèo được mua có thể dùng cùng rig/clip nếu dáng và chuyển động phù hợp, hoặc có clip riêng nếu đó là phần bản sắc của mèo. Mỗi mèo khác hình dáng cần bộ frame riêng; shader đổi màu không sinh được tai, đuôi, hoa văn hay động tác mới. Danh sách vườn xem icon gọn trước; khi chọn mới nạp clip lớn. Nền/viền/nhãn/họa tiết vùng luôn hiển thị được quanh mèo để puzzle vẫn đọc được.
+
+M0 kiểm kích thước file, texture, RAM/VRAM, FPS, thời gian xuất hiện khung đầu và chất lượng cạnh/đổ bóng của sprite trên Android/iPhone mục tiêu. Chỉ thêm frame/particle khi số đo còn ngân sách. Không tải asset qua mạng trong bản đầu.
+
+## 4. Danh mục bàn giao
+
+| Nhóm | Bản đầu |
+| --- | --- |
+| Bàn | 6 màu nền/viền/họa tiết, nhãn vùng, trạng thái X và X đỏ, phiên bản thang xám |
+| Mèo | Một model/rig gốc, một bộ sprite mèo mặc định cho idle/jump/celebrate/sad, icon tĩnh gọn; hàng tiến độ dùng nhãn/họa tiết vùng |
+| UI | Home, Puzzle, Help, Settings, **hai màn kết quả riêng**, điểm/tim, sticker thắng, trạng thái cỡ chữ lớn |
+| SFX/rung | X/clear, đúng, sai, thắng, thua; thiết lập tắt độc lập |
+| Nguồn | File model/texture/animation/audio gốc, manifest quyền, thông số xuất và version asset |
+
+Đợt N=12 thêm 12 màu/nhãn/họa tiết vùng, **không** nhân atlas hoạt ảnh theo 12 màu; kiểm lại board nhỏ, hàng tiến độ cuộn và performance. Không lặp màu đơn thuần để đủ 12; nhãn/họa tiết phải phân biệt khi không nhìn màu.
+</file>
+
+<file path="GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md">
+# 07 — Kiểm thử và tiêu chí nghiệm thu
+
+Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xác nhận dữ liệu kỹ thuật; các ca UI/mobile/sprite cần thực hiện khi có game chạy được.
+
+## 1. Level, solver, trace
+
+| ID | Ca | Kết quả |
+| --- | --- | --- |
+| QA-01 | `--release` trên campaign | Đúng 24 ID, `order=1..24`, N=4–6, mỗi level còn ít nhất hai mèo để tìm; không chương |
+| QA-02 | 0 hoặc ≥2 nghiệm | Chặn, báo ID/lý do; timeout solver không được xem là độc nhất |
+| QA-03 | `solution` khai khác nghiệm độc lập | Chặn |
+| QA-04 | Vùng tách rời | Chặn, nêu nhãn vùng |
+| QA-05 | Bước S2 sai focus/đích/chứng cứ | Chặn tại bước lỗi; trace đủ N mèo |
+| QA-06 | Hình vùng lặp trong cửa sổ 8 level sau xoay/lật/đổi nhãn | Cảnh báo fixture, chặn release |
+| QA-07 | T01/E01/E02/N12 | Nghiệm/trace hợp lệ; N12 kiểm nhãn A–L và biên schema |
+| QA-49 | Level `order=10,20` bản đầu | Motif/sticker và nhịp suy luận được duyệt người, qua cùng uniqueness/trace/usability; không thêm luật GR; ID/puzzle khóa trước release |
+| QA-32 | Schema cũ, thừa/thiếu trường, bool giả int, ID/order trùng, textKey sai | Báo rõ, không chấp nhận âm thầm |
+| QA-35 | N=12 và N=13; `--release` với N=12 | N12 được đọc/kiểm kỹ thuật; N13 và release N12 bị từ chối; chưa xem N12 là gameplay đã duyệt |
+
+## 2. Board, cử chỉ, điểm
+
+| ID | Ca | Kết quả |
+| --- | --- | --- |
+| QA-08 | Một chạm trên empty, X, X đỏ, cat/given | empty↔X hiện tức thì; X đỏ/cat/given bất biến; không tim/điểm ảo |
+| QA-09 | Hai chạm cùng empty hoặc X vào ô đúng | Một `TryCat`, cat đúng cố định, chỉ báo vùng sáng ở hàng tiến độ; hình mèo mặc định không đổi theo vùng; preview X được hoàn tác, không X lưu trung gian |
+| QA-10 | Hai chạm ô sai chưa có xung đột thấy được | X đỏ, -1 tim, +1 lỗi, score theo công thức, lý do trung tính |
+| QA-11 | Chạm đơn/đôi/kéo qua X đỏ, rồi Retry | X đỏ không đổi và không mất tim thêm; chỉ Retry reset ô cùng level |
+| QA-12 | Hai chạm khác ô, chậm hơn cửa sổ, ba chạm nhanh, chạm thứ hai thành kéo, app nền khi đã/chưa nhấc | Không gộp sai cử chỉ/nhân đôi lỗi; chạm đã nhấc được commit, chạm/nét chưa nhấc bị hủy |
+| QA-13 | Chạm cat đúng/given sau khi tìm | Không xóa, không thêm điểm/tim |
+| QA-14 | Hết 3 tim rồi Retry | Màn thua riêng, cùng level, board/điểm/tim/hint/thời gian reset |
+| QA-15 | Đủ N cat khi còn X/X đỏ nơi khác | Thắng ngay, ghi một result, current level tăng đúng 1 |
+| QA-16 | Điểm với given, lỗi trước/sau mèo, hint và score sàn 0 | Bằng `max(0,100×correctPlaced−25×mistakes)` ở mọi thời điểm |
+| QA-17 | Input board ở Won/Failed/result | Bị chặn; không ghi kết quả hai lần |
+| QA-43 | Kéo từ empty qua empty/X/X đỏ/cat, đi nhanh và vòng ngược | Chỉ ô empty trên đường phủ đầy đủ thành X một lần; trạng thái khác giữ nguyên; một batch lưu |
+| QA-44 | Kéo từ X qua X/empty/X đỏ/cat, đi nhanh và vòng ngược | Chỉ ô X trên đường thành empty một lần; trạng thái khác giữ nguyên; một batch lưu |
+| QA-45 | Ngưỡng 12 điểm logic, hai ngón/lòng bàn tay, bắt đầu ngoài bàn, nhấc ngoài bàn, app nền | Không nhầm tap/drag/double, không nhận ngón phụ; chạm đã nhấc được lưu, nét chưa nhấc bị hủy, nét hợp lệ commit một lần |
+
+## 3. Hint, tutorial, màn kết quả
+
+| ID | Ca | Kết quả |
+| --- | --- | --- |
+| QA-18 | X che ô nghiệm, X đỏ ở ô sai, xin hint | Hint bỏ qua ghi chú làm tiền đề, hướng dẫn chạm đôi trên X đúng, không đề nghị xóa X đỏ hay tự đặt cat |
+| QA-19 | Đặt cat đúng khác thứ tự trace, xin hint | S2 hiện tại hợp lệ; giải thích ô bị loại và mèo nguồn |
+| QA-20 | Xin hint lặp/đóng/NoHint | Hint hợp lệ tăng đếm mỗi yêu cầu, không đổi điểm/tim/board; NoHint không tăng |
+| QA-21 | Tutorial làm đúng khác thứ tự rồi đóng/mở app | Mốc đã đạt không hiện lại/kẹt |
+| QA-22 | Thử sai trên ô hướng dẫn và ô khác trong T1–T3 | Chỉ ô đang sáng miễn tim/X đỏ; ô khác theo luật thường |
+| QA-33 | Script tutorial trên level phát hành | Target X và mèo có chứng cứ thật; bản hướng dẫn mở lại không đổi campaign |
+| QA-36 | Mèo đúng đầu/nửa bàn, thắng, hết tim, giảm chuyển động | “Nice/Great”/sticker đúng mốc; màn thắng/thua khác nhau; nút Next/Retry luôn dùng được; giảm chuyển động giữ thông tin |
+
+## 4. Save, UX, thiết bị và phát hành
+
+| ID | Ca | Kết quả |
+| --- | --- | --- |
+| QA-23 | Back To Home/Settings/Help/app nền sau X, X đỏ, cat, hint | Home Play đúng level và board/tim/điểm; không có màn chọn level |
+| QA-24 | Hỏng session; hỏng progress chính nhưng bản trước tốt | Session reset cùng level sau báo lỗi; progress lấy bản hợp lệ trước, không mất completed đã lưu ở bản đó |
+| QA-25 | Thêm level ở cuối dãy sau khi người chơi hết nội dung; hash/version sai | Bắt đầu level mới đúng; session không hợp lệ không làm tiến level |
+| QA-26 | Chơi offline qua các level đầu | Không cần mạng/tài khoản/quảng cáo |
+| QA-27 | Bàn 6×6, hàng 6 vị trí tiến độ vùng, chữ lớn, safe area trên máy nhỏ | Bàn/nút đủ vùng chạm và không bị sticker che; không cần phóng/trượt bàn |
+| QA-28 | Thang xám, tắt âm/rung, giảm chuyển động | Vùng/mèo/X đỏ/điểm/tim/kết quả vẫn phân biệt |
+| QA-29 | Trình đọc màn hình quét bàn/hàng tiến độ vùng | Đọc tọa độ/vùng/trạng thái; gọi được action X và Thử mèo |
+| QA-30 | M0 sprite cat jump/sticker trên Android/iPhone thấp đã chốt | Đo FPS/RAM/VRAM/tải/khựng với atlas thực; tối ưu và đo lại nếu không đạt TECH-19 |
+| QA-50 | M0 một bộ atlas mèo mặc định dùng chung trên 6 vùng | Cùng hình/clip mèo trên mọi ô `cat`, gồm given; vùng vẫn phân biệt bằng nền/viền/nhãn/họa tiết, không nhân atlas hoặc tô lông theo màu vùng; đo VRAM thực và khựng trên máy mục tiêu |
+| QA-31 | Giả lỗi ghi session/progress, crash giữa progress và dọn session | Không nói đã lưu nếu thất bại; thắng đã hiện thì Home mở level kế một lần |
+| QA-34 | Asset/build Android+iOS | Màu/sticker/sprite từ model gốc/audio có nguồn; build offline, không chứa asset tham chiếu |
+
+## 5. Cổng bản đầu và mở rộng N=12
+
+Ít nhất 10 người chưa đọc GDD chơi trên thiết bị thật. Ghi tỷ lệ hiểu chạm/kéo/chạm đôi, số nhầm chạm đôi/kéo, thời gian mỗi level, lỗi, hint, chỗ họ chỉ nhìn màu không nhận ra vùng và mức thích hoạt ảnh. Từng level phải có một lượt giải thủ công không xem nghiệm. Nếu tỷ lệ nhầm cử chỉ cao, điều chỉnh cửa sổ/ngưỡng/feedback qua playtest rồi kiểm lại QA-08..12/43..45.
+
+Release đầu chỉ đạt khi 24 level liên tiếp qua QA-01..07/32/49, mọi hành vi QA-08..31/33..36/43..45/50 chạy và lỗi chặn được sửa, asset có quyền rõ, Android+iOS đã đo trên thiết bị mục tiêu. N=12 là hạng mục sau bản đầu: cần 12 cặp màu/họa tiết, kích thước/chạm chính xác **không zoom/pan**, hàng tiến độ cuộn, solver/trace/hint và đo sprite trên bàn lớn; chỉ khi toàn bộ các ca đó qua mới tăng giới hạn **phát hành**.
+
+## 6. Cổng nghiên cứu S3+ và meta sau MVP
+
+[S3–S5](10-nghien-cuu-quy-tac-suy-luan.md) dùng QA-37..42 như cổng riêng. Nghiên cứu S3 bắt đầu M1; nếu bật S3 trước release đầu, QA-37/40/41 và mọi ca schema/trace liên quan sẽ thành cổng bắt buộc của release đó. Chỉ bật từng quy tắc sau khi fixture gốc dương/âm, validator proof trace, hint và test trên thiết bị đều qua; S5 cần chứng minh nhánh có thể giải thích rõ. Kế hoạch meta/sinh level ở [11](11-ke-hoach-meta-va-sinh-level.md) dùng QA tương lai dưới đây, chưa là tính năng release đầu.
+
+| ID | Cổng tương lai | Kết quả bắt buộc trước khi bật |
+| --- | --- | --- |
+| QA-37 | S3 giao thoa | Fixture dương/âm, tập loại mới đúng, hint không dựa X/X đỏ |
+| QA-38 | S4 cặp khóa | Kiểm ghép cặp và phản ví dụ có ứng viên ngoài hai đích |
+| QA-39 | S5 phản chứng | Nhánh ≤3 bước chứng minh mâu thuẫn, không rò trạng thái, timeout từ chối |
+| QA-40 | Trace trộn S2/S3/S4 | Bước sai thứ tự, no-op, kết luận giả, dùng nghiệm làm chứng cứ đều bị chặn |
+| QA-41 | Hint S3+ | Tính lại từ trạng thái hiện tại, đọc được và không tự ghi X/cat |
+| QA-42 | N=12 solver/trace/hint | Đạt ngân sách đo thật; timeout là thất bại |
+| QA-46 | Vàng từ điểm, thắng lại, crash/retry, backfill dữ liệu cũ | Công thức đúng; một level chỉ cấp một lần theo grant ID; balance và ledger nhất quán, không âm |
+| QA-47 | Tim về 0, trả vàng cứu lượt hoặc chọn Retry | Đủ vàng mới trừ một lần; hồi 1 tim, xóa riêng X đỏ cuối, giữ board/lỗi/điểm/hint/thời gian; crash/chạm lặp không cấp/trừ trùng; Retry cùng level luôn miễn phí |
+| QA-48 | Sinh ứng viên level mới và mốc tương lai | Seed/version tái tạo được; nghiệm duy nhất, vùng liên thông, trace hợp lệ, lọc trùng, review người và QA N tương ứng; không sửa level đã phát hành |
+| QA-51 | Spike render 3D một lần khi đổi giống/phụ kiện | Chân dung tĩnh dùng `UPDATE_ONCE`; animation đủ frame/clip, không giật lúc chọn; đo thời gian bake/readback, RAM/VRAM và khôi phục app; lỗi quay về sprite đóng gói sẵn |
+| QA-52 | Mua/chọn mèo trong bộ sưu tập sau MVP | Migration progress, ID ổn định, danh sách Vườn chỉ có mèo đã mua và ban đầu rỗng; mèo mặc định chọn lại bằng nút riêng. Mua một lần, chỉ chọn mặc định hoặc mèo đã mua; đủ clip tương ứng cho mọi mèo bán. Mọi ô `cat`/given và hoạt ảnh theo mèo đang chọn; vùng vẫn đọc qua nền/nhãn/họa tiết. Đổi mèo không đổi nghiệm/board/điểm; fallback lỗi tải và cache đúng |
+| QA-53 | Quảng cáo thưởng cứu lượt khi thiếu vàng | Chỉ hiện khi thiếu vàng và quảng cáo sẵn có; xác nhận thưởng hợp lệ cấp đúng một lần như QA-47. Hủy/lỗi/offline/crash không cấp tim hoặc trừ vàng, giữ màn chờ; Retry miễn phí vẫn dùng được |
+</file>
+
+<file path="GDD/08-ke-hoach-trien-khai-cho-agent.md">
+# 08 — Kế hoạch triển khai cho agent
+
+Trước khi nhận gói, đọc [README](README.md), [luật chuẩn](02-luat-choi-va-trang-thai.md) và tài liệu gói. Mỗi bàn giao nêu mã GDD/QA, lệnh/kết quả kiểm tra, rủi ro còn lại. Dùng [fixture](data/levels.sample.json) làm đầu vào ban đầu; T01/E01/E02/N12 không tính vào 24 level phát hành. Thay luật/schema/tiến trình/điểm phải cập nhật GDD, fixture, validator/test và QA cùng thay đổi.
+
+## 1. Thứ tự phụ thuộc
+
+```mermaid
+flowchart LR
+    A[M0: Godot + chạm/kéo/đôi + sprite mèo mặc định] --> B[Puzzle core + score]
+    B --> C[Validator/schema v3]
+    B --> D[Session/save tuyến tính]
+    B --> E[Hint S1/S2]
+    A --> F[UI shell + art pipeline]
+    C --> G[Puzzle UI + tutorial]
+    D --> G
+    E --> G
+    F --> G
+    G --> H[24 level + playtest]
+    E --> J[Nghiên cứu S3 từ M1]
+    J -.->|Chỉ nếu qua cổng| H
+    H --> I[QA + release]
+```
+
+Core không đo thời gian chạm hay phát animation. Gesture layer hiển thị X preview tức thì rồi tạo `MarkX`/`ClearX`/`MarkStroke`/`TryCat`; session service chỉ lưu action đã xác nhận; UI trình bày events. Content tool, save và hint chỉ làm song song sau khi schema v3 và hành vi X đỏ/score được khóa. Không dùng S3–S5 ở level phát hành khi validator chỉ hiểu S2.
+
+## 2. Gói việc
+
+| Gói | Đầu ra | Mã chính | QA chính |
+| --- | --- | --- | --- |
+| A — Bootstrap/tech spike | Godot version khóa, build Android/iOS thử, prototype X tức thì/chạm đôi 280 ms/kéo ngưỡng 12 điểm và một bộ sprite mèo mặc định dùng trên 6 vùng; đo atlas, VRAM và mèo nhảy/sticker | D-06, TECH-13/14/19..21 | QA-12/26/30/43..45/50 |
+| B — Core | Board, solver độc lập, 4 trạng thái, X đỏ khóa, score thuần, batch nét kéo, event, unit tests | GR-01..20/29/30, TECH-01..03/17 | QA-02..04/08..17/43/44 |
+| C — Content tool | Schema v3 N≤12, S2 trace, lọc trùng, cổng order1..24/N≤6 | LV-01..06, TECH-07/16 | QA-01..07/32/35 |
+| D — Save/progress | Một session, progress current level, backup/atomic, crash recovery, append level | GR-25..28, TECH-06/08..12/15 | QA-14/15/23..25/31 |
+| E — Hint | S1 witness/S2 runtime, bỏ qua X đỏ | GR-21..24, TECH-04 | QA-18..20 |
+| F — UI/tutorial | Home, Puzzle, hai Result, Help, Settings, màu/hàng tiến độ vùng, tutorial chạm/kéo/đôi, accessibility | UX-01/03..23, TECH-05 | QA-08..12/21/22/27..29/33/36/43..45 |
+| G — Art/sprite/audio | Model mèo gốc + rig/clip, một bộ sprite mèo mặc định dùng trên 6 vùng, sticker, SFX, manifest quyền | ART-01..13, TECH-18..21 | QA-27/28/30/34/36/50 |
+| H — Level design | 24 level gốc order1..24, mốc thủ công 10/20, metadata/trace, script tutorial, biên bản duyệt/playtest | LV-01..07 | QA-01..07/33/49 |
+| I — QA/release | Báo cáo QA, build ứng viên offline, số đo thiết bị, playtest | GDD 07 | QA-01..36/43..45/49/50 |
+| J — Nghiên cứu S | Agent chuyên trách nghiên cứu S3 từ M1, sau đó S4/S5; fixture dương/âm, proof trace, hint và cổng riêng. S3 chỉ vào bản đầu nếu hoàn tất mọi phần trước M2 | GDD 10, LV-03 | QA-37..42 |
+| K — Meta/sinh level sau MVP | Thiết kế/triển khai wallet, cứu lượt bằng vàng/quảng cáo thưởng, danh sách mèo đã mua/chọn và generator offline cho level mới/mốc sau 24; không thêm vào build đầu | GDD 11, LV-07, TECH-20/21 | QA-46..48/52/53 |
+
+## 3. Mốc và cổng
+
+| Mốc | Đầu ra thấy được | Điều kiện qua |
+| --- | --- | --- |
+| M0 — Proof of concept | T01 chơi được: X tức thì, kéo X, chạm đôi mèo, X đỏ khóa, score; sprite mèo mặc định nhảy/sticker trên các vùng | Khóa Godot minor version, máy macOS/Xcode, Android/iPhone mục tiêu, số đo TECH-19/21 và QA-50, đo ngưỡng kéo/chạm đôi và bộ atlas |
+| M1 — Vertical slice | 4 level phát hành gốc đầu, tutorial, 5 màn + Result thua, save, hint, 6 màu tạm; bắt đầu fixture/chứng minh S3 | Người mới hiểu cử chỉ; QA core/save/hint và UI cơ bản qua; fixture không tính vào 4; quyết định S3 có đủ triển vọng cho M2 |
+| M2 — Content complete | 24 level order1..24 gồm mốc 10/20, art/sprite/audio gốc | `--release` qua, từng level có lượt giải không xem nghiệm, tutorial bám level thật; 10 người playtest và sửa điểm kẹt. Nếu dùng S3, nâng schema/fixture/validator/hint/QA đồng bộ trước cổng này |
+| M3 — Release candidate | Build offline Android/iOS và báo cáo QA | Cổng tài liệu 07 đạt trên thiết bị đã chốt |
+
+Không gán lịch tuần trước khi có số đo M0/M1. Sprite 2D từ model gốc là pipeline đã chọn cho bản đầu; M0 tập trung đo bộ atlas thật và chất lượng chạm/kéo. Phaser chỉ là lựa chọn cho một prototype web 2D riêng; không tạo hai codebase sản xuất song song. Gói J có [câu lệnh giao agent](10-nghien-cuu-quy-tac-suy-luan.md#9-câu-lệnh-giao-cho-agent-nghiên-cứu-tiếp) và bắt đầu từ M1; gói K theo [kế hoạch meta và sinh level](11-ke-hoach-meta-va-sinh-level.md) sau MVP. Khi giao gói K, nêu rõ GDD 11, TECH-18/20/21 và QA-46/47/52/53.
+
+## 4. Definition of Done
+
+1. Ghi mã GR/UX/LV/TECH/ART và QA đã đáp ứng, kết quả kiểm thực tế, giới hạn còn lại.
+2. Core/gesture/UI/save dùng cùng action contract; chạm đôi có thể có X preview nhưng không lưu X trung gian hoặc hai lỗi; nét kéo lưu một batch.
+3. Mọi sửa schema/luật/điểm/order cập nhật tài liệu, fixture, validator/test và migration nếu đã có save phát hành.
+4. Asset/model/level có nguồn gốc rõ; ID/puzzle đã phát hành ổn định.
+5. Nội dung chưa có chứng minh S2, chưa qua playtest hoặc chưa đủ màu/vùng chạm N=12 ở kích thước thật không được đóng gói release.
+
+## 5. Quyết định còn mở
+
+| ID | Khi chốt | Nội dung |
+| --- | --- | --- |
+| O-01 | Trước art cuối | Tên phát hành, logo, bộ nhận diện gốc |
+| O-02 | M0 | Godot minor version, renderer mobile, thiết bị mục tiêu, atlas mèo mặc định và bộ màu/nhãn/họa tiết vùng, cửa sổ chạm đôi/ngưỡng kéo qua playtest |
+| O-03 | M1 | Cân bằng điểm 100/25, tốc độ feedback, nhịp 24 level theo người chơi |
+| O-04 | Sau bản đầu | Có phát hành N=7–12/S3–S5 hay không; cần màu, UX kích thước thật, validator và QA mới |
+| O-05 | Sau bản đầu | Công thức vàng, giá cứu lượt/giá từng mèo và khả năng cung cấp quảng cáo thưởng được thử trước khi cập nhật schema/save và mở wallet |
+| O-06 | Trước M2; sau bản đầu | Mốc 10/20 làm thủ công trước release; motif generator cho 30/40 về sau được duyệt qua level hợp lệ và playtest |
+| O-07 | M0; sau bản đầu | Chốt ngân sách atlas mèo và ngưỡng nạp cache trên máy thấp; chỉ mở chọn mèo sau khi QA-52 đạt. Runtime bake 3D nếu cần nhiều biến thể phải qua QA-51 riêng |
+</file>
+
+<file path="GDD/09-ra-soat-thiet-ke.md">
+# 09 — Rà soát thiết kế 0.4.2
+
+Luật chuẩn ở [02](02-luat-choi-va-trang-thai.md). Bảng này ghi quyết định sau [đánh giá lần 1](../design-reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md), [đánh giá lần 2](../design-reviews/02-danh-gia-ban-thiet-ke-v04.md) và góp ý ngày 2026-09-18. Nếu review gợi ý khác yêu cầu người dùng, quyết định ở bảng này là phiên bản cần triển khai.
+
+| Mã review | Quyết định | Tài liệu/QA liên quan |
+| --- | --- | --- |
+| REV-UX-01 | Một chạm đổi X **tức thì trên hình**; sau cửa sổ 280 ms mới commit. Giữ chạm/kéo đánh hoặc xóa X theo ô đầu, mỗi ô một lần. Hai chạm nhanh cùng ô hoàn tác preview và gọi một `TryCat`. | GR-09..14/29/30, UX-09..11/22/23, TECH-03/14, QA-08/09/12/43..45 |
+| REV-GD-01 | Bản đầu giữ **3 tim**, không Undo. `x_error` bị khóa đến Retry; gói cứu lượt sau MVP có ngoại lệ chỉ cho X đỏ của lần sai làm tim về 0, theo phiên bản session mới. | GR-13/16/17/19, [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-08/11/14/47 |
+| REV-GD-02 / REV-ECO-01 | Meta sau MVP: điểm thắng đổi vàng theo công thức thử nghiệm, wallet/ledger cấp một lần. Vàng chỉ dùng cứu lượt và mua mèo; hint/trợ giúp cơ bản miễn phí, không bán hint nâng cao bằng vàng. | [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-46/47/52 |
+| REV-GD-03 | Generator offline theo seed/ràng buộc/trace sau MVP; biên tập duyệt level mới. Mốc 10/20 được làm thủ công trước release đầu vì ID/puzzle bất biến; generator hỗ trợ mốc mới như 30/40, không có luật thắng bí mật. | LV-07, [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-48/49 |
+| REV-TECH-01 | Chọn Godot 4.x/GDScript, tạo hoạt ảnh trong 3D rồi **render sprite sheet 2D cho runtime**. M0 đo atlas/FPS/RAM/VRAM. | TECH-18/19, ART-06..11, QA-30/34 |
+| REV-TECH-02 | Ngưỡng chuyển kéo 12 điểm logic; chỉ ngón chính bắt đầu trong bàn, bỏ qua ngón phụ/chạm lòng bàn tay, nội suy đường kéo nhanh. | UX-22/23, TECH-03, QA-43..45 |
+| REV-TECH-03 | Giữ trần schema N=12; release đầu N≤6. **Không zoom/pan**; N lớn chỉ mở sau thử kích thước thật trên máy mục tiêu. | LV-01, UX-18, TECH-19, QA-27/35 |
+| REV-TECH-04 | Agent nghiên cứu chuyên trách đã đặc tả S3 giao thoa, S4 cặp khóa, S5 phản chứng và câu lệnh giao việc tiếp. Chưa bật S3–S5 cho schema v3/release; cần fixture/validator/hint/QA tương ứng. | [Nghiên cứu 10](10-nghien-cuu-quy-tac-suy-luan.md), QA-37..42 |
+| REV-TECH-05 | Mọi ô `cat` và hoạt ảnh dùng mèo đang chọn; màu vùng ở bàn/hàng tiến độ, không tô lông mèo theo vùng. Dùng lại gói clip đang chọn trong phiên, nạp khi cần và giới hạn cache. Một render 3D bằng `UPDATE_ONCE` chỉ tạo ảnh tĩnh; bake animation là spike tương lai. | GR-01..08, TECH-18/20/21, ART-12/13, QA-50..52 |
+| REV-GD-04 | Sau MVP, tim về 0 mở màn chờ cứu lượt: đủ vàng thì trả vàng, thiếu vàng có thể xem quảng cáo thưởng khi sẵn có, luôn có Retry miễn phí. Cứu thành công hồi 1 tim, xóa X đỏ cuối, giữ board và điểm phạt. Bản đầu vẫn theo GR-19. | [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-47/53 |
+| REV-META-01 | Vườn mèo chỉ là danh sách mèo đã mua bằng vàng để chọn mèo đang dùng. Không có Garden Lobby, petting, mèo tự về vườn sau level hoặc chọn theo mèo của ô đáp án. | [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), UX mở rộng, QA-52 |
+
+## Trạng thái thực tế
+
+- **Có:** GDD v0.4.2, schema level v3, bốn fixture level gốc kể cả N12 biên kỹ thuật, validator S2, vector/test tham chiếu cử chỉ; nghiên cứu S3–S5 và đặc tả meta/generator/chọn mèo.
+- **Chưa có:** game chạy được, 24 level phát hành, asset/model/sprite, script tutorial gắn level thật, số đo Android/iOS và playtest. Đây là công việc M0–M3.
+- **Rủi ro phải đo:** chạm đơn nhìn thấy X nhưng chạm đôi phải hoàn tác preview mượt; kéo qua đường nhanh phải phủ đủ ô, không nhận ngón phụ; N12 có schema nhưng có thể không đủ kích thước chạm ở màn nhỏ; atlas mèo và cache nhiều mèo có thể tốn RAM/VRAM. M0/M1 phải ghi số đo và video thao tác trên thiết bị thật.
+
+## Ranh giới bản quyền và thay đổi
+
+Giữ họ luật chung đã tham khảo; tên, màn, level, model, âm và sticker phải là tác phẩm gốc. Nếu đổi điểm, cử chỉ, schema hoặc tiến trình, sửa GDD/fixture/validator/QA trong cùng thay đổi; puzzle đã phát hành cần ID mới nếu đổi dữ liệu.
+
+Bản 0.4.2 đổi quy tắc **trình bày mèo** và đặc tả meta **chưa bật**; level schema v3, dữ liệu `levels.sample.json`, bốn trạng thái và tiến trình bản đầu không đổi. Vì vậy validator level không cần trường mèo/vàng/quảng cáo; QA-09/50 kiểm trình bày hiện hành, QA-46/47/52/53 là cổng riêng trước khi bật meta. Khi triển khai gói K phải thêm fixture/test cho session, progress và giao dịch cùng phiên bản save mới.
+</file>
+
+<file path="GDD/10-nghien-cuu-quy-tac-suy-luan.md">
+# 10 — Nghiên cứu quy tắc suy luận S3–S5
+
+**Trạng thái:** đặc tả nghiên cứu cho `REV-TECH-04`, chưa bật cho level phát hành. Nghiên cứu S3 bắt đầu từ M1; chỉ có thể dùng trong bản đầu nếu schema/fixture/validator/hint/QA được hoàn tất trước M2. Luật GR tại [02](02-luat-choi-va-trang-thai.md) vẫn là nguồn chuẩn; schema v3 và validator hiện chỉ chấp nhận trace S2. Tài liệu này đề xuất cách mở rộng có chứng cứ, không tự đổi luật hoặc cổng release.
+
+## 1. Mục tiêu và nguyên tắc
+
+S3 nên được triển khai trước để level có bước suy luận giao thoa mà người chơi nhìn và hiểu được. S4 mở rộng thành một cặp khóa. S5 chỉ là hướng nghiên cứu cho level khó sau này vì lời giải thích phản chứng dài dễ biến hint thành màn hình đọc chứng minh. Thứ tự ưu tiên: **S3 → S4 → S5**; mỗi kỹ thuật cần fixture, validator, hint và playtest trước khi dùng trong nội dung phát hành.
+
+Mô hình nền là mỗi hàng, cột và vùng chứa đúng một mèo, còn các cặp mèo không được kề chéo theo GR-01..04. Đây là dạng ràng buộc số lượng và khác nhau; [nghiên cứu gốc của Régin về `alldifferent`](https://s.aaai.org/Library/AAAI/1994/aaai94-055.php) là cơ sở cho ý tưởng nhóm ứng viên khóa, còn [nghiên cứu Demystify về lời giải thích Star Battle](https://ceur-ws.org/Vol-2894/short8.pdf) cho thấy cần phân biệt suy ra một nước đi với *giải thích được* nước đi ấy. Các công thức S3–S5 dưới đây được suy ra riêng cho luật Vườn Mèo, không chép level hay lời giải của trò khác.
+
+## 2. Ký hiệu và bất biến của bộ suy luận
+
+- `C` là tập N² ô. `U` là một đơn vị: một hàng, một cột hoặc một vùng. Mỗi `U` chứa đúng một mèo theo luật.
+- `K` là các mèo đã biết chắc: given và cat đúng đã đặt. Trong validator trace, `K` bắt đầu từ givens rồi nhận các kết luận S2 đã chứng minh.
+- `E` là tập ô **bị loại theo chứng minh** từ các bước S3/S4/S5 trước đó. `E` chỉ sống trong trạng thái solver và trace; không phải trạng thái ô thứ năm, không đồng nghĩa X hoặc `x_error` của người chơi.
+- `S1(K)` gồm mọi ô khác bị loại bởi một mèo trong `K` vì cùng hàng, cột, vùng hoặc kề chéo. `P = C \ (K ∪ S1(K) ∪ E)` là tập ứng viên còn lại. Với đơn vị chưa có mèo `U`, đặt `P(U) = P ∩ U`.
+- Trước và sau mọi bước trace, mọi đơn vị chưa có mèo phải có ít nhất một ứng viên; các mèo trong `K` không xung đột; `E ∩ K = ∅`. Bất biến này phát hiện trace sai hoặc level không nhất quán, không cho phép suy luận từ tiền đề rỗng.
+
+X và X đỏ là ghi chú/đánh dấu thao tác, **không** là tiền đề logic. Riêng X đỏ bị khóa theo quyết định `REV-GD-01`; nó vẫn không trở thành chứng cứ để solver/hint loại thêm ô. `solution` chỉ dùng kiểm nghiệm và đếm nghiệm độc lập; không được dùng để xác nhận một bước suy luận.
+
+## 3. S3 — khóa giao thoa hai đơn vị
+
+Chọn hai đơn vị chưa có mèo, khác loại, `U` (nguồn) và `V` (đích). Điều kiện:
+
+```text
+P(U) ≠ ∅  và  P(U) ⊆ V.
+```
+
+Vì mèo duy nhất của `U` phải nằm trong `V`, nó cũng là mèo duy nhất của `V`. Do đó loại **toàn bộ** `P(V) \ U` khỏi ứng viên. Bước S3 hợp lệ trong trace chỉ khi tập ô mới bị loại khác rỗng. Hướng thường dễ giải thích là vùng → hàng/cột; chiều ngược lại cũng đúng nếu điều kiện tập hợp thỏa. Không đủ nếu vùng *chỉ có vài ô hình học* giao với hàng: mọi ứng viên còn lại của vùng phải ở hàng ấy.
+
+**Ví dụ dương ở mức tập ứng viên:** vùng A chưa có mèo chỉ còn `(2,1)` và `(2,3)`, đều thuộc hàng 2. Hàng 2 còn ứng viên `(2,1)`, `(2,3)`, `(2,5)`. S3 loại `(2,5)`; không khẳng định mèo A ở `(2,1)` hay `(2,3)`. Nếu sau đó một đơn vị khác chỉ còn `(2,5)`, dữ liệu tiền đề đã mâu thuẫn và không được dùng ví dụ này làm fixture level.
+
+**Phản ví dụ:** A còn `(2,1)` và `(3,4)`. Dù A giao hàng 2 ở `(2,1)`, mèo A có thể ở `(3,4)`, nên không được loại `(2,5)` của hàng 2. Validator phải kiểm `P(A) ⊆ hàng 2` từ trạng thái hiện tại, không tin metadata “intersection” của người biên tập.
+
+## 4. S4 — cặp đơn vị khóa hai đơn vị
+
+Chọn `U1,U2` là hai đơn vị chưa có mèo, khác nhau **trong cùng một loại** (chẳng hạn hai vùng). Chọn `V1,V2` là hai đơn vị chưa có mèo, khác nhau trong cùng một loại khác (chẳng hạn hai hàng). Điều kiện:
+
+```text
+P(U1) ∪ P(U2) ⊆ V1 ∪ V2,
+và tồn tại một ghép một-một khả thi U1,U2 → V1,V2 theo các ứng viên.
+```
+
+Hai mèo nguồn phải khác nhau vì `U1,U2` rời nhau. Mỗi `V` chứa nhiều nhất một mèo, nên hai mèo ấy chiếm hết `V1,V2`. Loại toàn bộ `P(V1 ∪ V2) \ (U1 ∪ U2)`. Điều kiện ghép một-một giúp loại trường hợp tiền đề vốn vô nghiệm; nó có thể kiểm bằng tối đa hai hoán vị, chưa cần thư viện matching. Không suy ra vị trí chính xác hay mèo của `U1` thuộc `V1` nào. Đây là cặp khóa theo nguyên lý tập con của ràng buộc `alldifferent`, giới hạn hai nguồn để hint còn ngắn.
+
+**Ví dụ dương:** A còn `(1,0),(2,0)`, B còn `(1,4),(2,4)`; hai vùng là nguồn, hai hàng 1 và 2 là đích. Nếu hàng 1 còn `(1,5)` ngoài A/B, loại `(1,5)`; tương tự hàng 2. Đây là minh họa tập ứng viên, không phải fixture phát hành và chưa chứng minh có thể nhúng vào một level hợp lệ, liên thông, nghiệm duy nhất.
+
+**Phản ví dụ:** B còn thêm `(3,4)`. Khi đó một mèo nguồn có thể ở hàng 3, nên không được loại `(1,5)`. Phản ví dụ khác: cả A và B chỉ còn ứng viên trong hàng 1; không có ghép một-một với hàng 1/2, phải báo mâu thuẫn, không tạo hint S4.
+
+## 5. S5 — phản chứng ngắn, hoãn kích hoạt
+
+Giả sử một ứng viên chưa biết `q` là mèo trong một nhánh tạm. Chạy tối đa **ba** bước suy luận đã được kiểm riêng (S1 là loại trừ tự động; bước trace nhánh cho phép S2/S3/S4). Nếu nhánh dẫn tới một đơn vị chưa có mèo nhưng `P(U)=∅`, hoặc hai mèo đã biết xung đột trực tiếp, thì giả thiết sai: thêm `q` vào `E` ở nhánh thật. Không được dùng “solver chỉ tìm ra một nghiệm khác” hoặc `solution[q]=false` làm phản chứng. Phải lưu cây chứng cứ tuần tự đủ để người đọc lần theo.
+
+**Ví dụ trừu tượng:** giả sử `q`; S1 của `q` loại `u`, làm vùng B chỉ còn `v`; S2 buộc `v`; S1 của `v` loại hết ứng viên của vùng C. Kết luận `q` không thể là mèo. Ví dụ này chỉ mô tả dạng chứng cứ; fixture dương phải là một bàn hoàn chỉnh, nơi validator độc lập xác nhận mọi tọa độ và bước nhánh.
+
+**Phản ví dụ:** nhánh giả sử `q` còn ít nhất một nghiệm phù hợp luật thì tuyệt đối không loại `q`, kể cả khi nghiệm ấy khác `solution` khai báo hoặc khác hướng giải thích của biên tập viên. Nếu nhánh chạm giới hạn bước/thời gian mà chưa có mâu thuẫn, kết quả là “chưa chứng minh”, không phải “sai”.
+
+S5 có nguy cơ thành một cách đoán được ngụy trang. Chỉ nghiên cứu sau khi S3/S4 có mẫu hint đọc tốt trên điện thoại và playtest cho thấy người chơi hiểu được chuỗi tối đa ba bước. Có thể dùng solver đầy đủ làm *oracle kiểm thử độc lập* cho kết luận, nhưng bằng chứng hiển thị vẫn phải là nhánh cục bộ kể trên.
+
+## 6. Đề xuất proof trace và cách validator kiểm
+
+Schema v3 hiện chỉ có S2 đặt mèo. Khi thực sự bật S3+, cần nâng schema có version mới và đồng bộ `GDD/05`, fixture, validator, runtime, test; không thêm `rule: "S3"` vào JSON v3. Một dạng proof trace **đề xuất**, chưa là hợp đồng dữ liệu:
+
+```json
+{"rule":"S3","sources":[{"type":"region","id":"A"}],"targets":[{"type":"row","id":2}],"conclusion":{"type":"eliminate","cells":[[2,5]]},"textKey":"hint.lock.intersection"}
+{"rule":"S4","sources":[{"type":"region","id":"A"},{"type":"region","id":"B"}],"targets":[{"type":"row","id":1},{"type":"row","id":2}],"conclusion":{"type":"eliminate","cells":[[1,5],[2,5]]},"textKey":"hint.lock.pair"}
+{"rule":"S5","assume":[1,3],"branchTrace":[{"rule":"S2","focus":{"type":"region","id":"B"},"conclusion":{"type":"place","r":2,"c":4}}],"contradiction":{"type":"emptyUnit","unit":{"type":"region","id":"C"}},"conclusion":{"type":"eliminate","cells":[[1,3]]},"textKey":"hint.short.contradiction"}
+```
+
+Các dòng trên là **hình dạng minh họa**, không được nạp trực tiếp làm level. Chi tiết tên khóa, serialization của đơn vị và giới hạn nhánh cần chốt cùng runtime. Validator phải làm tuần tự:
+
+1. Dựng `K` từ givens, `E=∅`, tính S1 từ luật và topology; không đọc X/X đỏ hay `solution` để tính ứng viên.
+2. Với mỗi S3/S4, kiểm loại đơn vị, tình trạng chưa có mèo, điều kiện tập hợp và ghép cặp; tự tính **tập ô mới bị loại đầy đủ**, so đúng với `conclusion.cells` đã sắp thứ tự, cấm no-op và trùng lặp.
+3. Với mỗi S5, clone `K,E`, thêm giả thiết `q`, kiểm từng bước nhánh theo cùng bộ quy tắc, xác nhận mâu thuẫn được nêu trong giới hạn độ sâu. Chỉ thêm `q` vào `E` của nhánh thật; không để rò các loại trừ tạm.
+4. Với mỗi S2, dựng lại `P(focus)` sau S1 và `E`, yêu cầu đúng một ứng viên, rồi thêm mèo vào `K`. Kiểm kết luận không trùng/khác given và không xung đột.
+5. Kết thúc phải đủ N mèo. Bộ đếm nghiệm độc lập vẫn xác nhận nghiệm duy nhất nhưng không thay thế proof trace.
+
+Một phép kiểm phụ dùng brute force trên bàn nhỏ: với mọi bước loại ô, mọi hoàn chỉnh hợp luật từ *trạng thái trước bước* phải để ô đó trống. Kiểm này bắt lỗi hiện thực hóa, nhưng phép kiểm chính vẫn là tiền đề cục bộ, vì nghiệm duy nhất có thể khiến một bước suy luận không hợp lệ trông như đúng.
+
+## 7. Hợp đồng hint và thứ tự giải thích
+
+Hint runtime khởi tạo từ given + cat đúng hiện có, tính lại S1 và các bước S3/S4 trên trạng thái ấy; không dùng con trỏ trace và không lấy X/X đỏ làm sự thật. Ưu tiên **S2 trực tiếp**, rồi chuỗi ngắn **S3 → S2**, sau đó **S4 → S2**; S5 đứng cuối nếu sau này được duyệt. Trong cùng cấp, chọn chuỗi ít ô/đơn vị cần tô sáng nhất, rồi phá hòa theo `(loại đơn vị, id, tọa độ)` để hint lặp cho kết quả ổn định. Một hint có thể hiển thị bước loại trước và bước đặt sau trong hai khung nối tiếp, nhưng không tự ghi X hay đặt mèo.
+
+Nếu chuỗi chưa đưa tới một vị trí mèo, chỉ trình bày một bước loại có ích cùng các ô liên quan; nghiên cứu UX xem người chơi có hiểu và tự ghi X được không. Với S3, câu mẫu: “Mèo vùng A chỉ có thể ở hàng 3, nên các ô còn lại của hàng 3 ngoài vùng A không có mèo.” Với S4: “Hai mèo của A và B nằm trong hai hàng 2–3; hai hàng này không còn mèo ngoài A/B.” Với S5, chia lời giải thích thành giả sử → từng bước → mâu thuẫn → loại giả sử. Hàng/cột nói theo tọa độ UI 1-based. Khi X che ô kết luận đặt mèo, nhắc chạm đôi trực tiếp trên X; X đỏ không thể là ô nghiệm ở level hợp lệ. Không dùng ghi chú ấy làm lý do suy luận.
+
+Không quảng cáo một level là “giải được bằng S3” nếu chỉ có thể suy ra bằng cách xem nghiệm, nếu hint cần quá nhiều khung, hoặc nếu người chơi thử mò mèo nhanh hơn hiểu lời giải. Độ khó nên đo từ đường chứng cứ ngắn nhất và playtest, không chỉ đếm số bước.
+
+## 8. Fixture, QA và cổng bật quy tắc
+
+| Mã QA đề xuất | Kiểm tra trước khi bật |
+| --- | --- |
+| QA-37 | Fixture S3 dương: có bước loại mới và S2 sau đó; đảo một ứng viên nguồn ra ngoài đơn vị đích thì validator từ chối; cùng dữ liệu với X/X đỏ khác nhau cho cùng hint. |
+| QA-38 | Fixture S4 dương có ghép cặp và loại mới; thêm ứng viên vào đơn vị đích thứ ba hoặc làm mất ghép cặp thì từ chối. |
+| QA-39 | Fixture S5 dương có nhánh ≤3 bước đến mâu thuẫn; thiếu bước, kết luận sai, nhánh còn nghiệm hoặc timeout đều từ chối; trạng thái nhánh không rò ra board thật. |
+| QA-40 | Trace trộn S2/S3/S4 theo thứ tự bất kỳ nhưng hợp lệ được nhận; đảo bước làm tiền đề chưa có, no-op, ô loại trùng, dùng `solution` hoặc ghi chú làm chứng cứ đều bị chặn. |
+| QA-41 | Hint khi người chơi đặt mèo đúng khác thứ tự trace vẫn có bằng chứng hiện hành; đọc được trên màn nhỏ, giảm chuyển động/trình đọc màn hình; hint không tự đặt mèo/X. |
+| QA-42 | N=12: kiểm ngân sách solver, validator trace và hint trên thiết bị mục tiêu; timeout là thất bại/cần biên tập, không là nghiệm duy nhất hoặc bằng chứng hợp lệ. |
+
+Lộ trình: (1) viết bộ mẫu nhỏ dương/âm độc lập và chứng minh tay; (2) tìm hoặc sinh **level gốc** có bước S3 thật, nghiệm duy nhất, vùng liên thông; (3) triển khai checker S3 + property test với brute force; (4) thiết kế hint, thử với người chơi; (5) nâng schema/fixture/GDD/QA cùng một thay đổi rồi mới cho content dùng S3; (6) lặp quy trình riêng cho S4, sau đó mới cân nhắc S5. Giữ release hiện tại ở S2 cho tới khi mỗi cổng tương ứng đạt.
+
+## 9. Câu lệnh giao cho agent nghiên cứu tiếp
+
+```text
+Bạn là agent phụ trách quy tắc suy luận của Vườn Mèo. Đọc GDD/README.md,
+02-luat-choi-va-trang-thai.md, 04-thiet-ke-level.md,
+05-kien-truc-va-du-lieu.md, 07-kiem-thu-va-tieu-chi-nghiem-thu.md,
+10-nghien-cuu-quy-tac-suy-luan.md và design-reviews/README.md.
+Nghiên cứu và triển khai lần lượt S3 rồi S4; chỉ nghiên cứu S5 khi có bằng chứng
+hint dễ hiểu. Với mỗi quy tắc, giao: (1) định nghĩa hình thức và phản ví dụ,
+(2) proof trace tuần tự không dựa vào nghiệm/X/X đỏ, (3) fixture level gốc
+dương/âm có nghiệm duy nhất và vùng liên thông, (4) validator và unit/property
+tests, (5) hint có giải thích đọc được trên màn nhỏ và hỗ trợ accessibility,
+(6) mã QA cùng kết quả đo. Không bật level phát hành dùng quy tắc mới trước khi
+GDD, schema version, dữ liệu mẫu, validator, runtime hint và QA được cập nhật
+đồng bộ; chạy python GDD/tools/validate_levels.py GDD/data/levels.sample.json.
+Nêu rõ giới hạn, timeout và các ca chưa chứng minh. Không sao chép level/asset
+của game tham chiếu.
+```
+</file>
+
+<file path="GDD/11-ke-hoach-meta-va-sinh-level.md">
+# 11 — Kế hoạch meta và sinh level sau MVP
+
+**Trạng thái:** đặc tả mở rộng sau MVP cho REV-ECO-01/REV-GD-04/REV-META-01; chưa là luật bản đầu. Luật điểm, tim, hint và tiến trình hiện hành ở [02](02-luat-choi-va-trang-thai.md); schema level v3/progress v2 chưa có wallet hoặc metadata generator. Công thức cấp vàng, giá cứu lượt và giá mèo phải được chốt bằng playtest trước khi bật.
+
+## 1. Mục tiêu và thứ tự
+
+1. Phát hành puzzle gốc với 3 tim, điểm GR-18, hint/trợ giúp hiện hành và tiến trình tuyến tính.
+2. Sau khi có số liệu hoàn thành level, thêm vàng như phần thưởng thành tích; vàng dùng để cứu lượt khi hết tim và mua mèo trong bộ sưu tập. Hint và luật cơ bản vẫn miễn phí, nên thiếu vàng không chặn giải level.
+3. Vườn mèo là danh sách mèo đã mua bằng vàng. Người chơi chọn một mèo đã mua làm ngoại hình/hoạt ảnh đang dùng, hoặc quay lại mèo mặc định; không xây sân vườn mô phỏng, petting, trang trí hay mèo tự cấp khi thắng level.
+4. Biên tập level mốc 10/20 trong 24 level đầu. Sau MVP, dùng công cụ sinh level **offline** để đề xuất ứng viên cho level mới và mốc 30/40 trở đi, có biên tập viên duyệt. Mốc đặc biệt không đổi luật GR.
+
+## 2. Vàng, cứu lượt và bộ sưu tập: đặc tả đề xuất
+
+Điểm cuối lượt thắng vẫn tính `score = max(0, 100 × correctPlacedCount − 25 × mistakeCount)`. Đề xuất cấp `gold = floor(score / 50)` **một lần cho lần thắng đầu của mỗi level**. Lượt thua cấp 0; chơi lại sau này không cấp vàng lần nữa. Ví dụ thắng N=6, không given, 0 lỗi → 600 điểm → 12 vàng; 1 lỗi → 575 điểm → 11 vàng. Công thức/giá cần kiểm trên tập level thật và có thể đổi **trước khi phát hành wallet**, cùng version kinh tế rõ ràng.
+
+Wallet dùng số nguyên không âm và ledger bất biến: `grantId = level:<id>:first_clear`, `spendId` duy nhất cho giao dịch, `economyVersion`, số dư. Grant và cập nhật progress phải nguyên tử hoặc có cơ chế phát lại idempotent sau crash; không thể vừa hiện nhận vàng vừa mất giao dịch. Khi cập nhật từ bản cũ, backfill các level đã thắng theo `results` đúng một lần, với quy tắc version cố định và biên bản migration. Không tính vàng từ X/hint/tốc độ chưa được chốt.
+
+| Nội dung tương lai | Giá | Ranh giới thiết kế |
+| --- | ---: | --- |
+| Cứu lượt khi tim về 0 | Chốt sau playtest | Hồi 1 tim và đưa riêng ô `x_error` của lần sai cuối về `empty`; giữ nguyên các ô khác, điểm, số lỗi, hint và thời gian |
+| Mua mèo trong bộ sưu tập | Chốt theo từng `appearanceId` | Sở hữu vĩnh viễn, chọn mèo để đổi hình và hoạt ảnh; không đổi nghiệm hoặc cơ hội thắng |
+
+Hint S2 và trang luật không dùng vàng, không có vật phẩm/hint trả phí trong phạm vi này. UI phải hiện giá, số dư và tác dụng trước khi xác nhận chi. Mua mèo và cứu lượt có `spendId` riêng, xử lý idempotent; mở lại màn, chạm lặp hoặc crash không được trừ hai lần. Không trừ vàng nếu giao dịch hoặc lưu session thất bại. Cân bằng phải kiểm cả người chơi thắng điểm thấp, vì vàng kiếm từ điểm có thể ít nhất ở nhóm cần cứu lượt nhiều nhất.
+
+Khi tim về 0, phiên chuyển sang **chờ quyết định cứu lượt** và khóa bàn, chưa ghi kết quả thua cuối cùng. Người chơi có thể: (1) trả vàng nếu đủ số dư; (2) nếu không đủ vàng, xem quảng cáo thưởng khi dịch vụ có sẵn; hoặc (3) bỏ qua và Thử lại miễn phí trên cùng level. Chỉ khi trừ vàng thành công **hoặc** nhận xác nhận xem quảng cáo thưởng hợp lệ mới hồi đúng 1 tim, xóa X đỏ của **lần sai vừa làm tim về 0** và trở lại `Playing` trên board cũ. Các X đỏ trước đó vẫn khóa; `mistakeCount` và phạt điểm của lần sai cuối vẫn giữ. Nếu quảng cáo bị hủy, lỗi, không có mạng hoặc không có quảng cáo, phiên vẫn ở màn chờ quyết định với nút Thử lại dùng được. Không tự tiêu vàng, không tự phát quảng cáo và không cấp tim khi khôi phục app.
+
+Trạng thái chờ, tọa độ ô sai cuối và ID giao dịch phải lưu bền vững trước khi hiện lựa chọn. Chi vàng và chuyển session về `Playing` cần cùng một giao dịch khôi phục được sau crash; xác nhận thưởng quảng cáo cũng cần ID duy nhất để không cấp lặp. Tích hợp quảng cáo chỉ thuộc bản mở rộng có SDK/mạng và đánh giá riêng về riêng tư, nền tảng, khả năng sẵn có; bản đầu vẫn chơi offline hoàn toàn. Khi không thể xem quảng cáo, Retry miễn phí luôn là đường tiếp tục. Đây là thay đổi state/save tương lai, **không áp dụng GR-17/19 của bản đầu** cho đến khi migration, fixture hành vi và QA-47/53 được triển khai cùng nhau.
+
+## 3. Công cụ sinh level offline
+
+Generator nhận `seed`, `generatorVersion`, cỡ N, nhịp khó mục tiêu và bộ motif biên tập. Một lần chạy cho ra nhiều ứng viên **chưa phát hành**. Pipeline đề xuất:
+
+1. Sinh hoán vị vị trí mèo thỏa hàng/cột/không chạm chéo.
+2. Phân vùng N miền liên thông, mỗi miền chứa đúng một mèo nghiệm; kiểm diện tích và độ đọc hình vùng.
+3. Chọn givens và bố trí vùng để tạo một nghiệm duy nhất; đếm nghiệm độc lập với nghiệm gốc.
+4. Tìm trace hợp lệ bằng tập quy tắc **đã được bật** (hiện S1/S2); nếu cần đoán thì loại hoặc chỉnh ứng viên. Khi S3+ đã qua [cổng nghiên cứu](10-nghien-cuu-quy-tac-suy-luan.md), mới cho phép chúng trong generator/trace.
+5. Tính chỉ số: số bước chứng minh, số focus thay thế, số givens, hình vùng trùng dưới xoay/lật, độ khó đọc và thời gian solver. Loại ứng viên trùng hoặc vượt ngân sách.
+6. Biên tập viên giải không nhìn nghiệm, chọn/điều chỉnh; chạy `validate_levels.py --release` trên campaign và playtest. Chỉ level đã duyệt mới nhận ID/order phát hành bất biến.
+
+“Quy luật ẩn” ở đây là **mẫu thiết kế nội dung**, như đối xứng vùng, vùng hẹp/rộng xen kẽ, thứ tự loại trừ hoặc chuỗi S3 về sau. Người chơi không phải đoán một luật thắng bí mật. Metadata seed/motif/version nằm ở hồ sơ biên tập; chỉ thêm vào JSON runtime nếu có nhu cầu và migration được duyệt. Không để kết quả ngẫu nhiên runtime thay thế level đã kiểm chứng.
+
+## 4. Level mốc 10/20 và các mốc tiếp theo
+
+Mỗi mốc có một motif hình ảnh riêng, sticker riêng và một khoảnh khắc suy luận nổi bật trong tập quy tắc đã học. `order=10` là tổng kết kỹ năng đầu; `order=20` là thử thách tổng hợp trước chặng cuối. Cả hai được **biên tập thủ công trước release đầu** vì generator chưa có và ID/puzzle đã phát hành bất biến. Chúng vẫn có 3 tim, cùng bốn trạng thái và cùng điều kiện thắng; không ép motif làm hỏng puzzle. Sau MVP, generator có thể đề xuất các mốc mới như `30,40`, hoặc hỗ trợ 10/20 **chỉ nếu nội dung đầu chưa phát hành**. Không thay 10/20 của người chơi đã hoàn thành để đưa level sinh tự động vào.
+
+## 5. Cổng triển khai
+
+| Giai đoạn | Đầu ra | Cổng QA |
+| --- | --- | --- |
+| Meta prototype | Bảng tính mô phỏng điểm→vàng, giá cứu lượt và giá mèo trên 24 level với nhiều nhóm người chơi | Không có level nào yêu cầu mua để tiến; hint và Retry miễn phí; giá/công thức được chốt bằng dữ liệu |
+| Wallet và bộ sưu tập | Version progress mới, ledger, migration/backfill, danh sách mèo mua và lựa chọn hiện hành | QA-46/52; crash, cấp/mua trùng và số dư âm đều được xử lý |
+| Cứu lượt và quảng cáo thưởng | Version session mới, trạng thái chờ quyết định, giao dịch cứu lượt và adapter quảng cáo có fallback | QA-47/53; không mất board, không cấp/trừ trùng, Retry miễn phí khi quảng cáo vắng mặt |
+| Generator prototype | Seed/version tái tạo, báo cáo ứng viên, fixture level gốc, kiểm trùng/trace | QA-48 và QA-01..07/32/35; timeout không được coi là hợp lệ |
+| Mốc đặc biệt bản đầu | Level order10/20 duyệt người, motif/sticker, playtest trước release | QA-49/36; không đổi GR, vẫn đọc được và không cần đoán |
+| Mốc đặc biệt về sau | Ứng viên order30/40 hoặc các mốc chưa phát hành từ generator offline | QA-48/49; không thay ID/puzzle cũ |
+
+## 6. Bộ sưu tập và chọn mèo sau MVP
+
+`appearanceId` định danh ngoại hình mèo; `assetVersion` định danh clip đóng gói. Mèo mặc định luôn có sẵn để có lựa chọn ban đầu và nút quay về riêng; **danh sách Vườn mèo chỉ gồm các mèo đã mua bằng vàng**, không tự cấp mèo khi thắng level. Danh sách có ảnh xem trước, trạng thái đang chọn và nút chọn; mèo chưa mua chỉ có thể xuất hiện trong danh mục mua. Không có sân vườn mô phỏng hoặc tương tác petting trong phạm vi này.
+
+`selectedAppearanceId` quyết định hình mèo trên **mọi ô `cat`, gồm given và ô người chơi đặt**, cùng hoạt ảnh đúng/sai/thắng/thua phù hợp. Mèo trên ô đáp án không có giống riêng theo ô hoặc theo vùng; level JSON không gán `appearanceId` cho ô. Vùng A–L vẫn được nhận diện bằng nền, viền, nhãn và họa tiết của ô/hàng tiến độ, độc lập với màu lông và clip của mèo được chọn. Đổi mèo chỉ đổi cách trình bày; không thay nghiệm, trạng thái ô, tim, điểm hay `puzzleHash`.
+
+Khi tính năng bật, nâng `progressVersion` và thêm `purchasedAppearanceIds`, `selectedAppearanceId` với migration: người chơi cũ dùng mèo mặc định và danh sách mua ban đầu rỗng; `selectedAppearanceId` phải là ID mặc định hoặc thuộc danh sách đã mua. Mua mèo bằng vàng dùng ledger idempotent của §2 và ghi quyền sở hữu cùng giao dịch; mua lại không trừ tiền. ID asset không có hoặc lỗi nạp hiển thị mèo mặc định mà không mất quyền sở hữu. Session/level schema không chứa lựa chọn mèo. Việc đổi mèo được ghi bền vững trước khi UI báo “đã chọn”; asset manager nạp clip mới và đổi presenter khi sẵn sàng, không reset bàn đang chơi.
+
+Một hình render tĩnh một lần chỉ dùng cho chân dung/sticker. Hoạt ảnh cần nhiều frame; phương án mặc định là bộ sprite đã render offline **theo từng mèo**, tải và dùng lại khi mèo đó đang được chọn. Màu vùng nằm trên bàn/hàng tiến độ, nên không cần nhân clip theo 6/12 vùng hoặc tô màu mèo theo vùng. Giới hạn cache theo ngân sách thiết bị; gói mèo cũ có thể được giải phóng sau khi đổi. Nhánh bake 3D theo yêu cầu dành cho nhiều biến thể ngoại hình sẽ được thử riêng theo [TECH-21](05-kien-truc-va-du-lieu.md) và QA-51 trước khi thành tính năng.
+</file>
+
+<file path="GDD/README.md">
+# GDD — Vườn Mèo (tên tạm)
+
+**Phiên bản:** 0.4.2 · **Ngày:** 2026-09-18 · **Trạng thái:** đặc tả để triển khai, chưa có game chạy được.
+
+## Đọc theo thứ tự
+
+| Tài liệu | Vai trò |
+| --- | --- |
+| [01-tam-nhin-va-pham-vi.md](01-tam-nhin-va-pham-vi.md) | Sản phẩm, phạm vi, điểm, tiến trình level |
+| [02-luat-choi-va-trang-thai.md](02-luat-choi-va-trang-thai.md) | **Nguồn chuẩn của luật GR** và thao tác ô |
+| [03-luong-man-hinh-va-ux.md](03-luong-man-hinh-va-ux.md) | Luồng màn hình, chạm/kéo/chạm đôi, kết quả, tutorial |
+| [04-thiet-ke-level.md](04-thiet-ke-level.md) | Suy luận, biên tập và duyệt level |
+| [05-kien-truc-va-du-lieu.md](05-kien-truc-va-du-lieu.md) | Chọn engine, schema, API, save và cache asset mèo |
+| [06-my-thuat-va-am-thanh.md](06-my-thuat-va-am-thanh.md) | Mèo đang chọn độc lập với màu vùng, sprite từ model 3D, sticker, âm thanh |
+| [07-kiem-thu-va-tieu-chi-nghiem-thu.md](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | Ca QA và cổng phát hành |
+| [08-ke-hoach-trien-khai-cho-agent.md](08-ke-hoach-trien-khai-cho-agent.md) | Gói việc và mốc triển khai |
+| [09-ra-soat-thiet-ke.md](09-ra-soat-thiet-ke.md) | Quyết định cho từng mã review từ bản 0.3 |
+| [10-nghien-cuu-quy-tac-suy-luan.md](10-nghien-cuu-quy-tac-suy-luan.md) | Nghiên cứu S3+; chưa bật trong release |
+| [11-ke-hoach-meta-va-sinh-level.md](11-ke-hoach-meta-va-sinh-level.md) | Kế hoạch vàng, cứu lượt, bộ sưu tập mèo và sinh level sau MVP |
+| [data/levels.sample.json](data/levels.sample.json) | Fixture kỹ thuật, không thuộc nội dung phát hành |
+| [data/interactions.sample.json](data/interactions.sample.json) | Vector hành vi chạm/kéo và ô khóa cho prototype |
+| [tools/validate_levels.py](tools/validate_levels.py) | Validator schema v3, nghiệm, trace S2 và thứ tự release |
+
+## Các quyết định hiện hành
+
+| ID | Quyết định |
+| --- | --- |
+| D-01 | Một dãy level liên tiếp. Bản đầu 24 level gốc, thứ tự `1..24`, bàn N=4–6. Sau này có thể mở tới N=12 vùng/mèo/màu khi UI, solver, asset và QA đạt cổng riêng. Không có chương hoặc màn chọn level. |
+| D-02 | Bản đầu dùng S1/S2 và trace được kiểm. S3–S5 chờ validator/hint/QA giải thích đầy đủ. |
+| D-03 | Ô có đúng bốn trạng thái `empty`, `x`, `x_error`, `cat`. Một chạm đổi X/empty; hai chạm cùng ô xác nhận mèo. Sai thành `x_error`, mất một trong ba tim. |
+| D-04 | Một chạm hiện X/xóa X ngay bằng preview và xác nhận sau cửa sổ chạm đôi; giữ và rê sẽ tô/xóa X theo trạng thái ô đầu. Chạm đôi cùng ô hủy preview rồi thử mèo. X đỏ/cat khóa thao tác; không Undo. |
+| D-05 | Màn chơi có điểm cấp level, hàng N chỉ báo tiến độ theo màu/nhãn/họa tiết vùng, hint và trợ giúp. Chỉ level hiện tại được chơi; thắng chuyển sang level kế, thua cho Retry miễn phí. |
+| D-06 | Godot 4.x/GDScript cho game 2D; tạo model/animation mèo 3D gốc rồi xuất **một bộ sprite cho mỗi mèo**. Mọi ô `cat` và hoạt ảnh dùng mèo đang chọn, bản đầu là mèo mặc định; màu vùng nằm ở nền/viền/nhãn, không tô mèo theo vùng. Không dùng SubViewport 3D runtime trong bản đầu. |
+| D-07 | Offline Android/iOS, tiếng Việt đầu tiên, không tài khoản/SDK quảng cáo hoặc analytics mạng trong bản đầu. Asset, level và câu chữ gốc. |
+| D-08 | Giữ 3 tim và phạt điểm; X đỏ là kết quả sai cố định đến Retry, không thể xóa/đặt lại, không Undo. |
+| D-09 | Mốc level 10/20 được biên tập trước release đầu. Vàng dùng để cứu lượt khi hết tim và mua mèo; thiếu vàng có thể xem quảng cáo thưởng để cứu lượt khi dịch vụ sẵn có, Retry vẫn miễn phí. Ví vàng, quảng cáo và sinh level mới/mốc 30/40 là kế hoạch sau MVP; hint cơ bản vẫn miễn phí. |
+| D-10 | Vườn mèo về sau chỉ là danh sách mèo đã mua bằng vàng để chọn mèo đang dùng; không có sân vườn tương tác hay mèo tự mở khi thắng. Tải gói mèo đang chọn khi cần, dùng lại trong phiên và thu hồi gói cũ theo ngân sách RAM/VRAM. Render 3D một lần chỉ phù hợp ảnh tĩnh; bake clip lúc đổi mèo là spike riêng. |
+
+`GR` trong tài liệu 02 là luật chuẩn. Thay đổi luật, schema, thứ tự tiến trình hoặc cách tính điểm phải sửa GDD, fixture, validator/test và QA cùng thay đổi. Nội dung puzzle của ID đã phát hành không được đổi âm thầm.
+
+## Nguồn đối chiếu
+
+Luật nền được đối chiếu với mô tả chính thức của [Meowdoku trên Google Play](https://play.google.com/store/apps/details?id=com.oakever.meowdoku) và [App Store](https://apps.apple.com/us/app/meowdoku/id6761760135). Lựa chọn engine dựa trên [tài liệu Phaser](https://docs.phaser.io/) và [AnimatedSprite2D của Godot](https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html). Dự án không dùng tên, level, giao diện, nhân vật hoặc asset của game tham chiếu.
+
+## Kiểm tra fixture
+
+Từ thư mục gốc: `python GDD/tools/validate_levels.py GDD/data/levels.sample.json` và `python -m unittest discover GDD/tools -p "test_*.py"`. Cờ `--release` dùng khi có đủ 24 level campaign, thứ tự `1..24`. Fixture `T01/E01/E02/N12` không tính vào số này.
+</file>
+
+<file path="AGENTS.md">
+# Hướng dẫn cho coding agent
+
+1. Đọc [GDD/README.md](GDD/README.md) trước khi triển khai. Luật chuẩn nằm ở [GDD/02-luat-choi-va-trang-thai.md](GDD/02-luat-choi-va-trang-thai.md); các gói việc nằm ở [GDD/08-ke-hoach-trien-khai-cho-agent.md](GDD/08-ke-hoach-trien-khai-cho-agent.md).
+2. Đọc các phản biện và kiến nghị kỹ thuật tại [design-reviews/README.md](design-reviews/README.md) trước khi bắt đầu các gói việc.
+3. Khi nhận gói việc, nêu mã yêu cầu GDD và mã QA sẽ đáp ứng. Dùng `GDD/data/levels.sample.json` làm fixture ban đầu.
+3. Nếu đổi luật, schema dữ liệu hoặc tiến trình mở khóa, cập nhật GDD, dữ liệu mẫu và kiểm thử liên quan trong cùng thay đổi. Không tự thay đổi âm thầm.
+4. Chạy `python GDD/tools/validate_levels.py GDD/data/levels.sample.json` sau khi sửa dữ liệu level. Level dùng S3–S5 cần mở rộng validator trace trước khi phát hành.
+5. Tạo asset và level gốc; không sao chép tên thương mại, ảnh, âm thanh, giao diện hoặc level của Meowdoku.
+
+@C:\Users\khoat\.codex\RTK.md
+</file>
+
+<file path="README.md">
+# Vườn Mèo — thiết kế game giải đố
+
+Repository hiện chứa [GDD v0.4.1](GDD/README.md), fixture và validator, chưa có game chạy được. Thiết kế hiện hành: **một dãy 24 level**, bàn 4×4–6×6 ở bản đầu; một chạm hiện/ẩn X tức thì, kéo đánh/xóa X theo ô đầu, hai chạm nhanh cùng ô thử mèo. Ô có `empty`, `x`, `x_error`, `cat`; X đỏ khóa đến Retry, giữ 3 tim và không Undo. Thắng đi tới level kế, không có chương hoặc màn chọn level. Schema/validator chuẩn bị nhãn và bàn tới N=12 cho đợt mở rộng có kiểm thử riêng, không dùng zoom/pan.
+
+Luật chuẩn: [GDD/02-luat-choi-va-trang-thai.md](GDD/02-luat-choi-va-trang-thai.md). Hướng Godot 2D với sprite từ model 3D, mặt nạ màu vùng và cache giống mèo: [GDD/05-kien-truc-va-du-lieu.md](GDD/05-kien-truc-va-du-lieu.md). Lộ trình: [GDD/08-ke-hoach-trien-khai-cho-agent.md](GDD/08-ke-hoach-trien-khai-cho-agent.md). Nghiên cứu S3–S5 và kế hoạch vàng/sinh level/mở khóa giống lần lượt ở [GDD/10](GDD/10-nghien-cuu-quy-tac-suy-luan.md) và [GDD/11](GDD/11-ke-hoach-meta-va-sinh-level.md).
+
+Từ thư mục gốc, kiểm fixture và test validator:
+
+```text
+python GDD/tools/validate_levels.py GDD/data/levels.sample.json
+python -m unittest discover GDD/tools -p "test_*.py"
+```
+
+Cờ `--release` chỉ dùng cho bộ 24 level phát hành gốc; bốn fixture hiện tại không thuộc bộ đó. Tên “Vườn Mèo” là tên tạm; Godot 4.x/GDScript và pipeline sprite 2D cần được xác nhận bằng prototype và đo trên thiết bị thật ở M0.
+</file>
+
+</files>
