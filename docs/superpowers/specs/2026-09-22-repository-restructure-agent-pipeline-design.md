@@ -1,44 +1,44 @@
-# Repository Restructure and Agent Pipeline Design
+# Thiết kế tái cấu trúc repository và pipeline làm việc cho agent
 
-**Date:** 2026-09-22  
-**Project:** ASOL-Game-02  
-**Status:** Approved conversational design; awaiting written-spec review  
-**Scope:** Repository organization, document authority, local work-package pipeline, Git baseline, and safe folder rename
+**Ngày:** 2026-09-22  
+**Dự án:** ASOL-Game-02  
+**Trạng thái:** Thiết kế hội thoại đã được duyệt; đang chờ duyệt bản đặc tả thành văn  
+**Phạm vi:** Tổ chức repository, thẩm quyền tài liệu, pipeline work package cục bộ, baseline Git và đổi tên thư mục an toàn
 
-## 1. Purpose
+## 1. Mục đích
 
-Restructure the design-only project into a professional repository that a human or any coding agent can understand and operate without relying on Codex-specific skills, external issue trackers, or undocumented conventions.
+Tái cấu trúc dự án hiện chỉ có tài liệu thiết kế thành một repository chuyên nghiệp mà con người hoặc bất kỳ coding agent nào cũng có thể đọc hiểu và vận hành, không phụ thuộc vào skill riêng của Codex, dịch vụ quản lý issue bên ngoài hoặc quy ước không được ghi thành văn.
 
-Success means:
+Thành công có nghĩa là:
 
-- Canonical design, governance, active reviews, historical records, work contracts, and execution evidence have visibly different locations and authority.
-- A human assigns one explicit work-package ID; an agent cannot self-claim unrelated work.
-- The repository can validate package metadata, dependencies, requirement/QA references, internal links, path scope, verification evidence, and handoff completeness using Python standard library only.
-- Existing GDD validation continues to pass.
-- Historical material remains recoverable while generated caches and duplicate artifacts are removed.
-- The final project directory is `D:\Work\Alpaca_Solution\ASOL-Game-02`.
+- Thiết kế canonical, governance, review hiện hành, hồ sơ lịch sử, hợp đồng công việc và bằng chứng thực thi nằm ở những vị trí có vai trò và thẩm quyền tách biệt rõ ràng.
+- Con người giao đúng một mã work package; agent không được tự nhận công việc không liên quan.
+- Repository có thể kiểm tra metadata của package, dependency, tham chiếu requirement/QA, link nội bộ, phạm vi đường dẫn, bằng chứng kiểm chứng và mức độ hoàn chỉnh của handoff chỉ bằng Python standard library.
+- Các kiểm tra GDD hiện có tiếp tục chạy đạt.
+- Tài liệu lịch sử độc nhất vẫn có thể khôi phục, còn cache sinh tự động và artifact trùng được loại bỏ.
+- Thư mục dự án cuối cùng là `D:\Work\Alpaca_Solution\ASOL-Game-02`.
 
-## 2. Constraints and Non-goals
+## 2. Ràng buộc và ngoài phạm vi
 
-### Constraints
+### Ràng buộc
 
-- Keep `GDD/` and its canonical file paths stable.
-- Use Markdown with TOML front matter for work packages.
-- Use Python 3.11+ standard library only for the agent pipeline; `tomllib` parses metadata.
-- Keep the workflow agent-agnostic and offline-capable.
-- Preserve unique historical documents under an explicit archive.
-- Do not silently change gameplay rules, schemas, progression, scoring, or release content.
-- Do not overwrite an existing `ASOL-Game-02` directory during the final rename.
+- Giữ ổn định `GDD/` và các đường dẫn canonical bên trong.
+- Dùng Markdown với TOML front matter cho work package.
+- Pipeline agent chỉ dùng Python 3.11+ standard library; `tomllib` dùng để đọc metadata.
+- Workflow phải độc lập nền tảng agent và hoạt động offline.
+- Giữ lại tài liệu lịch sử độc nhất trong khu vực archive rõ ràng.
+- Không âm thầm thay đổi luật gameplay, schema, tiến trình, điểm hoặc nội dung phát hành.
+- Không ghi đè thư mục `ASOL-Game-02` nếu nó đã tồn tại khi đổi tên cuối cùng.
 
-### Non-goals
+### Ngoài phạm vi
 
-- Creating the Godot project or game implementation.
-- Completing GDD v1.0 Design Freeze.
-- Producing the 24-level release campaign.
-- Activating post-MVP features, S4/S5, N>6 release content, economy, advertisements, collection systems, or level generation.
-- Integrating a hosted issue tracker.
+- Tạo project Godot hoặc triển khai game.
+- Hoàn tất GDD v1.0 Design Freeze.
+- Sản xuất campaign phát hành 24 level.
+- Kích hoạt tính năng post-MVP, S4/S5, nội dung phát hành N>6, economy, quảng cáo, bộ sưu tập hoặc sinh level.
+- Tích hợp hệ thống quản lý issue có hosting.
 
-## 3. Target Repository Structure
+## 3. Cấu trúc repository đích
 
 ```text
 ASOL-Game-02/
@@ -77,61 +77,61 @@ ASOL-Game-02/
    └─ tests/
 ```
 
-`game/` is intentionally absent until the M0 bootstrap package creates a real Godot project. Empty product directories must not imply implementation progress that does not exist.
+Chủ ý chưa tạo `game/` cho đến khi package bootstrap M0 tạo một project Godot thực. Không tạo thư mục sản phẩm rỗng khiến người đọc hiểu nhầm rằng đã có tiến độ triển khai.
 
-## 4. Document Authority
+## 4. Thẩm quyền tài liệu
 
-Documents have six authority classes, in descending order for implementation decisions:
+Tài liệu được chia thành sáu lớp thẩm quyền, theo thứ tự giảm dần khi quyết định triển khai:
 
-1. **Canonical design:** `GDD/`
+1. **Thiết kế canonical:** `GDD/`
 2. **Governance:** `docs/governance/`
-3. **Work contract:** `work/packages/`
-4. **Runtime evidence:** `work/evidence/` and `work/handoffs/`
-5. **Active review/reference:** `docs/reviews/`
-6. **Historical only:** `docs/archive/`
+3. **Hợp đồng công việc:** `work/packages/`
+4. **Bằng chứng thực thi:** `work/evidence/` và `work/handoffs/`
+5. **Review/tham chiếu hiện hành:** `docs/reviews/`
+6. **Chỉ mang tính lịch sử:** `docs/archive/`
 
-`docs/governance/document-register.toml` records each governed document with:
+`docs/governance/document-register.toml` ghi nhận từng tài liệu được quản trị bằng các trường:
 
 - `path`
 - `class`
 - `status`
 - `owner`
-- optional `superseded_by`
+- `superseded_by` không bắt buộc
 
-Archive documents are immutable evidence. They must carry a visible `SUPERSEDED` or `HISTORICAL` notice and point to the current authority. Agents must not derive implementation requirements from archive content.
+Tài liệu archive là bằng chứng lịch sử bất biến. Chúng phải có thông báo `SUPERSEDED` hoặc `HISTORICAL` dễ thấy và trỏ tới nguồn hiện hành. Agent không được suy diễn requirement triển khai từ nội dung archive.
 
-`GDD/12-sinh-level-do-kho-va-endless.md` remains in `GDD/` for path stability but is registered as `PROPOSED/POST-MVP`. A work package may use it only when `read_first` explicitly names it and the active phase permits post-MVP work.
+`GDD/12-sinh-level-do-kho-va-endless.md` tiếp tục nằm trong `GDD/` để ổn định đường dẫn nhưng được đăng ký ở trạng thái `PROPOSED/POST-MVP`. Work package chỉ được dùng tài liệu này khi `read_first` dẫn trực tiếp tới nó và phase hiện tại cho phép công việc post-MVP.
 
-## 5. Human and Agent Entrypoints
+## 5. Entrypoint cho con người và agent
 
 ### `README.md`
 
-The human-facing project map explains current status, repository areas, core commands, and the absence of a runnable game.
+Bản đồ dự án dành cho con người, giải thích trạng thái hiện tại, các khu vực trong repository, lệnh chính và thực tế rằng chưa có game chạy được.
 
 ### `AGENTS.md`
 
-The universal agent entrypoint remains concise and contains only mandatory behavior:
+Entrypoint chung cho mọi agent phải ngắn gọn và chỉ chứa hành vi bắt buộc:
 
-- Follow the authority order.
-- Work only on the assigned package ID.
-- Run `inspect` before editing.
-- Never use archive material as an active requirement.
-- Stay inside `allowed_paths`.
-- Change rules, schemas, progression, or scoring only through a `design-change` package.
-- Run `verify` and create a valid handoff before reporting completion.
-- Preserve original assets and levels; do not copy commercial game content.
+- Tuân theo thứ tự thẩm quyền.
+- Chỉ làm package ID được giao.
+- Chạy `inspect` trước khi sửa file.
+- Không bao giờ dùng nội dung archive làm requirement hiện hành.
+- Chỉ sửa trong `allowed_paths`.
+- Chỉ thay luật, schema, tiến trình hoặc điểm qua package loại `design-change`.
+- Chạy `verify` và tạo handoff hợp lệ trước khi báo hoàn tất.
+- Tạo asset và level gốc; không sao chép nội dung game thương mại.
 
-Tool-specific instructions may supplement this contract but cannot override repository authority or package scope.
+Hướng dẫn riêng của từng công cụ có thể bổ sung cho hợp đồng này nhưng không được ghi đè thẩm quyền repository hoặc phạm vi package.
 
 ### `CONTRIBUTING.md`
 
-The contribution guide explains branch naming, package state ownership, validation, review, commit expectations, and how humans create or approve packages.
+Hướng dẫn đóng góp giải thích cách đặt tên branch, quyền sở hữu trạng thái package, validation, review, quy ước commit và cách con người tạo hoặc phê duyệt package.
 
-## 6. Work-package Contract
+## 6. Hợp đồng work package
 
-Each package is a Markdown file whose opening TOML front matter is delimited by `+++`.
+Mỗi package là một file Markdown có TOML front matter mở đầu và kết thúc bằng `+++`.
 
-Required fields:
+Các trường bắt buộc:
 
 ```toml
 +++
@@ -154,11 +154,11 @@ out_of_scope = ["production content", "wallet", "ads", "S4", "S5"]
 +++
 ```
 
-The Markdown body defines intent, acceptance criteria, exact verification commands, expected evidence, known risks, and reviewer focus. Validation commands are TOML arrays of process arguments rather than shell command strings.
+Phần Markdown mô tả mục tiêu, acceptance criteria, lệnh kiểm chứng chính xác, bằng chứng cần có, rủi ro đã biết và trọng tâm review. Lệnh validation được biểu diễn bằng mảng đối số tiến trình trong TOML thay vì chuỗi lệnh shell.
 
-The package `status` is the coordinator-owned catalog state before execution (`draft` or `ready`). Once `start` creates `work/state/<id>.toml`, the mutable state file becomes the authoritative effective status (`in_progress`, `blocked`, `review`, or `done`) while the package contract remains `ready`. `list` and dependency checks resolve this rule consistently; they never require the two files to be edited in tandem.
+`status` trong package là trạng thái catalog do coordinator quản lý trước khi thực thi (`draft` hoặc `ready`). Sau khi `start` tạo `work/state/<id>.toml`, file state trở thành nguồn chuẩn cho trạng thái hiệu lực có thể thay đổi (`in_progress`, `blocked`, `review` hoặc `done`), còn hợp đồng package vẫn giữ `ready`. `list` và kiểm tra dependency luôn giải quyết theo quy tắc này; không yêu cầu sửa hai file cùng lúc.
 
-Supported `kind` values are:
+Các giá trị `kind` được hỗ trợ:
 
 - `implementation`
 - `content`
@@ -166,71 +166,71 @@ Supported `kind` values are:
 - `design-change`
 - `governance`
 
-Implementation packages cannot modify `GDD/`, `docs/governance/`, `AGENTS.md`, or pipeline code unless those paths are explicitly authorized by a governance package. A `design-change` package that changes rules, schema, progression, or scoring must declare the coupled GDD, fixture, validator/test, and QA paths.
+Package implementation không được sửa `GDD/`, `docs/governance/`, `AGENTS.md` hoặc mã pipeline trừ khi các đường dẫn đó được một package governance cho phép rõ ràng. Package `design-change` thay luật, schema, tiến trình hoặc điểm phải khai báo đồng bộ các đường dẫn GDD, fixture, validator/test và QA liên quan.
 
-## 7. Mutable State and Handoffs
+## 7. Trạng thái thay đổi và handoff
 
-Package contracts remain stable. Mutable execution state lives in `work/state/<id>.toml` and contains:
+Hợp đồng package được giữ ổn định. Trạng thái thực thi thay đổi nằm ở `work/state/<id>.toml` và chứa:
 
-- assigned agent
-- lifecycle status
-- branch name
+- agent được giao
+- trạng thái vòng đời
+- tên branch
 - base revision
-- start/update timestamps
-- blocker reason when applicable
+- thời điểm bắt đầu/cập nhật
+- nguyên nhân bị chặn khi có
 
-Handoffs live at `work/handoffs/<id>.md` and must include:
+Handoff nằm tại `work/handoffs/<id>.md` và phải gồm:
 
-- package ID and agent
-- requirements satisfied
-- QA covered
-- changed files
-- validation commands and outcomes
-- evidence paths
-- remaining risks and limitations
-- reviewer disposition
+- package ID và agent
+- requirement đã đáp ứng
+- QA đã bao phủ
+- file đã thay đổi
+- lệnh validation và kết quả
+- đường dẫn bằng chứng
+- rủi ro và giới hạn còn lại
+- kết luận của reviewer
 
-Selected machine-produced logs and measurements live under `work/evidence/<id>/` and are committed when they support acceptance. Raw temporary output stays ignored. The pipeline must not capture environment dumps, secrets, tokens, or unrelated system information.
+Log và số đo được chọn làm bằng chứng nằm trong `work/evidence/<id>/` và được commit khi chúng hỗ trợ nghiệm thu. Output thô tạm thời tiếp tục bị ignore. Pipeline không được thu thập toàn bộ environment, secret, token hoặc thông tin hệ thống không liên quan.
 
-## 8. Lifecycle and Ownership
+## 8. Vòng đời và quyền sở hữu
 
 ```text
-human assignment
+con người giao việc
       ↓
-inspect dependencies, authority, scope, and reading list
+inspect dependency, authority, scope và danh sách cần đọc
       ↓
-start records agent, branch, and base revision
+start ghi agent, branch và base revision
       ↓
-implementation inside allowed paths
+triển khai trong allowed_paths
       ↓
-verify runs checks and inspects Git diff
+verify chạy kiểm tra và xem Git diff
       ↓
-handoff records evidence and remaining risk
+handoff ghi bằng chứng và rủi ro còn lại
       ↓
-reviewer accepts or rejects
+reviewer chấp nhận hoặc từ chối
       ↓
-done or returned to in_progress
+done hoặc quay lại in_progress
 ```
 
-Allowed transitions:
+Các chuyển trạng thái hợp lệ:
 
-- `draft → ready`: owner/coordinator only
-- `ready → in_progress`: assigned agent after dependency and Git checks
-- `in_progress → review`: assigned agent after successful verification and complete handoff
-- `review → done`: reviewer/coordinator only
-- `review → in_progress`: reviewer rejection with reason
-- `in_progress → blocked`: assigned agent with a concrete blocker and evidence
-- `blocked → in_progress`: coordinator after the blocker is resolved
+- `draft → ready`: chỉ owner/coordinator
+- `ready → in_progress`: agent được giao sau khi kiểm dependency và Git
+- `in_progress → review`: agent được giao sau khi kiểm chứng đạt và handoff đầy đủ
+- `review → done`: chỉ reviewer/coordinator
+- `review → in_progress`: reviewer từ chối và ghi lý do
+- `in_progress → blocked`: agent được giao phải ghi blocker cụ thể và bằng chứng
+- `blocked → in_progress`: coordinator sau khi blocker được giải quyết
 
-No command selects or claims the next package. A human supplies the package ID.
+Không có lệnh chọn hoặc tự nhận package tiếp theo. Con người cung cấp package ID.
 
-Each package uses branch `work/<package-id>-<slug>`. `start` normally requires a clean working tree and records the current commit. Git subprocesses use `-c safe.directory=<resolved-repository-root>` for that exact repository so sandbox ownership differences do not require a global Git configuration change. When a constrained environment cannot create a branch, the handoff must state that limitation and the coordinator owns integration.
+Mỗi package dùng branch `work/<package-id>-<slug>`. Bình thường `start` yêu cầu working tree sạch và ghi lại commit hiện tại. Tiến trình Git dùng `-c safe.directory=<resolved-repository-root>` cho đúng repository đó để khác biệt ownership của sandbox không buộc thay cấu hình Git toàn cục. Khi môi trường bị giới hạn không thể tạo branch, handoff phải ghi rõ giới hạn này và coordinator chịu trách nhiệm tích hợp.
 
-## 9. Agent Pipeline CLI
+## 9. CLI của agent pipeline
 
-The zero-dependency entrypoint is `python tools/agent_pipeline.py`.
+Entrypoint zero-dependency là `python tools/agent_pipeline.py`.
 
-Commands:
+Các lệnh:
 
 ```text
 validate
@@ -244,57 +244,57 @@ handoff <package-id>
 accept <package-id>
 ```
 
-Responsibilities:
+Trách nhiệm:
 
-- `validate`: validate repository metadata without changing files.
-- `doctor`: run structural checks across documents, packages, links, protected paths, and prohibited artifacts.
-- `list`: show packages filtered by lifecycle status.
-- `trace`: locate a canonical requirement, related QA, decisions, and consuming packages.
-- `inspect`: print the package scope, dependencies, reading list, deliverables, checks, and exclusions.
-- `start`: validate assignment/dependencies/Git state and create mutable state.
-- `verify`: execute declared validation processes, store concise evidence, and compare the diff with `allowed_paths`.
-- `handoff`: create a missing handoff skeleton and exit nonzero, or validate a completed handoff and move eligible state to review. It never advances an incomplete handoff.
-- `accept`: validate reviewer preconditions and mark the package done.
+- `validate`: kiểm metadata repository mà không thay đổi file.
+- `doctor`: chạy kiểm tra cấu trúc cho tài liệu, package, link, protected path và artifact bị cấm.
+- `list`: hiển thị package theo trạng thái vòng đời.
+- `trace`: tìm requirement canonical, QA liên quan, quyết định và package đang sử dụng mã đó.
+- `inspect`: in phạm vi package, dependency, danh sách cần đọc, deliverable, lệnh kiểm tra và nội dung loại trừ.
+- `start`: kiểm assignment/dependency/trạng thái Git và tạo mutable state.
+- `verify`: chạy các tiến trình validation đã khai báo, lưu bằng chứng gọn và so diff với `allowed_paths`.
+- `handoff`: nếu chưa có thì tạo handoff skeleton và trả mã lỗi; nếu đã hoàn chỉnh thì kiểm tra và chuyển state đủ điều kiện sang review. Lệnh không bao giờ cho handoff chưa hoàn chỉnh đi tiếp.
+- `accept`: kiểm điều kiện reviewer và đánh dấu package hoàn tất.
 
-Commands fail closed. They return a nonzero exit code and identify the file, field, and correction. They do not silently normalize invalid contracts or expand scope.
+Mọi lệnh đều fail closed. Khi lỗi, chúng trả exit code khác 0 và nêu rõ file, trường cùng cách sửa. Chúng không âm thầm chuẩn hóa contract sai hoặc mở rộng scope.
 
-## 10. Validation Rules
+## 10. Quy tắc validation
 
-Repository validation covers:
+Validation repository bao phủ:
 
-- TOML syntax and required package fields.
-- Unique package IDs and valid enums.
-- Existing dependencies and acyclic dependency graph.
-- Dependency completion before `start`.
-- Legal lifecycle transitions.
-- Requirement IDs (`D`, `GR`, `UX`, `LV`, `TECH`, `ART`, `DEC`) defined by an authorized document.
-- QA IDs defined by `GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md`.
-- Internal Markdown links.
-- Absence of `file:///`, `ASOL-Game-03`, and workspace-specific absolute links in active documents.
-- Normalized relative allowed paths that cannot escape the repository.
-- Git diff containment within `allowed_paths`.
-- Protected-path rules by package kind.
-- Validation commands represented as argument arrays.
-- Handoff completeness and evidence existence.
-- Absence of Python cache, Godot cache, Repomix snapshots, duplicate reports, and unapproved generated artifacts.
+- Cú pháp TOML và trường package bắt buộc.
+- Package ID duy nhất và enum hợp lệ.
+- Dependency tồn tại và đồ thị dependency không có chu trình.
+- Dependency đã hoàn tất trước khi `start`.
+- Chuyển trạng thái hợp lệ.
+- Requirement ID (`D`, `GR`, `UX`, `LV`, `TECH`, `ART`, `DEC`) được định nghĩa bởi tài liệu có thẩm quyền.
+- QA ID được định nghĩa bởi `GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md`.
+- Link Markdown nội bộ.
+- Không còn `file:///`, `ASOL-Game-03` và link tuyệt đối phụ thuộc workspace trong tài liệu hiện hành.
+- `allowed_paths` là đường dẫn tương đối đã chuẩn hóa và không thể thoát khỏi repository.
+- Git diff chỉ nằm trong `allowed_paths`.
+- Quy tắc protected path theo package kind.
+- Lệnh validation được biểu diễn bằng mảng đối số.
+- Handoff đầy đủ và bằng chứng tồn tại.
+- Không có Python cache, Godot cache, Repomix snapshot, báo cáo trùng hoặc artifact sinh tự động chưa được cho phép.
 
-## 11. Initial Backlog
+## 11. Backlog ban đầu
 
-The restructure seeds only work that has enough authority to be represented honestly:
+Lần tái cấu trúc chỉ seed công việc đã có đủ thẩm quyền để mô tả trung thực:
 
-| ID | Status after restructure | Purpose |
+| ID | Trạng thái sau tái cấu trúc | Mục đích |
 | --- | --- | --- |
-| `SETUP-001` | `done` after acceptance | Repository restructure and agent pipeline |
-| `M0-A01` | `ready` | Godot version, renderer, device, OS, and toolchain baseline |
-| `M0-A02` | `draft` | Gesture and interaction prototype |
-| `M0-A03` | `draft` | Sprite, board layout, and mobile performance spike |
-| `M0-GATE` | `draft` | Review M0 evidence and approve or reject progression to M1 |
+| `SETUP-001` | `done` sau nghiệm thu | Tái cấu trúc repository và agent pipeline |
+| `M0-A01` | `ready` | Baseline phiên bản Godot, renderer, thiết bị, OS và toolchain |
+| `M0-A02` | `draft` | Prototype gesture và interaction |
+| `M0-A03` | `draft` | Spike sprite, bố cục bàn và hiệu năng mobile |
+| `M0-GATE` | `draft` | Review bằng chứng M0 và phê duyệt hoặc từ chối chuyển sang M1 |
 
-Packages corresponding to later GDD/08 work remain conceptual until their dependencies and ownership are ready. The pipeline does not convert all future work into `ready` merely because it appears in a plan.
+Các package tương ứng với công việc GDD/08 về sau vẫn ở mức khái niệm cho đến khi dependency và ownership sẵn sàng. Pipeline không chuyển toàn bộ công việc tương lai sang `ready` chỉ vì chúng xuất hiện trong một kế hoạch.
 
-## 12. Cleanup and Migration
+## 12. Dọn dẹp và migration
 
-### Preserve and move
+### Giữ lại và di chuyển
 
 ```text
 design-control/          → docs/governance/
@@ -307,51 +307,51 @@ GDD/tools/generate_game_design_report.py
 docs/Bao_Cao_...docx     → docs/reports/Bao_Cao_...docx
 ```
 
-### Remove after baseline commit
+### Xóa sau baseline commit
 
-- Duplicate root DOCX.
-- `meowdoku-clone.xml`, a reproducible Repomix snapshot.
-- `__pycache__/` and `*.pyc`.
-- Empty tool-state directories after their unique records are archived.
+- DOCX trùng ở root.
+- `meowdoku-clone.xml`, một Repomix snapshot có thể tái tạo.
+- `__pycache__/` và `*.pyc`.
+- Thư mục trạng thái công cụ trống sau khi hồ sơ độc nhất đã được archive.
 
-### Ignore going forward
+### Ignore về sau
 
-`.gitignore` covers Python caches, `.codegraph/`, Godot `.godot/`, export/build artifacts, Repomix snapshots, temporary files, and transient evidence that is not explicitly selected for a handoff.
+`.gitignore` bao phủ Python cache, `.codegraph/`, Godot `.godot/`, artifact export/build, Repomix snapshot, file tạm và evidence tạm thời chưa được chủ động chọn cho handoff.
 
-All active links are updated after moves. Historical documents may retain quoted obsolete paths only when clearly marked historical; they must not expose obsolete paths as the primary navigation route.
+Mọi link hiện hành được cập nhật sau khi di chuyển. Tài liệu lịch sử có thể giữ đường dẫn cũ được trích dẫn khi được đánh dấu rõ là lịch sử; chúng không được dùng đường dẫn cũ làm tuyến điều hướng chính.
 
-## 13. Git and Folder Rename
+## 13. Git và đổi tên thư mục
 
-The repository first records a pre-restructure baseline commit. The restructure and verified pipeline form a separate commit.
+Repository ghi một baseline commit trước tái cấu trúc. Cấu trúc mới và pipeline đã được kiểm chứng nằm trong một commit riêng.
 
-The directory rename occurs only after all repository changes, tests, and commits complete:
+Chỉ đổi tên thư mục sau khi hoàn tất mọi thay đổi repository, kiểm thử và commit:
 
-1. Resolve source and target absolute paths.
-2. Confirm source is exactly `D:\Work\Alpaca_Solution\ASOL-Game-03`.
-3. Confirm target is exactly `D:\Work\Alpaca_Solution\ASOL-Game-02` and does not exist.
-4. Rename from the common parent with native PowerShell `Move-Item -LiteralPath`.
-5. Perform no further writes from the old workspace session.
-6. Reopen the project at the new path.
+1. Resolve đường dẫn tuyệt đối của source và target.
+2. Xác nhận source chính xác là `D:\Work\Alpaca_Solution\ASOL-Game-03`.
+3. Xác nhận target chính xác là `D:\Work\Alpaca_Solution\ASOL-Game-02` và chưa tồn tại.
+4. Đổi tên từ thư mục cha chung bằng `Move-Item -LiteralPath` native của PowerShell.
+5. Không ghi thêm dữ liệu từ phiên workspace cũ.
+6. Mở lại dự án tại đường dẫn mới.
 
-The rename never overwrites or merges into an existing target directory.
+Không bao giờ ghi đè hoặc gộp vào target directory đã tồn tại.
 
-## 14. Testing Strategy
+## 14. Chiến lược kiểm thử
 
-`tools/tests/test_agent_pipeline.py` uses `unittest` and temporary repositories to exercise:
+`tools/tests/test_agent_pipeline.py` dùng `unittest` và repository tạm để kiểm:
 
-- valid and malformed TOML front matter
-- missing required fields and duplicate IDs
-- nonexistent dependencies and dependency cycles
-- illegal lifecycle transitions
-- missing requirement and QA references
-- broken internal links and obsolete absolute paths
-- path traversal and overly broad allowed paths
-- protected-path changes by implementation packages
-- invalid shell-string validation commands
-- incomplete handoffs and missing evidence
-- dirty Git state, invalid base revision, and out-of-scope diff
+- TOML front matter hợp lệ và sai cú pháp
+- thiếu trường bắt buộc và ID trùng
+- dependency không tồn tại và dependency cycle
+- chuyển trạng thái trái phép
+- requirement và QA không tồn tại
+- link nội bộ hỏng và đường dẫn tuyệt đối lỗi thời
+- path traversal và `allowed_paths` quá rộng
+- package implementation thay protected path
+- lệnh validation dạng chuỗi shell không hợp lệ
+- handoff thiếu nội dung và bằng chứng không tồn tại
+- Git dirty, base revision sai và diff ngoài scope
 
-The final verification set is:
+Tập lệnh kiểm chứng cuối cùng:
 
 ```text
 python GDD/tools/validate_levels.py GDD/data/levels.sample.json
@@ -362,17 +362,17 @@ python tools/agent_pipeline.py inspect SETUP-001
 python tools/agent_pipeline.py inspect M0-A01
 ```
 
-## 15. Definition of Done
+## 15. Điều kiện hoàn tất
 
-The restructure is complete only when:
+Tái cấu trúc chỉ hoàn tất khi:
 
-- A baseline commit and a verified restructure commit exist.
-- Root contains only clear entrypoints and role-based directories.
-- Duplicate reports, caches, and Repomix snapshots are absent.
-- Active internal links and the document register validate.
-- Existing level validator and all 23 existing unit tests pass.
-- New pipeline tests pass.
-- `doctor`, `inspect SETUP-001`, and `inspect M0-A01` succeed.
-- `SETUP-001` has a complete handoff and evidence.
-- No game implementation or gameplay rule changed.
-- The project directory is safely renamed to `ASOL-Game-02` and the workspace is reopened there before further work.
+- Có baseline commit và commit tái cấu trúc đã kiểm chứng.
+- Root chỉ chứa entrypoint rõ ràng và các thư mục phân theo vai trò.
+- Không còn báo cáo trùng, cache hoặc Repomix snapshot.
+- Link nội bộ hiện hành và document register hợp lệ.
+- Validator level và toàn bộ 23 unit test hiện có chạy đạt.
+- Test pipeline mới chạy đạt.
+- `doctor`, `inspect SETUP-001` và `inspect M0-A01` chạy thành công.
+- `SETUP-001` có handoff và bằng chứng đầy đủ.
+- Không triển khai game hoặc thay đổi luật gameplay.
+- Thư mục dự án được đổi tên an toàn thành `ASOL-Game-02` và workspace được mở lại tại đó trước khi tiếp tục công việc.
