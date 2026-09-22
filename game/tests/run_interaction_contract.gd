@@ -2,6 +2,7 @@ extends SceneTree
 
 
 const InteractionSessionScript = preload("res://scripts/interaction_session.gd")
+const GestureEngineScript = preload("res://scripts/gesture_engine.gd")
 
 const LEVEL_PATH := "res://data/t01.json"
 const E01_PATH := "res://tests/fixtures/e01.json"
@@ -17,6 +18,23 @@ func _run() -> void:
 	var e01: Dictionary = _read_json(E01_PATH)
 	var contract: Dictionary = _read_json(CONTRACT_PATH)
 	var failures: Array[String] = []
+
+	for case_value in contract["cases"]:
+		var case: Dictionary = case_value
+		var engine = GestureEngineScript.new(level, contract)
+		var actual: Dictionary = JSON.parse_string(
+			JSON.stringify(engine.run_contract_case(case))
+		)
+		var expected := {
+			"cells": case["expected"],
+			"hearts": case["hearts"],
+			"actions": case["actions"],
+		}
+		if actual != expected:
+			failures.append(
+				"%s\nEXPECTED: %s\nACTUAL:   %s"
+				% [case["id"], expected, actual]
+			)
 
 	for case_value in contract["sessionCases"]:
 		var case: Dictionary = case_value
@@ -35,7 +53,10 @@ func _run() -> void:
 			)
 
 	if failures.is_empty():
-		print("M0_A02_SESSION_CONTRACT_PASS %d" % contract["sessionCases"].size())
+		print(
+			"M0_A02_INTERACTION_CONTRACT_PASS gestures=%d sessions=%d"
+			% [contract["cases"].size(), contract["sessionCases"].size()]
+		)
 		quit(0)
 		return
 

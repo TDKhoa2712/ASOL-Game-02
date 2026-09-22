@@ -125,7 +125,7 @@ Run the command from Step 1.
 
 Expected: all session cases pass; gesture cases may still be reported as not implemented only if the runner explicitly separates phases.
 
-- [ ] **Step 4: Commit session model**
+- [x] **Step 4: Commit session model**
 
 ```powershell
 git add game/scripts/interaction_session.gd game/tests/run_interaction_contract.gd
@@ -138,17 +138,17 @@ git commit -m "feat: implement deterministic interaction session"
 - Add: `game/scripts/gesture_engine.gd`
 - Modify: `game/tests/run_interaction_contract.gd`
 
-- [ ] **Step 1: Extend runner to all gesture cases and observe RED**
+- [x] **Step 1: Extend runner to all gesture cases and observe RED**
 
 Replay all canonical `cases`, including preview, 280 ms boundary, 12 px slop, different cells, second-drag, locked cells, interpolation, return path, secondary pointer and lifecycle flush/cancel.
 
 Expected RED: gesture engine missing or mismatched cases.
 
-- [ ] **Step 2: Implement GestureEngine minimally**
+- [x] **Step 2: Implement GestureEngine minimally**
 
 Expose deterministic pointer down/move/up, pending flush, active cancel and visible preview state. Use the same session actions/events consumed by the UI.
 
-- [ ] **Step 3: Run full Godot interaction contract**
+- [x] **Step 3: Run full Godot interaction contract**
 
 ```powershell
 & 'C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe' --headless --path game --script res://tests/run_interaction_contract.gd
@@ -156,7 +156,7 @@ Expose deterministic pointer down/move/up, pending flush, active cancel and visi
 
 Expected GREEN: all gesture and session cases pass; output ends with `M0_A02_INTERACTION_CONTRACT_PASS`.
 
-- [ ] **Step 4: Run canonical Python oracle**
+- [x] **Step 4: Run canonical Python oracle**
 
 ```powershell
 python -B -m unittest GDD/tools/test_interaction_contract.py
