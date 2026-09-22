@@ -251,7 +251,7 @@ Expected: commit succeeds and the working tree is clean.
 - Consumes: complete M0-REPLAN commits and evidence.
 - Produces: M0-REPLAN state `review`, ready for coordinator acceptance.
 
-- [ ] **Step 1: Re-read the spec and verify every acceptance item**
+- [x] **Step 1: Re-read the spec and verify every acceptance item**
 
 Run:
 
@@ -263,7 +263,7 @@ git status --short
 
 Expected: package scope matches the spec; no whitespace errors; no uncommitted content before handoff.
 
-- [ ] **Step 2: Run the final full verification**
+- [x] **Step 2: Run the final full verification**
 
 ```powershell
 python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json
@@ -275,7 +275,7 @@ python tools/agent_pipeline.py doctor
 
 Expected: 5 fixtures validate; 23 GDD tests and 22 pipeline tests pass; validate and doctor exit 0.
 
-- [ ] **Step 3: Perform final whole-branch review**
+- [x] **Step 3: Perform final whole-branch review**
 
 Because repository instructions do not authorize sub-agent delegation, review the full diff from the M0-REPLAN base revision, checking every Review Focus item and recording any ruling or deferred minor in the execution ledger.
 

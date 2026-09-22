@@ -32,3 +32,12 @@ Chuỗi M0 đã được phân lại để prototype tương tác có thể phá
 Sau khi M0-REPLAN được reviewer/coordinator accept, package thực thi tiếp theo là M0-A01 để verify và đóng baseline theo contract mới đã thỏa mãn. Sau khi M0-A01 được accept, con người giao chính xác M0-A02 để bắt đầu xây prototype chạy trong Godot Editor. M0-A03 chỉ bắt đầu khi prototype đủ đại diện cho phép đo mobile.
 
 Không được bắt đầu package kế tiếp bằng cách sửa tay state; mọi transition phải đi qua pipeline.
+
+## Final review rulings
+
+- Requirement loss: pass — TECH-13/19 và QA-26 vẫn có chủ sở hữu tại M0-A03 và được M0-GATE kiểm tra.
+- Dependency ordering: pass — M0-A01 → M0-A02 → M0-A03, không có chu trình.
+- False completion: pass — M0-A01 chỉ nhận editor/toolchain/host export và ghi rõ phần device/iOS chưa đo.
+- Prototype blocking: pass — M0-A02 nghiệm thu prototype trong Godot Editor, không yêu cầu APK hoặc thiết bị thật.
+- Gate weakening: pass — M0-GATE từ chối thiếu Android/iPhone, macOS/Xcode hoặc số đo TECH-13/19/21.
+- Scope deviation: accepted — chỉ assertion seed M0-A02 được đồng bộ từ `draft` sang `ready`; pipeline implementation không đổi.

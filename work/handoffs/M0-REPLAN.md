@@ -32,11 +32,14 @@ M0-REPLAN — Re-sequence M0 for editor-first playable prototype
 ## Validation
 
 - Contract assertion RED trước khi sửa và GREEN sau khi phân lại package.
+- 5/5 level fixtures validate.
+- 23/23 GDD unit tests pass.
 - 22/22 pipeline unit tests pass.
 - `python tools/agent_pipeline.py validate`: pass.
 - `python tools/agent_pipeline.py doctor`: pass.
 - `python tools/agent_pipeline.py verify M0-REPLAN`: pass; cả hai package checks exit 0.
 - `git diff --check`: pass tại điểm kiểm tra contract.
+- Whole-branch review: pass cho requirement loss, dependency ordering, false completion, prototype blocking và gate weakening.
 
 ## Evidence
 
