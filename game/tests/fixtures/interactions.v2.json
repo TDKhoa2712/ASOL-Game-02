@@ -1,0 +1,308 @@
+{
+  "contractVersion": 2,
+  "levelId": "T01",
+  "doubleTapWindowMs": 280,
+  "touchSlopLogicalPx": 12,
+  "cellLogicalPx": 100,
+  "cases": [
+    {
+      "id": "tap_empty_immediate_x",
+      "kind": "tap",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "tap_x_immediate_clear",
+      "kind": "tap",
+      "initial": {"0,0": "x"},
+      "cell": [0, 0],
+      "preview": "empty",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["ClearX"]
+    },
+    {
+      "id": "double_empty_correct_rolls_back_preview",
+      "kind": "double",
+      "initial": {},
+      "cell": [0, 1],
+      "intervalMs": 180,
+      "preview": "x",
+      "expected": {"0,1": "cat"},
+      "hearts": 3,
+      "actions": ["TryCat"]
+    },
+    {
+      "id": "double_x_wrong_becomes_locked_error",
+      "kind": "double",
+      "initial": {"0,0": "x"},
+      "cell": [0, 0],
+      "intervalMs": 180,
+      "preview": "empty",
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": ["TryCat"]
+    },
+    {
+      "id": "slow_double_is_two_single_taps",
+      "kind": "double",
+      "initial": {},
+      "cell": [0, 0],
+      "intervalMs": 281,
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["MarkX", "ClearX"]
+    },
+    {
+      "id": "fast_taps_on_different_cells_are_independent",
+      "kind": "different",
+      "initial": {},
+      "first": [0, 0],
+      "second": [0, 2],
+      "intervalMs": 180,
+      "expected": {"0,0": "x", "0,2": "x"},
+      "hearts": 3,
+      "actions": ["MarkX", "MarkX"]
+    },
+    {
+      "id": "second_contact_becomes_clear_stroke",
+      "kind": "second_drag",
+      "initial": {},
+      "cell": [0, 0],
+      "intervalMs": 180,
+      "to": [0, 2],
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": ["MarkX", "MarkStroke"]
+    },
+    {
+      "id": "jitter_below_slop_stays_tap",
+      "kind": "jitter",
+      "initial": {},
+      "cell": [0, 0],
+      "distanceLogicalPx": 11,
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "motion_over_slop_is_stroke",
+      "kind": "jitter",
+      "initial": {},
+      "cell": [0, 0],
+      "distanceLogicalPx": 13,
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "locked_error_ignores_tap_and_double",
+      "kind": "locked",
+      "initial": {"0,0": "x_error"},
+      "initialHearts": 2,
+      "cell": [0, 0],
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": []
+    },
+    {
+      "id": "locked_error_cannot_start_stroke",
+      "kind": "locked_drag",
+      "initial": {"0,0": "x_error"},
+      "initialHearts": 2,
+      "cell": [0, 0],
+      "to": [0, 3],
+      "expected": {"0,0": "x_error"},
+      "hearts": 2,
+      "actions": []
+    },
+    {
+      "id": "mark_drag_skips_locked_and_existing",
+      "kind": "drag",
+      "initial": {"0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "initialHearts": 2,
+      "from": [0, 0],
+      "to": [0, 3],
+      "returnTo": [0, 0],
+      "expected": {"0,0": "x", "0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "hearts": 2,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "clear_drag_skips_empty_and_error",
+      "kind": "drag",
+      "initial": {"1,0": "x", "1,1": "x", "1,2": "x_error"},
+      "initialHearts": 2,
+      "from": [1, 0],
+      "to": [1, 3],
+      "expected": {"1,2": "x_error"},
+      "hearts": 2,
+      "actions": ["MarkStroke"]
+    },
+    {
+      "id": "second_finger_does_not_add_stroke",
+      "kind": "secondary",
+      "initial": {},
+      "primary": [2, 0],
+      "secondaryFrom": [3, 0],
+      "secondaryTo": [3, 3],
+      "expected": {"2,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "background_flushes_released_single_tap",
+      "kind": "flush_pending",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {"0,0": "x"},
+      "hearts": 3,
+      "actions": ["MarkX"]
+    },
+    {
+      "id": "background_discards_unreleased_preview",
+      "kind": "cancel_active",
+      "initial": {},
+      "cell": [0, 0],
+      "preview": "x",
+      "expected": {},
+      "hearts": 3,
+      "actions": []
+    }
+  ],
+  "sessionCases": [
+    {
+      "id": "undo_single_mark",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "UndoApplied"]}
+    },
+    {
+      "id": "undo_clear",
+      "initial": {"cells": {"0,0": "x"}},
+      "actions": [
+        {"type": "ClearX", "cell": [0, 0]},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["ClearX", "UndoApplied"]}
+    },
+    {
+      "id": "undo_stroke_batch",
+      "initial": {"cells": {"0,1": "x", "0,3": "x_error"}, "hearts": 2, "mistakeCount": 1},
+      "actions": [
+        {"type": "MarkStroke", "mode": "mark", "cells": [[0, 0], [0, 1], [0, 2], [0, 3]]},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,1": "x", "0,3": "x_error"}, "hearts": 2, "mistakeCount": 1, "hintCount": 0, "undoAvailable": false, "events": ["MarkStroke", "UndoApplied"]}
+    },
+    {
+      "id": "trycat_clears_undo",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "TryCat", "cell": [0, 1]},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x", "0,1": "cat"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "CatPlaced", "UndoUnavailable"]}
+    },
+    {
+      "id": "back_home_clears_undo",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "BackToHome"},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "ReturnedHome", "UndoUnavailable"]}
+    },
+    {
+      "id": "restart_resets_attempt",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "TryCat", "cell": [0, 2]},
+        {"type": "Hint", "result": "evidence"},
+        {"type": "RestartLevel"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["Restarted"]}
+    },
+    {
+      "id": "hint_once",
+      "actions": [
+        {"type": "Hint", "result": "evidence"},
+        {"type": "Hint", "result": "evidence"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 1, "undoAvailable": false, "events": ["HintShown", "HintUnavailable"]}
+    },
+    {
+      "id": "no_hint_does_not_consume",
+      "actions": [
+        {"type": "Hint", "result": "none"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["NoHint"]}
+    },
+    {
+      "id": "retry_resets_attempt",
+      "initial": {"cells": {"0,0": "x", "0,2": "x_error"}, "hearts": 0, "mistakeCount": 3, "hintCount": 1},
+      "actions": [
+        {"type": "Retry"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["Retried"]}
+    },
+    {
+      "id": "won_clears_undo",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "LevelWon"},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "LevelWon", "UndoUnavailable"]}
+    },
+    {
+      "id": "failed_clears_undo",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "LevelFailed"},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "LevelFailed", "UndoUnavailable"]}
+    },
+    {
+      "id": "close_app_clears_undo",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 0]},
+        {"type": "CloseApp"},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "AppClosed", "UndoUnavailable"]}
+    },
+    {
+      "id": "reload_preserves_hint_and_has_no_undo",
+      "initial": {"cells": {"0,0": "x", "0,2": "x_error"}, "hearts": 2, "mistakeCount": 1, "hintCount": 1},
+      "actions": [
+        {"type": "Hint", "result": "evidence"},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {"0,0": "x", "0,2": "x_error"}, "hearts": 2, "mistakeCount": 1, "hintCount": 1, "undoAvailable": false, "events": ["HintUnavailable", "UndoUnavailable"]}
+    },
+    {
+      "id": "given_is_immutable_for_all_board_actions",
+      "levelId": "E01",
+      "actions": [
+        {"type": "MarkX", "cell": [0, 2]},
+        {"type": "TryCat", "cell": [0, 2]},
+        {"type": "MarkStroke", "mode": "mark", "cells": [[0, 1], [0, 2], [0, 3]]},
+        {"type": "UndoX"}
+      ],
+      "expected": {"cells": {}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["NoOp", "NoOp", "MarkStroke", "UndoApplied"]}
+    }
+  ]
+}

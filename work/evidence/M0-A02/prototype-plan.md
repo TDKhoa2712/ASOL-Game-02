@@ -54,7 +54,7 @@ python tools/agent_pipeline.py start M0-A02 --agent codex
 
 Expected: branch `work/m0-a02-gesture-and-input-interaction-prototype`; state `in_progress`.
 
-- [ ] **Step 3: Commit lifecycle state**
+- [x] **Step 3: Commit lifecycle state**
 
 ```powershell
 git add work/state/M0-A02.toml
@@ -70,7 +70,7 @@ Expected: clean working tree.
 - Add: `game/tests/fixtures/interactions.v2.json`
 - Add: `game/data/t01.json`
 
-- [ ] **Step 1: Write the failing fixture sync test**
+- [x] **Step 1: Write the failing fixture sync test**
 
 Test that the game interaction fixture equals `GDD/data/interactions.sample.json`, and that `game/data/t01.json` equals the canonical T01 object from `GDD/data/levels.sample.json`.
 
@@ -80,11 +80,11 @@ python -B -m unittest game.tests.test_interaction_fixture_sync
 
 Expected RED: missing game mirror files.
 
-- [ ] **Step 2: Add exact runtime mirrors**
+- [x] **Step 2: Add exact runtime mirrors**
 
 Copy only canonical T01 and interaction contract v2 into the specified `game/**` JSON files.
 
-- [ ] **Step 3: Re-run fixture sync**
+- [x] **Step 3: Re-run fixture sync**
 
 ```powershell
 python -B -m unittest game.tests.test_interaction_fixture_sync
