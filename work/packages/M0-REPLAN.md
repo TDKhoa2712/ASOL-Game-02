@@ -29,6 +29,7 @@ allowed_paths = [
   "work/packages/M0-GATE.md",
   "work/packages/M0-REPLAN.md",
   "docs/governance/**",
+  "tools/tests/test_agent_pipeline.py",
   "work/evidence/M0-REPLAN/**",
   "work/handoffs/M0-REPLAN.md"
 ]

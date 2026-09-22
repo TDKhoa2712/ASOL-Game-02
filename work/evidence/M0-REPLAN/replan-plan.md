@@ -169,7 +169,7 @@ python tools/agent_pipeline.py inspect M0-GATE
 
 Expected: A01 has only D-06/no QA; A02 and A03 are ready; A03 depends on A02 and owns TECH-13/19/21 plus QA-26/27/30/50.
 
-- [ ] **Step 8: Commit package contract changes**
+- [x] **Step 8: Commit package contract changes**
 
 ```powershell
 git add work/packages/M0-A01.md work/packages/M0-A02.md work/packages/M0-A03.md work/packages/M0-GATE.md
@@ -181,6 +181,7 @@ Expected: commit succeeds.
 ### Task 3: Record replan evidence and complete package verification
 
 **Files:**
+- Modify: `tools/tests/test_agent_pipeline.py`
 - Create: `work/evidence/M0-REPLAN/replan-summary.md`
 - Generated: `work/evidence/M0-REPLAN/verification.txt`
 - Create: `work/handoffs/M0-REPLAN.md`
@@ -189,7 +190,7 @@ Expected: commit succeeds.
 - Consumes: updated package contracts and pipeline validation output.
 - Produces: reviewer-readable trace of what moved, what remains blocked, and the next assigned-package sequence.
 
-- [ ] **Step 1: Write replan-summary.md**
+- [x] **Step 1: Write replan-summary.md**
 
 Include exact before/after ownership table:
 
@@ -204,7 +205,13 @@ Include exact before/after ownership table:
 
 Also state that no gameplay rule/schema or quality threshold changed, and the next execution package after acceptance is `M0-A01` to close its now-satisfied baseline before `M0-A02` starts.
 
-- [ ] **Step 2: Run repository and pipeline suites**
+- [ ] **Step 2: Synchronize the seed catalog regression assertion**
+
+After observing the existing test fail because it expects `M0-A02` to remain `draft`, update only that expectation to `ready`. Do not change pipeline implementation or weaken any general validation.
+
+Expected: the regression test now expresses the approved editor-first catalog state.
+
+- [ ] **Step 3: Run repository and pipeline suites**
 
 ```powershell
 python -B -m unittest discover tools/tests -p test_*.py
@@ -214,7 +221,7 @@ python tools/agent_pipeline.py doctor
 
 Expected: 22 pipeline tests pass; validate and doctor exit 0.
 
-- [ ] **Step 3: Run required package verification**
+- [ ] **Step 4: Run required package verification**
 
 ```powershell
 python tools/agent_pipeline.py verify M0-REPLAN
@@ -222,11 +229,11 @@ python tools/agent_pipeline.py verify M0-REPLAN
 
 Expected: `work/evidence/M0-REPLAN/verification.txt` is written with both checks at exit 0.
 
-- [ ] **Step 4: Write a complete handoff**
+- [ ] **Step 5: Write a complete handoff**
 
 Create `work/handoffs/M0-REPLAN.md` with Package, Requirements, QA, Changed files, Validation, Evidence, Remaining risks and Reviewer sections. It must contain no `<...>` placeholders or TODO markers.
 
-- [ ] **Step 5: Commit evidence and handoff**
+- [ ] **Step 6: Commit evidence and handoff**
 
 ```powershell
 git add work/evidence/M0-REPLAN/replan-summary.md work/evidence/M0-REPLAN/verification.txt work/handoffs/M0-REPLAN.md
