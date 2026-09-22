@@ -29,7 +29,7 @@ M0-PREFLIGHT — M0 prototype readiness governance. Thực hiện bởi Codex tr
 
 - `python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json`: 5/5 fixture hợp lệ, 0 duplicate geometry warning; output lưu tại `level-validator.txt`.
 - `python -B -m unittest discover GDD/tools -p test_*.py`: 23 test pass.
-- `python -B -m unittest discover tools/tests -p test_*.py`: 21 test pass.
+- Pipeline `verify` ban đầu ghi 21 test; sau review, `python -B -m unittest discover tools/tests -p test_*.py` ghi 22 test pass, gồm regression test UTF-8.
 - `python tools/agent_pipeline.py validate`: pass.
 - `python tools/agent_pipeline.py doctor`: pass.
 - `python tools/agent_pipeline.py verify M0-PREFLIGHT` với bytecode cache tắt: pass và ghi evidence.
@@ -38,6 +38,7 @@ M0-PREFLIGHT — M0 prototype readiness governance. Thực hiện bởi Codex tr
 
 - `work/evidence/M0-PREFLIGHT/verification.txt`.
 - `work/evidence/M0-PREFLIGHT/level-validator.txt`.
+- `work/evidence/M0-PREFLIGHT/review-verification.txt`.
 - Test hồi quy mới chứng minh catalog từ chối deliverable nằm ngoài `allowed_paths` bằng mã `DELIVERABLE_OUT_OF_SCOPE`.
 - Các contract M0 giờ khai báo Godot headless/runtime smoke checks và artifact evidence cụ thể.
 
