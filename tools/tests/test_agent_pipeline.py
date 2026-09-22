@@ -3,25 +3,32 @@ from tempfile import TemporaryDirectory
 from unittest import mock
 import json
 import subprocess
+import sys
 import unittest
 
 from tools.agent_pipeline import (
+    Check,
+    Package,
     PipelineError,
     State,
+    accept_package,
     assert_state_base_is_ancestor,
     changed_paths,
     doctor,
+    handoff_package,
     inspect_package,
     load_document_register,
     load_package,
     load_packages,
     main,
     normalize_repo_path,
+    path_allowed,
     read_state,
     start_package,
     trace_requirement,
     validate_catalog,
     validate_links,
+    verify_package,
     write_state_atomic,
 )
 
@@ -421,6 +428,172 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(state.agent, "agent-x")
         self.assertEqual(state.status, "in_progress")
         self.assertTrue(state.branch.startswith("work/m0-a01-"))
+
+
+def package_object(
+    *,
+    package_id: str = "M0-A01",
+    kind: str = "implementation",
+    phase: str = "M0",
+    status: str = "ready",
+    allowed_paths: tuple[str, ...] = ("game/**",),
+    deliverables: tuple[str, ...] = ("game/project.godot",),
+    read_first: tuple[str, ...] = ("GDD/README.md",),
+    requirements: tuple[str, ...] = ("D-06",),
+    qa: tuple[str, ...] = ("QA-26",),
+    checks: tuple[Check, ...] = (
+        Check("fixture", ("python", "GDD/tools/validate_levels.py")),
+    ),
+) -> Package:
+    return Package(
+        path=Path(f"work/packages/{package_id}.md"),
+        id=package_id,
+        title="Test Package",
+        kind=kind,
+        phase=phase,
+        status=status,
+        depends_on=(),
+        requirements=requirements,
+        qa=qa,
+        read_first=read_first,
+        allowed_paths=allowed_paths,
+        deliverables=deliverables,
+        out_of_scope=(),
+        checks=checks,
+        body="# Test Package",
+    )
+
+
+def make_started_repository(
+    *, check_command: tuple[str, ...] | None = None
+) -> Path:
+    root = make_ready_git_repository()
+    templates = root / "work" / "templates"
+    templates.mkdir(parents=True, exist_ok=True)
+    (templates / "handoff.md").write_text(
+        '''# Handoff: <package-id>
+## Package
+<package-id>
+## Requirements
+<requirements>
+## QA
+<qa>
+## Changed files
+<files>
+## Validation
+<validation>
+## Evidence
+<evidence>
+## Remaining risks
+<risks>
+## Reviewer
+<reviewer>
+''',
+        encoding="utf-8",
+    )
+    cmd = list(check_command) if check_command else ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"]
+    package_file = root / "work" / "packages" / "M0-A01.md"
+    package_file.write_text(
+        f'''+++
+id = "M0-A01"
+title = "Baseline"
+kind = "implementation"
+phase = "M0"
+status = "ready"
+depends_on = []
+requirements = ["D-06"]
+qa = ["QA-26"]
+read_first = ["GDD/README.md"]
+allowed_paths = ["game/**", "work/evidence/M0-A01/**", "work/handoffs/M0-A01.md"]
+deliverables = ["game/project.godot"]
+out_of_scope = []
+[[checks]]
+id = "custom"
+command = {json.dumps(cmd)}
++++
+# Baseline
+''',
+        encoding="utf-8",
+    )
+    subprocess.run(["git", "add", "-A"], cwd=root, check=True, capture_output=True)
+    subprocess.run(
+        ["git", "commit", "-m", "setup templates and package"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+    )
+    start_package(root, "M0-A01", "agent-x")
+    return root
+
+
+def make_review_repository() -> Path:
+    root = make_started_repository()
+    evidence_path = root / "work" / "evidence" / "M0-A01" / "verification.txt"
+    evidence_path.parent.mkdir(parents=True, exist_ok=True)
+    evidence_path.write_text("All checks passed\n", encoding="utf-8")
+    handoff_path = root / "work" / "handoffs" / "M0-A01.md"
+    handoff_path.parent.mkdir(parents=True, exist_ok=True)
+    handoff_path.write_text(
+        '''# Handoff: M0-A01
+## Package
+M0-A01
+## Requirements
+D-06
+## QA
+QA-26
+## Changed files
+game/project.godot
+## Validation
+rtk python GDD/tools/validate_levels.py
+## Evidence
+work/evidence/M0-A01/verification.txt
+## Remaining risks
+None
+## Reviewer
+Approved by Test Reviewer
+''',
+        encoding="utf-8",
+    )
+    from tools.agent_pipeline import transition_state
+
+    transition_state(root, "M0-A01", "review")
+    return root
+
+
+class VerificationTests(unittest.TestCase):
+    def test_scope_matches_normalized_glob_and_rejects_protected_path(self):
+        package = package_object(
+            allowed_paths=("game/**", "work/evidence/M0-A01/**")
+        )
+        self.assertTrue(path_allowed("game/scenes/main.tscn", package))
+        self.assertFalse(
+            path_allowed("GDD/02-luat-choi-va-trang-thai.md", package)
+        )
+
+    def test_failed_check_does_not_replace_previous_evidence(self):
+        root = make_started_repository(
+            check_command=(sys.executable, "-c", "raise SystemExit(7)")
+        )
+        evidence = root / "work" / "evidence" / "M0-A01" / "verification.txt"
+        evidence.parent.mkdir(parents=True, exist_ok=True)
+        evidence.write_text("previous valid evidence", encoding="utf-8")
+        with self.assertRaisesRegex(PipelineError, "exit 7"):
+            verify_package(root, "M0-A01")
+        self.assertEqual(
+            evidence.read_text(encoding="utf-8"), "previous valid evidence"
+        )
+
+    def test_handoff_skeleton_does_not_advance_state(self):
+        root = make_started_repository()
+        with self.assertRaisesRegex(PipelineError, "điền handoff"):
+            handoff_package(root, "M0-A01")
+        self.assertEqual(read_state(root, "M0-A01").status, "in_progress")
+        self.assertTrue((root / "work/handoffs/M0-A01.md").exists())
+
+    def test_accept_requires_review_state_and_complete_handoff(self):
+        root = make_review_repository()
+        accept_package(root, "M0-A01")
+        self.assertEqual(read_state(root, "M0-A01").status, "done")
 
 
 if __name__ == "__main__":

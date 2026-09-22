@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
+import json
 import os
 import re
 import subprocess
@@ -646,7 +648,7 @@ def changed_paths(root: Path, base_revision: str) -> set[str]:
             if line_str:
                 result_paths.add(line_str.replace("\\", "/"))
 
-    status_proc = git(root, "status", "--porcelain=v1", "-z", check=False)
+    status_proc = git(root, "status", "--porcelain=v1", "-uall", "-z", check=False)
     if status_proc.returncode == 0 and status_proc.stdout:
         raw_entries = [entry for entry in status_proc.stdout.split("\0") if entry]
         i = 0
@@ -743,6 +745,184 @@ def transition_state(
     return new_state
 
 
+PROTECTED_PREFIXES = (
+    "GDD/",
+    "docs/governance/",
+    "AGENTS.md",
+    "tools/agent_pipeline.py",
+)
+
+
+def path_allowed(path: str, package: Package) -> bool:
+    normalized = normalize_repo_path(path)
+    if package.kind == "implementation" and any(
+        normalized == prefix or normalized.startswith(prefix)
+        for prefix in PROTECTED_PREFIXES
+    ):
+        return False
+    return any(
+        fnmatch.fnmatchcase(normalized, pattern)
+        for pattern in package.allowed_paths
+    )
+
+
+def run_check(root: Path, check: Check) -> tuple[int, str]:
+    completed = subprocess.run(
+        check.command, cwd=root, text=True, capture_output=True
+    )
+    output = completed.stdout + completed.stderr
+    return completed.returncode, output
+
+
+def verify_package(root: Path, package_id: str) -> None:
+    state = read_state(root, package_id)
+    if state.status != "in_progress":
+        raise PipelineError(
+            f"chỉ có thể verify package ở trạng thái 'in_progress', hiện tại là: {state.status}"
+        )
+    assert_state_base_is_ancestor(root, state)
+    packages = load_packages(root)
+    if package_id not in packages:
+        raise PipelineError(f"package không tồn tại: {package_id}")
+    package = packages[package_id]
+
+    paths = changed_paths(root, state.base_revision)
+    for path in sorted(paths):
+        if path == f"work/state/{package.id}.toml":
+            continue
+        if not path_allowed(path, package):
+            raise PipelineError(f"file thay đổi ngoài allowed_paths: {path}")
+
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    evidence_lines: list[str] = [
+        f"Evidence for package: {package.id}",
+        f"Timestamp (UTC): {now_iso}",
+        f"Agent: {state.agent}",
+        f"Branch: {state.branch}",
+        f"Base revision: {state.base_revision}",
+        "",
+    ]
+    for check in package.checks:
+        returncode, output = run_check(root, check)
+        evidence_lines.extend(
+            [
+                f"Check: {check.id}",
+                f"Command: {json.dumps(list(check.command))}",
+                f"Exit code: {returncode}",
+                "Output:",
+                output.rstrip(),
+                "---",
+            ]
+        )
+        if returncode != 0:
+            raise PipelineError(
+                f"check '{check.id}' thất bại với exit {returncode}:\n{output}"
+            )
+
+    evidence_dir = root / "work" / "evidence" / package.id
+    evidence_dir.mkdir(parents=True, exist_ok=True)
+    evidence_file = evidence_dir / "verification.txt"
+    temp_file = evidence_dir / "verification.txt.tmp"
+    temp_file.write_text("\n".join(evidence_lines) + "\n", encoding="utf-8")
+    os.replace(temp_file, evidence_file)
+
+
+def validate_handoff(root: Path, package_id: str) -> None:
+    handoff_path = root / "work" / "handoffs" / f"{package_id}.md"
+    if not handoff_path.is_file():
+        raise PipelineError(f"handoff chưa tồn tại tại {handoff_path}")
+    content = handoff_path.read_text(encoding="utf-8")
+    required_headings = [
+        "Package",
+        "Requirements",
+        "QA",
+        "Changed files",
+        "Validation",
+        "Evidence",
+        "Remaining risks",
+        "Reviewer",
+    ]
+    for heading in required_headings:
+        if not re.search(
+            rf"^#+\s+{re.escape(heading)}\b", content, re.MULTILINE | re.IGNORECASE
+        ):
+            raise PipelineError(f"handoff thiếu mục bắt buộc: {heading}")
+
+    placeholders = [
+        "<package-id>",
+        "<requirements>",
+        "<qa>",
+        "<files>",
+        "<validation>",
+        "<evidence>",
+        "<risks>",
+        "<reviewer>",
+        "TODO",
+    ]
+    for ph in placeholders:
+        if ph in content:
+            raise PipelineError(
+                "vui lòng điền handoff đầy đủ trước khi chuyển sang review"
+            )
+
+
+def handoff_package(root: Path, package_id: str) -> State:
+    state = read_state(root, package_id)
+    if state.status != "in_progress":
+        raise PipelineError(
+            f"chỉ có thể handoff package ở trạng thái 'in_progress', hiện tại là: {state.status}"
+        )
+    assert_state_base_is_ancestor(root, state)
+
+    handoff_path = root / "work" / "handoffs" / f"{package_id}.md"
+    if not handoff_path.is_file():
+        handoff_path.parent.mkdir(parents=True, exist_ok=True)
+        template_file = root / "work" / "templates" / "handoff.md"
+        if template_file.is_file():
+            skeleton = template_file.read_text(encoding="utf-8")
+        else:
+            skeleton = (
+                f"# Handoff: {package_id}\n\n"
+                "## Package\n<package-id>\n\n"
+                "## Requirements\n<requirements>\n\n"
+                "## QA\n<qa>\n\n"
+                "## Changed files\n<files>\n\n"
+                "## Validation\n<validation>\n\n"
+                "## Evidence\n<evidence>\n\n"
+                "## Remaining risks\n<risks>\n\n"
+                "## Reviewer\n<reviewer>\n"
+            )
+        handoff_path.write_text(
+            skeleton.replace("<package-id>", package_id), encoding="utf-8"
+        )
+        raise PipelineError(
+            f"đã tạo skeleton handoff tại {handoff_path}, vui lòng điền handoff"
+        )
+
+    evidence_path = root / "work" / "evidence" / package_id / "verification.txt"
+    if not evidence_path.is_file():
+        raise PipelineError(
+            f"chưa có bằng chứng verification tại {evidence_path}"
+        )
+
+    validate_handoff(root, package_id)
+    return transition_state(root, package_id, "review")
+
+
+def accept_package(root: Path, package_id: str) -> State:
+    state = read_state(root, package_id)
+    if state.status != "review":
+        raise PipelineError(
+            f"chỉ có thể accept package ở trạng thái 'review', hiện tại là: {state.status}"
+        )
+    validate_handoff(root, package_id)
+    proc = git(root, "config", "user.name", check=False)
+    reviewer = proc.stdout.strip()
+    if not reviewer:
+        raise PipelineError("git config user.name chưa được thiết lập")
+    return transition_state(root, package_id, "done")
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agent_pipeline", description="Repository agent pipeline CLI"
@@ -768,6 +948,15 @@ def build_parser() -> argparse.ArgumentParser:
     start_parser = subparsers.add_parser("start", help="Start work package")
     start_parser.add_argument("package_id", help="Package ID to start")
     start_parser.add_argument("--agent", required=True, help="Agent name")
+
+    verify_parser = subparsers.add_parser("verify", help="Verify work package")
+    verify_parser.add_argument("package_id", help="Package ID to verify")
+
+    handoff_parser = subparsers.add_parser("handoff", help="Handoff work package")
+    handoff_parser.add_argument("package_id", help="Package ID to handoff")
+
+    accept_parser = subparsers.add_parser("accept", help="Accept work package")
+    accept_parser.add_argument("package_id", help="Package ID to accept")
 
     return parser
 
@@ -830,6 +1019,21 @@ def dispatch(args: argparse.Namespace, root: Path) -> int:
     if args.command == "start":
         state = start_package(root, args.package_id, args.agent)
         _print(f"OK: started {state.package_id} on branch {state.branch}")
+        return 0
+
+    if args.command == "verify":
+        verify_package(root, args.package_id)
+        _print(f"OK: verified {args.package_id}")
+        return 0
+
+    if args.command == "handoff":
+        state = handoff_package(root, args.package_id)
+        _print(f"OK: handed off {state.package_id} to review")
+        return 0
+
+    if args.command == "accept":
+        state = accept_package(root, args.package_id)
+        _print(f"OK: accepted {state.package_id} (done)")
         return 0
 
     raise PipelineError(f"subcommand không được hỗ trợ: {args.command}")
