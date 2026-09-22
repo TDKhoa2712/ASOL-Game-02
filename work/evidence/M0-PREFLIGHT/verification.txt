@@ -8,7 +8,7 @@ Check: pipeline_tests
 Command: ["python", "-m", "unittest", "discover", "tools/tests", "-p", "test_*.py"]
 Exit code: 0
 Output:
-REPOMIX_SNAPSHOT meowdoku-clone.xml: Repomix snapshot pháº£i Ä‘Æ°á»£c tÃ¡i táº¡o ngoÃ i repository
+REPOMIX_SNAPSHOT meowdoku-clone.xml: Repomix snapshot phải được tái tạo ngoài repository
 OK: started M0-A01 on branch work/m0-a01-baseline
 .....................
 ----------------------------------------------------------------------

@@ -1,6 +1,8 @@
 # Nhật ký quyết định thiết kế
 
-Chỉ ghi các quyết định đã có trong GDD hiện hành/GDD 09. Các DEC ngày
+Ghi quyết định canonical đã có trong GDD hiện hành/GDD 09 và quyết định
+governance cấp dưới dùng để quản lý freeze/change-control mà không tự đổi luật.
+Các DEC ngày
 2026-09-18 là baseline v0.4.2; DEC-013..016 ngày 2026-09-21 tạo baseline v0.5.0. DEC-017 ngày 2026-09-22 bổ sung governance cho Design Freeze mà không đổi luật GDD.
 
 ## DEC-001 — Campaign tuyến tính 24 level
@@ -187,6 +189,6 @@ Chỉ ghi các quyết định đã có trong GDD hiện hành/GDD 09. Các DEC 
 - **Alternatives considered:** Freeze mọi giá trị; hoặc hoãn toàn bộ freeze tới sau M1. Chọn freeze core và tune có kiểm soát để M0/M1 còn hiệu chỉnh cảm giác mà không làm trôi luật.
 - **Rationale:** Tách invariant triển khai khỏi tham số cần đo trên thiết bị/người chơi, đồng thời ngăn tuning bị dùng để lách thay đổi scope hoặc schema.
 - **Change control:** Mọi tuning phải có evidence, owner, phase và DEC cập nhật giá trị trước khi merge. Thay đổi ngoài danh sách tuneable, hoặc đổi ý nghĩa luật/schema/tiến trình/phạm vi/scorecard, bắt buộc mở lại Design Freeze bằng package `design-change` hoặc `governance`, cập nhật đồng bộ GDD, fixture, validator/test và QA.
-- **Evidence:** GDD 00–09, checklist Design Freeze 06, risk/research register và phê duyệt package M0-PREFLIGHT.
+- **Evidence:** GDD 00–09, AGENTS.md, checklist Design Freeze 06, risk/research register và phê duyệt trực tiếp của Human Coordinator cho thiết kế frozen/tuneable ngày 2026-09-22; nghiệm thu implementation M0-PREFLIGHT vẫn theo pipeline riêng.
 - **Affected GDD IDs:** D-01..10, GR-01..33, LV-01..08, TECH-01..21, ART-01..13, toàn bộ QA MVP.
 - **Status:** ACTIVE-GOVERNANCE — đóng DQ-002; không tự tuyên bố Design Freeze đã đạt.

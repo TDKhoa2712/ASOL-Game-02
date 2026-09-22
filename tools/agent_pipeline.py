@@ -779,7 +779,12 @@ def path_allowed(path: str, package: Package) -> bool:
 
 def run_check(root: Path, check: Check) -> tuple[int, str]:
     completed = subprocess.run(
-        check.command, cwd=root, text=True, capture_output=True
+        check.command,
+        cwd=root,
+        text=True,
+        encoding='utf-8',
+        errors='replace',
+        capture_output=True,
     )
     output = completed.stdout + completed.stderr
     return completed.returncode, output

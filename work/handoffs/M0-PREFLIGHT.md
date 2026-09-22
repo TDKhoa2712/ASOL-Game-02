@@ -27,7 +27,7 @@ M0-PREFLIGHT — M0 prototype readiness governance. Thực hiện bởi Codex tr
 
 ## Validation
 
-- `python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json`: 5/5 fixture hợp lệ, 0 duplicate geometry warning.
+- `python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json`: 5/5 fixture hợp lệ, 0 duplicate geometry warning; output lưu tại `level-validator.txt`.
 - `python -B -m unittest discover GDD/tools -p test_*.py`: 23 test pass.
 - `python -B -m unittest discover tools/tests -p test_*.py`: 21 test pass.
 - `python tools/agent_pipeline.py validate`: pass.
@@ -37,6 +37,7 @@ M0-PREFLIGHT — M0 prototype readiness governance. Thực hiện bởi Codex tr
 ## Evidence
 
 - `work/evidence/M0-PREFLIGHT/verification.txt`.
+- `work/evidence/M0-PREFLIGHT/level-validator.txt`.
 - Test hồi quy mới chứng minh catalog từ chối deliverable nằm ngoài `allowed_paths` bằng mã `DELIVERABLE_OUT_OF_SCOPE`.
 - Các contract M0 giờ khai báo Godot headless/runtime smoke checks và artifact evidence cụ thể.
 
@@ -45,6 +46,7 @@ M0-PREFLIGHT — M0 prototype readiness governance. Thực hiện bởi Codex tr
 - Godot, Blender và Gradle chưa được tìm thấy trên PATH của máy hiện tại; Android SDK/ADB và JDK 21 đã có. M0-A01 cần cài/khóa Godot minor version và export templates trước khi verify.
 - Chưa có bằng chứng máy macOS/Xcode, iPhone mục tiêu hoặc phép đo thiết bị thật; M0-A01 phải chuyển blocked nếu không có môi trường iOS thay vì handoff như đã đạt.
 - Design Freeze vẫn chưa sẵn sàng: còn bằng chứng M0, ranh giới package B/Core, trace matrix QA và bằng chứng content/runtime Hint S3.
+- M0-A01 nay phụ thuộc M0-PREFLIGHT; pipeline sẽ không cho start trước khi Coordinator accept package này.
 - Nhánh `main` vẫn chưa chứa commit hoàn tất SETUP-001; Coordinator cần tích hợp baseline hoặc chủ động duy trì chuỗi nhánh trước khi bắt đầu M0-A01.
 
 ## Reviewer

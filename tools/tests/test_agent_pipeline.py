@@ -26,6 +26,7 @@ from tools.agent_pipeline import (
     normalize_repo_path,
     path_allowed,
     read_state,
+    run_check,
     start_package,
     trace_requirement,
     validate_catalog,
@@ -580,6 +581,27 @@ Approved by Test Reviewer
 
 
 class VerificationTests(unittest.TestCase):
+    def test_run_check_decodes_utf8_output(self):
+        root = make_repository()
+        check = Check(
+            'utf8',
+            (
+                sys.executable,
+                '-c',
+                (
+                    'import sys; '
+                    'sys.stdout.buffer.write('
+                    "'bằng chứng'.encode('utf-8')"
+                    ')'
+                ),
+            ),
+        )
+
+        returncode, output = run_check(root, check)
+
+        self.assertEqual(returncode, 0)
+        self.assertEqual(output, 'bằng chứng')
+
     def test_scope_matches_normalized_glob_and_rejects_protected_path(self):
         package = package_object(
             allowed_paths=("game/**", "work/evidence/M0-A01/**")

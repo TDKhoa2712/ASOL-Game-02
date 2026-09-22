@@ -50,7 +50,7 @@ change và tuân thủ yêu cầu đồng bộ của `AGENTS.md`.
 ## 6. Điều kiện bằng chứng M0 trước khi tuyên bố freeze
 
 - [ ] Godot minor, renderer và toolchain Android/iOS đã được chốt bằng build thử.
-- [ ] Interaction prototype replay được contract v2 cho QA-08..12/43..45/54..56 trên thiết bị mục tiêu.
+- [ ] Interaction prototype replay được contract v2 cho QA-08/09/12/43..45/54/55 trên thiết bị mục tiêu.
 - [ ] 280 ms/12 điểm được giữ hoặc thay bằng kết quả đo có decision record.
 - [ ] Preview/rollback không tạo state trung gian bền vững hoặc nhân đôi `TryCat`.
 - [ ] Atlas mèo mặc định có số đo FPS, stutter, RAM/VRAM và thời gian tải đạt budget đã chốt.
@@ -66,7 +66,7 @@ không âm thầm thay scope/rule/schema:
 - [ ] Tune feedback timing ở M1.
 - [ ] Nhịp khó/thời gian của 24 level.
 - [ ] Cảm giác công bằng của 3 tim/Undo X/X đỏ.
-- [ ] Tutorial Level 1/một Hint mỗi lượt/accessibility validation.
+- [ ] Tutorial Level 1/một Hint mỗi lượt/accessibility validation, gồm QA-56 về Hint qua reload/Retry/Restart ở package E/M1.
 - [ ] Chi tiết motif/sticker level 10/20.
 - [ ] Tên phát hành và art identity trước art cuối.
 
