@@ -37,7 +37,7 @@
 - Add: `work/evidence/M0-A02/prototype-plan.md`
 - Generated: `work/state/M0-A02.toml`
 
-- [ ] **Step 1: Commit the approved design and implementation plan**
+- [x] **Step 1: Commit the approved design and implementation plan**
 
 ```powershell
 git add work/evidence/M0-A02/prototype-design.md work/evidence/M0-A02/prototype-plan.md
@@ -46,7 +46,7 @@ git commit -m "docs: design M0-A02 editor prototype"
 
 Expected: planning artifacts are committed and the tree is clean.
 
-- [ ] **Step 2: Start the assigned package**
+- [x] **Step 2: Start the assigned package**
 
 ```powershell
 python tools/agent_pipeline.py start M0-A02 --agent codex
