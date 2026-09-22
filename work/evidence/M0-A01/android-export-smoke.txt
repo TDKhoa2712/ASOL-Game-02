@@ -1,5 +1,5 @@
 Android export smoke for package: M0-A01
-Date: 2026-09-22
+Date: 2026-09-23
 Host: Windows x64 10.0.26200
 Godot: 4.7.2.stable.official.ed1daf0bf
 
@@ -19,7 +19,7 @@ Result: PASS — APK created, aligned, signed, and verified by Godot
 Artifact:
 - Path: game/build/android/asol-game-02-debug.apk (gitignored local build output)
 - Size: 28,256,094 bytes
-- SHA-256: 48E8F3A543D330822430F20D70BF513ADDFAC9A0B0FBB72B181AD5CB6DCAF995
+- SHA-256: 759C3BFF61D4941643298DCC53040876C81F2F777030B43EC582BF8AC252DD7B
 - Package: org.asol.game02
 - Version: code 1, name 0.0.0-m0
 - SDK: min 24, target/compile 36
@@ -35,8 +35,8 @@ Signature verification:
 Offline manifest check:
 `aapt2 dump permissions` returned only `package: org.asol.game02` and no permissions. In particular, the bootstrap APK does not request `android.permission.INTERNET`.
 
-Remaining Android blocker:
-No physical device was attached and no emulator AVD exists, so install, cold-start, offline launch, and TECH-13/19 measurements were not run.
+Deferred Android device work:
+No physical device was attached and no emulator AVD exists, so install, cold-start, offline launch, and TECH-13/19 measurements were not run. These checks are owned by M0-A03 and do not block the M0-A01 host-export baseline.
 
 Non-fatal export warning:
 No project icon is configured. The debug build uses template fallback art; production branding is outside M0-A01.

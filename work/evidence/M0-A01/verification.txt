@@ -1,8 +1,8 @@
 Evidence for package: M0-A01
-Timestamp (UTC): 2026-09-22T14:57:45Z
+Timestamp (UTC): 2026-09-22T17:31:13Z
 Agent: codex
-Branch: work/m0-a01-godot-toolchain-and-device-baseline
-Base revision: 8a332c7e8714556473ae8e4f3e7b31c54358c920
+Branch: work/m0-a01-godot-toolchain-and-editor-baseline
+Base revision: 48b89e9767029d2a9ad078c0d5fa55b0e4682943
 
 Check: fixture
 Command: ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"]

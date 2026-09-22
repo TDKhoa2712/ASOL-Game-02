@@ -1,7 +1,7 @@
-# M0-A01 — Godot toolchain and device baseline
+# M0-A01 — Godot toolchain and editor baseline
 
-**Updated:** 2026-09-22 (Asia/Saigon)  
-**Package state:** BLOCKED pending iOS host/signing and assigned physical devices; do not hand off as achieved
+**Updated:** 2026-09-23 (Asia/Saigon)  
+**Package state:** READY FOR HANDOFF under the accepted editor-first contract; device/iOS validation is owned by M0-A03
 
 ## Locked project baseline
 
@@ -35,16 +35,16 @@ The project contains only a local bootstrap scene and local scripts. This is an 
 | macOS/Xcode host | **UNAVAILABLE** on this Windows host |
 | iPhone target device | **UNASSIGNED** |
 
-## Required device matrix and budgets
+## Device validation deferred to M0-A03
 
-No Technical Lead/QA decision currently assigns concrete low-end devices, OS versions, or memory budgets. DQ-003 and DQ-005 remain open, so the following are explicit blockers rather than invented values.
+No Technical Lead/QA decision currently assigns concrete low-end devices, OS versions, or memory budgets. DQ-003 and DQ-005 remain open. Under the accepted M0 replan, these values and measurements are explicit M0-A03/M0-GATE requirements rather than M0-A01 acceptance conditions.
 
 | Target | Device | OS | Load budget | Runtime budget | Status |
 | --- | --- | --- | --- | --- | --- |
-| Android low-end | UNASSIGNED | UNASSIGNED | TECH-13: first level <2 s after startup | TECH-19: ≥55 FPS, no frame stall >100 ms; RAM/VRAM budget UNASSIGNED | BLOCKED |
-| iPhone low-end | UNASSIGNED | UNASSIGNED | TECH-13: first level <2 s after startup | TECH-19: ≥55 FPS, no frame stall >100 ms; RAM/VRAM budget UNASSIGNED | BLOCKED |
+| Android low-end | UNASSIGNED | UNASSIGNED | TECH-13: first level <2 s after startup | TECH-19: ≥55 FPS, no frame stall >100 ms; RAM/VRAM budget UNASSIGNED | DEFERRED TO M0-A03 |
+| iPhone low-end | UNASSIGNED | UNASSIGNED | TECH-13: first level <2 s after startup | TECH-19: ≥55 FPS, no frame stall >100 ms; RAM/VRAM budget UNASSIGNED | DEFERRED TO M0-A03 |
 
-The bootstrap has no production sprite atlas, jump animation, sticker, or playable level. Therefore it cannot produce valid TECH-13/19 device measurements; those measurements must not be inferred from desktop headless timings.
+The bootstrap has no production sprite atlas, jump animation, sticker, or playable level. Therefore it cannot produce valid TECH-13/19 device measurements; those measurements must not be inferred from desktop headless timings and remain hard-gated by M0-A03/M0-GATE.
 
 ## Verification completed on this host
 
@@ -58,23 +58,22 @@ The bootstrap has no production sprite atlas, jump animation, sticker, or playab
 | Android APK identity | PASS — `org.asol.game02`, version code 1, version name `0.0.0-m0`, min SDK 24, target SDK 36 |
 | Android APK signature | PASS — APK Signature Scheme v2 and v3 verified; debug certificate only, not a release identity |
 | Android offline manifest | PASS for bootstrap — `aapt2 dump permissions` listed the package and no permissions, including no `android.permission.INTERNET` |
-| Android install/run | BLOCKED — no physical device or configured AVD |
-| iOS export/build smoke | BLOCKED — matching template is installed, but Team ID is intentionally absent and the required macOS/Xcode/signing environment is unavailable; see `ios-export-smoke.txt` |
-| TECH-13/19 measurements | BLOCKED — no assigned Android/iPhone devices and no representative gameplay/atlas workload |
+| Android install/run | DEFERRED TO M0-A03 — no physical device or configured AVD; not an M0-A01 acceptance condition |
+| iOS export/build smoke | DEFERRED TO M0-A03 — matching template is installed, but Team ID and macOS/Xcode/signing environment are unavailable; see `ios-export-smoke.txt` |
+| TECH-13/19 measurements | DEFERRED TO M0-A03 — no assigned devices or representative gameplay/atlas workload |
 
 Godot emitted a non-fatal warning that no project icon is specified. Production branding/content is out of scope for M0-A01; the debug APK uses the template fallback and must not be treated as a release artifact.
 
-## Unblock requirements
+## Mobile follow-up owned by M0-A03
 
 1. Technical Lead + QA Lead assign one low-end Android and one low-end iPhone, exact OS versions, and RAM/VRAM/load budgets.
 2. Install and run the debug APK on the assigned Android device; record cold startup and offline launch.
 3. Provide a macOS/Xcode host, Apple Team/signing configuration, export/build the iOS preset, and record startup/offline smoke on the assigned iPhone.
 4. When the representative level and sprite workload exists, capture FPS, frame stalls, RAM, VRAM, and load time on both devices against TECH-13/19.
 
-Until all items above have evidence, `M0-A01` must remain blocked and must not enter review.
+Until all items above have evidence, M0-A03 and M0-GATE must remain blocked from claiming mobile completion. Their absence does not block M0-A01 editor/toolchain handoff.
 
 ## Authoritative toolchain references
 
 - Godot 4.7 Android export setup: <https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_android.html>
 - Godot 4.7 iOS export requirements: <https://docs.godotengine.org/en/4.7/tutorials/export/exporting_for_ios.html>
-

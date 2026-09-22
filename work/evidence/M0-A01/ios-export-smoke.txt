@@ -8,6 +8,7 @@ Godot_v4.7.2-stable_win64.exe --headless --path game --export-debug "iOS M0 Debu
 
 Exit code: 1
 Result: BLOCKED
+Disposition after M0-REPLAN: DEFERRED TO M0-A03; this historical host limitation is not an M0-A01 acceptance condition.
 
 The matching Godot 4.7.2 `ios.zip` export template is installed and the preset is recognized. Godot now reports:
 - App Store Team ID not specified.
