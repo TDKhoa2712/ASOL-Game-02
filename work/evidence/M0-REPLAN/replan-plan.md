@@ -221,7 +221,7 @@ python tools/agent_pipeline.py doctor
 
 Expected: 22 pipeline tests pass; validate and doctor exit 0.
 
-- [ ] **Step 4: Run required package verification**
+- [x] **Step 4: Run required package verification**
 
 ```powershell
 python tools/agent_pipeline.py verify M0-REPLAN
@@ -229,7 +229,7 @@ python tools/agent_pipeline.py verify M0-REPLAN
 
 Expected: `work/evidence/M0-REPLAN/verification.txt` is written with both checks at exit 0.
 
-- [ ] **Step 5: Write a complete handoff**
+- [x] **Step 5: Write a complete handoff**
 
 Create `work/handoffs/M0-REPLAN.md` with Package, Requirements, QA, Changed files, Validation, Evidence, Remaining risks and Reviewer sections. It must contain no `<...>` placeholders or TODO markers.
 
