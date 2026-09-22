@@ -5,9 +5,12 @@ import unittest
 
 from tools.agent_pipeline import (
     PipelineError,
+    doctor,
+    inspect_package,
     load_document_register,
     load_package,
     load_packages,
+    main,
     normalize_repo_path,
     trace_requirement,
     validate_catalog,
@@ -113,6 +116,15 @@ owner = "tech"
     return root
 
 
+def make_valid_repository() -> Path:
+    root = make_registered_repository(
+        requirements="| D-06 | Engine |", qa="| QA-26 | Offline | D-06 |"
+    )
+    write_package(root, VALID_PACKAGE, filename="M0-A01.md")
+    (root / "README.md").write_text("# Project\n", encoding="utf-8")
+    return root
+
+
 class PackageParsingTests(unittest.TestCase):
     def test_loads_valid_package(self):
         with TemporaryDirectory() as temp:
@@ -198,6 +210,28 @@ class CatalogValidationTests(unittest.TestCase):
         self.assertIn("GDD/README.md", trace)
         self.assertIn("QA-26", trace)
         self.assertIn("M0-A01", trace)
+
+
+class ReadOnlyCliTests(unittest.TestCase):
+    def test_doctor_reports_cache_snapshot_and_obsolete_path(self):
+        root = make_valid_repository()
+        (root / "GDD/tools/__pycache__").mkdir(parents=True)
+        (root / "meowdoku-clone.xml").write_text("repomix", encoding="utf-8")
+        (root / "README.md").write_text("ASOL-Game-03 file:///D:/old", encoding="utf-8")
+        codes = {issue.code for issue in doctor(root)}
+        self.assertTrue({"CACHE_ARTIFACT", "REPOMIX_SNAPSHOT", "OBSOLETE_PATH"} <= codes)
+
+    def test_inspect_prints_scope_dependencies_and_checks(self):
+        root = make_valid_repository()
+        output = inspect_package(root, "M0-A01")
+        self.assertIn("D-06", output)
+        self.assertIn("game/**", output)
+        self.assertIn("fixture", output)
+
+    def test_main_returns_nonzero_for_invalid_repository(self):
+        root = make_valid_repository()
+        (root / "meowdoku-clone.xml").write_text("repomix", encoding="utf-8")
+        self.assertEqual(main(["doctor"], root=root), 1)
 
 
 if __name__ == "__main__":

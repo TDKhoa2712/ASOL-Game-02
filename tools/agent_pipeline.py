@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import argparse
 import re
+import sys
 import tomllib
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
@@ -459,3 +461,183 @@ def trace_requirement(
             qa_text = ", ".join(package.qa) if package.qa else "none"
             lines.append(f"Package: {package.id} (QA: {qa_text})")
     return "\n".join(lines)
+
+
+def repository_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def inspect_package(root: Path, package_id: str) -> str:
+    packages = load_packages(root)
+    if package_id not in packages:
+        raise PipelineError(f"package không tồn tại: {package_id}")
+    package = packages[package_id]
+    lines: list[str] = [
+        f"Package: {package.id} ({package.title})",
+        f"Kind: {package.kind}",
+        f"Phase: {package.phase}",
+        f"Status: {package.status}",
+        f"Depends on: {', '.join(package.depends_on) or 'none'}",
+        f"Requirements: {', '.join(package.requirements) or 'none'}",
+        f"QA: {', '.join(package.qa) or 'none'}",
+        "Read first:",
+        *(f"  - {p}" for p in package.read_first),
+        "Allowed paths:",
+        *(f"  - {p}" for p in package.allowed_paths),
+        "Deliverables:",
+        *(f"  - {p}" for p in package.deliverables),
+        "Out of scope:",
+        *(f"  - {p}" for p in package.out_of_scope),
+        "Checks:",
+        *(f"  - {check.id}: {' '.join(check.command)}" for check in package.checks),
+    ]
+    return "\n".join(lines)
+
+
+def doctor(root: Path) -> list[Issue]:
+    packages = load_packages(root)
+    issues = validate_catalog(root, packages)
+    documents = load_document_register(root)
+    issues.extend(validate_links(root, documents))
+    for path in root.rglob("*"):
+        relative = _relative_path(root, path)
+        if ".git" in path.parts:
+            continue
+        if "__pycache__" in path.parts or path.suffix == ".pyc":
+            issues.append(
+                Issue(
+                    "CACHE_ARTIFACT",
+                    relative,
+                    "Python cache không được nằm trong repository",
+                )
+            )
+        if path.name == "meowdoku-clone.xml":
+            issues.append(
+                Issue(
+                    "REPOMIX_SNAPSHOT",
+                    relative,
+                    "Repomix snapshot phải được tái tạo ngoài repository",
+                )
+            )
+        if path.is_file() and not relative.startswith(
+            ("docs/archive/", ".git/", ".codegraph/")
+        ):
+            if path.suffix in {".md", ".toml"}:
+                try:
+                    content = path.read_text(encoding="utf-8")
+                    if "ASOL-Game-03" in content or "file:///" in content:
+                        issues.append(
+                            Issue(
+                                "OBSOLETE_PATH",
+                                relative,
+                                "chứa đường dẫn tuyệt đối hoặc định danh cũ",
+                            )
+                        )
+                except UnicodeDecodeError:
+                    pass
+    return sorted(issues, key=lambda issue: (issue.path, issue.code, issue.message))
+
+
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="agent_pipeline", description="Repository agent pipeline CLI"
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser("validate", help="Validate catalog and links")
+    subparsers.add_parser("doctor", help="Run repository health checks")
+
+    list_parser = subparsers.add_parser("list", help="List work packages")
+    list_parser.add_argument(
+        "--status", help="Filter packages by status", default=None
+    )
+
+    trace_parser = subparsers.add_parser(
+        "trace", help="Trace requirement definition and usages"
+    )
+    trace_parser.add_argument("requirement_id", help="Requirement ID to trace")
+
+    inspect_parser = subparsers.add_parser("inspect", help="Inspect package contract")
+    inspect_parser.add_argument("package_id", help="Package ID to inspect")
+
+    return parser
+
+
+def _print(text: str = "", file: Any = None) -> None:
+    target = file or sys.stdout
+    try:
+        print(text, file=target)
+    except UnicodeEncodeError:
+        buffer = getattr(target, "buffer", None)
+        if buffer is not None:
+            buffer.write((text + "\n").encode("utf-8", errors="replace"))
+        else:
+            print(
+                text.encode("ascii", errors="backslashreplace").decode("ascii"),
+                file=target,
+            )
+
+
+def dispatch(args: argparse.Namespace, root: Path) -> int:
+    if args.command == "validate":
+        packages = load_packages(root)
+        issues = validate_catalog(root, packages)
+        documents = load_document_register(root)
+        issues.extend(validate_links(root, documents))
+        if issues:
+            for issue in issues:
+                _print(f"{issue.code} {issue.path}: {issue.message}")
+            return 1
+        _print("OK: validation passed")
+        return 0
+
+    if args.command == "doctor":
+        issues = doctor(root)
+        if issues:
+            for issue in issues:
+                _print(f"{issue.code} {issue.path}: {issue.message}")
+            return 1
+        _print("OK: repository contract is valid")
+        return 0
+
+    if args.command == "list":
+        packages = load_packages(root)
+        for package in packages.values():
+            status = package.status
+            state_file = root / "work" / "state" / f"{package.id}.toml"
+            if state_file.is_file():
+                try:
+                    state_data = tomllib.loads(state_file.read_text(encoding="utf-8"))
+                    status = state_data.get("status", status)
+                except Exception:
+                    pass
+            if args.status and status != args.status:
+                continue
+            _print(f"{package.id:10} {status:12} {package.kind:15} {package.title}")
+        return 0
+
+    if args.command == "trace":
+        packages = load_packages(root)
+        _print(trace_requirement(root, args.requirement_id, packages))
+        return 0
+
+    if args.command == "inspect":
+        _print(inspect_package(root, args.package_id))
+        return 0
+
+    raise PipelineError(f"subcommand không được hỗ trợ: {args.command}")
+
+
+def main(argv: list[str] | None = None, root: Path | None = None) -> int:
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    root_path = (root or repository_root()).resolve()
+    try:
+        return dispatch(args, root_path)
+    except PipelineError as exc:
+        _print(f"ERROR: {exc}", file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
