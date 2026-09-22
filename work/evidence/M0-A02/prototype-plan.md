@@ -92,7 +92,7 @@ python -B -m unittest game.tests.test_interaction_fixture_sync
 
 Expected GREEN: one sync test passes.
 
-- [ ] **Step 4: Commit fixture contract**
+- [x] **Step 4: Commit fixture contract**
 
 ```powershell
 git add game/data/t01.json game/tests/fixtures/interactions.v2.json game/tests/test_interaction_fixture_sync.py
@@ -105,7 +105,7 @@ git commit -m "test: mirror T01 interaction contract"
 - Add: `game/scripts/interaction_session.gd`
 - Add: `game/tests/run_interaction_contract.gd`
 
-- [ ] **Step 1: Write a session-vector runner and observe RED**
+- [x] **Step 1: Write a session-vector runner and observe RED**
 
 The runner loads T01 and the interaction fixture, executes all `sessionCases`, prints case-specific failures and exits nonzero if any state differs.
 
@@ -115,11 +115,11 @@ The runner loads T01 and the interaction fixture, executes all `sessionCases`, p
 
 Expected RED: `interaction_session.gd` or required API is missing.
 
-- [ ] **Step 2: Implement InteractionSession minimally**
+- [x] **Step 2: Implement InteractionSession minimally**
 
 Provide reset/load-initial/public-state plus actions `MarkX`, `ClearX`, `MarkStroke`, `UndoX`, `TryCat`, `RestartLevel`, `Retry`, `Hint`, `BackToHome`, `CloseApp`, `LevelWon` and `LevelFailed`.
 
-- [ ] **Step 3: Re-run session vectors**
+- [x] **Step 3: Re-run session vectors**
 
 Run the command from Step 1.
 
