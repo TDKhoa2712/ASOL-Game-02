@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Godot
+.godot/
+*.translation
+
+# Tool snapshots and indexers
+meowdoku-clone.xml
+*.repomix.xml
+.codegraph/
+
+# Temporary and local logs
+*.tmp
+*.log
+scratch/

@@ -1,0 +1,83 @@
+[[documents]]
+path = "GDD/README.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/01-tam-nhin-va-pham-vi.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/02-luat-choi-va-trang-thai.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/03-luong-man-hinh-va-ux.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/04-thiet-ke-level.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/05-kien-truc-va-du-lieu.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/06-my-thuat-va-am-thanh.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/08-ke-hoach-trien-khai-cho-agent.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/09-ra-soat-thiet-ke.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/10-nghien-cuu-quy-tac-suy-luan.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/11-ke-hoach-meta-va-sinh-level.md"
+class = "canonical"
+status = "CANONICAL"
+owner = "Game Design"
+
+[[documents]]
+path = "GDD/12-sinh-level-do-kho-va-endless.md"
+class = "canonical-proposal"
+status = "PROPOSED"
+owner = "Puzzle Design"
+
+[[documents]]
+path = "docs/governance/README.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"

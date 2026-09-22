@@ -1,14 +1,51 @@
-# Vườn Mèo — thiết kế game giải đố
+# ASOL-Game-02 — Vườn Mèo
 
-Repository hiện chứa [GDD v0.5.0](GDD/README.md), fixture và validator, chưa có game chạy được. Thiết kế hiện hành: **một dãy 24 level**, bàn 4×4–6×6; Level 1 là tutorial duy nhất; level 1–18 dùng S1/S2 và 19–24 bắt buộc cần S3. Một chạm hiện/ẩn X tức thì, kéo đánh/xóa X theo ô đầu, hai chạm nhanh cùng ô thử mèo. Ô có `empty`, `x`, `x_error`, `cat`; X đỏ khóa, giữ 3 tim, có Restart và Undo một action X gần nhất nhưng không Undo qua `TryCat`. Mỗi lượt có một Hint miễn phí; scorecard chỉ hiện ở Result. Thắng đi tới level kế, không có chương hoặc màn chọn level. Schema v4/validator chuẩn bị bàn tới N=12 cho tooling, còn release vẫn N≤6 và không dùng zoom/pan.
+Dự án phát triển game giải đố logic "Vườn Mèo".
 
-Luật chuẩn: [GDD/02-luat-choi-va-trang-thai.md](GDD/02-luat-choi-va-trang-thai.md). Hướng Godot 2D với sprite từ model 3D, màu/nhãn/họa tiết vùng độc lập và cache mèo: [GDD/05-kien-truc-va-du-lieu.md](GDD/05-kien-truc-va-du-lieu.md). Lộ trình: [GDD/08-ke-hoach-trien-khai-cho-agent.md](GDD/08-ke-hoach-trien-khai-cho-agent.md). S3 MVP cùng nghiên cứu S4/S5 ở [GDD/10](GDD/10-nghien-cuu-quy-tac-suy-luan.md); mọi meta/sinh level trong [GDD/11](GDD/11-ke-hoach-meta-va-sinh-level.md) đều là nghiên cứu post-MVP, không có interface trong bản đầu.
+> **Trạng thái hiện tại:** Dự án đang ở giai đoạn tiền sản xuất (Pre-production). Repository chứa toàn bộ tài liệu thiết kế chuẩn (GDD), quy chuẩn quản trị (Governance), pipeline quản lý công việc và bộ test kiểm chứng; **chưa có client game chạy được**. Thư mục mã nguồn `game/` sẽ được khởi tạo trong gói việc M0 baseline.
 
-Từ thư mục gốc, kiểm fixture và test validator:
+---
 
+## Cấu trúc Repository
+
+- [`GDD/`](GDD/README.md): Nguồn thiết kế chuẩn (Canonical Game Design Document v0.5.0), dữ liệu mẫu (fixtures) và công cụ kiểm chứng logic level.
+- [`docs/governance/`](docs/governance/README.md): Hệ thống quản trị, thẩm quyền tài liệu ([`document-register.toml`](docs/governance/document-register.toml)) và nhật ký quyết định kỹ thuật.
+- [`work/`](work/README.md): Hợp đồng công việc ([`work/packages/`](work/packages/)), trạng thái vòng đời thực thi, báo cáo bàn giao và bằng chứng kiểm chứng.
+- [`tools/`](tools/agent_pipeline.py): Bộ công cụ CLI zero-dependency (`tools/agent_pipeline.py`), sinh báo cáo và kiểm thử tự động.
+
+---
+
+## Lệnh Vận Hành Nhanh
+
+Kiểm tra tính toàn vẹn của repository:
+```text
+python tools/agent_pipeline.py doctor
+```
+
+Xem danh sách work package:
+```text
+python tools/agent_pipeline.py list
+```
+
+Xem chi tiết gói việc M0 baseline:
+```text
+python tools/agent_pipeline.py inspect M0-A01
+```
+
+Chạy kiểm thử GDD và level fixture:
 ```text
 python GDD/tools/validate_levels.py GDD/data/levels.sample.json
 python -m unittest discover GDD/tools -p "test_*.py"
 ```
 
-Cờ `--release` chỉ dùng cho bộ 24 level phát hành gốc; năm fixture hiện tại không thuộc bộ đó. Tên “Vườn Mèo” là tên tạm; Godot 4.x/GDScript và pipeline sprite 2D cần được xác nhận bằng prototype và đo trên thiết bị thật ở M0.
+Chạy kiểm thử toàn bộ pipeline:
+```text
+python -m unittest discover tools/tests -p "test_*.py"
+```
+
+---
+
+## Quy định Đóng góp và Phát triển
+
+- Dành cho nhà phát triển và coding agent: đọc [`AGENTS.md`](AGENTS.md) và [`CONTRIBUTING.md`](CONTRIBUTING.md).
+- Toàn bộ tài sản hình ảnh, âm thanh, cấp độ và mã nguồn phải là tác phẩm gốc, không sao chép từ bất kỳ tựa game thương mại nào.

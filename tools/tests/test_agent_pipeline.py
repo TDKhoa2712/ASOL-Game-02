@@ -596,5 +596,32 @@ class VerificationTests(unittest.TestCase):
         self.assertEqual(read_state(root, "M0-A01").status, "done")
 
 
+class RepositoryContractTests(unittest.TestCase):
+    def test_seed_packages_and_entrypoints_exist(self):
+        root = Path(__file__).resolve().parents[2]
+        for relative in (
+            "README.md",
+            "AGENTS.md",
+            "CONTRIBUTING.md",
+            ".gitignore",
+            "docs/governance/README.md",
+            "docs/governance/document-register.toml",
+            "work/README.md",
+            "work/templates/package.md",
+            "work/templates/handoff.md",
+            "work/packages/SETUP-001.md",
+            "work/packages/M0-A01.md",
+            "work/packages/M0-A02.md",
+            "work/packages/M0-A03.md",
+            "work/packages/M0-GATE.md",
+        ):
+            self.assertTrue((root / relative).exists(), relative)
+
+        packages = load_packages(root)
+        self.assertEqual(packages["M0-A01"].status, "ready")
+        self.assertEqual(packages["M0-A02"].status, "draft")
+        self.assertEqual(packages["M0-GATE"].depends_on, ("M0-A02", "M0-A03"))
+
+
 if __name__ == "__main__":
     unittest.main()
