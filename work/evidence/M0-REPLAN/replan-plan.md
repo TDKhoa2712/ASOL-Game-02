@@ -80,7 +80,7 @@ python tools/agent_pipeline.py start M0-REPLAN --agent codex
 
 Expected: current branch is `work/m0-replan-re-sequence-m0-for-editor-first-playable-prototype`; state is `in_progress`.
 
-- [ ] **Step 5: Commit lifecycle state**
+- [x] **Step 5: Commit lifecycle state**
 
 ```powershell
 git add work/state/M0-REPLAN.toml
@@ -101,7 +101,7 @@ Expected: clean tree on the M0-REPLAN branch.
 - Consumes: package topology defined in `replan-spec.md`.
 - Produces: catalog fields and acceptance text consumed by pipeline inspection and future package agents.
 
-- [ ] **Step 1: Run the contract assertion and observe RED**
+- [x] **Step 1: Run the contract assertion and observe RED**
 
 Run:
 
@@ -111,7 +111,7 @@ python -B -c "from pathlib import Path; from tools.agent_pipeline import load_pa
 
 Expected: assertion failure because the existing catalog still has the old responsibilities/statuses.
 
-- [ ] **Step 2: Update M0-A01**
+- [x] **Step 2: Update M0-A01**
 
 Change the title to `Godot toolchain and editor baseline`, keep only requirement `D-06`, set `qa = []`, and replace device/iOS completion clauses with these measurable acceptance conditions:
 
@@ -124,7 +124,7 @@ Change the title to `Godot toolchain and editor baseline`, keep only requirement
 
 Keep `game/**`, A01 evidence and A01 handoff as the only allowed paths.
 
-- [ ] **Step 3: Update M0-A02**
+- [x] **Step 3: Update M0-A02**
 
 Set catalog `status = "ready"`. Keep dependency `M0-A01`, current GR/TECH scope and current checks. Replace the device-evidence acceptance bullet with:
 
@@ -134,7 +134,7 @@ Set catalog `status = "ready"`. Keep dependency `M0-A01`, current GR/TECH scope 
 
 Keep interaction contract, Undo/Restart and timing behavior as package acceptance.
 
-- [ ] **Step 4: Update M0-A03**
+- [x] **Step 4: Update M0-A03**
 
 Change title to `Mobile device, rendering, and performance validation`, set `status = "ready"`, set `depends_on = ["M0-A02"]`, add `TECH-13` to requirements, and add `QA-26` to QA.
 
@@ -148,17 +148,17 @@ Replace acceptance with explicit requirements for:
 - [ ] Missing host/device evidence makes this package blocked; desktop/headless results cannot substitute for it.
 ```
 
-- [ ] **Step 5: Strengthen M0-GATE wording**
+- [x] **Step 5: Strengthen M0-GATE wording**
 
 Keep catalog status/dependencies/IDs unchanged. Add acceptance text requiring A01/A02/A03 to be `done` and explicitly rejecting the gate when Android/iPhone identity, iOS macOS/Xcode smoke, or TECH-13/19/21 measurements are missing.
 
-- [ ] **Step 6: Run the same contract assertion and observe GREEN**
+- [x] **Step 6: Run the same contract assertion and observe GREEN**
 
 Run the exact command from Step 1.
 
 Expected: exit code 0.
 
-- [ ] **Step 7: Inspect every updated package**
+- [x] **Step 7: Inspect every updated package**
 
 ```powershell
 python tools/agent_pipeline.py inspect M0-A01

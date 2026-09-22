@@ -61,5 +61,7 @@ Tổng hợp, đánh giá bằng chứng thực thi từ các gói việc M0 và
 ## 2. Tiêu chí nghiệm thu (Acceptance Criteria)
 - [ ] Toàn bộ gói việc tiền đề (M0-A01, M0-A02, M0-A03) đã nghiệm thu `done`.
 - [ ] Báo cáo đo đạc hiệu năng và phản hồi điều khiển đạt yêu cầu.
+- [ ] Gate bị từ chối nếu thiếu định danh Android/iPhone và phiên bản OS, hoặc thiếu bằng chứng build/run iOS trên macOS/Xcode.
+- [ ] Gate bị từ chối nếu thiếu số đo TECH-13/19/21 trên workload prototype và thiết bị mục tiêu; desktop/headless không được thay thế evidence mobile.
 - [ ] Không nhận bằng chứng QA-56 tại M0; Hint/session được nghiệm thu ở package E/M1 theo GDD 08.
 - [ ] Biên bản Design Freeze Checklist được phê duyệt.
