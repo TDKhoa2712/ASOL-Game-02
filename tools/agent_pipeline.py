@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
+import subprocess
 import sys
 import tomllib
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import unquote, urlsplit
@@ -53,6 +56,26 @@ class Document:
     status: str
     owner: str
     superseded_by: str | None = None
+
+
+@dataclass(frozen=True)
+class State:
+    package_id: str
+    agent: str
+    status: str
+    branch: str
+    base_revision: str
+    started_at: str
+    updated_at: str
+    blocker_reason: str = ""
+
+
+TRANSITIONS = {
+    "in_progress": {"blocked", "review"},
+    "blocked": {"in_progress"},
+    "review": {"in_progress", "done"},
+    "done": set(),
+}
 
 
 REQUIRED_FIELDS = {
@@ -538,6 +561,188 @@ def doctor(root: Path) -> list[Issue]:
     return sorted(issues, key=lambda issue: (issue.path, issue.code, issue.message))
 
 
+def git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    command = ["git", "-c", f"safe.directory={root.resolve().as_posix()}", *args]
+    return subprocess.run(
+        command, cwd=root, text=True, capture_output=True, check=check
+    )
+
+
+def serialize_state(state: State) -> str:
+    return (
+        f'package_id = "{state.package_id}"\n'
+        f'agent = "{state.agent}"\n'
+        f'status = "{state.status}"\n'
+        f'branch = "{state.branch}"\n'
+        f'base_revision = "{state.base_revision}"\n'
+        f'started_at = "{state.started_at}"\n'
+        f'updated_at = "{state.updated_at}"\n'
+        f'blocker_reason = "{state.blocker_reason}"\n'
+    )
+
+
+def read_state(root: Path, package_id: str) -> State:
+    path = root / "work" / "state" / f"{package_id}.toml"
+    if not path.is_file():
+        raise PipelineError(f"state không tồn tại cho package: {package_id}")
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as exc:
+        raise PipelineError(f"state TOML không hợp lệ: {exc}") from exc
+    return State(
+        package_id=_string(data, "package_id"),
+        agent=_string(data, "agent"),
+        status=_string(data, "status"),
+        branch=_string(data, "branch"),
+        base_revision=_string(data, "base_revision"),
+        started_at=_string(data, "started_at"),
+        updated_at=_string(data, "updated_at"),
+        blocker_reason=str(data.get("blocker_reason", "")).strip(),
+    )
+
+
+def write_state_atomic(path: Path, state: State) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(serialize_state(state), encoding="utf-8", newline="\n")
+    os.replace(temporary, path)
+
+
+def effective_status(root: Path, package: Package) -> str:
+    state_path = root / "work" / "state" / f"{package.id}.toml"
+    if state_path.is_file():
+        try:
+            state = read_state(root, package.id)
+            return state.status
+        except Exception:
+            pass
+    return package.status
+
+
+def assert_state_base_is_ancestor(root: Path, state: State) -> None:
+    result = git(
+        root, "merge-base", "--is-ancestor", state.base_revision, "HEAD", check=False
+    )
+    if result.returncode != 0:
+        raise PipelineError(
+            f"base_revision {state.base_revision} không còn là ancestor của HEAD (branch có thể bị rebase hoặc đổi ngoài pipeline)"
+        )
+
+
+def changed_paths(root: Path, base_revision: str) -> set[str]:
+    result_paths: set[str] = set()
+
+    diff_head = git(root, "diff", "--name-only", base_revision, check=False)
+    if diff_head.returncode == 0 and diff_head.stdout:
+        for line in diff_head.stdout.splitlines():
+            line_str = line.strip()
+            if line_str:
+                result_paths.add(line_str.replace("\\", "/"))
+
+    diff_cached = git(root, "diff", "--name-only", "--cached", check=False)
+    if diff_cached.returncode == 0 and diff_cached.stdout:
+        for line in diff_cached.stdout.splitlines():
+            line_str = line.strip()
+            if line_str:
+                result_paths.add(line_str.replace("\\", "/"))
+
+    status_proc = git(root, "status", "--porcelain=v1", "-z", check=False)
+    if status_proc.returncode == 0 and status_proc.stdout:
+        raw_entries = [entry for entry in status_proc.stdout.split("\0") if entry]
+        i = 0
+        while i < len(raw_entries):
+            entry = raw_entries[i]
+            code = entry[:2]
+            path_part = entry[3:]
+            if code[0] in {"R", "C"} or code[1] in {"R", "C"}:
+                i += 1
+                if i < len(raw_entries):
+                    result_paths.add(raw_entries[i].replace("\\", "/"))
+            if path_part:
+                result_paths.add(path_part.replace("\\", "/"))
+            i += 1
+
+    return result_paths
+
+
+def start_package(root: Path, package_id: str, agent: str) -> State:
+    packages = load_packages(root)
+    if package_id not in packages:
+        raise PipelineError(f"package không tồn tại: {package_id}")
+    package = packages[package_id]
+    if package.status != "ready":
+        raise PipelineError(
+            f"chỉ có thể start package ở trạng thái 'ready', hiện tại là: {package.status}"
+        )
+
+    for dep in package.depends_on:
+        if dep not in packages:
+            raise PipelineError(f"dependency không tồn tại: {dep}")
+        dep_status = effective_status(root, packages[dep])
+        if dep_status != "done":
+            raise PipelineError(
+                f"dependency {dep} chưa hoàn tất (trạng thái: {dep_status})"
+            )
+
+    status_proc = git(root, "status", "--porcelain=v1", check=False)
+    if status_proc.stdout.strip():
+        raise PipelineError(
+            "working tree không sạch, vui lòng commit hoặc stash trước khi start"
+        )
+
+    branch_proc = git(root, "branch", "--show-current", check=False)
+    current_branch = branch_proc.stdout.strip()
+
+    slug = re.sub(r"[^a-z0-9]+", "-", package.title.lower()).strip("-")
+    target_branch = f"work/{package.id.lower()}-{slug}"
+
+    if current_branch != target_branch:
+        switch_proc = git(root, "checkout", "-b", target_branch, check=False)
+        if switch_proc.returncode != 0:
+            git(root, "checkout", target_branch)
+
+    head_proc = git(root, "rev-parse", "HEAD")
+    head_revision = head_proc.stdout.strip()
+
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    state = State(
+        package_id=package.id,
+        agent=agent,
+        status="in_progress",
+        branch=target_branch,
+        base_revision=head_revision,
+        started_at=now_iso,
+        updated_at=now_iso,
+        blocker_reason="",
+    )
+    write_state_atomic(root / "work" / "state" / f"{package.id}.toml", state)
+    return state
+
+
+def transition_state(
+    root: Path, package_id: str, new_status: str, *, blocker_reason: str = ""
+) -> State:
+    state = read_state(root, package_id)
+    allowed = TRANSITIONS.get(state.status, set())
+    if new_status not in allowed:
+        raise PipelineError(
+            f"không thể chuyển trạng thái từ {state.status} sang {new_status}"
+        )
+    now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    new_state = State(
+        package_id=state.package_id,
+        agent=state.agent,
+        status=new_status,
+        branch=state.branch,
+        base_revision=state.base_revision,
+        started_at=state.started_at,
+        updated_at=now_iso,
+        blocker_reason=blocker_reason if new_status == "blocked" else "",
+    )
+    write_state_atomic(root / "work" / "state" / f"{package_id}.toml", new_state)
+    return new_state
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="agent_pipeline", description="Repository agent pipeline CLI"
@@ -559,6 +764,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     inspect_parser = subparsers.add_parser("inspect", help="Inspect package contract")
     inspect_parser.add_argument("package_id", help="Package ID to inspect")
+
+    start_parser = subparsers.add_parser("start", help="Start work package")
+    start_parser.add_argument("package_id", help="Package ID to start")
+    start_parser.add_argument("--agent", required=True, help="Agent name")
 
     return parser
 
@@ -603,14 +812,7 @@ def dispatch(args: argparse.Namespace, root: Path) -> int:
     if args.command == "list":
         packages = load_packages(root)
         for package in packages.values():
-            status = package.status
-            state_file = root / "work" / "state" / f"{package.id}.toml"
-            if state_file.is_file():
-                try:
-                    state_data = tomllib.loads(state_file.read_text(encoding="utf-8"))
-                    status = state_data.get("status", status)
-                except Exception:
-                    pass
+            status = effective_status(root, package)
             if args.status and status != args.status:
                 continue
             _print(f"{package.id:10} {status:12} {package.kind:15} {package.title}")
@@ -623,6 +825,11 @@ def dispatch(args: argparse.Namespace, root: Path) -> int:
 
     if args.command == "inspect":
         _print(inspect_package(root, args.package_id))
+        return 0
+
+    if args.command == "start":
+        state = start_package(root, args.package_id, args.agent)
+        _print(f"OK: started {state.package_id} on branch {state.branch}")
         return 0
 
     raise PipelineError(f"subcommand không được hỗ trợ: {args.command}")
