@@ -205,13 +205,13 @@ Include exact before/after ownership table:
 
 Also state that no gameplay rule/schema or quality threshold changed, and the next execution package after acceptance is `M0-A01` to close its now-satisfied baseline before `M0-A02` starts.
 
-- [ ] **Step 2: Synchronize the seed catalog regression assertion**
+- [x] **Step 2: Synchronize the seed catalog regression assertion**
 
 After observing the existing test fail because it expects `M0-A02` to remain `draft`, update only that expectation to `ready`. Do not change pipeline implementation or weaken any general validation.
 
 Expected: the regression test now expresses the approved editor-first catalog state.
 
-- [ ] **Step 3: Run repository and pipeline suites**
+- [x] **Step 3: Run repository and pipeline suites**
 
 ```powershell
 python -B -m unittest discover tools/tests -p test_*.py

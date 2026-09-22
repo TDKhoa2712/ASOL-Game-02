@@ -660,7 +660,7 @@ class RepositoryContractTests(unittest.TestCase):
 
         packages = load_packages(root)
         self.assertEqual(packages["M0-A01"].status, "ready")
-        self.assertEqual(packages["M0-A02"].status, "draft")
+        self.assertEqual(packages["M0-A02"].status, "ready")
         self.assertEqual(packages["M0-GATE"].depends_on, ("M0-A02", "M0-A03"))
 
     def test_real_repository_passes_doctor(self):
