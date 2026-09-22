@@ -1,7 +1,7 @@
 # Nhật ký quyết định thiết kế
 
 Chỉ ghi các quyết định đã có trong GDD hiện hành/GDD 09. Các DEC ngày
-2026-09-18 là baseline v0.4.2; DEC-013..016 ngày 2026-09-21 tạo baseline v0.5.0.
+2026-09-18 là baseline v0.4.2; DEC-013..016 ngày 2026-09-21 tạo baseline v0.5.0. DEC-017 ngày 2026-09-22 bổ sung governance cho Design Freeze mà không đổi luật GDD.
 
 ## DEC-001 — Campaign tuyến tính 24 level
 
@@ -178,3 +178,15 @@ Chỉ ghi các quyết định đã có trong GDD hiện hành/GDD 09. Các DEC 
 - **Evidence:** GDD/QA đã có tiêu chí máy kiểm và playtest; fairness của 3 tim vẫn là giả thuyết M1 chứ không phải blocker quyết định scope.
 - **Affected GDD IDs:** D-05/08/09, GR-17..19/25, LV-05/08, UX-05/06, QA-14..16/27..29/57.
 - **Status:** ACTIVE-MVP.
+
+## DEC-017 — Design Freeze khóa core và quản lý danh sách tuneable
+
+- **DEC-ID:** DEC-017
+- **Date:** 2026-09-22
+- **Decision:** GDD v1.0 Design Freeze khóa phạm vi MVP và các loại trừ, GR/state transition, điều kiện thắng/thua, schema level/save/session, tiến trình campaign, ranh giới module và QA gate. Các tham số tuneable được giới hạn ở: cửa sổ double-tap 280 ms và ngưỡng kéo 12 điểm logic (M0, UX Lead + Technical Lead); feedback khoảng 0,7 giây (M1, UX Lead); hệ số scorecard 100/25 nhưng không đổi vai trò Result-only (M1, Game Design Lead); atlas/frame/nén và ngân sách tải/RAM/VRAM trong ngưỡng TECH-19 (M0, Technical Lead + Art Lead); nhịp khó, thời gian mục tiêu và presentation không đổi luật (M1/M2, Game Design/Puzzle/UX Lead).
+- **Alternatives considered:** Freeze mọi giá trị; hoặc hoãn toàn bộ freeze tới sau M1. Chọn freeze core và tune có kiểm soát để M0/M1 còn hiệu chỉnh cảm giác mà không làm trôi luật.
+- **Rationale:** Tách invariant triển khai khỏi tham số cần đo trên thiết bị/người chơi, đồng thời ngăn tuning bị dùng để lách thay đổi scope hoặc schema.
+- **Change control:** Mọi tuning phải có evidence, owner, phase và DEC cập nhật giá trị trước khi merge. Thay đổi ngoài danh sách tuneable, hoặc đổi ý nghĩa luật/schema/tiến trình/phạm vi/scorecard, bắt buộc mở lại Design Freeze bằng package `design-change` hoặc `governance`, cập nhật đồng bộ GDD, fixture, validator/test và QA.
+- **Evidence:** GDD 00–09, checklist Design Freeze 06, risk/research register và phê duyệt package M0-PREFLIGHT.
+- **Affected GDD IDs:** D-01..10, GR-01..33, LV-01..08, TECH-01..21, ART-01..13, toàn bộ QA MVP.
+- **Status:** ACTIVE-GOVERNANCE — đóng DQ-002; không tự tuyên bố Design Freeze đã đạt.

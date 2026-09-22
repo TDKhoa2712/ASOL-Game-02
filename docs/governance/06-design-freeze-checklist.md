@@ -17,8 +17,8 @@ change và tuân thủ yêu cầu đồng bộ của `AGENTS.md`.
 - [ ] Không còn câu mô tả mèo tô/mã hóa theo màu vùng trong tài liệu hiện hành.
 - [ ] Mọi review có trạng thái `resolved`, `deferred`, `rejected` hoặc `open` khớp GDD/09.
 - [ ] Không còn link lịch sử sai workspace làm đường dẫn chính.
-- [ ] Mọi câu hỏi có `blocking phase=Design Freeze` đã CLOSED hoặc DEFERRED bằng DEC có thẩm quyền.
-- [ ] Có định nghĩa rõ danh sách frozen và tuneable được phê duyệt cho v1.0.
+- [x] Mọi câu hỏi có `blocking phase=Design Freeze` đã CLOSED hoặc DEFERRED bằng DEC có thẩm quyền.
+- [x] Có định nghĩa rõ danh sách frozen và tuneable được phê duyệt cho v1.0 qua DEC-017.
 
 ## 3. Điều kiện bắt buộc — phạm vi MVP
 
@@ -34,7 +34,7 @@ change và tuân thủ yêu cầu đồng bộ của `AGENTS.md`.
 - [x] Schema level v4, fixture và validator thống nhất với S1/S2/S3 hiện hành.
 - [x] Bốn trạng thái ô, given flag, tim, scorecard Result-only, Hint, thắng/thua, Retry/Restart và Undo X được mô tả.
 - [x] Preview, committed action và save state được phân biệt trong đặc tả.
-- [ ] Mọi giá trị provisional như 280 ms, 12 điểm, 100/25 và 0,7 giây được gắn nhãn tuneable cùng phase/owner.
+- [x] Mọi giá trị provisional như 280 ms, 12 điểm, 100/25 và 0,7 giây được gắn nhãn tuneable cùng phase/owner trong DEC-017.
 - [ ] Có một trace matrix kiểm được cho `REV → DEC/D → GR/UX/LV/TECH/ART → QA`.
 
 ## 5. Điều kiện bắt buộc — acceptance criteria
@@ -85,7 +85,7 @@ Freeze phải được mở lại bằng DEC mới; không được xử lý nh�
 ## 9. Kiểm tra hồ sơ trước ký freeze
 
 - [ ] `00-design-status.md` không còn blocker mở.
-- [ ] `01-open-questions.md` không còn câu hỏi `OPEN — BLOCKER`.
+- [x] `01-open-questions.md` không còn câu hỏi `OPEN — BLOCKER`.
 - [ ] `02-decision-log.md` chỉ chứa quyết định thực, có nguồn và trạng thái.
 - [ ] `03-risk-register.md` có owner/phase cho mọi rủi ro High impact.
 - [ ] `04-assumptions.md` không trình bày giả định như sự thật đã chứng minh.

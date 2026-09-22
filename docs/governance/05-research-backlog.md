@@ -8,7 +8,7 @@ Backlog này ghi câu hỏi và bằng chứng cần thu, không phải kế ho�
 | --- | --- | --- | --- | --- |
 | RES-NOW-01 | Xác định một baseline tài liệu duy nhất và liệt kê mọi drift phải xử lý | CT/DRIFT trong audit, DQ-002 | Không còn phiên bản/architecture/status mâu thuẫn | CLOSED — v0.5.0 |
 | RES-NOW-02 | Chốt phạm vi S3 đối với MVP | DQ-001, DEC-013, REV-TECH-04 | Order 1–18 S2; 19–24 bắt buộc S3; schema v4 | CLOSED — DEC-013 |
-| RES-NOW-03 | Định nghĩa Design Freeze và change-control | DQ-002, AC-05 | Checklist 06 được phê duyệt và owner roles xác nhận | OPEN-BLOCKER |
+| RES-NOW-03 | Định nghĩa Design Freeze và change-control | DQ-002, DEC-017 | Frozen/tuneable, owner/phase/evidence và điều kiện mở lại freeze được định nghĩa | CLOSED — DEC-017 |
 | RES-NOW-04 | Định nghĩa ngưỡng đạt cử chỉ và per-level content | DQ-009, QA-08..12/43..45, LV-05/08 | Per-level gate đã chốt; ngưỡng cử chỉ còn cần M0 evidence | PARTIAL — DQ-009 CLOSED |
 
 ## M0

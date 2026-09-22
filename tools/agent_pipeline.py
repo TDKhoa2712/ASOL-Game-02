@@ -345,6 +345,15 @@ def validate_catalog(root: Path, packages: dict[str, Package]) -> list[Issue]:
                         f"read_first không tồn tại: {read_first}",
                     )
                 )
+        for deliverable in package.deliverables:
+            if not path_allowed(deliverable, package):
+                issues.append(
+                    Issue(
+                        'DELIVERABLE_OUT_OF_SCOPE',
+                        package_path,
+                        f'deliverable nằm ngoài allowed_paths: {deliverable}',
+                    )
+                )
         for requirement in package.requirements:
             if requirement in requirement_ids:
                 continue

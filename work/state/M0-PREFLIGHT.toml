@@ -1,0 +1,8 @@
+package_id = "M0-PREFLIGHT"
+agent = "codex"
+status = "review"
+branch = "work/m0-preflight-m0-prototype-readiness-governance"
+base_revision = "8fb51d0012a30135c2f6196b37c7a126bf8e1c42"
+started_at = "2026-09-22T07:09:18Z"
+updated_at = "2026-09-22T07:32:40Z"
+blocker_reason = ""

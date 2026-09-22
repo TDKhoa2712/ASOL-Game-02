@@ -305,6 +305,23 @@ class PackageParsingTests(unittest.TestCase):
 
 
 class CatalogValidationTests(unittest.TestCase):
+    def test_rejects_deliverable_outside_allowed_paths(self):
+        root = make_repository(
+            {
+                'M0-A03': package_text('M0-A03').replace(
+                    'game/project.godot',
+                    'docs/reviews/mobile-spike.md',
+                )
+            }
+        )
+
+        issues = validate_catalog(root, load_packages(root))
+
+        self.assertEqual(
+            [issue.code for issue in issues],
+            ['DELIVERABLE_OUT_OF_SCOPE'],
+        )
+
     def test_rejects_missing_dependency_and_cycle(self):
         root = make_repository(
             {

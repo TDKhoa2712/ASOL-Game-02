@@ -25,8 +25,7 @@ qa = [
   "QA-45",
   "QA-50",
   "QA-54",
-  "QA-55",
-  "QA-56"
+  "QA-55"
 ]
 read_first = [
   "GDD/README.md",
@@ -46,6 +45,12 @@ out_of_scope = [
 [[checks]]
 id = "gdd_validate"
 command = ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"]
+[[checks]]
+id = "repository_validate"
+command = ["python", "tools/agent_pipeline.py", "validate"]
+[[checks]]
+id = "repository_doctor"
+command = ["python", "tools/agent_pipeline.py", "doctor"]
 +++
 
 # M0-GATE: M0 evidence review and milestone gate
@@ -56,4 +61,5 @@ Tổng hợp, đánh giá bằng chứng thực thi từ các gói việc M0 và
 ## 2. Tiêu chí nghiệm thu (Acceptance Criteria)
 - [ ] Toàn bộ gói việc tiền đề (M0-A01, M0-A02, M0-A03) đã nghiệm thu `done`.
 - [ ] Báo cáo đo đạc hiệu năng và phản hồi điều khiển đạt yêu cầu.
+- [ ] Không nhận bằng chứng QA-56 tại M0; Hint/session được nghiệm thu ở package E/M1 theo GDD 08.
 - [ ] Biên bản Design Freeze Checklist được phê duyệt.

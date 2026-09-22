@@ -1,6 +1,6 @@
 # Trạng thái thiết kế
 
-**Ngày chụp trạng thái:** 2026-09-21  
+**Ngày chụp trạng thái:** 2026-09-22  
 **GDD hiện hành:** v0.5.0, ngày 2026-09-21  
 **Pha hiện tại:** xác nhận Game Design / Product Design / Technical Design trước production  
 **Cổng mục tiêu:** đủ điều kiện vào M0 và tiến tới GDD v1.0 Design Freeze  
@@ -76,11 +76,10 @@ hoặc các GDD hiện hành.
 
 ## 7. Blocker của Design Freeze
 
-1. `DQ-002` và danh sách frozen/tuneable chưa được owner phê duyệt chính thức.
-2. Chưa có bằng chứng M0 trên thiết bị cho input, atlas, bố cục, accessibility và baseline toolchain.
-3. Chưa có sáu level release order 19–24 thật cùng runtime Hint S3 và bằng chứng blind solve/playtest M2.
-4. Ranh giới package A/M0 và package B/Core cần được xác nhận khi tạo project Godot.
-5. Chuỗi truy vết đã có DEC-013..016 nhưng owner/phase/evidence cho toàn bộ QA vẫn cần ma trận ký duyệt.
+1. Chưa có bằng chứng M0 trên thiết bị cho input, atlas, bố cục, accessibility và baseline toolchain.
+2. Chưa có sáu level release order 19–24 thật cùng runtime Hint S3 và bằng chứng blind solve/playtest M2.
+3. Ranh giới package A/M0 và package B/Core cần được xác nhận khi tạo project Godot.
+4. Chuỗi truy vết đã có DEC-013..017 nhưng owner/phase/evidence cho toàn bộ QA vẫn cần ma trận ký duyệt.
 
 ## 8. Hạng mục M0
 

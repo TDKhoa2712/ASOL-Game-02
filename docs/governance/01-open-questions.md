@@ -18,19 +18,19 @@ Giả thuyết hiện tại không phải quyết định.
 - **Blocking phase:** M2 content complete.
 - **Status:** CLOSED — DEC-013.
 
-## DQ-002 — Design Freeze khóa những gì?
+## DQ-002 — Design Freeze khóa những gì? — CLOSED
 
 - **DQ-ID:** DQ-002
 - **Question:** Những trường nào là luật bị khóa, những trường nào vẫn được tune ở M0/M1, và thay đổi nào bắt buộc mở lại freeze?
 - **Category:** Governance
 - **Why it matters:** Nếu không phân biệt, 280 ms, điểm 100/25 hoặc S3 có thể bị hiểu sai là bất biến.
-- **Current hypothesis:** Khóa scope/luật/schema/tiến trình; để tham số cảm giác và cân bằng ở trạng thái tuneable có kiểm soát.
+- **Resolution:** DEC-017 khóa scope/luật/state/schema/tiến trình/module/QA gate và giới hạn một danh sách tuneable có owner, phase, evidence và change-control rõ ràng.
 - **Options:** (A) Freeze toàn bộ; (B) Freeze core, giữ danh sách tuneable; (C) hoãn freeze tới sau M1.
 - **Known evidence:** AGENTS yêu cầu thay luật/schema/tiến trình phải cập nhật đồng bộ.
-- **Missing evidence:** Tiêu chí phê duyệt và change-control chính thức.
+- **Missing evidence:** Bằng chứng M0/M1 cho giá trị cuối của từng tham số tuneable; đây là execution evidence, không mở lại câu hỏi governance.
 - **Related GDD IDs:** D-01..10, O-01..07, toàn bộ GR/QA.
 - **Blocking phase:** Design Freeze.
-- **Status:** OPEN — BLOCKER.
+- **Status:** CLOSED — DEC-017.
 
 ## DQ-003 — Baseline kỹ thuật M0 là gì?
 
