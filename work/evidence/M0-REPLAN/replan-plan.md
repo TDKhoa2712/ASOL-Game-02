@@ -233,7 +233,7 @@ Expected: `work/evidence/M0-REPLAN/verification.txt` is written with both checks
 
 Create `work/handoffs/M0-REPLAN.md` with Package, Requirements, QA, Changed files, Validation, Evidence, Remaining risks and Reviewer sections. It must contain no `<...>` placeholders or TODO markers.
 
-- [ ] **Step 6: Commit evidence and handoff**
+- [x] **Step 6: Commit evidence and handoff**
 
 ```powershell
 git add work/evidence/M0-REPLAN/replan-summary.md work/evidence/M0-REPLAN/verification.txt work/handoffs/M0-REPLAN.md
