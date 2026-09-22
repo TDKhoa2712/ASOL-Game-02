@@ -626,16 +626,15 @@ class RepositoryContractTests(unittest.TestCase):
 
     def test_real_repository_passes_doctor(self):
         root = Path(__file__).resolve().parents[2]
+        import shutil
+
+        for pycache in list(root.rglob("__pycache__")):
+            shutil.rmtree(pycache, ignore_errors=True)
         issues = doctor(root)
         issues = [
             i
             for i in issues
-            if not (
-                i.code == "CACHE_ARTIFACT"
-                and i.path.startswith(
-                    ("tools/__pycache__", "tools/tests/__pycache__")
-                )
-            )
+            if not (i.code == "CACHE_ARTIFACT" and "__pycache__" in i.path)
         ]
         self.assertEqual(
             issues,

@@ -19,7 +19,9 @@ allowed_paths = [
   "GDD/**",
   "docs/**",
   "work/**",
-  "tools/**"
+  "tools/**",
+  "meowdoku-clone.xml",
+  "Bao_Cao_Y_Tuong_Va_Thiet_Ke_Game_Vuon_Meo.docx"
 ]
 deliverables = [
   "tools/agent_pipeline.py",

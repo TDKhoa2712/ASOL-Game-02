@@ -10,7 +10,7 @@
 
 **Tech Stack:** Python 3.11+ standard library (`argparse`, `dataclasses`, `tomllib`, `pathlib`, `subprocess`, `unittest`), Markdown, TOML, Git và PowerShell cho bước đổi tên workspace cuối cùng.
 
-**Spec:** `docs/superpowers/specs/2026-09-22-repository-restructure-agent-pipeline-design.md`
+**Spec:** `docs/archive/agent-history/superpowers/specs/2026-09-22-repository-restructure-agent-pipeline-design.md`
 
 ## Ràng buộc toàn cục
 

@@ -1,0 +1,45 @@
+Evidence for package: SETUP-001
+Timestamp (UTC): 2026-09-22T03:53:59Z
+Agent: coding-agent
+Branch: work/setup-001-restructure
+Base revision: fb8a43598f92d11e039e1c72218e025fbdc67081
+
+Check: gdd_validate
+Command: ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"]
+Exit code: 0
+Output:
+OK   T01: 4x4, unique solution, connected regions, S2 trace
+OK   E01: 5x5, unique solution, connected regions, S2 trace
+OK   E02: 6x6, unique solution, connected regions, S2 trace
+OK   N12: 12x12, unique solution, connected regions, empty trace
+OK   S301: 4x4, unique solution, connected regions, S2/S3 trace
+Validated 5 level(s); 0 duplicate geometry warning(s).
+---
+Check: gdd_tests
+Command: ["python", "-m", "unittest", "discover", "GDD/tools", "-p", "test_*.py"]
+Exit code: 0
+Output:
+.......................
+----------------------------------------------------------------------
+Ran 23 tests in 0.008s
+
+OK
+---
+Check: pipeline_tests
+Command: ["python", "-m", "unittest", "discover", "tools/tests", "-p", "test_*.py"]
+Exit code: 0
+Output:
+REPOMIX_SNAPSHOT meowdoku-clone.xml: Repomix snapshot pháº£i Ä‘Æ°á»£c tÃ¡i táº¡o ngoÃ i repository
+OK: started M0-A01 on branch work/m0-a01-baseline
+....................
+----------------------------------------------------------------------
+Ran 20 tests in 2.935s
+
+OK
+---
+Check: doctor
+Command: ["python", "tools/agent_pipeline.py", "doctor"]
+Exit code: 0
+Output:
+OK: repository contract is valid
+---
