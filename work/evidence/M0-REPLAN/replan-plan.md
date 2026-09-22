@@ -63,7 +63,7 @@ git commit -m "build: establish Godot 4.7 editor baseline"
 
 Expected: commit succeeds; M0-REPLAN bootstrap/spec/plan remain as the only uncommitted files.
 
-- [ ] **Step 3: Commit the approved M0-REPLAN bootstrap and planning artifacts**
+- [x] **Step 3: Commit the approved M0-REPLAN bootstrap and planning artifacts**
 
 ```powershell
 git add work/packages/M0-REPLAN.md work/evidence/M0-REPLAN/replan-spec.md work/evidence/M0-REPLAN/replan-plan.md
@@ -72,7 +72,7 @@ git commit -m "docs: define editor-first M0 replan"
 
 Expected: working tree is clean.
 
-- [ ] **Step 4: Start the assigned package through the pipeline**
+- [x] **Step 4: Start the assigned package through the pipeline**
 
 ```powershell
 python tools/agent_pipeline.py start M0-REPLAN --agent codex
