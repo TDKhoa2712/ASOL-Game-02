@@ -5,6 +5,7 @@ import tomllib
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
+from urllib.parse import unquote, urlsplit
 
 
 class PipelineError(ValueError):
@@ -43,6 +44,15 @@ class Package:
     body: str
 
 
+@dataclass(frozen=True)
+class Document:
+    path: str
+    document_class: str
+    status: str
+    owner: str
+    superseded_by: str | None = None
+
+
 REQUIRED_FIELDS = {
     "id",
     "title",
@@ -60,6 +70,10 @@ REQUIRED_FIELDS = {
 KINDS = {"implementation", "content", "research", "design-change", "governance"}
 CATALOG_STATUSES = {"draft", "ready"}
 PACKAGE_ID_RE = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)+$")
+ACTIVE_DOCUMENT_STATUSES = {"CANONICAL", "ACTIVE", "PROPOSED"}
+REQUIREMENT_RE = re.compile(r"\b(?:D|GR|UX|LV|TECH|ART|DEC)-\d{2}\b")
+QA_RE = re.compile(r"\bQA-\d{2}\b")
+MARKDOWN_LINK_RE = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
 
 
 def split_front_matter(text: str) -> tuple[dict[str, Any], str]:
@@ -192,3 +206,256 @@ def load_packages(root: Path) -> dict[str, Package]:
             raise PipelineError(f"package id trùng: {package.id}")
         packages[package.id] = package
     return dict(sorted(packages.items()))
+
+
+def load_document_register(root: Path) -> tuple[Document, ...]:
+    path = root / "docs" / "governance" / "document-register.toml"
+    if not path.exists():
+        return ()
+    try:
+        data = tomllib.loads(path.read_text(encoding="utf-8"))
+    except tomllib.TOMLDecodeError as exc:
+        raise PipelineError(f"document register TOML không hợp lệ: {exc}") from exc
+
+    raw_documents = data.get("documents", [])
+    if not isinstance(raw_documents, list):
+        raise PipelineError("document register phải có [[documents]]")
+
+    documents: list[Document] = []
+    seen_paths: set[str] = set()
+    for index, item in enumerate(raw_documents):
+        if not isinstance(item, dict):
+            raise PipelineError(f"documents[{index}] phải là table")
+        missing = {"path", "class", "status", "owner"} - item.keys()
+        if missing:
+            raise PipelineError(
+                f"documents[{index}] thiếu field: {', '.join(sorted(missing))}"
+            )
+        document_path = normalize_repo_path(item["path"])
+        if document_path in seen_paths:
+            raise PipelineError(f"document register trùng path: {document_path}")
+        seen_paths.add(document_path)
+        documents.append(
+            Document(
+                path=document_path,
+                document_class=_document_string(item, "class", index),
+                status=_document_string(item, "status", index).upper(),
+                owner=_document_string(item, "owner", index),
+                superseded_by=(
+                    normalize_repo_path(item["superseded_by"])
+                    if item.get("superseded_by") is not None
+                    else None
+                ),
+            )
+        )
+    return tuple(documents)
+
+
+def _document_string(item: dict[str, Any], field: str, index: int) -> str:
+    value = item[field]
+    if not isinstance(value, str) or not value.strip():
+        raise PipelineError(f"documents[{index}].{field} phải là chuỗi không rỗng")
+    return value.strip()
+
+
+def _relative_path(root: Path, path: Path) -> str:
+    try:
+        return path.relative_to(root).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def _authority_ids(
+    root: Path, documents: tuple[Document, ...]
+) -> tuple[set[str], set[str], set[str]]:
+    active_requirements: set[str] = set()
+    active_qa: set[str] = set()
+    proposed_ids: set[str] = set()
+    for document in documents:
+        path = root / document.path
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding="utf-8")
+        requirement_ids = set(REQUIREMENT_RE.findall(content))
+        qa_ids = set(QA_RE.findall(content))
+        is_post_mvp = (
+            document.status == "PROPOSED"
+            or document.document_class.upper() == "POST-MVP"
+        )
+        if is_post_mvp:
+            proposed_ids.update(requirement_ids)
+            proposed_ids.update(qa_ids)
+        elif document.status in {"CANONICAL", "ACTIVE"}:
+            active_requirements.update(requirement_ids)
+            active_qa.update(qa_ids)
+    return active_requirements, active_qa, proposed_ids
+
+
+def validate_catalog(root: Path, packages: dict[str, Package]) -> list[Issue]:
+    issues: list[Issue] = []
+    documents = load_document_register(root)
+    requirement_ids, qa_ids, proposed_ids = _authority_ids(root, documents)
+
+    for package in packages.values():
+        package_path = _relative_path(root, package.path)
+        for dependency in package.depends_on:
+            if dependency not in packages:
+                issues.append(
+                    Issue(
+                        "MISSING_DEPENDENCY",
+                        package_path,
+                        f"dependency không tồn tại: {dependency}",
+                    )
+                )
+        for read_first in package.read_first:
+            if not (root / read_first).is_file():
+                issues.append(
+                    Issue(
+                        "MISSING_READ_FIRST",
+                        package_path,
+                        f"read_first không tồn tại: {read_first}",
+                    )
+                )
+        for requirement in package.requirements:
+            if requirement in requirement_ids:
+                continue
+            if requirement in proposed_ids and package.phase != "POST-MVP":
+                issues.append(
+                    Issue(
+                        "PROPOSED_REQUIREMENT",
+                        package_path,
+                        f"requirement {requirement} chỉ dành cho phase POST-MVP",
+                    )
+                )
+            else:
+                issues.append(
+                    Issue(
+                        "UNKNOWN_REQUIREMENT",
+                        package_path,
+                        f"requirement không có trong authority: {requirement}",
+                    )
+                )
+        for qa_id in package.qa:
+            if qa_id in qa_ids:
+                continue
+            if qa_id in proposed_ids and package.phase != "POST-MVP":
+                issues.append(
+                    Issue(
+                        "PROPOSED_QA",
+                        package_path,
+                        f"QA {qa_id} chỉ dành cho phase POST-MVP",
+                    )
+                )
+            else:
+                issues.append(
+                    Issue(
+                        "UNKNOWN_QA",
+                        package_path,
+                        f"QA không có trong authority: {qa_id}",
+                    )
+                )
+
+    issues.extend(_dependency_cycle_issues(root, packages))
+    return sorted(issues, key=lambda issue: (issue.path, issue.code, issue.message))
+
+
+def _dependency_cycle_issues(
+    root: Path, packages: dict[str, Package]
+) -> list[Issue]:
+    colors = {package_id: 0 for package_id in packages}
+    stack: list[str] = []
+    reported: set[tuple[str, ...]] = set()
+    issues: list[Issue] = []
+
+    def visit(package_id: str) -> None:
+        colors[package_id] = 1
+        stack.append(package_id)
+        for dependency in packages[package_id].depends_on:
+            if dependency not in packages:
+                continue
+            if colors[dependency] == 0:
+                visit(dependency)
+            elif colors[dependency] == 1:
+                start = stack.index(dependency)
+                cycle = tuple(stack[start:] + [dependency])
+                if cycle not in reported:
+                    reported.add(cycle)
+                    issues.append(
+                        Issue(
+                            "DEPENDENCY_CYCLE",
+                            _relative_path(root, packages[package_id].path),
+                            f"chu trình dependency: {' -> '.join(cycle)}",
+                        )
+                    )
+        stack.pop()
+        colors[package_id] = 2
+
+    for package_id in sorted(packages):
+        if colors[package_id] == 0:
+            visit(package_id)
+    return issues
+
+
+def validate_links(root: Path, documents: tuple[Document, ...]) -> list[Issue]:
+    issues: list[Issue] = []
+    resolved_root = root.resolve()
+    for document in documents:
+        if document.status not in ACTIVE_DOCUMENT_STATUSES:
+            continue
+        source = root / document.path
+        if not source.is_file():
+            issues.append(
+                Issue("MISSING_DOCUMENT", document.path, "tài liệu đã đăng ký không tồn tại")
+            )
+            continue
+        content = source.read_text(encoding="utf-8")
+        for match in MARKDOWN_LINK_RE.finditer(content):
+            raw_target = match.group(1).strip()
+            if raw_target.startswith("<") and raw_target.endswith(">"):
+                raw_target = raw_target[1:-1]
+            split = urlsplit(raw_target)
+            if split.scheme.lower() in {"http", "https", "mailto"}:
+                continue
+            if not split.path:
+                continue
+            decoded = unquote(split.path).replace("\\", "/")
+            candidate = (source.parent / decoded).resolve()
+            if not candidate.is_relative_to(resolved_root):
+                issues.append(
+                    Issue(
+                        "LINK_ESCAPE",
+                        document.path,
+                        f"link thoát khỏi repository: {raw_target}",
+                    )
+                )
+            elif not candidate.exists():
+                issues.append(
+                    Issue(
+                        "BROKEN_LINK",
+                        document.path,
+                        f"link không tồn tại: {raw_target}",
+                    )
+                )
+    return sorted(issues, key=lambda issue: (issue.path, issue.code, issue.message))
+
+
+def trace_requirement(
+    root: Path, requirement_id: str, packages: dict[str, Package]
+) -> str:
+    lines: list[str] = [f"Requirement: {requirement_id}"]
+    for document in load_document_register(root):
+        if document.status not in ACTIVE_DOCUMENT_STATUSES:
+            continue
+        path = root / document.path
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding="utf-8")
+        if requirement_id in content:
+            lines.append(f"Definition: {document.path}")
+            for qa_id in sorted(set(QA_RE.findall(content))):
+                lines.append(f"QA: {qa_id} ({document.path})")
+    for package in packages.values():
+        if requirement_id in package.requirements:
+            qa_text = ", ".join(package.qa) if package.qa else "none"
+            lines.append(f"Package: {package.id} (QA: {qa_text})")
+    return "\n".join(lines)
