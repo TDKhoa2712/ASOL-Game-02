@@ -1,0 +1,30 @@
+; Engine configuration file.
+; Edit through the Godot editor when possible.
+;
+; Format:
+;   [section]
+;   param=value
+
+config_version=5
+
+[application]
+
+config/name="ASOL Game 02"
+config/features=PackedStringArray("4.7")
+run/main_scene="res://scenes/bootstrap.tscn"
+
+[display]
+
+[display/window]
+
+size/viewport_width=1080
+size/viewport_height=1920
+stretch/mode="canvas_items"
+stretch/aspect="expand"
+handheld/orientation=1
+
+[rendering]
+
+renderer/rendering_method="mobile"
+renderer/rendering_method.mobile="mobile"
+textures/vram_compression/import_etc2_astc=true

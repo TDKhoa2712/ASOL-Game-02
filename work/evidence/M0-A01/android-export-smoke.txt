@@ -1,0 +1,42 @@
+Android export smoke for package: M0-A01
+Date: 2026-09-22
+Host: Windows x64 10.0.26200
+Godot: 4.7.2.stable.official.ed1daf0bf
+
+Template source:
+https://github.com/godotengine/godot-builds/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz
+
+Template SHA-512:
+ca4d71c4d7b81dfc15d1a98baa07534aa95b03fdda78a0075b06672e1648d2e5f40980c9adc28d23e1b92e732ee7bf3461997aa804af74ec2fcd7a93ccb84079
+Result: matches official SHA512-SUMS.txt
+
+Command:
+Godot_v4.7.2-stable_win64.exe --headless --path game --export-debug "Android M0 Debug" build/android/asol-game-02-debug.apk
+
+Exit code: 0
+Result: PASS — APK created, aligned, signed, and verified by Godot
+
+Artifact:
+- Path: game/build/android/asol-game-02-debug.apk (gitignored local build output)
+- Size: 28,256,094 bytes
+- SHA-256: 48E8F3A543D330822430F20D70BF513ADDFAC9A0B0FBB72B181AD5CB6DCAF995
+- Package: org.asol.game02
+- Version: code 1, name 0.0.0-m0
+- SDK: min 24, target/compile 36
+- Native ABI: arm64-v8a
+- Orientation feature: portrait
+
+Signature verification:
+- APK Signature Scheme v2: true
+- APK Signature Scheme v3: true
+- Signers: 1
+- Certificate: Godot debug template certificate; not a production signing identity
+
+Offline manifest check:
+`aapt2 dump permissions` returned only `package: org.asol.game02` and no permissions. In particular, the bootstrap APK does not request `android.permission.INTERNET`.
+
+Remaining Android blocker:
+No physical device was attached and no emulator AVD exists, so install, cold-start, offline launch, and TECH-13/19 measurements were not run.
+
+Non-fatal export warning:
+No project icon is configured. The debug build uses template fallback art; production branding is outside M0-A01.
