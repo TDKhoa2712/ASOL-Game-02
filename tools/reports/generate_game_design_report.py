@@ -335,7 +335,7 @@ def build_game_design_document(output_path):
     doc.add_paragraph().paragraph_format.space_after = Pt(40)
     meta_headers = ["Thông tin phân loại", "Chi tiết đặc tả dự án"]
     meta_rows = [
-        ["Tên dự án (Working Title)", "Vườn Mèo (Cat Garden) — Mã dự án: ASOL-Game-03"],
+        ["Tên dự án (Working Title)", "Vườn Mèo (Cat Garden) — Mã dự án: ASOL-Game-02"],
         ["Thể loại (Genre)", "Logic Puzzle / Single-player Grid Deduction (Star Battle style)"],
         ["Nền tảng mục tiêu (Platform)", "iOS & Android (Màn hình dọc - Portrait, Hoạt động Offline 100%)"],
         ["Engine phát triển", "Godot Engine 4.x (GDScript, Pipeline đồ họa 2D từ 3D Blender)"],
@@ -722,7 +722,7 @@ def build_game_design_document(output_path):
 
     add_h2(doc, "8.2. Lời Kết & Đề Xuất Phê Duyệt")
     add_p(doc, 
-          "Dự án \"Vườn Mèo\" (ASOL-Game-03) sở hữu một bản thiết kế toàn diện, có cơ sở toán học vững chắc, định hướng thẩm mỹ ấm cúng và "
+          "Dự án \"Vườn Mèo\" (ASOL-Game-02) sở hữu một bản thiết kế toàn diện, có cơ sở toán học vững chắc, định hướng thẩm mỹ ấm cúng và "
           "chiến lược công nghệ thông minh. Dự án đáp ứng đầy đủ cả hai yếu tố: Tính giải trí thư giãn đại chúng (nhờ hình tượng mèo cưng đáng yêu) "
           "và Tính kích thích trí tuệ lâu dài (nhờ cơ chế giải đố logic thuần khiết).")
     add_p(doc, 
@@ -734,5 +734,8 @@ def build_game_design_document(output_path):
     print(f"Đã tạo thành công file Word tại: {output_path}")
 
 if __name__ == "__main__":
-    target_file = sys.argv[1] if len(sys.argv) > 1 else "Bao_Cao_Y_Tuong_Va_Thiet_Ke_Game_Vuon_Meo.docx"
+    from pathlib import Path
+    REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+    DEFAULT_OUTPUT = REPOSITORY_ROOT / "docs/reports/Bao_Cao_Y_Tuong_Va_Thiet_Ke_Game_Vuon_Meo.docx"
+    target_file = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else DEFAULT_OUTPUT
     build_game_design_document(target_file)

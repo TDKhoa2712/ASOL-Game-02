@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # Kế hoạch triển khai tái cấu trúc repository và agent pipeline
 
 > **Dành cho agent thực thi:** BẮT BUỘC dùng sub-skill `superpowers:subagent-driven-development` (khuyến nghị) hoặc `superpowers:executing-plans` để thực hiện kế hoạch theo từng task. Mỗi bước dùng checkbox (`- [ ]`) để theo dõi.

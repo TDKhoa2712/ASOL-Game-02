@@ -1,6 +1,6 @@
 # 09 — Rà soát thiết kế 0.5.0
 
-Luật chuẩn ở [02](02-luat-choi-va-trang-thai.md). Bảng này ghi quyết định sau [đánh giá lần 1](../design-reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md), [đánh giá lần 2](../design-reviews/02-danh-gia-ban-thiet-ke-v04.md), [MVP game-design review](../design-control/reviews/01-mvp-game-design-review.md) và phê duyệt ngày 2026-09-21. Nếu review gợi ý khác quyết định đã duyệt, bảng này và luật GR là phiên bản cần triển khai.
+Luật chuẩn ở [02](02-luat-choi-va-trang-thai.md). Bảng này ghi quyết định sau [đánh giá lần 1](../docs/archive/reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md), [đánh giá lần 2](../docs/archive/reviews/02-danh-gia-ban-thiet-ke-v04.md), [MVP game-design review](../docs/reviews/01-mvp-game-design-review.md) và phê duyệt ngày 2026-09-21. Nếu review gợi ý khác quyết định đã duyệt, bảng này và luật GR là phiên bản cần triển khai.
 
 | Mã review | Quyết định | Tài liệu/QA liên quan |
 | --- | --- | --- |

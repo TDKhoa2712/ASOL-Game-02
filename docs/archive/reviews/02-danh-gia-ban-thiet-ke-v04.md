@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # 02 — Rà soát & Đánh giá Chuyên sâu Bản thiết kế GDD v0.4
 
 **Ngày lập:** 2026-09-18  

@@ -14,6 +14,8 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import unquote, urlsplit
 
+sys.dont_write_bytecode = True
+
 
 class PipelineError(ValueError):
     """Raised when repository pipeline metadata is invalid."""

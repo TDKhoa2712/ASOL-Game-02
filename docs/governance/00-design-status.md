@@ -7,8 +7,8 @@
 **Trạng thái Design Freeze:** **CHƯA SẴN SÀNG**
 
 Thư mục này là lớp quản trị và truy vết. Nó không thay thế luật chuẩn ở
-[`GDD/02-luat-choi-va-trang-thai.md`](../GDD/02-luat-choi-va-trang-thai.md),
-quyết định review ở [`GDD/09-ra-soat-thiet-ke.md`](../GDD/09-ra-soat-thiet-ke.md),
+[`GDD/02-luat-choi-va-trang-thai.md`](../../GDD/02-luat-choi-va-trang-thai.md),
+quyết định review ở [`GDD/09-ra-soat-thiet-ke.md`](../../GDD/09-ra-soat-thiet-ke.md),
 hoặc các GDD hiện hành.
 
 ## 1. Thẩm quyền tài liệu

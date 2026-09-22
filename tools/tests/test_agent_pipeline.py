@@ -6,6 +6,8 @@ import subprocess
 import sys
 import unittest
 
+sys.dont_write_bytecode = True
+
 from tools.agent_pipeline import (
     Check,
     Package,
@@ -621,6 +623,25 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertEqual(packages["M0-A01"].status, "ready")
         self.assertEqual(packages["M0-A02"].status, "draft")
         self.assertEqual(packages["M0-GATE"].depends_on, ("M0-A02", "M0-A03"))
+
+    def test_real_repository_passes_doctor(self):
+        root = Path(__file__).resolve().parents[2]
+        issues = doctor(root)
+        issues = [
+            i
+            for i in issues
+            if not (
+                i.code == "CACHE_ARTIFACT"
+                and i.path.startswith(
+                    ("tools/__pycache__", "tools/tests/__pycache__")
+                )
+            )
+        ]
+        self.assertEqual(
+            issues,
+            [],
+            "\n".join(f"{i.code} {i.path}: {i.message}" for i in issues),
+        )
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # 01 — Rà soát & Đánh giá Toàn diện Thiết kế và Kiến trúc Game "Vườn Mèo"
 
 **Ngày lập:** 2026-09-18  

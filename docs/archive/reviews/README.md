@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # Design Reviews & Architecture Backlog
 
 Thư mục này chứa các tài liệu rà soát, phản biện chuyên sâu và kiến nghị cải tiến về **Game Design**, **User Experience (UX)** và **Kiến trúc Kỹ thuật** cho dự án "Vườn Mèo".

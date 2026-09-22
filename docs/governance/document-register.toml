@@ -81,3 +81,51 @@ path = "docs/governance/README.md"
 class = "governance"
 status = "ACTIVE"
 owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/00-design-status.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/01-open-questions.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/02-decision-log.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/03-risk-register.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/04-assumptions.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/05-research-backlog.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/governance/06-design-freeze-checklist.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Governance"
+
+[[documents]]
+path = "docs/reviews/01-mvp-game-design-review.md"
+class = "review"
+status = "ACTIVE"
+owner = "Game Design Review"

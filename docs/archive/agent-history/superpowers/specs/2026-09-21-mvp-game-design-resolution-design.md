@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # Đặc tả giải quyết review thiết kế MVP
 
 **Ngày:** 2026-09-21  

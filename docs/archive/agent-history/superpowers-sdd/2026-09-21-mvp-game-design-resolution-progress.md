@@ -1,3 +1,5 @@
+> HISTORICAL — Nội dung có thể đã bị GDD v0.5.0 supersede; không dùng làm requirement triển khai.
+
 # SDD ledger — plan: docs/superpowers/plans/2026-09-21-mvp-game-design-resolution.md
 
 ## Preflight
