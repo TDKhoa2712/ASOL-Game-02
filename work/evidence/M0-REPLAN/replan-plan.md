@@ -279,7 +279,7 @@ Expected: 5 fixtures validate; 23 GDD tests and 22 pipeline tests pass; validate
 
 Because repository instructions do not authorize sub-agent delegation, review the full diff from the M0-REPLAN base revision, checking every Review Focus item and recording any ruling or deferred minor in the execution ledger.
 
-- [ ] **Step 4: Handoff through the pipeline**
+- [x] **Step 4: Handoff through the pipeline**
 
 ```powershell
 python tools/agent_pipeline.py handoff M0-REPLAN
