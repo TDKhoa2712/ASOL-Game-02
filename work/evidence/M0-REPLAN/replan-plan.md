@@ -287,7 +287,7 @@ python tools/agent_pipeline.py handoff M0-REPLAN
 
 Expected: state changes from `in_progress` to `review`.
 
-- [ ] **Step 5: Commit the review state**
+- [x] **Step 5: Commit the review state**
 
 ```powershell
 git add work/state/M0-REPLAN.toml
