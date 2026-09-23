@@ -25,11 +25,11 @@ func _run() -> void:
 		var actual: Dictionary = JSON.parse_string(
 			JSON.stringify(_run_live_case(engine, case))
 		)
-		var expected := {
+		var expected: Dictionary = JSON.parse_string(JSON.stringify({
 			"cells": case["expected"],
 			"hearts": case["hearts"],
 			"actions": case["actions"],
-		}
+		}))
 		if case.has("preview"):
 			expected["preview"] = case["preview"]
 		if (
@@ -40,6 +40,42 @@ func _run() -> void:
 			)
 		):
 			expected["undoCells"] = case.get("initial", {})
+		if actual != expected:
+			failures.append(
+				"%s\nEXPECTED: %s\nACTUAL:   %s"
+				% [case["id"], expected, actual]
+			)
+
+	var boundary_cases := [
+		{
+			"id": "exact_12_px_remains_tap",
+			"kind": "jitter",
+			"initial": {},
+			"cell": [0, 0],
+			"distanceLogicalPx": 12,
+			"expected": {"0,0": "x"},
+			"hearts": 3,
+			"actions": ["MarkX"],
+		},
+		{
+			"id": "exact_280_ms_is_double_tap",
+			"kind": "double",
+			"initial": {},
+			"cell": [0, 1],
+			"intervalMs": 280,
+			"expected": {"0,1": "cat"},
+			"hearts": 3,
+			"actions": ["TryCat"],
+		},
+	]
+	for case in boundary_cases:
+		var engine = GestureEngineScript.new(level, contract)
+		var actual: Dictionary = JSON.parse_string(JSON.stringify(_run_live_case(engine, case)))
+		var expected: Dictionary = JSON.parse_string(JSON.stringify({
+			"cells": case["expected"],
+			"hearts": case["hearts"],
+			"actions": case["actions"],
+		}))
 		if actual != expected:
 			failures.append(
 				"%s\nEXPECTED: %s\nACTUAL:   %s"
@@ -64,8 +100,8 @@ func _run() -> void:
 
 	if failures.is_empty():
 		print(
-			"M0_A02_INTERACTION_CONTRACT_PASS gestures=%d sessions=%d"
-			% [contract["cases"].size(), contract["sessionCases"].size()]
+			"M0_A02_INTERACTION_CONTRACT_PASS gestures=%d boundaries=%d sessions=%d"
+			% [contract["cases"].size(), boundary_cases.size(), contract["sessionCases"].size()]
 		)
 		quit(0)
 		return
