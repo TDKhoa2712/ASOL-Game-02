@@ -266,7 +266,7 @@ git commit -m "docs: record M0-A02 prototype evidence"
 
 Review contract parity, preview rollback, Undo boundaries, locked cells, pointer ownership and Editor usability. Run `git diff --check` and confirm a clean tree.
 
-- [ ] **Step 7: Handoff through pipeline**
+- [x] **Step 7: Handoff through pipeline**
 
 ```powershell
 python tools/agent_pipeline.py handoff M0-A02
