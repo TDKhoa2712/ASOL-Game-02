@@ -208,7 +208,7 @@ python -B -m unittest discover game/tests -p test_*.py
 
 Expected: scene smoke prints `M0_A02_BOARD_SCENE_PASS`; all game tests pass.
 
-- [ ] **Step 5: Commit playable scene**
+- [x] **Step 5: Commit playable scene**
 
 ```powershell
 git add game/scenes/bootstrap.tscn game/scenes/board.tscn game/scripts/board_view.gd game/scripts/board_screen.gd game/tests/run_board_scene_smoke.gd
@@ -222,7 +222,7 @@ git commit -m "feat: add playable T01 editor prototype"
 - Generated: `work/evidence/M0-A02/verification.txt`
 - Add: `work/handoffs/M0-A02.md`
 
-- [ ] **Step 1: Run full verification**
+- [x] **Step 1: Run full verification**
 
 ```powershell
 $env:GODOT_BIN='C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe'
@@ -236,7 +236,7 @@ python tools/agent_pipeline.py doctor
 
 Expected: all game/GDD/pipeline tests pass; 5 fixtures validate; validate/doctor exit 0.
 
-- [ ] **Step 2: Run package verification**
+- [x] **Step 2: Run package verification**
 
 Create a temporary `godot.exe` hard-link in the OS temp directory, prepend it to PATH for this process, then run:
 
@@ -247,11 +247,11 @@ python tools/agent_pipeline.py verify M0-A02
 
 Expected: canonical Python and Godot interaction checks exit 0, no `__pycache__` is created, and `verification.txt` is refreshed.
 
-- [ ] **Step 3: Record evidence and manual run instructions**
+- [x] **Step 3: Record evidence and manual run instructions**
 
 `runtime-interaction-results.md` must list contract counts, commands, pass results, known prototype limits and exact Editor steps: import `game/project.godot`, press F6/F5, then test tap/double/drag/Undo/Restart.
 
-- [ ] **Step 4: Write complete handoff**
+- [x] **Step 4: Write complete handoff**
 
 Fill Package, Requirements, QA, Changed files, Validation, Evidence, Remaining risks and Reviewer with no placeholders or TODO markers.
 
