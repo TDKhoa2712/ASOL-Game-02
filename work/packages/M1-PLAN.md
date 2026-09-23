@@ -40,6 +40,9 @@ command = ["python", "-m", "unittest", "discover", "tools/tests", "-p", "test_*.
 id = "gdd_tests"
 command = ["python", "-m", "unittest", "discover", "GDD/tools", "-p", "test_*.py"]
 [[checks]]
+id = "game_tests"
+command = ["python", "-m", "unittest", "discover", "game/tests", "-p", "test_*.py"]
+[[checks]]
 id = "level_validator"
 command = ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"]
 +++
