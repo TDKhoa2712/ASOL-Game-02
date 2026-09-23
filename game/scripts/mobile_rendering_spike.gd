@@ -15,6 +15,17 @@ var sticker: PanelContainer
 var error_badge: Label
 var _jump_elapsed := 0.0
 var _jumping := false
+var _measure_status := "idle"
+var _measure_duration := 20.0
+var _measure_warmup := 2.0
+var _measure_elapsed := 0.0
+var _sample_elapsed := 0.0
+var _sample_frames := 0
+var _worst_frame_ms := 0.0
+var _slow_frames := 0
+var _peak_static_mb := 0.0
+var _peak_video_mb := 0.0
+var _result: Dictionary = {}
 
 
 func _ready() -> void:
@@ -24,6 +35,7 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_record_measurement(delta)
 	if not _jumping:
 		return
 	_jump_elapsed += delta
@@ -35,6 +47,66 @@ func _process(delta: float) -> void:
 		sticker.hide()
 		for cat in cats.get_children():
 			(cat as Sprite2D).texture.region = Rect2(0, 0, 128, 128)
+
+
+func start_measurement(duration_sec: float = 20.0, warmup_sec: float = 2.0) -> void:
+	_measure_duration = maxf(duration_sec, 0.01)
+	_measure_warmup = maxf(warmup_sec, 0.0)
+	_measure_elapsed = 0.0
+	_sample_elapsed = 0.0
+	_sample_frames = 0
+	_worst_frame_ms = 0.0
+	_slow_frames = 0
+	_peak_static_mb = 0.0
+	_peak_video_mb = 0.0
+	_measure_status = "running"
+	_result = {"status": "running"}
+	$MeasureButton.disabled = true
+	$ProbeResults.text = "Đang đo: khởi động..."
+
+
+func measurement_result() -> Dictionary:
+	return _result.duplicate()
+
+
+func _record_measurement(delta: float) -> void:
+	if _measure_status != "running":
+		return
+	_measure_elapsed += delta
+	if _measure_elapsed <= _measure_warmup:
+		$ProbeResults.text = "Đang làm nóng: %.1f / %.1f giây" % [_measure_elapsed, _measure_warmup]
+		return
+	_sample_elapsed += delta
+	_sample_frames += 1
+	_worst_frame_ms = maxf(_worst_frame_ms, delta * 1000.0)
+	if delta > 0.1:
+		_slow_frames += 1
+	_peak_static_mb = maxf(_peak_static_mb, Performance.get_monitor(Performance.MEMORY_STATIC) / 1048576.0)
+	_peak_video_mb = maxf(_peak_video_mb, Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED) / 1048576.0)
+	if _sample_frames % 120 == 0:
+		trigger_success()
+	$ProbeResults.text = "Đang đo: %.1f / %.1f giây" % [_sample_elapsed, _measure_duration]
+	if _sample_elapsed >= _measure_duration:
+		_measure_status = "complete"
+		_result = {
+			"status": "complete",
+			"frames": _sample_frames,
+			"seconds": _sample_elapsed,
+			"fps": _sample_frames / _sample_elapsed,
+			"worst_frame_ms": _worst_frame_ms,
+			"slow_frames": _slow_frames,
+			"static_mb": _peak_static_mb,
+			"video_mb": _peak_video_mb,
+		}
+		$ProbeResults.text = "Hoàn tất · %.1f FPS TB · khung tệ nhất %.1f ms\n>100 ms: %d · RAM Godot: %s · video: %s" % [
+			_result.fps, _worst_frame_ms, _slow_frames,
+			_memory_text(_peak_static_mb), _memory_text(_peak_video_mb),
+		]
+		$MeasureButton.disabled = false
+
+
+func _memory_text(megabytes: float) -> String:
+	return "%.1f MB" % megabytes if megabytes > 0.0 else "không có dữ liệu"
 
 
 func trigger_success() -> void:
@@ -125,6 +197,17 @@ func _build() -> void:
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(note)
 
+	var measure_button := Button.new()
+	measure_button.name = "MeasureButton"
+	measure_button.text = "Đo 20 giây"
+	measure_button.pressed.connect(start_measurement)
+	add_child(measure_button)
+
+	var probe_results := _label("Chạm Đo 20 giây, rồi chụp ảnh kết quả", 25)
+	probe_results.name = "ProbeResults"
+	probe_results.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	add_child(probe_results)
+
 
 func _layout_probe() -> void:
 	if board == null:
@@ -154,6 +237,10 @@ func _layout_probe() -> void:
 	$ErrorButton.size = $SuccessButton.size
 	$Note.position = Vector2(SAFE_SIDE, $SuccessButton.position.y + 102.0)
 	$Note.size = Vector2(size.x - SAFE_SIDE * 2.0, 70.0)
+	$MeasureButton.position = Vector2((size.x - 360.0) * 0.5, $Note.position.y + 75.0)
+	$MeasureButton.size = Vector2(360.0, 75.0)
+	$ProbeResults.position = Vector2(SAFE_SIDE, $MeasureButton.position.y + 85.0)
+	$ProbeResults.size = Vector2(size.x - SAFE_SIDE * 2.0, 95.0)
 
 
 func _label(value: String, font_size: int) -> Label:

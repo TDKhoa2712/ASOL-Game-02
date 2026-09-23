@@ -56,6 +56,16 @@ func _run() -> void:
 	_expect(not sticker.visible, "Error must clear the success sticker", failures)
 	_expect(screen.get_node("ErrorBadge").visible, "Error needs a non-color warning", failures)
 
+	_expect(screen.has_method("start_measurement"), "Probe must offer on-screen measurement", failures)
+	if screen.has_method("start_measurement"):
+		screen.start_measurement(0.15, 0.0)
+		await create_timer(0.25).timeout
+		var result: Dictionary = screen.measurement_result()
+		_expect(result.get("status") == "complete", "Measurement must complete without ADB", failures)
+		_expect(int(result.get("frames", 0)) > 0, "Measurement must sample rendered frames", failures)
+		_expect(screen.get_node("ProbeResults").visible, "Results must be visible for a phone screenshot", failures)
+		_expect(screen.get_node("ProbeResults").text.contains("Hoàn tất"), "Results must state completion on screen", failures)
+
 	screen.queue_free()
 	if failures.is_empty():
 		print("M0_A03_RENDERING_SPIKE_PASS")
