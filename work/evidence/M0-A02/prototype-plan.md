@@ -164,7 +164,7 @@ python -B -m unittest GDD/tools/test_interaction_contract.py
 
 Expected: 3 tests pass.
 
-- [ ] **Step 5: Commit gesture behavior**
+- [x] **Step 5: Commit gesture behavior**
 
 ```powershell
 git add game/scripts/gesture_engine.gd game/tests/run_interaction_contract.gd
@@ -180,7 +180,7 @@ git commit -m "feat: implement tap double-tap and stroke contract"
 - Add: `game/tests/run_board_scene_smoke.gd`
 - Modify: `game/scenes/bootstrap.tscn`
 
-- [ ] **Step 1: Write scene smoke and observe RED**
+- [x] **Step 1: Write scene smoke and observe RED**
 
 Require a board scene with T01, status/hearts, Undo, Restart and restart confirmation. Instantiate it headlessly and exercise Undo plus Cancel/Confirm restart.
 
@@ -190,15 +190,15 @@ Require a board scene with T01, status/hearts, Undo, Restart and restart confirm
 
 Expected RED: board scene/scripts are missing.
 
-- [ ] **Step 2: Implement BoardView and BoardScreen**
+- [x] **Step 2: Implement BoardView and BoardScreen**
 
 Draw original region/pattern/cat/X states, map mouse/touch to logical cells, connect gesture timing, expose hearts/status, and implement Undo and Restart dialog.
 
-- [ ] **Step 3: Integrate with bootstrap**
+- [x] **Step 3: Integrate with bootstrap**
 
 Instantiate `board.tscn` under bootstrap while preserving the bootstrap log marker and project main scene.
 
-- [ ] **Step 4: Run scene smoke and runtime smoke**
+- [x] **Step 4: Run scene smoke and runtime smoke**
 
 ```powershell
 & 'C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe' --headless --path game --script res://tests/run_board_scene_smoke.gd

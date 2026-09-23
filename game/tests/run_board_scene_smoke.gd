@@ -1,0 +1,94 @@
+extends SceneTree
+
+
+const BOARD_SCENE_PATH := "res://scenes/board.tscn"
+
+
+func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
+	var failures: Array[String] = []
+	if not ResourceLoader.exists(BOARD_SCENE_PATH):
+		_fail("Board scene is missing: %s" % BOARD_SCENE_PATH)
+		return
+
+	var packed_scene = load(BOARD_SCENE_PATH)
+	var screen = packed_scene.instantiate()
+	root.size = Vector2i(1080, 1920)
+	root.add_child(screen)
+	await process_frame
+
+	_expect(screen.name == "BoardScreen", "Root must be BoardScreen", failures)
+	_expect(
+		ProjectSettings.get_setting("display/window/size/viewport_width") == 1080,
+		"Logical viewport width must stay portrait",
+		failures
+	)
+	_expect(
+		ProjectSettings.get_setting("display/window/size/viewport_height") == 1920,
+		"Logical viewport height must stay portrait",
+		failures
+	)
+	for node_name in [
+		"HeartsLabel",
+		"StatusLabel",
+		"BoardView",
+		"UndoButton",
+		"RestartButton",
+		"RestartDialog",
+	]:
+		_expect(
+			screen.find_child(node_name, true, false) != null,
+			"Missing UI node: %s" % node_name,
+			failures
+		)
+	var hearts: Control = screen.find_child("HeartsLabel", true, false)
+	var status: Control = screen.find_child("StatusLabel", true, false)
+	_expect(hearts.get_global_rect().position.x >= 0.0, "Hearts label is clipped", failures)
+	_expect(status.get_global_rect().end.x <= 1080.0, "Status label is clipped", failures)
+
+	var session = screen.get_session()
+	session.apply_action({"type": "MarkX", "cell": [0, 0]})
+	screen.undo_last_x()
+	_expect(
+		session.public_state()["cells"].is_empty(),
+		"Undo must restore the previous board state",
+		failures
+	)
+
+	session.apply_action({"type": "MarkX", "cell": [0, 0]})
+	screen.request_restart()
+	await process_frame
+	var dialog = screen.find_child("RestartDialog", true, false)
+	_expect(dialog.visible, "Restart must ask for confirmation", failures)
+	screen.cancel_restart()
+	_expect(
+		session.public_state()["cells"].get("0,0") == "x",
+		"Cancelling restart must preserve progress",
+		failures
+	)
+
+	screen.request_restart()
+	screen.confirm_restart()
+	var restarted: Dictionary = session.public_state()
+	_expect(restarted["cells"].is_empty(), "Restart must clear cells", failures)
+	_expect(restarted["hearts"] == 3, "Restart must restore hearts", failures)
+
+	screen.queue_free()
+	if failures.is_empty():
+		print("M0_A02_BOARD_SCENE_PASS")
+		quit(0)
+	else:
+		_fail("\n".join(failures))
+
+
+func _expect(condition: bool, message: String, failures: Array[String]) -> void:
+	if not condition:
+		failures.append(message)
+
+
+func _fail(message: String) -> void:
+	push_error(message)
+	quit(1)
