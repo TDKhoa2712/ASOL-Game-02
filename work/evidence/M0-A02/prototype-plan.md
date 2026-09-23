@@ -255,7 +255,7 @@ Expected: canonical Python and Godot interaction checks exit 0, no `__pycache__`
 
 Fill Package, Requirements, QA, Changed files, Validation, Evidence, Remaining risks and Reviewer with no placeholders or TODO markers.
 
-- [ ] **Step 5: Commit evidence and handoff**
+- [x] **Step 5: Commit evidence and handoff**
 
 ```powershell
 git add work/evidence/M0-A02 work/handoffs/M0-A02.md

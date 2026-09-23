@@ -15,9 +15,9 @@ Không có claim APK, thiết bị thật, input latency, FPS, asset sản xuấ
 | Kiểm tra | Kết quả |
 |---|---|
 | Canonical Python interaction oracle | PASS — 3/3 |
-| Godot gesture contract v2 | PASS — 16/16 canonical + 2/2 exact-boundary |
+| Godot gesture contract v2 | PASS — 16/16 canonical + 2/2 exact-boundary + 4/4 live guards |
 | Godot session contract | PASS — 14/14 |
-| Board scene smoke | PASS — node UI, Undo, Restart cancel/confirm |
+| Board scene smoke | PASS — node UI, mouse/touch/drag/outside/focus, Undo, Restart cancel/confirm |
 | Game Python tests | PASS — 8/8 |
 | GDD tests | PASS — 23/23 |
 | Pipeline tests | PASS — 22/22 |
@@ -28,7 +28,7 @@ Không có claim APK, thiết bị thật, input latency, FPS, asset sản xuấ
 Marker runtime cuối cùng:
 
 ```text
-M0_A02_INTERACTION_CONTRACT_PASS gestures=16 boundaries=2 sessions=14
+M0_A02_INTERACTION_CONTRACT_PASS gestures=16 boundaries=2 segmented=1 ownership=1 terminals=2 sessions=14
 M0_A02_BOARD_SCENE_PASS
 M0_A01_BOOTSTRAP_READY
 ```
@@ -47,9 +47,13 @@ Các trace dưới đây là sự kiện logic xác định được replay vào
 | Jitter đúng 12 px | `down (50,50)`; `move (62,50)`; `up`; hết pending | Vẫn là một `MarkX` |
 | Motion 13 px | `down (50,50)`; `move (63,50)`; `up` | Một `MarkStroke`; Undo phục hồi state ban đầu |
 | Fast drag + return | `down [0,0]`; `move [0,3]`; `move [0,0]`; `up` | Nội suy đủ ô, mỗi ô xử lý một lần, bỏ qua cat/X/X đỏ |
+| Segmented elbow drag | `down [0,0]`; `move [0,3]`; `move [3,3]`; `up` | Nối từng sample: đủ hàng 0 rồi cột 3, không vẽ đường chéo từ origin |
 | Secondary pointer | primary `down [2,0]`; secondary `down [3,0]`, kéo `[3,3]`; primary `up` | Ngón phụ bị bỏ qua; chỉ primary tạo `MarkX` |
+| Locked primary owner | primary giữ `x_error [0,0]`; secondary chạm empty `[0,1]` | Primary vẫn sở hữu contact; secondary không tạo preview/action |
 | Background after release | `down/up [0,0]`; `flush_pending` | Tap đã nhấc được commit |
 | Background while active | `down [0,0]`; `cancel_active` | Preview chưa nhấc bị hủy; không action |
+| Released tap + active second | tap đầu đã `up`; contact thứ hai còn giữ; focus loss | Hủy contact thứ hai và commit tap đầu trong cùng notification |
+| Terminal attempts | 3 lỗi liên tiếp hoặc đặt đủ 4 mèo đúng | Chuyển `Failed`/`Won`, xóa Undo và từ chối input board mới |
 
 ## Ngưỡng và accidental TryCat
 
