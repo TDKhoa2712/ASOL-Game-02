@@ -23,13 +23,23 @@ func _run() -> void:
 		var case: Dictionary = case_value
 		var engine = GestureEngineScript.new(level, contract)
 		var actual: Dictionary = JSON.parse_string(
-			JSON.stringify(engine.run_contract_case(case))
+			JSON.stringify(_run_live_case(engine, case))
 		)
 		var expected := {
 			"cells": case["expected"],
 			"hearts": case["hearts"],
 			"actions": case["actions"],
 		}
+		if case.has("preview"):
+			expected["preview"] = case["preview"]
+		if (
+			case["kind"] == "drag"
+			or (
+				case["kind"] == "jitter"
+				and float(case["distanceLogicalPx"]) > float(contract["touchSlopLogicalPx"])
+			)
+		):
+			expected["undoCells"] = case.get("initial", {})
 		if actual != expected:
 			failures.append(
 				"%s\nEXPECTED: %s\nACTUAL:   %s"
@@ -63,6 +73,109 @@ func _run() -> void:
 	for failure in failures:
 		push_error(failure)
 	quit(1)
+
+
+func _run_live_case(engine, case: Dictionary) -> Dictionary:
+	var initial_hearts := int(case.get("initialHearts", 3))
+	engine.session.load_initial({
+		"cells": case.get("initial", {}),
+		"hearts": initial_hearts,
+		"mistakeCount": 3 - initial_hearts,
+	})
+	var kind := str(case["kind"])
+	var cell: Array = case.get("cell", case.get("from", case.get("primary", [])))
+	var preview := ""
+	var first_up_ms := 10
+
+	match kind:
+		"tap", "jitter":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			preview = engine.session.cell_state(cell)
+			if kind == "jitter":
+				engine.move_pointer(
+					0,
+					cell,
+					_center(cell) + Vector2(float(case["distanceLogicalPx"]), 0.0)
+				)
+			engine.end_pointer(0, first_up_ms)
+			engine.tick(first_up_ms + int(engine.contract["doubleTapWindowMs"]) + 1)
+		"double":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			preview = engine.session.cell_state(cell)
+			engine.end_pointer(0, first_up_ms)
+			var second_down_ms := first_up_ms + int(case["intervalMs"])
+			engine.begin_pointer(0, cell, _center(cell), second_down_ms)
+			engine.end_pointer(0, second_down_ms + 10)
+			engine.tick(second_down_ms + 10 + int(engine.contract["doubleTapWindowMs"]) + 1)
+		"different":
+			var first: Array = case["first"]
+			var second: Array = case["second"]
+			engine.begin_pointer(0, first, _center(first), 0)
+			engine.end_pointer(0, first_up_ms)
+			var second_down_ms := first_up_ms + int(case["intervalMs"])
+			engine.begin_pointer(0, second, _center(second), second_down_ms)
+			engine.end_pointer(0, second_down_ms + 10)
+			engine.tick(second_down_ms + 10 + int(engine.contract["doubleTapWindowMs"]) + 1)
+		"second_drag":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			preview = engine.session.cell_state(cell)
+			engine.end_pointer(0, first_up_ms)
+			var second_down_ms := first_up_ms + int(case["intervalMs"])
+			engine.begin_pointer(0, cell, _center(cell), second_down_ms)
+			engine.move_pointer(0, case["to"], _center(case["to"]))
+			engine.end_pointer(0, second_down_ms + 20)
+		"locked", "locked_drag":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			if kind == "locked_drag":
+				engine.move_pointer(0, case["to"], _center(case["to"]))
+			engine.end_pointer(0, first_up_ms)
+		"drag":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			engine.move_pointer(0, case["to"], _center(case["to"]))
+			if case.has("returnTo"):
+				engine.move_pointer(0, case["returnTo"], _center(case["returnTo"]))
+			engine.end_pointer(0, 30)
+		"secondary":
+			var primary: Array = case["primary"]
+			engine.begin_pointer(0, primary, _center(primary), 0)
+			engine.begin_pointer(1, case["secondaryFrom"], _center(case["secondaryFrom"]), 1)
+			engine.move_pointer(1, case["secondaryTo"], _center(case["secondaryTo"]))
+			engine.end_pointer(1, 5)
+			engine.end_pointer(0, first_up_ms)
+			engine.tick(first_up_ms + int(engine.contract["doubleTapWindowMs"]) + 1)
+		"flush_pending":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			preview = engine.session.cell_state(cell)
+			engine.end_pointer(0, first_up_ms)
+			engine.flush_pending()
+		"cancel_active":
+			engine.begin_pointer(0, cell, _center(cell), 0)
+			preview = engine.session.cell_state(cell)
+			engine.cancel_active()
+		_:
+			assert(false, "Unknown live gesture kind: %s" % kind)
+
+	var result := {
+		"cells": engine.session.cells.duplicate(true),
+		"hearts": engine.session.hearts,
+		"actions": engine.committed_actions.duplicate(),
+	}
+	if case.has("preview"):
+		result["preview"] = preview
+	if (
+		kind == "drag"
+		or (
+			kind == "jitter"
+			and float(case["distanceLogicalPx"]) > float(engine.contract["touchSlopLogicalPx"])
+		)
+	):
+		engine.session.apply_action({"type": "UndoX"})
+		result["undoCells"] = engine.session.cells.duplicate(true)
+	return result
+
+
+func _center(cell: Array) -> Vector2:
+	return Vector2(float(cell[1]) * 100.0 + 50.0, float(cell[0]) * 100.0 + 50.0)
 
 
 func _read_json(path: String) -> Dictionary:

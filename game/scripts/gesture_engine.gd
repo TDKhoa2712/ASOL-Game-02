@@ -81,7 +81,9 @@ func move_pointer(
 			if active_original_state not in ["empty", "x"]:
 				_clear_active()
 				return
-			preview_original = {}
+		else:
+			_rollback_preview()
+		preview_original = {}
 		dragging = true
 		stroke_mode = "mark" if active_original_state == "empty" else "clear"
 		stroke_cells = []
