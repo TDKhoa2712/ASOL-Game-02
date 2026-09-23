@@ -46,17 +46,69 @@ func _run() -> void:
 		)
 	var hearts: Control = screen.find_child("HeartsLabel", true, false)
 	var status: Control = screen.find_child("StatusLabel", true, false)
+	var board_view: Control = screen.find_child("BoardView", true, false)
 	_expect(hearts.get_global_rect().position.x >= 0.0, "Hearts label is clipped", failures)
 	_expect(status.get_global_rect().end.x <= 1080.0, "Status label is clipped", failures)
 
 	var session = screen.get_session()
-	session.apply_action({"type": "MarkX", "cell": [0, 0]})
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), true))
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), false))
+	board_view.engine.flush_pending()
+	_expect(
+		session.public_state()["cells"].get("0,0") == "x",
+		"Mouse tap must route through BoardView",
+		failures
+	)
 	screen.undo_last_x()
 	_expect(
 		session.public_state()["cells"].is_empty(),
 		"Undo must restore the previous board state",
 		failures
 	)
+
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), true))
+	board_view._gui_input(_mouse_motion(Vector2(650.0, 100.0)))
+	board_view._gui_input(_mouse_button(Vector2(650.0, 100.0), false))
+	_expect(
+		session.public_state()["cells"].size() == 4,
+		"Mouse drag must route a four-cell stroke through BoardView",
+		failures
+	)
+	screen.undo_last_x()
+
+	board_view._gui_input(_mouse_button(Vector2(100.0, 300.0), true))
+	board_view._gui_input(_mouse_button(Vector2(-20.0, 300.0), false))
+	board_view.engine.flush_pending()
+	_expect(
+		session.public_state()["cells"].get("1,0") == "x",
+		"Release outside board must finish the owned tap",
+		failures
+	)
+	screen.undo_last_x()
+
+	session.load_initial({"cells": {"0,0": "x_error"}, "hearts": 2, "mistakeCount": 1})
+	board_view._gui_input(_touch(0, Vector2(100.0, 100.0), true))
+	board_view._gui_input(_touch(1, Vector2(300.0, 100.0), true))
+	board_view._gui_input(_touch(1, Vector2(300.0, 100.0), false))
+	board_view._gui_input(_touch(0, Vector2(100.0, 100.0), false))
+	_expect(
+		session.public_state()["cells"] == {"0,0": "x_error"},
+		"Locked primary touch must block a mutable secondary touch",
+		failures
+	)
+	screen.confirm_restart()
+
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), true))
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), false))
+	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), true))
+	board_view._notification(Node.NOTIFICATION_APPLICATION_FOCUS_OUT)
+	_expect(
+		session.public_state()["cells"].get("0,0") == "x"
+		and not board_view.engine.pending_tap,
+		"Focus loss must cancel active contact and commit the released tap",
+		failures
+	)
+	screen.confirm_restart()
 
 	session.apply_action({"type": "MarkX", "cell": [0, 0]})
 	screen.request_restart()
@@ -87,6 +139,29 @@ func _run() -> void:
 func _expect(condition: bool, message: String, failures: Array[String]) -> void:
 	if not condition:
 		failures.append(message)
+
+
+func _mouse_button(position: Vector2, pressed: bool) -> InputEventMouseButton:
+	var event := InputEventMouseButton.new()
+	event.position = position
+	event.button_index = MOUSE_BUTTON_LEFT
+	event.pressed = pressed
+	return event
+
+
+func _mouse_motion(position: Vector2) -> InputEventMouseMotion:
+	var event := InputEventMouseMotion.new()
+	event.position = position
+	event.button_mask = MOUSE_BUTTON_MASK_LEFT
+	return event
+
+
+func _touch(index: int, position: Vector2, pressed: bool) -> InputEventScreenTouch:
+	var event := InputEventScreenTouch.new()
+	event.index = index
+	event.position = position
+	event.pressed = pressed
+	return event
 
 
 func _fail(message: String) -> void:

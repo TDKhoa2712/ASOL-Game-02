@@ -14,9 +14,11 @@ var committed_actions: Array = []
 
 var active_pointer := -1
 var active_cell: Array = []
+var previous_cell: Array = []
 var active_position := Vector2.ZERO
 var active_original_state := ""
 var active_is_second := false
+var active_actionable := false
 var dragging := false
 var stroke_mode := ""
 var stroke_cells: Array = []
@@ -40,6 +42,8 @@ func begin_pointer(
 ) -> bool:
 	if active_pointer != -1:
 		return false
+	if session.attempt_state != "Playing":
+		return false
 	if pending_tap:
 		var within_window := (
 			time_ms - pending_released_ms <= _double_tap_window_ms()
@@ -47,17 +51,24 @@ func begin_pointer(
 		if within_window and cell == pending_cell:
 			active_pointer = pointer_id
 			active_cell = cell.duplicate()
+			previous_cell = cell.duplicate()
 			active_position = logical_position
 			active_is_second = true
+			active_actionable = true
 			return true
 		flush_pending()
-	if session.is_given(cell) or session.cell_state(cell) not in ["empty", "x"]:
-		return false
 	active_pointer = pointer_id
 	active_cell = cell.duplicate()
+	previous_cell = cell.duplicate()
 	active_position = logical_position
 	active_original_state = session.cell_state(cell)
 	active_is_second = false
+	active_actionable = (
+		not session.is_given(cell)
+		and active_original_state in ["empty", "x"]
+	)
+	if not active_actionable:
+		return true
 	dragging = false
 	stroke_cells = []
 	visited_cells = {}
@@ -71,6 +82,8 @@ func move_pointer(
 	pointer_id: int, cell: Array, logical_position: Vector2
 ) -> void:
 	if pointer_id != active_pointer:
+		return
+	if not active_actionable:
 		return
 	if not dragging and logical_position.distance_to(active_position) <= _touch_slop():
 		return
@@ -89,13 +102,18 @@ func move_pointer(
 		stroke_cells = []
 		visited_cells = {}
 		_preview_stroke_cell(active_cell)
-	for target in line_cells(active_cell, cell, _cell_size()):
+	for target in line_cells(previous_cell, cell, _cell_size()):
 		_preview_stroke_cell(target)
+	previous_cell = cell.duplicate()
 	changed.emit()
 
 
 func end_pointer(pointer_id: int, time_ms: int) -> void:
 	if pointer_id != active_pointer:
+		return
+	if not active_actionable:
+		_clear_active()
+		changed.emit()
 		return
 	if dragging:
 		var committed_cells := stroke_cells.duplicate(true)
@@ -307,9 +325,11 @@ func _rollback_preview() -> void:
 func _clear_active(clear_preview: bool = true) -> void:
 	active_pointer = -1
 	active_cell = []
+	previous_cell = []
 	active_position = Vector2.ZERO
 	active_original_state = ""
 	active_is_second = false
+	active_actionable = false
 	dragging = false
 	stroke_mode = ""
 	stroke_cells = []

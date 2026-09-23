@@ -211,6 +211,8 @@ func _status_text(event_name: String) -> String:
 		"UndoApplied": "Đã hoàn tác",
 		"UndoUnavailable": "Không có bước X để hoàn tác",
 		"Restarted": "Đã bắt đầu lại",
+		"LevelWon": "Hoàn thành T01!",
+		"LevelFailed": "Đã hết lượt sai",
 	}.get(event_name, "Đang chơi")
 
 

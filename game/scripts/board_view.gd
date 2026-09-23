@@ -43,7 +43,7 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and engine != null:
 		if engine.active_pointer != -1:
 			engine.cancel_active()
-		elif engine.pending_tap:
+		if engine.pending_tap:
 			engine.flush_pending()
 
 

@@ -9,6 +9,7 @@ var cells: Dictionary = {}
 var hearts := 3
 var mistake_count := 0
 var hint_count := 0
+var attempt_state := "Playing"
 var undo_diff: Variant = null
 var events: Array = []
 
@@ -23,6 +24,7 @@ func reset_attempt(event_name: String = "") -> void:
 	hearts = 3
 	mistake_count = 0
 	hint_count = 0
+	attempt_state = "Playing"
 	undo_diff = null
 	events = []
 	if not event_name.is_empty():
@@ -35,6 +37,11 @@ func load_initial(initial: Dictionary) -> void:
 	hearts = int(initial.get("hearts", 3))
 	mistake_count = int(initial.get("mistakeCount", 0))
 	hint_count = int(initial.get("hintCount", 0))
+	attempt_state = (
+		"Failed" if hearts <= 0
+		else "Won" if _correct_placed_count() >= int(level["size"])
+		else "Playing"
+	)
 	undo_diff = null
 	events = []
 	changed.emit()
@@ -77,6 +84,13 @@ func write_cell(cell: Array, value: String) -> void:
 
 func apply_action(action: Dictionary) -> void:
 	var action_type := str(action["type"])
+	if (
+		action_type in ["MarkX", "ClearX", "MarkStroke", "TryCat"]
+		and attempt_state != "Playing"
+	):
+		events.append("NoOp")
+		changed.emit()
+		return
 	match action_type:
 		"MarkX", "ClearX":
 			_apply_single_x(action_type, action["cell"])
@@ -97,9 +111,14 @@ func apply_action(action: Dictionary) -> void:
 		"Retry":
 			reset_attempt("Retried")
 			return
-		"LevelWon", "LevelFailed":
+		"LevelWon":
 			undo_diff = null
-			events.append(action_type)
+			attempt_state = "Won"
+			events.append("LevelWon")
+		"LevelFailed":
+			undo_diff = null
+			attempt_state = "Failed"
+			events.append("LevelFailed")
 		"CloseApp":
 			undo_diff = null
 			events.append("AppClosed")
@@ -165,11 +184,25 @@ func _apply_try_cat(raw_cell: Array) -> void:
 	if int(level["solution"][cell[0]]) == cell[1]:
 		write_cell(cell, "cat")
 		events.append("CatPlaced")
+		if _correct_placed_count() >= int(level["size"]) and hearts > 0:
+			attempt_state = "Won"
+			events.append("LevelWon")
 	else:
 		write_cell(cell, "x_error")
 		hearts -= 1
 		mistake_count += 1
 		events.append("Mistake")
+		if hearts <= 0:
+			attempt_state = "Failed"
+			events.append("LevelFailed")
+
+
+func _correct_placed_count() -> int:
+	var count: int = level.get("givens", []).size()
+	for value in cells.values():
+		if value == "cat":
+			count += 1
+	return count
 
 
 func _apply_hint(result: String) -> void:

@@ -82,6 +82,63 @@ func _run() -> void:
 				% [case["id"], expected, actual]
 			)
 
+	var segmented_engine = GestureEngineScript.new(level, contract)
+	segmented_engine.begin_pointer(0, [0, 0], _center([0, 0]), 0)
+	segmented_engine.move_pointer(0, [0, 3], _center([0, 3]))
+	segmented_engine.move_pointer(0, [3, 3], _center([3, 3]))
+	segmented_engine.end_pointer(0, 30)
+	var segmented_expected := {
+		"0,0": "x", "0,1": "x", "0,2": "x", "0,3": "x",
+		"1,3": "x", "2,3": "x", "3,3": "x",
+	}
+	if segmented_engine.session.cells != segmented_expected:
+		failures.append(
+			"segmented_elbow_stroke\nEXPECTED: %s\nACTUAL:   %s"
+			% [segmented_expected, segmented_engine.session.cells]
+		)
+
+	var ownership_engine = GestureEngineScript.new(level, contract)
+	ownership_engine.session.load_initial({"cells": {"0,0": "x_error"}, "hearts": 2})
+	var primary_claimed: bool = ownership_engine.begin_pointer(0, [0, 0], _center([0, 0]), 0)
+	var secondary_claimed: bool = ownership_engine.begin_pointer(1, [0, 1], _center([0, 1]), 1)
+	ownership_engine.end_pointer(1, 5)
+	ownership_engine.end_pointer(0, 10)
+	ownership_engine.tick(300)
+	if (
+		not primary_claimed
+		or secondary_claimed
+		or ownership_engine.session.cells != {"0,0": "x_error"}
+		or not ownership_engine.committed_actions.is_empty()
+	):
+		failures.append(
+			"locked_primary_owns_contact\nprimary=%s secondary=%s cells=%s actions=%s"
+			% [primary_claimed, secondary_claimed, ownership_engine.session.cells, ownership_engine.committed_actions]
+		)
+
+	var failed_engine = GestureEngineScript.new(level, contract)
+	for wrong_cell in [[0, 0], [0, 2], [0, 3]]:
+		failed_engine.session.apply_action({"type": "TryCat", "cell": wrong_cell})
+	var failed_accepts_input: bool = failed_engine.begin_pointer(0, [1, 0], _center([1, 0]), 100)
+	if (
+		failed_engine.session.hearts != 0
+		or failed_accepts_input
+		or failed_engine.session.events[-1] != "LevelFailed"
+	):
+		failures.append(
+			"failed_attempt_locks_board\nhearts=%s accepts=%s events=%s"
+			% [failed_engine.session.hearts, failed_accepts_input, failed_engine.session.events]
+		)
+
+	var won_engine = GestureEngineScript.new(level, contract)
+	for row in range(int(level["size"])):
+		won_engine.session.apply_action({"type": "TryCat", "cell": [row, int(level["solution"][row])]})
+	var won_accepts_input: bool = won_engine.begin_pointer(0, [0, 0], _center([0, 0]), 100)
+	if won_accepts_input or won_engine.session.events[-1] != "LevelWon":
+		failures.append(
+			"won_attempt_locks_board\naccepts=%s events=%s"
+			% [won_accepts_input, won_engine.session.events]
+		)
+
 	for case_value in contract["sessionCases"]:
 		var case: Dictionary = case_value
 		var case_level: Dictionary = e01 if case.get("levelId", "T01") == "E01" else level
@@ -100,7 +157,7 @@ func _run() -> void:
 
 	if failures.is_empty():
 		print(
-			"M0_A02_INTERACTION_CONTRACT_PASS gestures=%d boundaries=%d sessions=%d"
+			"M0_A02_INTERACTION_CONTRACT_PASS gestures=%d boundaries=%d segmented=1 ownership=1 terminals=2 sessions=%d"
 			% [contract["cases"].size(), boundary_cases.size(), contract["sessionCases"].size()]
 		)
 		quit(0)
