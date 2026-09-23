@@ -262,7 +262,7 @@ git add work/evidence/M0-A02 work/handoffs/M0-A02.md
 git commit -m "docs: record M0-A02 prototype evidence"
 ```
 
-- [ ] **Step 6: Final whole-branch review**
+- [x] **Step 6: Final whole-branch review**
 
 Review contract parity, preview rollback, Undo boundaries, locked cells, pointer ownership and Editor usability. Run `git diff --check` and confirm a clean tree.
 
