@@ -22,11 +22,16 @@ func _check_home() -> void:
 	var home = scene.instantiate()
 	_check(home.get_meta("screen_id", "") == "home", "Home has screen metadata")
 	_check(home.get_node_or_null("SafeArea") != null, "Home uses safe area container")
-	_check(home.get_node_or_null("SafeArea/Content/PlayButton") != null, "Home has Play button")
-	_check(home.get_node_or_null("SafeArea/Content/HelpButton") != null, "Home has Help button")
-	_check(home.get_node_or_null("SafeArea/Content/SettingsButton") != null, "Home has Settings button")
-	_check(home.get_node("SafeArea/Content/PlayButton").text == "Chơi / Tiếp tục", "Home Play label is explicit")
-	_check(_large_enough(home.get_node("SafeArea/Content/PlayButton")), "Home Play meets touch target")
+	var content = home.get_node_or_null("SafeArea/Content")
+	var stack = home.get_node_or_null("SafeArea/Content/Stack")
+	_check(stack != null, "Home has content stack")
+	if content != null and stack != null:
+		_check(content.get_child_count() == 1, "Home content has one layout owner")
+		_check(content.get_child(0) == stack, "Home stack owns content layout")
+	for child_name in ["Title", "CurrentLevelLabel", "PlayButton", "HelpButton", "SettingsButton", "ProgressHint"]:
+		_check(stack != null and stack.get_node_or_null(child_name) != null, "Home stack has %s" % child_name)
+	_check(stack != null and stack.get_node("PlayButton").text == "Chơi / Tiếp tục", "Home Play label is explicit")
+	_check(stack != null and _large_enough(stack.get_node("PlayButton")), "Home Play meets touch target")
 	home.free()
 
 func _check_result(path: String, screen_id: String, action_name: String, action_text: String) -> void:

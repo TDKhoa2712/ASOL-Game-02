@@ -1,0 +1,8 @@
+package_id = "M1-A09"
+agent = "codex"
+status = "review"
+branch = "work/m1-a09-home-screen-layout-correction"
+base_revision = "6f8466c010493831139fd3b63f20f568d0630884"
+started_at = "2026-09-24T13:03:11Z"
+updated_at = "2026-09-24T13:13:56Z"
+blocker_reason = ""

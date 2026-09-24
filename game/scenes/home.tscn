@@ -67,21 +67,21 @@ theme_override_styles/panel = SubResource("StylePanel")
 layout_mode = 2
 theme_override_constants/separation = 18
 
-[node name="Title" type="Label" parent="SafeArea/Content"]
+[node name="Title" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.203922, 0.25098, 0.341176, 1)
 theme_override_font_sizes/font_size = 42
 text = "Mèo Logic"
 horizontal_alignment = 1
 
-[node name="CurrentLevelLabel" type="Label" parent="SafeArea/Content"]
+[node name="CurrentLevelLabel" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.439216, 0.52549, 1)
 theme_override_font_sizes/font_size = 22
 text = "Level hiện tại: 1"
 horizontal_alignment = 1
 
-[node name="PlayButton" type="Button" parent="SafeArea/Content"]
+[node name="PlayButton" type="Button" parent="SafeArea/Content/Stack"]
 custom_minimum_size = Vector2(240, 64)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -90,21 +90,21 @@ theme_override_styles/normal = SubResource("StyleButton")
 text = "Chơi / Tiếp tục"
 tooltip_text = "Mở level hiện tại hoặc tiếp tục lượt đang lưu"
 
-[node name="HelpButton" type="Button" parent="SafeArea/Content"]
+[node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
 custom_minimum_size = Vector2(240, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Trợ giúp / Luật"
 tooltip_text = "Xem luật hàng, cột, vùng và cử chỉ"
 
-[node name="SettingsButton" type="Button" parent="SafeArea/Content"]
+[node name="SettingsButton" type="Button" parent="SafeArea/Content/Stack"]
 custom_minimum_size = Vector2(240, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
 text = "Cài đặt"
 tooltip_text = "Âm thanh, rung, giảm chuyển động và phân biệt vùng"
 
-[node name="ProgressHint" type="Label" parent="SafeArea/Content"]
+[node name="ProgressHint" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.439216, 0.52549, 1)
 text = "Tiến trình được lưu tự động"
