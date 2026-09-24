@@ -40,6 +40,11 @@ func _run() -> void:
 	session.apply_action({"type": "TryCat", "cell": [0, 0]})
 	_check(session.hearts == 2 and session.mistake_count == 1, "red X cannot be retried")
 	_check(session.domain_events.has("ScoreChanged"), "core emits score event")
+	_check(session.get("detailed_events") is Array and session.detailed_events.has({"type": "Mistake", "reason": "row"}), "session exposes proven mistake reason")
+	var neutral_result: Dictionary = Core.try_cat(level, {}, 3, 0, [0, 0])
+	_check(neutral_result.get("reason") == "neutral", "unproven mistake stays neutral")
+	var exhausted_result: Dictionary = Core.try_cat(level, {}, 0, 3, [0, 1])
+	_check(exhausted_result["state"] == "Failed" and exhausted_result["cells"].is_empty(), "zero-heart core cannot win")
 
 	var stroke = Session.new(level)
 	stroke.apply_action({"type": "MarkStroke", "mode": "mark", "cells": [[0, 0], [0, 2], [0, 2], [0, 3]]})

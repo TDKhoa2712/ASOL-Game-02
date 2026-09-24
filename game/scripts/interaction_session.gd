@@ -15,6 +15,7 @@ var attempt_state := "Playing"
 var undo_diff: Variant = null
 var events: Array = []
 var domain_events: Array = []
+var detailed_events: Array = []
 
 
 func _init(level_data: Dictionary) -> void:
@@ -31,6 +32,7 @@ func reset_attempt(event_name: String = "") -> void:
 	undo_diff = null
 	events = []
 	domain_events = []
+	detailed_events = []
 	if not event_name.is_empty():
 		events.append(event_name)
 	changed.emit()
@@ -49,6 +51,7 @@ func load_initial(initial: Dictionary) -> void:
 	undo_diff = null
 	events = []
 	domain_events = []
+	detailed_events = []
 	changed.emit()
 
 
@@ -193,6 +196,11 @@ func _apply_try_cat(raw_cell: Array) -> void:
 	mistake_count = int(result["mistakeCount"])
 	attempt_state = str(result["state"])
 	domain_events.append_array(result["events"])
+	for event_name in result["events"]:
+		var detail := {"type": event_name}
+		if event_name == "Mistake":
+			detail["reason"] = result["reason"]
+		detailed_events.append(detail)
 	for event_name in result["events"]:
 		if event_name in ["NoOp", "CatPlaced", "Mistake", "LevelWon", "LevelFailed"]:
 			events.append(event_name)

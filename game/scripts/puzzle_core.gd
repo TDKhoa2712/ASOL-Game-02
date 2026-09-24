@@ -62,6 +62,10 @@ static func mistake_reason(level: Dictionary, cells: Dictionary, cell: Array) ->
 
 static func try_cat(level: Dictionary, cells: Dictionary, hearts: int, mistakes: int, cell: Array) -> Dictionary:
 	var result := {"cells": cells.duplicate(true), "hearts": hearts, "mistakeCount": mistakes, "state": "Playing", "events": []}
+	if hearts <= 0:
+		result["state"] = "Failed"
+		result["events"].append("NoOp")
+		return result
 	if not in_bounds(level, cell) or cell_state(level, cells, cell) not in ["empty", "x"]:
 		result["events"].append("NoOp")
 		return result
