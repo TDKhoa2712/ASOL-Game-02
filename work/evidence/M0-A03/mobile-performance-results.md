@@ -30,7 +30,7 @@ Ngày ghi nhận: 2026-09-24. Engine: Godot 4.7.2 stable, renderer `mobile` tron
 | --- | --- |
 | Android debug export | PASS bằng preset `Android M0 Debug`, ARM64, Godot 4.7.2; APK 28.324.252 byte tại `game/build/android/asol-game-02-debug.apk` (artifact local, không version-control). SHA-256 `ABDD7CAC2BC872BE0BAD2F2425BA0FD3AA2642EFD81F62D4E1DADB88BC3DABE6`. |
 | Android manifest | `aapt2 dump permissions` liệt kê package `org.asol.game02` và không liệt kê quyền mạng. Đây là kiểm tra manifest, chưa phải chạy offline. `aapt2` cảnh báo thiếu resource themed icon của template, nhưng export exit 0. |
-| Android install/run/offline trên Redmi | CHƯA ĐO: Redmi thật chưa kết nối. APK chính mở T01; APK probe riêng mở scene rendering. |
+| Android install/run/offline trên Redmi | Người dùng đã cài/chạy APK probe trên Redmi Note 13 Pro 5G và báo ứng dụng vẫn chạy khi tắt Wi-Fi và dữ liệu di động. Có ảnh kết quả probe trên máy thật; chưa có ảnh trạng thái mạng/offline hoặc bài chơi các level phát hành. |
 | iOS export/build/run/offline | CHƯA ĐO: Windows không có macOS/Xcode/signing và chưa gán iPhone. |
 
 APK probe đo thủ công: `game/build/android/mobile-rendering-spike-debug.apk`, 28.324.252 byte, SHA-256 `7E227945112FEA59EE46E7C5915C6A801BA1AE3A4760EA54FA1F7605FFBEA424` (artifact local, không version-control). Lần export mới đã khôi phục `game/project.godot` về nội dung gốc.
@@ -45,17 +45,23 @@ APK probe đo thủ công: `game/build/android/mobile-rendering-spike-debug.apk`
 - Đây là kiểm chứng tương thích/chạy offline ban đầu trên emulator. Không gán PASS QA-26/27/30/50 hoặc ngưỡng TECH-13/19/21 cho máy mục tiêu từ các ảnh và PID này.
 - Bản probe có nút đo đã cài bằng `adb install -r` (`Success`) và mở trên cùng AVD. [Ảnh trước đo](emulator-manual-measure-before.png) cho thấy nút và dòng hướng dẫn nằm trong màn hình. [Ảnh sau đo](emulator-manual-measure-result.png) hiện `Hoàn tất`: 56,4 FPS trung bình, khung tệ nhất 133,3 ms, 2 khung >100 ms, Godot static memory 39,7 MB và video memory 29,0 MB. Đây là kiểm tra đường thu thập/hiển thị trên emulator, không phải số đo Redmi hoặc iPhone. Số liệu còn cho thấy ngay workload mẫu này đã có stall trên emulator, nên không thể tuyên bố TECH-19 đạt.
 
+## Quan sát trên Redmi Note 13 Pro 5G
+
+- Người dùng cung cấp [ảnh kết quả đo 20 giây](redmi-note-13-pro-5g/két-qua-do-20-giay.jpg) từ APK probe trên Redmi Note 13 Pro 5G, 8/128 GB. File JPEG 280.302 byte, SHA-256 `FDA1DF06ECB24588F4F03E6C9E3D6C51D57A5F3C74FD44C491913100B510437A`. Ảnh cho thấy bàn A–F, nút và hai dòng kết quả đều hiển thị trong khung hình, không thấy bị cắt. Chưa biết phiên bản Android/HyperOS, chế độ tiết kiệm pin và tần số màn hình.
+- Một lần đo hiện trên ảnh: **60,0 FPS trung bình; khung tệ nhất 16,7 ms; 0 khung >100 ms; Godot static memory 49,3 MB; video memory 48,9 MB**. Đây là số do probe tự báo cáo cho atlas mẫu và phản hồi thử, không phải profiler RAM/VRAM toàn máy hoặc workload sản xuất. Chưa có các lần lặp để đánh giá dao động.
+- Người dùng báo ứng dụng vẫn chạy khi không có Wi-Fi và dữ liệu di động. Ghi nhận là **báo cáo thử thủ công**; ảnh kết quả không thể hiện trạng thái kết nối. Chưa có kiểm chứng offline các level đầu vì project hiện chỉ có T01 fixture.
+
 ## Số đo bắt buộc
 
 | Metric | Redmi Note 13 Pro 5G | iPhone mục tiêu |
 | --- | --- | --- |
 | Cold load màn đầu sau startup, TECH-13 | CHƯA ĐO | CHƯA ĐO |
-| FPS khi tương tác, TECH-19 | CHƯA ĐO | CHƯA ĐO |
-| Frame stall khi mèo nhảy/sticker, TECH-19 | CHƯA ĐO | CHƯA ĐO |
-| RAM peak / VRAM thực | CHƯA ĐO | CHƯA ĐO |
+| FPS khi tương tác, TECH-19 | Probe mẫu: 60,0 FPS một lần đo; workload sản xuất CHƯA ĐO | CHƯA ĐO |
+| Frame stall khi mèo nhảy/sticker, TECH-19 | Probe mẫu: tệ nhất 16,7 ms, 0 khung >100 ms; chưa có trace/lần lặp | CHƯA ĐO |
+| RAM peak / VRAM thực | Monitor Godot: static 49,3 MB, video 48,9 MB; tổng RAM/VRAM thực CHƯA ĐO | CHƯA ĐO |
 | Atlas load, first frame, cache | CHƯA ĐO | CHƯA ĐO |
-| Safe area, cỡ chạm/đọc bàn 6×6, QA-27 | CHƯA KIỂM TRÊN MÁY | CHƯA KIỂM TRÊN MÁY |
-| Offline play các level đầu, QA-26 | CHƯA KIỂM; project mới có T01 fixture | CHƯA KIỂM; project mới có T01 fixture |
+| Safe area, cỡ chạm/đọc bàn 6×6, QA-27 | Ảnh Redmi cho thấy bàn/nút/kết quả không bị cắt; cỡ chạm và safe area theo OS CHƯA KIỂM ĐẦY ĐỦ | CHƯA KIỂM TRÊN MÁY |
+| Offline play các level đầu, QA-26 | Người dùng báo APK probe chạy offline; level đầu CHƯA KIỂM, project mới có T01 fixture | CHƯA KIỂM; project mới có T01 fixture |
 
 ## Thử thủ công trên Redmi khi không có ADB
 
@@ -64,8 +70,8 @@ APK probe đo thủ công: `game/build/android/mobile-rendering-spike-debug.apk`
 3. Chạm `Đo 20 giây`, để màn hình sáng và không chuyển ứng dụng cho đến khi hiện `Hoàn tất`; chụp ảnh kết quả. Nên lặp lại ba lần sau khi đóng/mở app để thấy dao động. Gửi ảnh cùng thông tin có bật tiết kiệm pin/tần số màn hình nào không.
 4. Tắt Wi-Fi và dữ liệu di động, mở lại APK, kiểm bàn hiện đầy đủ và chụp ảnh. Nếu bị hệ thống chặn cài hoặc mở, ghi nguyên văn thông báo.
 
-Ảnh người dùng gửi sẽ là bằng chứng kiểm bố cục/offline và số đo probe trên Redmi. Nó chưa xác nhận TECH-13 cold load, profiler RAM/VRAM chuẩn, gameplay của các level phát hành hoặc iOS.
+Ảnh người dùng đã gửi là bằng chứng kiểm bố cục và số đo probe trên Redmi. Báo cáo offline là xác nhận thủ công từ người dùng. Chúng chưa xác nhận TECH-13 cold load, profiler RAM/VRAM chuẩn, gameplay của các level phát hành hoặc iOS.
 
 ## Ranh giới kết luận
 
-Desktop smoke, screenshot và Android export xác nhận scene thử có thể nạp và đóng gói. **TECH-13/19/21 và QA-26/27/30/50 chưa đạt nghiệm thu** vì thiếu số đo trên thiết bị mục tiêu, atlas/clip đại diện sản xuất và môi trường iOS. Theo hợp đồng M0-A03, package phải giữ trạng thái `blocked` cho đến khi các bằng chứng đó được bổ sung.
+Desktop smoke, Android export và ảnh Redmi xác nhận scene probe có thể nạp, đóng gói và hiển thị trên Android mục tiêu. **TECH-13/19/21 và QA-26/27/30/50 chưa đạt nghiệm thu đầy đủ** vì còn thiếu cold load, workload/asset đại diện sản xuất, các phép đo lặp/profiler và môi trường iOS. Theo hợp đồng M0-A03, package phải giữ trạng thái `blocked` cho đến khi các bằng chứng đó được bổ sung.
