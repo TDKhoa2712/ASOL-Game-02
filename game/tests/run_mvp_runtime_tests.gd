@@ -6,7 +6,10 @@ var failures: Array[String] = []
 
 
 func _initialize() -> void:
-	_run()
+	call_deferred("_run")
+
+
+func _finish() -> void:
 	if failures.is_empty():
 		print("M1_A08_MVP_RUNTIME_PASS")
 		quit(0)
@@ -72,6 +75,8 @@ func _run() -> void:
 	bootstrap._on_action("start_game")
 	for row in range(4):
 		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+	_check(bootstrap.flow.current_screen == "puzzle", "win result waits until current input completes")
+	await process_frame
 	_check(bootstrap.flow.current_screen == "result_win", "real gameplay routes to win result")
 	_check(bootstrap.get_node("ScreenHost").get_child(0).get_meta("screen_id", "") == "result_win", "win result screen is visible")
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack") != null, "win result has managed layout stack")
@@ -84,6 +89,8 @@ func _run() -> void:
 	bootstrap._on_action("start_game")
 	for wrong_cell in [[0, 0], [1, 0], [2, 1]]:
 		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
+	_check(bootstrap.flow.current_screen == "puzzle", "fail result waits until current input completes")
+	await process_frame
 	_check(bootstrap.flow.current_screen == "result_fail", "real gameplay routes to fail result")
 	_check(bootstrap.get_node("ScreenHost").get_child(0).get_meta("screen_id", "") == "result_fail", "fail result screen is visible")
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack") != null, "fail result has managed layout stack")
@@ -91,6 +98,7 @@ func _run() -> void:
 	bootstrap.free()
 
 	resumed.clear_saved_state()
+	_finish()
 
 
 func _check(condition: bool, label: String) -> void:

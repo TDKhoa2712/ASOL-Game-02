@@ -32,11 +32,17 @@ func _on_flow_changed(_screen_id: String, _level_id: String) -> void:
 
 
 func _on_runtime_level_won(_level_id: String, _next_level_id: String) -> void:
-	flow.dispatch("win")
+	call_deferred("_dispatch_result", "win")
 
 
 func _on_runtime_level_failed(_level_id: String) -> void:
-	flow.dispatch("fail")
+	call_deferred("_dispatch_result", "fail")
+
+
+func _dispatch_result(action: String) -> void:
+	if flow == null or flow.current_screen != Flow.SCREEN_PUZZLE:
+		return
+	flow.dispatch(action)
 
 
 func return_home() -> void:

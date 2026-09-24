@@ -1,0 +1,26 @@
+M1-A12 regression evidence — Godot 4.7.2 stable
+
+Package check:
+- run_mvp_runtime_tests.gd: PASS — M1_A08_MVP_RUNTIME_PASS
+- Regression assertions: result transition remains on puzzle during the current action and reaches result_win/result_fail after process_frame.
+
+Godot unit/contract checks:
+- run_puzzle_core_tests.gd: PASS — M1_A01_PUZZLE_CORE_PASS
+- run_level_loader_tests.gd: PASS — M1_A02_LEVEL_LOADER_PASS
+- run_save_repository_tests.gd: PASS — M1_A03_SAVE_REPOSITORY_PASS
+- run_hint_engine_tests.gd: PASS — M1_A04_HINT_ENGINE_PASS
+- run_tutorial_tests.gd: PASS — M1_A06_TUTORIAL_PASS
+- run_ui_shell_tests.gd: PASS — M1_A05_UI_SHELL_PASS
+- run_ui_flow_tests.gd: PASS — M1_A07_UI_FLOW_PASS
+- run_interaction_contract.gd: PASS — M0_A02_INTERACTION_CONTRACT_PASS
+- run_mobile_rendering_spike_smoke.gd: PASS — M0_A03_RENDERING_SPIKE_PASS
+
+Data and Python tests:
+- python GDD/tools/validate_levels.py game/data/campaign_m1.json: PASS — 4 levels, 0 duplicate geometry warnings.
+- python -m unittest discover -s GDD/tools -p test_*.py: PASS — 23 tests.
+
+Known unrelated baseline issue:
+- run_board_scene_smoke.gd: FAIL — Status label is clipped. This existing visual smoke failure is outside M1-A12 allowed_paths and unrelated to deferred result routing; no board layout files were changed.
+
+Static checks:
+- git diff --check: PASS.
