@@ -1,0 +1,8 @@
+package_id = "M1-A05"
+agent = "codex"
+status = "done"
+branch = "work/m1-a05-five-screen-ui-shell-and-accessible-board"
+base_revision = "0b4a2780b5b998ff79a799feca080cc66ba275c9"
+started_at = "2026-09-24T08:08:16Z"
+updated_at = "2026-09-24T08:09:21Z"
+blocker_reason = ""
