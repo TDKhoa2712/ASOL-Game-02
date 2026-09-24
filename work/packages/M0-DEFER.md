@@ -20,7 +20,9 @@ allowed_paths = [
   "work/packages/M0-DEFER.md",
   "work/packages/M1-*.md",
   "work/evidence/M0-DEFER/**",
-  "work/handoffs/M0-DEFER.md"
+  "work/evidence/M1-PLAN/package-map.md",
+  "work/handoffs/M0-DEFER.md",
+  "work/handoffs/M1-PLAN.md"
 ]
 deliverables = [
   "work/evidence/M0-DEFER/dependency-review.md"
@@ -31,6 +33,9 @@ out_of_scope = [
   "removing mobile, iOS, performance or release QA requirements",
   "changing gameplay rules, schema, score or MVP scope"
 ]
+[[checks]]
+id = "dependency_policy"
+command = ["python", "work/evidence/M0-DEFER/check_dependencies.py"]
 [[checks]]
 id = "repository_validate"
 command = ["python", "tools/agent_pipeline.py", "validate"]
@@ -56,6 +61,7 @@ Cho phép triển khai có điều kiện các package M1 trong lúc M0-A03 ch�
 - [ ] Có quyết định governance và cập nhật GDD 08 phân biệt quyền bắt đầu triển khai M1 với việc nghiệm thu M0/M1.
 - [ ] Mọi package triển khai/content M1 phụ thuộc M0-DEFER; các dependency nội bộ M1 giữ nguyên.
 - [ ] M0-GATE vẫn phụ thuộc M0-A03 và M1-GATE vẫn phụ thuộc M0-GATE.
+- [ ] Hồ sơ M1-PLAN đang review được cập nhật để không còn mâu thuẫn với dependency mới.
 - [ ] Báo cáo dependency liệt kê đầy đủ package bị chặn, package được mở và điều kiện thiết bị còn thiếu.
 - [ ] `validate`, `doctor` và toàn bộ check của package qua; không sửa code, content hay kết quả nghiệm thu M0-A03.
 

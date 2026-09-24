@@ -10,7 +10,7 @@ Front matter của M1-PLAN không nhận mã gameplay/technical requirement làm
 
 ## QA
 
-M1-PLAN không tuyên bố hoàn tất QA runtime. Các package M1 ghi QA owner trong front matter; `M1-GATE` sẽ tổng hợp chứng cứ vertical slice sau khi M0-GATE và các tiền đề M1 được nghiệm thu.
+M1-PLAN không tuyên bố hoàn tất QA runtime. Các package M1 ghi QA owner trong front matter; theo DEC-018/M0-DEFER, triển khai được mở có điều kiện nhưng `M1-GATE` chỉ tổng hợp/nghiệm thu vertical slice sau khi M0-GATE và các tiền đề M1 được nghiệm thu.
 
 ## Changed files
 
@@ -27,13 +27,13 @@ M1-PLAN không tuyên bố hoàn tất QA runtime. Các package M1 ghi QA owner 
 ## Evidence
 
 - `work/evidence/M1-PLAN/verification.txt` ghi command, exit code và output của từng check.
-- `work/evidence/M1-PLAN/package-map.md` nêu A01 và A02 là hai package có thể bắt đầu ngay sau M0-GATE; tất cả package triển khai/content đều phụ thuộc trực tiếp gate.
+- `work/evidence/M1-PLAN/package-map.md` được M0-DEFER cập nhật theo DEC-018: A01 và A02 có thể bắt đầu sau M0-DEFER; tất cả package triển khai/content phụ thuộc trực tiếp M0-DEFER, còn M1-GATE phụ thuộc M0-GATE.
 - `work/state/M0-A03.toml` hiện `blocked`; `M0-GATE` chưa có state `done`.
 
 ## Remaining risks
 
-M0-A03 còn thiếu bằng chứng thiết bị Android/iPhone, macOS/Xcode/signing và ngân sách atlas; do đó chưa package triển khai M1 nào được phép start. Các check Godot trong package M1 là cổng tương lai, chưa chạy vì deliverable chưa tồn tại. Bốn level M1 không đủ điều kiện `--release`; cổng 24 level, art/audio hoàn chỉnh và QA release thuộc M2/M3.
+M0-A03 còn thiếu bằng chứng iOS, macOS/Xcode/signing, phép đo/asset đại diện và ngân sách atlas; do đó M0-GATE/M1-GATE chưa thể đạt. Sau khi M0-DEFER được accept, package triển khai M1 có thể start theo dependency nhưng phải xem rendering/device QA là rủi ro mở. Các check Godot trong package M1 là cổng tương lai, chưa chạy vì deliverable chưa tồn tại. Bốn level M1 không đủ điều kiện `--release`; cổng 24 level, art/audio hoàn chỉnh và QA release thuộc M2/M3.
 
 ## Reviewer
 
-Reviewer governance độc lập cần đối chiếu dependency M0-GATE, ranh giới 4 level M1 với 24 level M2, mã QA trong từng hợp đồng và bằng chứng verify trước khi accept M1-PLAN. Chưa có quyết định accept của reviewer.
+Reviewer governance độc lập cần đối chiếu dependency M0-DEFER cho việc triển khai, M0-GATE cho nghiệm thu M1, ranh giới 4 level M1 với 24 level M2, mã QA trong từng hợp đồng và bằng chứng verify trước khi accept M1-PLAN. Chưa có quyết định accept của reviewer.

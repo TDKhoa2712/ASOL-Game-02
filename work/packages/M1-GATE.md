@@ -29,6 +29,7 @@ Tổng hợp bằng chứng vertical slice bốn level và quyết định chuy�
 
 - [ ] M0-GATE và mọi package M1 tiền đề đã được accept; không lấy headless thay cho đo trên thiết bị.
 - [ ] Bốn level gốc, tutorial Level 1, save, Hint một lần, Undo/Restart và các màn Result qua QA tương ứng.
+- [ ] Bàn N≤6 và các màn đạt safe area, vùng chạm tối thiểu 44×44, chữ lớn, thang xám, reduced motion và action đọc màn hình trên Android/iPhone mục tiêu; bằng chứng UI editor/headless của M1-A05 không thay thế kiểm chứng này.
 - [ ] Ghi rõ thử người mới về cử chỉ, 3 tim/X đỏ/Undo, scorecard 100/25, feedback, accessibility và vấn đề còn mở; nếu cần đổi luật/schema mở decision change.
 
 ## 3. Lệnh kiểm chứng

@@ -21,6 +21,8 @@ flowchart LR
     H --> I[QA + release]
 ```
 
+Theo [DEC-018](../docs/governance/02-decision-log.md), mũi tên M0 → B là phụ thuộc kỹ thuật/đầu ra, không buộc chờ nghiệm thu toàn bộ thiết bị để bắt đầu viết core. Khi package `M0-DEFER` đã được nghiệm thu, các package triển khai/content M1 có thể chạy có điều kiện trên baseline Godot và gesture M0-A01/A02. Điều này không đổi điều kiện qua M0 ở §3; `M0-A03` vẫn phải hoàn tất trước `M0-GATE`, và `M1-GATE` vẫn phụ thuộc `M0-GATE`.
+
 Core không đo thời gian chạm hay phát animation. Gesture layer hiển thị X preview tức thì rồi tạo `MarkX`/`ClearX`/`MarkStroke`/`TryCat`/`UndoX`/`RestartLevel`; session service chỉ lưu action đã xác nhận, không lưu khe Undo; UI trình bày events. Content tool, save và Hint chỉ làm song song sau khi schema v4, hành vi X đỏ/scorecard và S3 được khóa. Không dùng S4/S5 ở level phát hành.
 
 ## 2. Gói việc
@@ -47,6 +49,8 @@ Core không đo thời gian chạm hay phát animation. Gesture layer hiển th�
 | M1 — Vertical slice | 4 level phát hành gốc đầu, tutorial chỉ Level 1, 5 màn + Result thua, save, một Hint/lượt, Undo/Restart, 6 màu tạm; schema v4 + fixture/chứng minh S3 | Người mới hiểu cử chỉ; QA core/save/Hint/UI và validator S3 cơ bản qua; fixture không tính vào 4 |
 | M2 — Content complete | 24 level order1..24 gồm mốc 10/20 và sáu level cuối cần S3, art/sprite/audio gốc | `--release` qua QA-57, từng level có lượt giải không xem nghiệm với ≥1 tim, tutorial bám Level 1 thật; 10 người playtest và sửa điểm kẹt |
 | M3 — Release candidate | Build offline Android/iOS và báo cáo QA | Cổng tài liệu 07 đạt trên thiết bị đã chốt |
+
+Quyền bắt đầu code M1 theo `M0-DEFER` không phải tuyên bố M0 đạt, không cho phép ký Design Freeze/M1-GATE hoặc phát hành khi thiếu Android/iPhone, atlas đại diện, số đo TECH-13/19/21 và QA mobile. Các rủi ro này phải được giữ trong evidence/handoff M1 và đóng bằng `M0-A03`/`M0-GATE` trước khi nghiệm thu vertical slice.
 
 Không gán lịch tuần trước khi có số đo M0/M1. Sprite 2D từ model gốc là pipeline đã chọn cho bản đầu; M0 tập trung đo bộ atlas thật và chất lượng chạm/kéo. Phaser chỉ là lựa chọn cho một prototype web 2D riêng; không tạo hai codebase sản xuất song song. Gói J bắt đầu từ M1 và phải hoàn tất S3 trước cổng M2; [câu lệnh giao agent](10-nghien-cuu-quy-tac-suy-luan.md#9-câu-lệnh-giao-cho-agent-nghiên-cứu-tiếp) chỉ còn dùng cho S4/S5 sau khi S3 MVP ổn định. Gói K theo [kế hoạch meta và sinh level](11-ke-hoach-meta-va-sinh-level.md) sau MVP, không tạo interface trong build MVP.
 

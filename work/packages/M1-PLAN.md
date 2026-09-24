@@ -51,12 +51,12 @@ command = ["python", "GDD/tools/validate_levels.py", "GDD/data/levels.sample.jso
 
 ## 1. Mục tiêu và bối cảnh
 
-Đối chiếu GDD và governance để chia M1 thành các hợp đồng nhỏ, có phạm vi, đầu ra, dependency và kiểm chứng rõ ràng trong khi M0-A03 chờ kiểm chứng thiết bị. Việc lập kế hoạch này không mở M0-GATE.
+Đối chiếu GDD và governance để chia M1 thành các hợp đồng nhỏ, có phạm vi, đầu ra, dependency và kiểm chứng rõ ràng trong khi M0-A03 chờ kiểm chứng thiết bị. DEC-018/M0-DEFER cho phép bắt đầu triển khai có điều kiện; việc lập kế hoạch này không mở M0-GATE.
 
 ## 2. Tiêu chí nghiệm thu
 
 - [ ] Mỗi package M1 có ID, phạm vi, deliverable, dependency, acceptance criteria và checks phù hợp.
-- [ ] Mọi package triển khai M1 phụ thuộc trực tiếp hoặc gián tiếp vào M0-GATE; nêu rõ package nào có thể bắt đầu sau gate.
+- [ ] Mọi package triển khai/content M1 phụ thuộc trực tiếp vào M0-DEFER; M1-GATE vẫn phụ thuộc M0-GATE và các package M1 tiền đề.
 - [ ] Truy vết các yêu cầu và QA M1 theo GDD, không nhận yêu cầu thuộc M0 hoặc giai đoạn sau M1.
 - [ ] `validate`, `doctor`, unit tests và level validator đều pass.
 - [ ] Báo cáo handoff đầy đủ, không còn placeholder.
@@ -67,4 +67,4 @@ Chạy `python tools/agent_pipeline.py verify M1-PLAN` sau khi đăng ký các p
 
 ## 4. Rủi ro và trọng tâm review
 
-Không chuyển M0-A03 hoặc M0-GATE sang `done`; không tạo code triển khai M1. Kiểm tra dependency gate và phạm vi file để tránh mở triển khai sớm.
+Không chuyển M0-A03 hoặc M0-GATE sang `done`; không tạo code triển khai M1 trong package M1-PLAN. Kiểm tra dependency để quyền bắt đầu code không bị diễn giải thành nghiệm thu M0/M1.

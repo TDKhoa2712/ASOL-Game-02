@@ -192,3 +192,14 @@ Các DEC ngày
 - **Evidence:** GDD 00–09, AGENTS.md, checklist Design Freeze 06, risk/research register và phê duyệt trực tiếp của Human Coordinator cho thiết kế frozen/tuneable ngày 2026-09-22; nghiệm thu implementation M0-PREFLIGHT vẫn theo pipeline riêng.
 - **Affected GDD IDs:** D-01..10, GR-01..33, LV-01..08, TECH-01..21, ART-01..13, toàn bộ QA MVP.
 - **Status:** ACTIVE-GOVERNANCE — đóng DQ-002; không tự tuyên bố Design Freeze đã đạt.
+
+## DEC-018 — Cho phép xây dựng M1 có điều kiện khi kiểm chứng thiết bị M0 còn mở
+
+- **DEC-ID:** DEC-018
+- **Date:** 2026-09-24
+- **Decision:** Sau khi `M0-DEFER` được nghiệm thu, các package triển khai/content M1 có thể bắt đầu từ baseline Godot/gesture đã nghiệm thu ở M0-A01/A02, dù M0-A03 còn `blocked`. Đây chỉ là quyền xây dựng có điều kiện. `M0-GATE` vẫn đòi M0-A03 `done`; `M1-GATE` vẫn đòi M0-GATE `done`. Không ký Design Freeze, nghiệm thu vertical slice hoặc phát hành dựa trên ngoại lệ này.
+- **Alternatives considered:** Chờ đủ iPhone/Mac/Xcode và atlas cuối trước mọi code M1; hoặc đánh dấu M0-A03/M0-GATE đạt từ emulator và một ảnh Redmi. Chọn xây dựng có điều kiện, giữ nguyên gate nghiệm thu.
+- **Rationale:** Core, loader, save, Hint và content M1 có thể được kiểm chứng logic trên baseline hiện có; việc chờ thiết bị không cần chặn toàn bộ triển khai. UI/art/performance vẫn có nguy cơ sửa lại sau khi đo trên máy mục tiêu.
+- **Evidence:** M0-A01/A02 đã `done`; M0-A03 có probe Android trên Redmi Note 13 Pro 5G nhưng còn thiếu iOS, phép đo/asset đại diện và ngân sách RAM/VRAM/atlas. Báo cáo dependency ở `work/evidence/M0-DEFER/dependency-review.md` xác nhận đường đến M1-GATE vẫn đi qua M0-GATE.
+- **Affected GDD IDs:** GDD/08 thứ tự triển khai và mốc M0/M1; TECH-13/19/21, ART-01..13, QA-26/27/30/50 vẫn giữ nguyên ngưỡng và owner.
+- **Status:** ACTIVE-GOVERNANCE — ngoại lệ thứ tự triển khai; không phải nghiệm thu M0 hoặc miễn QA thiết bị.
