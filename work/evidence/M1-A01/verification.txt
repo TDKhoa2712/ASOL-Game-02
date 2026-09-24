@@ -1,0 +1,14 @@
+Evidence for package: M1-A01
+Timestamp (UTC): 2026-09-24T03:53:48Z
+Agent: Codex
+Branch: work/m1-a01-puzzle-core-score-and-committed-actions
+Base revision: 488064144049838bfff02a61fae4e0e75c22b36f
+
+Check: godot_core
+Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_puzzle_core_tests.gd"]
+Exit code: 0
+Output:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A01_PUZZLE_CORE_PASS
+---

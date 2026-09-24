@@ -1,5 +1,7 @@
 extends RefCounted
 
+const PuzzleCore = preload("res://scripts/puzzle_core.gd")
+
 
 signal changed
 
@@ -12,6 +14,7 @@ var hint_count := 0
 var attempt_state := "Playing"
 var undo_diff: Variant = null
 var events: Array = []
+var domain_events: Array = []
 
 
 func _init(level_data: Dictionary) -> void:
@@ -27,6 +30,7 @@ func reset_attempt(event_name: String = "") -> void:
 	attempt_state = "Playing"
 	undo_diff = null
 	events = []
+	domain_events = []
 	if not event_name.is_empty():
 		events.append(event_name)
 	changed.emit()
@@ -44,6 +48,7 @@ func load_initial(initial: Dictionary) -> void:
 	)
 	undo_diff = null
 	events = []
+	domain_events = []
 	changed.emit()
 
 
@@ -60,6 +65,10 @@ func public_state() -> Dictionary:
 
 func cell_state(cell: Array) -> String:
 	return str(cells.get(cell_key(cell), "empty"))
+
+
+func scorecard() -> int:
+	return PuzzleCore.score(_correct_placed_count() - level.get("givens", []).size(), mistake_count)
 
 
 func cell_key(cell: Array) -> String:
@@ -178,31 +187,19 @@ func _apply_undo() -> void:
 func _apply_try_cat(raw_cell: Array) -> void:
 	undo_diff = null
 	var cell := [int(raw_cell[0]), int(raw_cell[1])]
-	if is_given(cell) or cell_state(cell) not in ["empty", "x"]:
-		events.append("NoOp")
-		return
-	if int(level["solution"][cell[0]]) == cell[1]:
-		write_cell(cell, "cat")
-		events.append("CatPlaced")
-		if _correct_placed_count() >= int(level["size"]) and hearts > 0:
-			attempt_state = "Won"
-			events.append("LevelWon")
-	else:
-		write_cell(cell, "x_error")
-		hearts -= 1
-		mistake_count += 1
-		events.append("Mistake")
-		if hearts <= 0:
-			attempt_state = "Failed"
-			events.append("LevelFailed")
+	var result: Dictionary = PuzzleCore.try_cat(level, cells, hearts, mistake_count, cell)
+	cells = result["cells"]
+	hearts = int(result["hearts"])
+	mistake_count = int(result["mistakeCount"])
+	attempt_state = str(result["state"])
+	domain_events.append_array(result["events"])
+	for event_name in result["events"]:
+		if event_name in ["NoOp", "CatPlaced", "Mistake", "LevelWon", "LevelFailed"]:
+			events.append(event_name)
 
 
 func _correct_placed_count() -> int:
-	var count: int = level.get("givens", []).size()
-	for value in cells.values():
-		if value == "cat":
-			count += 1
-	return count
+	return PuzzleCore.correct_placed_count(level, cells)
 
 
 func _apply_hint(result: String) -> void:

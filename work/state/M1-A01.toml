@@ -1,0 +1,8 @@
+package_id = "M1-A01"
+agent = "Codex"
+status = "review"
+branch = "work/m1-a01-puzzle-core-score-and-committed-actions"
+base_revision = "488064144049838bfff02a61fae4e0e75c22b36f"
+started_at = "2026-09-24T03:44:46Z"
+updated_at = "2026-09-24T03:55:39Z"
+blocker_reason = ""
