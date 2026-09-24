@@ -2,6 +2,8 @@
 
 Ngày: 2026-09-24. Trạng thái: PROPOSED — chưa thay thế quy định đang có hiệu lực.
 
+> Cập nhật sau đề xuất: chủ dự án đã yêu cầu tạm ngưng, gom dev và cải tổ trên nhánh riêng. Nội dung bên dưới giữ nguyên như đề xuất ban đầu; điều hành hiện tại xem [AGENTS](../../AGENTS.md), [ROADMAP](../ROADMAP.md) và [STATUS](../STATUS.md). Không dùng trạng thái PROPOSED hoặc các câu “chưa thực thi” bên dưới để suy ra trạng thái hiện tại.
+
 ## 1. Mục tiêu và điểm xuất phát
 
 Theo xác nhận của chủ dự án, bản hiện tại chưa ổn định và mới chơi riêng lẻ, chưa liền mạch. Kết quả package cũ không được dùng để suy ra bản tích hợp đã hoàn thành. Các module, level, test và bằng chứng hiện có là tài sản để tái sử dụng sau khi kiểm tra.

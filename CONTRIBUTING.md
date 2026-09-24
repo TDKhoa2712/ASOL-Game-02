@@ -1,6 +1,12 @@
 # Hướng dẫn đóng góp (Contributing Guide)
 
-Tài liệu này quy định quy trình làm việc, phân nhánh Git, quản lý trạng thái work package và tiêu chuẩn nghiệm thu cho dự án ASOL-Game-02.
+Quy trình hiện hành nằm tại [AGENTS.md](AGENTS.md). Đọc [STATUS](docs/STATUS.md) trước khi làm việc; game đang tạm ngưng triển khai để cải tổ trên `refactor/project-reset` từ `dev`.
+
+Giao việc theo kết quả trong [ROADMAP](docs/ROADMAP.md), không theo mã package. Hướng dẫn chạy nằm ở [README](README.md). Dùng commit rõ mục đích; kiểm chứng phù hợp trước khi bàn giao và tích hợp.
+
+## Bản quy trình cũ — SUPERSEDED
+
+Phần dưới giữ để truy vết; không áp dụng các yêu cầu package/allowed_paths/start/verify/handoff/accept cho công việc mới. Xem [RST-001](docs/DECISIONS.md).
 
 ## 1. Nguyên tắc làm việc với Work Package
 

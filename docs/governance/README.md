@@ -1,4 +1,10 @@
-# Quy chuẩn quản trị tài liệu và quyết định kỹ thuật (Design Governance)
+# Hồ sơ governance trước cải tổ
+
+**SUPERSEDED về quy trình và kế hoạch từ 2026-09-24.** Quyền thực hiện theo [AGENTS](../../AGENTS.md), lịch theo [ROADMAP](../ROADMAP.md), trạng thái theo [STATUS](../STATUS.md), quyết định mới theo [DECISIONS](../DECISIONS.md).
+
+Các snapshot 00–06 được giữ để tra cứu. Quyết định kỹ thuật đã phản ánh trong GDD vẫn là căn cứ sản phẩm; các thủ tục package, design freeze và thứ tự gate M0/M1 cũ không điều hành việc mới. Không suy ra rằng QA phát hành hoặc yêu cầu thiết bị đã đạt từ việc bỏ gate cũ.
+
+## Bản quy chuẩn cũ (không còn áp dụng)
 
 Tài liệu này xác lập cơ chế quản trị, thẩm quyền và quy tắc cập nhật tài liệu trong dự án ASOL-Game-02.
 

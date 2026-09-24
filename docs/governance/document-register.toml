@@ -49,7 +49,8 @@ owner = "Game Design"
 [[documents]]
 path = "GDD/08-ke-hoach-trien-khai-cho-agent.md"
 class = "canonical"
-status = "CANONICAL"
+status = "SUPERSEDED"
+superseded_by = "docs/ROADMAP.md"
 owner = "Game Design"
 
 [[documents]]
@@ -85,43 +86,44 @@ owner = "Project Governance"
 [[documents]]
 path = "docs/governance/00-design-status.md"
 class = "governance"
-status = "ACTIVE"
+status = "SUPERSEDED"
+superseded_by = "docs/STATUS.md"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/01-open-questions.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/02-decision-log.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/03-risk-register.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/04-assumptions.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/05-research-backlog.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
 path = "docs/governance/06-design-freeze-checklist.md"
 class = "governance"
-status = "ACTIVE"
+status = "HISTORICAL"
 owner = "Project Governance"
 
 [[documents]]
@@ -129,3 +131,57 @@ path = "docs/reviews/01-mvp-game-design-review.md"
 class = "review"
 status = "ACTIVE"
 owner = "Game Design Review"
+
+[[documents]]
+path = "AGENTS.md"
+class = "workflow"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "README.md"
+class = "entrypoint"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "CONTRIBUTING.md"
+class = "workflow"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "work/README.md"
+class = "historical-index"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/ROADMAP.md"
+class = "plan"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/STATUS.md"
+class = "status"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/DECISIONS.md"
+class = "governance"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/BRANCH-CONSOLIDATION.md"
+class = "evidence"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/reviews/04-project-reset-proposal.md"
+class = "review"
+status = "HISTORICAL"
+owner = "Project Owner"

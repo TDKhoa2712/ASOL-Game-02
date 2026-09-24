@@ -1,4 +1,10 @@
-# Quy trình quản lý gói việc (Work Package Pipeline)
+# Hồ sơ work package cũ — HISTORICAL
+
+Từ ngày 2026-09-24, toàn bộ package/state/handoff/evidence cũ được giữ tại chỗ để bảo toàn liên kết và bằng chứng. Không nhận việc mới hoặc thay đổi trạng thái theo pipeline này. Các trạng thái bên dưới là ảnh chụp lịch sử, không biểu thị công việc đang chạy.
+
+Quy trình mới: [AGENTS](../AGENTS.md). Tiến độ và công việc hiện tại: [STATUS](../docs/STATUS.md), [ROADMAP](../docs/ROADMAP.md). Asset brief là tài liệu tham khảo, không phải lệnh sản xuất asset trong thời gian tạm ngưng.
+
+## Mô tả quy trình trước cải tổ (không còn áp dụng)
 
 Thư mục `work/` quản lý toàn bộ các hợp đồng gói việc, trạng thái thực thi, biên bản bàn giao và bằng chứng kiểm chứng.
 

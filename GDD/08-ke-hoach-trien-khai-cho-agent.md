@@ -1,5 +1,7 @@
 # 08 — Kế hoạch triển khai cho agent
 
+> **SUPERSEDED về kế hoạch/quy trình, 2026-09-24.** Kế hoạch hiện hành là [ROADMAP](../docs/ROADMAP.md), quyền thực hiện theo [AGENTS](../AGENTS.md). Nội dung bên dưới là lịch sử M0–M3; không yêu cầu package/gate cũ cho việc mới. Luật sản phẩm và QA phát hành trong các GDD liên quan vẫn giữ nguyên. Xem [quyết định cải tổ](../docs/DECISIONS.md).
+
 Trước khi nhận gói, đọc [README](README.md), [luật chuẩn](02-luat-choi-va-trang-thai.md) và tài liệu gói. Mỗi bàn giao nêu mã GDD/QA, lệnh/kết quả kiểm tra, rủi ro còn lại. Dùng [fixture](data/levels.sample.json) làm đầu vào ban đầu; T01/E01/E02/S301/N12 không tính vào 24 level phát hành. Thay luật/schema/tiến trình/điểm phải cập nhật GDD, fixture, validator/test và QA cùng thay đổi.
 
 ## 1. Thứ tự phụ thuộc

@@ -1,6 +1,6 @@
 # GDD — Vườn Mèo (tên tạm)
 
-**Phiên bản:** 0.5.0 · **Ngày:** 2026-09-21 · **Trạng thái:** đặc tả ứng viên cho GDD v1.0; còn cổng bằng chứng M0/M2 và chưa có game chạy được.
+**Phiên bản thiết kế:** 0.5.0 · **Ngày thiết kế:** 2026-09-21. Client đã tồn tại nhưng chưa ổn định/liền mạch. Đang tạm ngưng triển khai để cải tổ theo [STATUS](../docs/STATUS.md), cập nhật 2026-09-24. Luật sản phẩm chưa thay đổi; kế hoạch thực hiện chuyển sang [ROADMAP](../docs/ROADMAP.md).
 
 ## Đọc theo thứ tự
 
@@ -13,7 +13,7 @@
 | [05-kien-truc-va-du-lieu.md](05-kien-truc-va-du-lieu.md) | Chọn engine, schema, API, save và cache asset mèo |
 | [06-my-thuat-va-am-thanh.md](06-my-thuat-va-am-thanh.md) | Mèo đang chọn độc lập với màu vùng, sprite từ model 3D, sticker, âm thanh |
 | [07-kiem-thu-va-tieu-chi-nghiem-thu.md](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | Ca QA và cổng phát hành |
-| [08-ke-hoach-trien-khai-cho-agent.md](08-ke-hoach-trien-khai-cho-agent.md) | Gói việc và mốc triển khai |
+| [08-ke-hoach-trien-khai-cho-agent.md](08-ke-hoach-trien-khai-cho-agent.md) | Kế hoạch cũ đã được ROADMAP thay thế, chỉ để truy vết |
 | [09-ra-soat-thiet-ke.md](09-ra-soat-thiet-ke.md) | Quyết định cho từng mã review từ bản 0.3 |
 | [10-nghien-cuu-quy-tac-suy-luan.md](10-nghien-cuu-quy-tac-suy-luan.md) | Đặc tả S3 cho MVP; nghiên cứu S4/S5 sau MVP |
 | [11-ke-hoach-meta-va-sinh-level.md](11-ke-hoach-meta-va-sinh-level.md) | Kế hoạch vàng, cứu lượt, bộ sưu tập mèo và sinh level sau MVP |
