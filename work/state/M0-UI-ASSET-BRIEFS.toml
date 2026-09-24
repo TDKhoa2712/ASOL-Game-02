@@ -1,0 +1,8 @@
+package_id = "M0-UI-ASSET-BRIEFS"
+agent = "codex"
+status = "review"
+branch = "work/m0-ui-asset-briefs-mvp-ui-and-asset-creation-briefs"
+base_revision = "79799fa8f2bd642c674cbe680434f32d21c1088e"
+started_at = "2026-09-23T18:10:17Z"
+updated_at = "2026-09-23T18:16:55Z"
+blocker_reason = ""
