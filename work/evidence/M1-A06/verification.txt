@@ -1,14 +1,14 @@
 Evidence for package: M1-A06
+Timestamp (UTC): 2026-09-24T08:09:37Z
+Agent: codex
+Branch: work/m1-a06-level-1-tutorial-and-resumed-milestones
+Base revision: 48353dfa0cc6e5bc79e1247442851c3f7529f816
 
 Check: godot_tutorial
 Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_tutorial_tests.gd"]
 Exit code: 0
 Output:
 Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
-M1_A06_TUTORIAL_PASS
 
-Coverage:
-- Tutorial is enabled only for Level 1 IDs and follows T1-T6.
-- Milestones persist in tutorialSeenIds and are recomputed after resume.
-- Valid out-of-order actions skip already satisfied milestones.
-- Only a wrong TryCat on the highlighted tutorial cell is safe; other cells and later levels are penalized normally.
+M1_A06_TUTORIAL_PASS
+---
