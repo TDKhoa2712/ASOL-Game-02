@@ -1,23 +1,46 @@
 extends Control
 
 const Flow = preload("res://scripts/ui_flow_controller.gd")
+const Runtime = preload("res://scripts/mvp_runtime.gd")
 const HomeScene = preload("res://scenes/home.tscn")
 const WinScene = preload("res://scenes/result_win.tscn")
 const FailScene = preload("res://scenes/result_fail.tscn")
+const BoardScene = preload("res://scenes/board.tscn")
 
 var flow
+var runtime
 var screen_host: Control
 
 
 func _ready() -> void:
+	add_to_group("mvp_bootstrap")
 	screen_host = get_node("ScreenHost")
-	flow = Flow.new(["L01", "L02", "L03", "L04"])
+	runtime = Runtime.new()
+	if not runtime.initialize():
+		push_error("MVP runtime failed to load campaign")
+		return
+	flow = Flow.new(runtime.level_ids)
+	flow.current_level_index = maxi(0, runtime.level_ids.find(runtime.current_level_id))
 	flow.changed.connect(_on_flow_changed)
+	runtime.level_won.connect(_on_runtime_level_won)
+	runtime.level_failed.connect(_on_runtime_level_failed)
 	_render()
 
 
 func _on_flow_changed(_screen_id: String, _level_id: String) -> void:
 	_render()
+
+
+func _on_runtime_level_won(_level_id: String, _next_level_id: String) -> void:
+	flow.dispatch("win")
+
+
+func _on_runtime_level_failed(_level_id: String) -> void:
+	flow.dispatch("fail")
+
+
+func return_home() -> void:
+	flow.dispatch("home")
 
 
 func _render() -> void:
@@ -35,7 +58,7 @@ func _render() -> void:
 			if level_label != null:
 				level_label.text = "Level hiện tại: %s" % flow.current_level_id
 		Flow.SCREEN_PUZZLE:
-			screen = _build_puzzle_shell()
+			screen = _build_puzzle_screen()
 		Flow.SCREEN_RESULT_WIN:
 			screen = WinScene.instantiate()
 			_connect_button(screen, "SafeArea/Content/ContinueButton", "next")
@@ -79,57 +102,11 @@ func _on_action(action: String) -> void:
 	flow.dispatch(action)
 
 
-func _build_puzzle_shell() -> Control:
-	var root := Control.new()
-	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	var background := ColorRect.new()
-	background.color = Color("#F5F1E8")
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	root.add_child(background)
-
-	var margin := MarginContainer.new()
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 32)
-	margin.add_theme_constant_override("margin_right", 32)
-	margin.add_theme_constant_override("margin_top", 56)
-	margin.add_theme_constant_override("margin_bottom", 56)
-	root.add_child(margin)
-
-	var stack := VBoxContainer.new()
-	stack.add_theme_constant_override("separation", 18)
-	margin.add_child(stack)
-	var title := Label.new()
-	title.text = "Puzzle · %s" % flow.current_level_id
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 42)
-	stack.add_child(title)
-	var note := Label.new()
-	note.text = "MVP UI shell — khu vực gameplay sẽ được tích hợp ở M1-A08"
-	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	note.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	note.add_theme_font_size_override("font_size", 22)
-	stack.add_child(note)
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(0, 220)
-	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	stack.add_child(spacer)
-	var win_button := _make_button("Hoàn thành (mô phỏng)")
-	win_button.pressed.connect(_on_action.bind("win"))
-	stack.add_child(win_button)
-	var fail_button := _make_button("Hết tim (mô phỏng)")
-	fail_button.pressed.connect(_on_action.bind("fail"))
-	stack.add_child(fail_button)
-	var help_button := _make_button("Trợ giúp")
-	help_button.pressed.connect(_on_action.bind("help"))
-	stack.add_child(help_button)
-	var settings_button := _make_button("Cài đặt")
-	settings_button.pressed.connect(_on_action.bind("settings"))
-	stack.add_child(settings_button)
-	var home_button := _make_button("Về Home")
-	home_button.pressed.connect(_on_action.bind("home"))
-	stack.add_child(home_button)
-	return root
+func _build_puzzle_screen() -> Control:
+	runtime.start_level(flow.current_level_id)
+	var screen = BoardScene.instantiate()
+	screen.configure(runtime.active_level, runtime.engine, runtime, runtime.contract)
+	return screen
 
 
 func _build_info_shell(title_text: String, lines: Array) -> Control:

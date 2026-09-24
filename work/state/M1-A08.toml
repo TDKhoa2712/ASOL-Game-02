@@ -1,0 +1,8 @@
+package_id = "M1-A08"
+agent = "codex"
+status = "review"
+branch = "work/m1-a08-mvp-runtime-integration"
+base_revision = "c61690b4e9d321213530e02a14be5cd092a7fe86"
+started_at = "2026-09-24T12:33:03Z"
+updated_at = "2026-09-24T12:48:07Z"
+blocker_reason = ""

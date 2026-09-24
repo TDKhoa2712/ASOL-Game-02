@@ -1,0 +1,31 @@
+M1-A08 regression run — Godot 4.7.2 stable
+
+godot --headless --path game --script res://tests/run_puzzle_core_tests.gd
+M1_A01_PUZZLE_CORE_PASS
+
+godot --headless --path game --script res://tests/run_level_loader_tests.gd
+M1_A02_LEVEL_LOADER_PASS
+
+godot --headless --path game --script res://tests/run_save_repository_tests.gd
+M1_A03_SAVE_REPOSITORY_PASS
+
+godot --headless --path game --script res://tests/run_hint_engine_tests.gd
+M1_A04_HINT_ENGINE_PASS
+
+godot --headless --path game --script res://tests/run_tutorial_tests.gd
+M1_A06_TUTORIAL_PASS
+
+godot --headless --path game --script res://tests/run_ui_shell_tests.gd
+M1_A05_UI_SHELL_PASS
+
+godot --headless --path game --script res://tests/run_ui_flow_tests.gd
+M1_A07_UI_FLOW_PASS
+
+godot --headless --path game --script res://tests/run_mvp_runtime_tests.gd
+M1_A08_MVP_RUNTIME_PASS
+
+godot --headless --path game --quit-after 2
+exit 0
+
+python GDD/tools/validate_levels.py game/data/campaign_m1.json
+Validated 4 level(s); 0 duplicate geometry warning(s).

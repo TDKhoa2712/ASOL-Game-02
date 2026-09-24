@@ -7,20 +7,34 @@ const LEVEL_PATH := "res://data/t01.json"
 const CONTRACT_PATH := "res://tests/fixtures/interactions.v2.json"
 
 
-var level: Dictionary
-var contract: Dictionary
+var configured_level: Dictionary = {}
+var configured_contract: Dictionary = {}
+var configured_engine
+var runtime_controller
+var level: Dictionary = {}
+var contract: Dictionary = {}
 var engine
 var hearts_label: Label
 var status_label: Label
 var undo_button: Button
+var hint_button: Button
+var hint_label: Label
 var restart_dialog: ConfirmationDialog
 var board_view
+var last_terminal_event := ""
+
+
+func configure(level_data: Dictionary, engine_instance = null, runtime = null, contract_data: Dictionary = {}) -> void:
+	configured_level = level_data.duplicate(true)
+	configured_engine = engine_instance
+	runtime_controller = runtime
+	configured_contract = contract_data.duplicate(true)
 
 
 func _ready() -> void:
-	level = _read_json(LEVEL_PATH)
-	contract = _read_json(CONTRACT_PATH)
-	engine = GestureEngineScript.new(level, contract)
+	level = configured_level if not configured_level.is_empty() else _read_json(LEVEL_PATH)
+	contract = configured_contract if not configured_contract.is_empty() else _read_json(CONTRACT_PATH)
+	engine = configured_engine if configured_engine != null else GestureEngineScript.new(level, contract)
 	engine.session.changed.connect(_refresh)
 	engine.changed.connect(_refresh)
 	_build_interface()
@@ -28,7 +42,7 @@ func _ready() -> void:
 
 
 func get_session():
-	return engine.session
+	return engine.session if engine != null else null
 
 
 func undo_last_x() -> void:
@@ -87,7 +101,7 @@ func _build_interface() -> void:
 	content.add_child(title)
 
 	var subtitle := Label.new()
-	subtitle.text = "Prototype tương tác T01 · Chạm, chạm đôi và kéo"
+	subtitle.text = "Level %s · Chạm, chạm đôi và kéo" % str(level.get("id", ""))
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_font_size_override("font_size", 25)
 	subtitle.add_theme_color_override("font_color", Color("#667085"))
@@ -140,12 +154,28 @@ func _build_interface() -> void:
 	undo_button.pressed.connect(undo_last_x)
 	actions.add_child(undo_button)
 
+	hint_button = _make_button("HintButton", "Gợi ý", Color("#FFF7D6"), Color("#344054"))
+	hint_button.pressed.connect(_on_hint_pressed)
+	actions.add_child(hint_button)
+
 	var restart_button := _make_button("RestartButton", "Chơi lại", Color("#344054"), Color.WHITE)
 	restart_button.pressed.connect(request_restart)
 	actions.add_child(restart_button)
 
+	var home_button := _make_button("HomeButton", "Về Home", Color("#FFFFFF"), Color("#344054"))
+	home_button.pressed.connect(_on_home_pressed)
+	actions.add_child(home_button)
+
+	hint_label = Label.new()
+	hint_label.name = "HintLabel"
+	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint_label.add_theme_font_size_override("font_size", 21)
+	hint_label.add_theme_color_override("font_color", Color("#475467"))
+	content.add_child(hint_label)
+
 	var note := Label.new()
-	note.text = "Bản prototype dùng hình vector tạm thời · chạy trực tiếp trong Godot Editor"
+	note.text = "Hình vector tạm thời · dữ liệu campaign M1"
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	note.add_theme_font_size_override("font_size", 20)
 	note.add_theme_color_override("font_color", Color("#98A2B3"))
@@ -153,7 +183,7 @@ func _build_interface() -> void:
 
 	restart_dialog = ConfirmationDialog.new()
 	restart_dialog.name = "RestartDialog"
-	restart_dialog.title = "Chơi lại màn T01?"
+	restart_dialog.title = "Chơi lại màn %s?" % str(level.get("id", ""))
 	restart_dialog.dialog_text = "Toàn bộ đánh dấu và số lỗi trong lượt hiện tại sẽ được xóa."
 	restart_dialog.get_ok_button().text = "Chơi lại"
 	restart_dialog.get_cancel_button().text = "Giữ nguyên"
@@ -194,9 +224,12 @@ func _refresh() -> void:
 	var state: Dictionary = engine.session.public_state()
 	hearts_label.text = "Lượt sai còn lại: %d / 3" % int(state["hearts"])
 	undo_button.disabled = not bool(state["undoAvailable"])
+	hint_button.disabled = int(state["hintCount"]) > 0
 	var events: Array = state["events"]
 	var latest := str(events[-1]) if not events.is_empty() else "Sẵn sàng"
 	status_label.text = _status_text(latest)
+	if hint_label != null and latest == "HintShown" and runtime_controller != null:
+		hint_label.text = _hint_text(runtime_controller.last_hint)
 	board_view.queue_redraw()
 
 
@@ -211,9 +244,36 @@ func _status_text(event_name: String) -> String:
 		"UndoApplied": "Đã hoàn tác",
 		"UndoUnavailable": "Không có bước X để hoàn tác",
 		"Restarted": "Đã bắt đầu lại",
-		"LevelWon": "Hoàn thành T01!",
+		"LevelWon": "Hoàn thành %s!" % str(level.get("id", "")),
 		"LevelFailed": "Đã hết lượt sai",
 	}.get(event_name, "Đang chơi")
+
+
+func _on_hint_pressed() -> void:
+	if runtime_controller == null:
+		return
+	var result: Dictionary = runtime_controller.use_hint()
+	if result.get("ok", false):
+		hint_label.text = _hint_text(result.get("evidence", {}))
+	else:
+		hint_label.text = "Chưa có gợi ý mới trong trạng thái hiện tại."
+	_refresh()
+
+
+func _on_home_pressed() -> void:
+	_settle_input()
+	if runtime_controller != null:
+		runtime_controller.save_current_session()
+	get_tree().call_group("mvp_bootstrap", "return_home")
+
+
+func _hint_text(evidence: Dictionary) -> String:
+	if evidence.is_empty():
+		return "Đã nhận gợi ý."
+	var cell: Array = evidence.get("cell", [])
+	if not cell.is_empty():
+		return "Gợi ý %s tại ô (%d, %d)" % [str(evidence.get("rule", "")), int(cell[0]) + 1, int(cell[1]) + 1]
+	return "Gợi ý %s: loại %d ô ứng viên." % [str(evidence.get("rule", "")), evidence.get("eliminateCells", []).size()]
 
 
 func _read_json(path: String) -> Dictionary:

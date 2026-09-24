@@ -1,0 +1,24 @@
+Evidence for package: M1-A08
+Timestamp (UTC): 2026-09-24T12:47:15Z
+Agent: codex
+Branch: work/m1-a08-mvp-runtime-integration
+Base revision: c61690b4e9d321213530e02a14be5cd092a7fe86
+
+Check: godot_mvp_runtime
+Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_mvp_runtime_tests.gd"]
+Exit code: 0
+Output:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A08_MVP_RUNTIME_PASS
+---
+Check: m1_campaign_validator
+Command: ["python", "GDD/tools/validate_levels.py", "game/data/campaign_m1.json"]
+Exit code: 0
+Output:
+OK   L01: 4x4, unique solution, connected regions, S2 trace
+OK   L02: 5x5, unique solution, connected regions, S2 trace
+OK   L03: 6x6, unique solution, connected regions, S2 trace
+OK   L04: 6x6, unique solution, connected regions, S2 trace
+Validated 4 level(s); 0 duplicate geometry warning(s).
+---
