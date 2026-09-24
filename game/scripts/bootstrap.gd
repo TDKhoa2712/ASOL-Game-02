@@ -61,16 +61,18 @@ func _render() -> void:
 			screen = _build_puzzle_screen()
 		Flow.SCREEN_RESULT_WIN:
 			screen = WinScene.instantiate()
-			_connect_button(screen, "SafeArea/Content/ContinueButton", "next")
-			_connect_button(screen, "SafeArea/Content/HomeButton", "home")
-			var win_score = screen.get_node_or_null("SafeArea/Content/ScoreLabel")
+			_wrap_result_content(screen)
+			_connect_button(screen, "SafeArea/Content/Stack/ContinueButton", "next")
+			_connect_button(screen, "SafeArea/Content/Stack/HomeButton", "home")
+			var win_score = screen.get_node_or_null("SafeArea/Content/Stack/ScoreLabel")
 			if win_score != null:
 				win_score.text = "%s đã hoàn thành" % flow.current_level_id
 		Flow.SCREEN_RESULT_FAIL:
 			screen = FailScene.instantiate()
-			_connect_button(screen, "SafeArea/Content/RetryButton", "retry")
-			_connect_button(screen, "SafeArea/Content/HomeButton", "home")
-			var fail_score = screen.get_node_or_null("SafeArea/Content/ScoreLabel")
+			_wrap_result_content(screen)
+			_connect_button(screen, "SafeArea/Content/Stack/RetryButton", "retry")
+			_connect_button(screen, "SafeArea/Content/Stack/HomeButton", "home")
+			var fail_score = screen.get_node_or_null("SafeArea/Content/Stack/ScoreLabel")
 			if fail_score != null:
 				fail_score.text = "Level hiện tại: %s" % flow.current_level_id
 		Flow.SCREEN_HELP:
@@ -96,6 +98,22 @@ func _connect_button(screen: Node, path: String, action: String) -> void:
 	var button = screen.get_node_or_null(path)
 	if button != null:
 		button.pressed.connect(_on_action.bind(action), CONNECT_DEFERRED)
+
+
+func _wrap_result_content(screen: Control) -> void:
+	var content = screen.get_node_or_null("SafeArea/Content")
+	if content == null:
+		return
+	var stack := VBoxContainer.new()
+	stack.name = "Stack"
+	stack.layout_mode = 2
+	stack.add_theme_constant_override("separation", 18)
+	var children: Array[Node] = content.get_children()
+	for child in children:
+		content.remove_child(child)
+		child.owner = null
+		stack.add_child(child)
+	content.add_child(stack)
 
 
 func _on_action(action: String) -> void:

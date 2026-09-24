@@ -64,6 +64,30 @@ func _run() -> void:
 	active_screen._ready()
 	_check(active_screen.get_script() == load("res://scripts/board_screen.gd"), "bootstrap opens real board screen")
 	_check(active_screen.get_session() != null, "real board screen receives runtime session")
+	bootstrap.runtime.clear_saved_state()
+	bootstrap.runtime.progress = bootstrap.runtime.repository.new_progress("L01")
+	bootstrap.runtime.start_level("L01", false)
+	bootstrap.flow.current_screen = "home"
+	bootstrap.flow.current_level_index = 0
+	bootstrap._on_action("start_game")
+	for row in range(4):
+		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+	_check(bootstrap.flow.current_screen == "result_win", "real gameplay routes to win result")
+	_check(bootstrap.get_node("ScreenHost").get_child(0).get_meta("screen_id", "") == "result_win", "win result screen is visible")
+	_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack") != null, "win result has managed layout stack")
+	_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton") != null, "win result has Continue button")
+
+	bootstrap.runtime.progress = bootstrap.runtime.repository.new_progress("L01")
+	bootstrap.runtime.start_level("L01", false)
+	bootstrap.flow.current_screen = "home"
+	bootstrap.flow.current_level_index = 0
+	bootstrap._on_action("start_game")
+	for wrong_cell in [[0, 0], [1, 0], [2, 1]]:
+		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
+	_check(bootstrap.flow.current_screen == "result_fail", "real gameplay routes to fail result")
+	_check(bootstrap.get_node("ScreenHost").get_child(0).get_meta("screen_id", "") == "result_fail", "fail result screen is visible")
+	_check(bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack") != null, "fail result has managed layout stack")
+	_check(bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack/RetryButton") != null, "fail result has Retry button")
 	bootstrap.free()
 
 	resumed.clear_saved_state()
