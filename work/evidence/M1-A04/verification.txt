@@ -1,0 +1,14 @@
+Evidence for package: M1-A04
+
+Check: godot_hint
+Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_hint_engine_tests.gd"]
+Exit code: 0
+Output:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+M1_A04_HINT_ENGINE_PASS
+
+Coverage:
+- Direct S2 evidence is preferred and consumes one hint.
+- S3 locked-candidate evidence is recomputed from current state and can unlock S2.
+- X targets request direct cat attempt; x_error is never suggested as a target.
+- NoHint and already-used Hint do not consume the hint.

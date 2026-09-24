@@ -1,0 +1,14 @@
+Evidence for package: M1-A03
+
+Check: godot_save
+Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_save_repository_tests.gd"]
+Exit code: 0
+Output:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+M1_A03_SAVE_REPOSITORY_PASS
+
+Coverage:
+- progress.json and session.json are independent and versioned.
+- session level/hash validation requests same-level recreation.
+- atomic temp/backup replacement and progress backup recovery.
+- linear completion appends result once, selects first uncompleted level, and clears winning session.

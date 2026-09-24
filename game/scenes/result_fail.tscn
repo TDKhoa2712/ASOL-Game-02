@@ -1,0 +1,88 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.972549, 0.960784, 0.92549, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+content_margin_left = 28.0
+content_margin_top = 28.0
+content_margin_right = 28.0
+content_margin_bottom = 28.0
+
+[sub_resource type="StyleBoxFlat" id="StylePrimary"]
+bg_color = Color(0.956863, 0.576471, 0.352941, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="ResultFail" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/screen_id = "fail"
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.988235, 0.92549, 0.886275, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="PanelContainer" parent="SafeArea"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Title" type="Label" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 42
+text = "Hết tim"
+horizontal_alignment = 1
+
+[node name="Message" type="Label" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Lượt này đã kết thúc. Bạn có thể thử lại level hiện tại."
+autowrap_mode = 2
+horizontal_alignment = 1
+
+[node name="ScoreLabel" type="Label" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 28
+text = "Điểm lượt: 0"
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="SafeArea/Content"]
+custom_minimum_size = Vector2(240, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StylePrimary")
+text = "Thử lại"
+tooltip_text = "Tạo lượt mới cho level hiện tại"
+
+[node name="HomeButton" type="Button" parent="SafeArea/Content"]
+custom_minimum_size = Vector2(240, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Về Home"
+tooltip_text = "Trở về màn Home"

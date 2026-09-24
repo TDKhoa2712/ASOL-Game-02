@@ -1,0 +1,13 @@
+Evidence for package: M1-A05
+
+Check: godot_ui
+Command: ["godot", "--headless", "--path", "game", "--script", "res://tests/run_ui_shell_tests.gd"]
+Exit code: 0
+Output:
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+M1_A05_UI_SHELL_PASS
+
+Coverage:
+- Home, win-result and fail-result scenes load headlessly.
+- Stable screen metadata, safe-area containers, primary actions, score and Home actions are present.
+- Primary actions use explicit labels and 240x64 touch targets; secondary actions use 240x52.
