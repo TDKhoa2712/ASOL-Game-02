@@ -51,10 +51,10 @@ func _render() -> void:
 	match flow.current_screen:
 		Flow.SCREEN_HOME:
 			screen = HomeScene.instantiate()
-			_connect_button(screen, "SafeArea/Content/PlayButton", "start_game")
-			_connect_button(screen, "SafeArea/Content/HelpButton", "help")
-			_connect_button(screen, "SafeArea/Content/SettingsButton", "settings")
-			var level_label = screen.get_node_or_null("SafeArea/Content/CurrentLevelLabel")
+			_connect_button(screen, "SafeArea/Content/Stack/PlayButton", "start_game")
+			_connect_button(screen, "SafeArea/Content/Stack/HelpButton", "help")
+			_connect_button(screen, "SafeArea/Content/Stack/SettingsButton", "settings")
+			var level_label = screen.get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
 			if level_label != null:
 				level_label.text = "Level hiện tại: %s" % flow.current_level_id
 		Flow.SCREEN_PUZZLE:
@@ -95,7 +95,7 @@ func _render() -> void:
 func _connect_button(screen: Node, path: String, action: String) -> void:
 	var button = screen.get_node_or_null(path)
 	if button != null:
-		button.pressed.connect(_on_action.bind(action))
+		button.pressed.connect(_on_action.bind(action), CONNECT_DEFERRED)
 
 
 func _on_action(action: String) -> void:

@@ -6,8 +6,12 @@ var failures: Array[String] = []
 
 
 func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
 	_check_flow_routes()
-	_check_bootstrap_scene()
+	await _check_bootstrap_scene()
 	if failures.is_empty():
 		print("M1_A07_UI_FLOW_PASS")
 		quit(0)
@@ -68,6 +72,21 @@ func _check_bootstrap_scene() -> void:
 	var bootstrap = scene.instantiate()
 	_check(bootstrap.get_script() != null, "bootstrap has flow script")
 	_check(bootstrap.get_node_or_null("ScreenHost") != null, "bootstrap has screen host")
+	bootstrap._ready()
+	var home = bootstrap.get_node("ScreenHost").get_child(0)
+	home.get_node("SafeArea/Content/Stack/PlayButton").emit_signal("pressed")
+	await process_frame
+	_check(bootstrap.flow.current_screen == "puzzle", "Home Play button routes to puzzle")
+	bootstrap.return_home()
+	home = bootstrap.get_node("ScreenHost").get_child(0)
+	home.get_node("SafeArea/Content/Stack/HelpButton").emit_signal("pressed")
+	await process_frame
+	_check(bootstrap.flow.current_screen == "help", "Home Help button routes to help")
+	bootstrap.return_home()
+	home = bootstrap.get_node("ScreenHost").get_child(0)
+	home.get_node("SafeArea/Content/Stack/SettingsButton").emit_signal("pressed")
+	await process_frame
+	_check(bootstrap.flow.current_screen == "settings", "Home Settings button routes to settings")
 	bootstrap.free()
 
 

@@ -1,0 +1,8 @@
+package_id = "M1-A10"
+agent = "codex"
+status = "review"
+branch = "work/m1-a10-home-navigation-wiring-correction"
+base_revision = "bb6c14526380153af9b2584582286dbc6b973eff"
+started_at = "2026-09-24T13:21:50Z"
+updated_at = "2026-09-24T13:27:21Z"
+blocker_reason = ""
