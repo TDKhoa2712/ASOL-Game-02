@@ -41,6 +41,9 @@ func dispatch(action: String) -> bool:
 		"next":
 			accepted = current_screen == SCREEN_RESULT_WIN
 			next_screen = SCREEN_PUZZLE
+		"replay_campaign":
+			accepted = current_screen == SCREEN_RESULT_WIN
+			next_screen = SCREEN_PUZZLE
 		"retry":
 			accepted = current_screen == SCREEN_RESULT_FAIL
 			next_screen = SCREEN_PUZZLE

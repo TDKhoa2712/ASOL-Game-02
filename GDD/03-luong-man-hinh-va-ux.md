@@ -68,14 +68,14 @@ Tutorial chỉ gắn Level 1, script theo ID level và điều kiện bàn; khô
 
 | Mốc | Bài học | Hành động để qua |
 | --- | --- | --- |
-| T1 | Một chạm đặt X | Đánh X vào ô được gợi ý loại trừ |
-| T2 | Một chạm nữa xóa X | Xóa X đó sau khi chỉ dẫn T2 xuất hiện |
+| T1 | Một chạm đặt X | Đánh X vào ô (2,2) được gọi rõ bằng tọa độ, không tô sáng |
+| T2 | Một chạm nữa xóa X | Xóa X ở ô (2,2) sau khi chỉ dẫn T2 xuất hiện |
 | T3 | Kéo để đánh/xóa nhiều X | Kéo qua ít nhất hai ô hợp lệ; chế độ do ô đầu quyết định |
-| T4 | Hai chạm xác nhận mèo | Đặt đúng mèo tại ô S2 được tô sáng |
+| T4 | Hai chạm xác nhận mèo | Đặt đúng mèo tại ô S2 được gọi rõ bằng tọa độ, không tô sáng |
 | T5 | Bốn luật và X đỏ | Xem minh họa hàng/cột/vùng/không chạm và một minh họa X đỏ an toàn |
 | T6 | Hint | Mở Hint miễn phí của lượt và đóng phần giải thích |
 
-Trong Level 1, thử mèo sai **trên ô đang tô sáng** chỉ được nhắc và không mất tim; thao tác khác theo luật thường. Script phải được QA kiểm trên level thật. Khi app đóng giữa mốc, khôi phục board, `hintCount` và `tutorialSeenIds`, rồi suy lại mốc chưa đạt; không phát sinh thao tác ảo hoặc cấp lại Hint.
+Trong Level 1, thử mèo sai **trên ô tutorial được gọi rõ bằng tọa độ** chỉ được nhắc và không mất tim; thao tác khác theo luật thường. Tutorial không tô sáng hay làm nổi ô. Script phải được QA kiểm trên level thật. Khi app đóng giữa mốc, khôi phục board, `hintCount` và `tutorialSeenIds`, rồi suy lại mốc chưa đạt; không phát sinh thao tác ảo hoặc cấp lại Hint.
 
 ## 5. Tiếp cận, màu và chuyển động
 

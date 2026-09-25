@@ -5,9 +5,18 @@
 Ngày 2026-09-25. Chủ dự án xác nhận: sau khi hoàn thành level hiện có, bản MVP phải cho quay về Home và chơi lại từ L01 để kiểm chứng; bản chính thức sau này không cho replay từ L01.
 
 - Home giữ nút chính hoạt động sau khi campaign hoàn tất và đổi nhãn thành `Chơi lại từ L01`.
-- Replay tạo session mới từ L01 nhưng không ghi đè `currentLevelId` hoàn thành hoặc danh sách level đã hoàn thành.
+- Kết quả L01–L03 giữ nút chính `Tiếp tục` để sang level kế tiếp. Chỉ sau khi thắng L04, nút chính trên Result đổi thành `Chơi lại từ L01` và mở lượt L01 mới trực tiếp; nút Home vẫn còn.
+- Replay tạo session mới từ L01 nhưng không ghi đè `currentLevelId` hoàn thành hoặc danh sách level đã hoàn thành. Trong vòng replay, thắng L01–L03 vẫn tiếp tục tuần tự; chỉ kết quả L04 mới quay lại L01.
 - Cờ `MVP_ALLOW_CAMPAIGN_REPLAY` trong bootstrap hiện bật để kiểm thử; trước bản chính thức phải tắt cờ và kiểm lại màn hoàn tất.
 - Quyết định này chỉ mở đường kiểm chứng MVP, không thay đổi luật, save schema, phạm vi 24 level hoặc Endless.
+
+## RST-004 — Bỏ ô sáng trong tutorial MVP
+
+Ngày 2026-09-25. Chủ dự án chốt bỏ hoàn toàn viền sáng chỉ ô trên bàn tutorial.
+
+- T1/T2 gọi rõ ô `(2,2)` bằng tọa độ hiển thị cho người chơi; T4 gọi rõ tọa độ mèo suy ra từ level.
+- Ô tutorial được chỉ định vẫn giữ cơ chế miễn phạt ở các bước áp dụng, nhưng không còn hiệu ứng sáng.
+- Quyết định không đổi luật, save schema hoặc dữ liệu level.
 
 ## RST-002 — Duyệt cải tổ và mở R1
 

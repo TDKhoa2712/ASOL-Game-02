@@ -106,22 +106,30 @@ func _complete_campaign() -> void:
 				bootstrap.runtime.apply_action({"type": "TryCat", "cell": cell})
 		await process_frame
 		_check(bootstrap.flow.current_screen == "result_win", "win screen after " + level_id)
+		var continue_button = bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton")
 		if level_id == "L04":
-			_press(bootstrap, "ResultWin/SafeArea/Content/Stack/HomeButton")
-			await process_frame
-		else:
+			_check(continue_button != null and continue_button.text == "Chơi lại từ L01", "only final Result offers replay from L01")
+			_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/HomeButton") != null, "final Result still offers Home")
 			_press(bootstrap, "ResultWin/SafeArea/Content/Stack/ContinueButton")
 			await process_frame
-	_check(bootstrap.flow.current_screen == "home", "last Result Home returns Home")
+		else:
+			_check(continue_button != null and continue_button.text == "Tiếp tục", level_id + " Result keeps Continue")
+			_press(bootstrap, "ResultWin/SafeArea/Content/Stack/ContinueButton")
+			await process_frame
+	_check(bootstrap.flow.current_screen == "puzzle", "final Result replay opens puzzle directly")
 	_check(bootstrap.runtime.progress.get("currentLevelId", "missing") == null, "campaign stores completion marker")
-	var replay_button = bootstrap.get_node_or_null("ScreenHost/Home/SafeArea/Content/Stack/PlayButton")
-	_check(replay_button != null and not replay_button.disabled, "MVP Home enables replay after campaign completion")
-	_check(replay_button != null and replay_button.text == "Chơi lại từ L01", "MVP Home labels campaign replay explicitly")
-	_press(bootstrap, "Home/SafeArea/Content/Stack/PlayButton")
-	await process_frame
-	_check(bootstrap.flow.current_screen == "puzzle", "MVP replay opens puzzle")
 	_check(bootstrap.runtime.current_level_id == "L01", "MVP replay starts at L01")
 	_check(bootstrap.runtime.engine.session.attempt_state == "Playing", "MVP replay creates a fresh attempt")
+	var replay_level: Dictionary = bootstrap.runtime.active_level
+	for row in range(int(replay_level["size"])):
+		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, int(replay_level["solution"][row])]})
+	await process_frame
+	var replay_continue = bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton")
+	_check(replay_continue != null and replay_continue.text == "Tiếp tục", "replayed L01 returns to normal Continue")
+	_press(bootstrap, "ResultWin/SafeArea/Content/Stack/ContinueButton")
+	await process_frame
+	_check(bootstrap.flow.current_screen == "puzzle", "replayed L01 Continue opens next puzzle")
+	_check(bootstrap.runtime.current_level_id == "L02", "replayed L01 advances to L02")
 	var replay_board = bootstrap.get_node("ScreenHost").get_child(0)
 	var replay_home = replay_board.find_child("HomeButton", true, false)
 	_check(replay_home != null, "MVP replay board exposes Home")

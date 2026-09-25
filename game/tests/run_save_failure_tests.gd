@@ -159,7 +159,7 @@ func _tutorial_progress_write_failure() -> void:
 	await process_frame
 	var blocker := profile.path_join("progress.json.tmp")
 	DirAccess.make_dir_absolute(blocker)
-	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [0, 0]})
+	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [1, 1]})
 	var dialog = bootstrap.get_node_or_null("SaveErrorDialog")
 	_check(dialog != null and dialog.visible, "tutorial progress write failure is reported")
 	DirAccess.remove_absolute(blocker)

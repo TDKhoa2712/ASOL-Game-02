@@ -54,7 +54,7 @@ Undo hoàn nguyên đúng diff thực tế của action X gần nhất: các ô 
 | GR-19 | Tim về 0 → `Failed`, lưu kết quả thua và khóa board. Retry tạo lượt mới trên **cùng level**, reset ô/tim/scorecard/Hint/thời gian. |
 | GR-20 | Một ô sai có thể chưa xung đột với mèo hiện có; chỉ nêu lý do cục bộ có chứng cứ (hàng, cột, vùng, chạm chéo). Nếu không có, dùng lời trung tính. |
 
-Riêng tutorial Level 1, thao tác sai **trên ô được tô sáng** được nhắc mà không đặt `x_error`, trừ tim hoặc tăng lỗi; ô khác theo GR-16. Từ Level 2, mọi thao tác dùng phạt bình thường. Không dùng tutorial để dò nhiều ô miễn phí.
+Riêng tutorial Level 1, thao tác sai **trên ô tutorial được gọi rõ bằng tọa độ** được nhắc mà không đặt `x_error`, trừ tim hoặc tăng lỗi; ô này không được tô sáng. Ô khác theo GR-16. Từ Level 2, mọi thao tác dùng phạt bình thường. Không dùng tutorial để dò nhiều ô miễn phí.
 
 ## 4. Hint
 

@@ -59,6 +59,12 @@ func _check_flow_routes() -> void:
 	_check(flow.dispatch("next"), "result accepts next")
 	_check(flow.current_screen == Flow.SCREEN_PUZZLE, "flow leaves level selection to runtime")
 
+	var replay_flow = Flow.new(["L01", "L02", "L03", "L04"])
+	_check(replay_flow.dispatch("start_game"), "replay flow starts game")
+	_check(replay_flow.dispatch("win"), "replay flow reaches result")
+	_check(replay_flow.dispatch("replay_campaign"), "final result accepts campaign replay")
+	_check(replay_flow.current_screen == Flow.SCREEN_PUZZLE, "campaign replay opens puzzle")
+
 
 func _check_bootstrap_scene() -> void:
 	var scene = load("res://scenes/bootstrap.tscn")

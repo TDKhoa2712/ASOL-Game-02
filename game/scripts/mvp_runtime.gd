@@ -277,12 +277,17 @@ func _read_tutorial_state() -> Dictionary:
 	var saved = progress.get("tutorialState", {})
 	var seen: Array = saved.get("tutorialSeenIds", []) if typeof(saved) == TYPE_DICTIONARY else []
 	var tutorial_level: Dictionary = levels.get("L01", {})
-	var highlight := [0, 0]
+	var highlight := [1, 1]
 	var solution: Array = tutorial_level.get("solution", [])
-	for row in range(solution.size()):
-		if int(solution[row]) != 0:
-			highlight = [row, 0]
-			break
+	var size := int(tutorial_level.get("size", solution.size()))
+	if size <= 1 or solution.size() <= 1 or int(solution[1]) == 1:
+		for row in range(solution.size()):
+			for column in range(size):
+				if int(solution[row]) != column:
+					highlight = [row, column]
+					break
+			if highlight != [1, 1]:
+				break
 	var cat_cell := [0, 0]
 	var trace: Array = tutorial_level.get("logicTrace", [])
 	if not trace.is_empty() and typeof(trace[0]) == TYPE_DICTIONARY:

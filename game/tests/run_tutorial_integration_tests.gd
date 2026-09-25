@@ -19,19 +19,21 @@ func _run() -> void:
 	await process_frame
 	var board_screen = bootstrap.get_node("ScreenHost").get_child(0)
 	var tutorial_label = board_screen.find_child("TutorialLabel", true, false)
-	_check(tutorial_label != null and not tutorial_label.text.is_empty(), "tutorial shows current instruction on puzzle")
-	_check(board_screen.find_child("BoardView", true, false).tutorial_highlight == [0, 0], "T1 highlights elimination cell")
-	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [0, 0]})
+	var board_view = board_screen.find_child("BoardView", true, false)
+	_check(tutorial_label != null and tutorial_label.text.contains("(2,2)"), "T1 names the elimination cell without a glow")
+	_check(not _has_property(board_view, "tutorial_highlight"), "board has no tutorial highlight renderer")
+	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [1, 1]})
 	_check(bootstrap.runtime.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T1"), "real MarkX records T1 in progress")
+	_check(tutorial_label.text.contains("(2,2)"), "T2 names the same elimination cell")
 	var persisted_tutorial: Dictionary = bootstrap.runtime.repository.load_progress().get("data", {}).get("tutorialState", {})
 	_check(not persisted_tutorial.has("tutorialCatCell"), "derived cat target is not added to saved progress schema")
-	bootstrap.runtime.apply_action({"type": "ClearX", "cell": [0, 0]})
+	bootstrap.runtime.apply_action({"type": "ClearX", "cell": [1, 1]})
 	_check(bootstrap.runtime.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T2"), "real ClearX records T2")
 	bootstrap.runtime.apply_action({"type": "MarkStroke", "mode": "mark", "cells": [[1, 0], [1, 2]]})
 	_check(bootstrap.runtime.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T3"), "real two-cell stroke records T3")
+	_check(tutorial_label.text.contains("(4,3)"), "T4 names the derived cat cell")
 	bootstrap.runtime.apply_action({"type": "TryCat", "cell": [3, 2]})
 	_check(bootstrap.runtime.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T4"), "correct S2 cat records T4")
-	_check(board_screen.find_child("BoardView", true, false).tutorial_highlight.is_empty(), "after T4 no stale cell highlight")
 	bootstrap.runtime.apply_action({"type": "TryCat", "cell": [0, 0]})
 	_check(bootstrap.runtime.engine.session.hearts == 2, "old tutorial cell is no longer exempt after highlight moves")
 	board_screen = bootstrap.get_node("ScreenHost").get_child(0)
@@ -80,14 +82,21 @@ func _check(condition: bool, label: String) -> void:
 	if not condition:
 		failures.append(label)
 
+
+func _has_property(object: Object, property_name: String) -> bool:
+	for property in object.get_property_list():
+		if str(property.get("name", "")) == property_name:
+			return true
+	return false
+
 func _safe_tutorial_mistake() -> void:
 	var profile := OS.get_user_data_dir().path_join("r1_tutorial_safe_%s_%s" % [OS.get_process_id(), Time.get_ticks_usec()])
 	var runtime = Runtime.new(profile)
 	runtime.initialize()
+	runtime.apply_action({"type": "TryCat", "cell": [1, 1]})
+	_check(runtime.engine.session.hearts == 3, "wrong cat on the named tutorial cell keeps three hearts")
+	_check(runtime.engine.session.cell_state([1, 1]) == "empty", "named tutorial cell stays editable")
 	runtime.apply_action({"type": "TryCat", "cell": [0, 0]})
-	_check(runtime.engine.session.hearts == 3, "wrong cat on highlighted tutorial cell keeps three hearts")
-	_check(runtime.engine.session.cell_state([0, 0]) == "empty", "highlighted tutorial cell stays editable")
-	runtime.apply_action({"type": "TryCat", "cell": [1, 0]})
-	_check(runtime.engine.session.hearts == 2, "wrong cat outside highlight costs one heart")
+	_check(runtime.engine.session.hearts == 2, "wrong cat outside the named tutorial cell costs one heart")
 	runtime.clear_saved_state()
 	DirAccess.remove_absolute(profile)

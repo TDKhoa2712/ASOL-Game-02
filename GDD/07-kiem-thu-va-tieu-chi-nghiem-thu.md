@@ -46,7 +46,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-19 | Đặt cat đúng khác thứ tự trace, xin Hint | S2 hoặc chuỗi S3→S2 hiện tại hợp lệ; giải thích source/target/ô bị loại và mèo nguồn |
 | QA-20 | Xin Hint lặp/đóng/NoHint | Evidence hợp lệ tiêu thụ đúng một Hint, không đổi scorecard/tim/board; lần hai bị chặn; `NoHint` không tiêu thụ |
 | QA-21 | Tutorial làm đúng khác thứ tự rồi đóng/mở app | Mốc đã đạt không hiện lại/kẹt |
-| QA-22 | Thử sai trên ô hướng dẫn và ô khác ở Level 1; thử sai từ Level 2 | Chỉ ô đang sáng tại Level 1 miễn tim/X đỏ; ô khác và mọi level sau theo luật thường |
+| QA-22 | Thử sai trên ô hướng dẫn được gọi bằng tọa độ và ô khác ở Level 1; thử sai từ Level 2 | Chỉ ô tutorial được chỉ định tại Level 1 miễn tim/X đỏ; không tô sáng ô; ô khác và mọi level sau theo luật thường |
 | QA-33 | Script tutorial trên Level 1 phát hành | T1–T6 theo X→clear→drag→double-tap→bốn luật→Hint, target có chứng cứ thật; Level 2 không hiện tutorial; bản mở lại không đổi campaign |
 | QA-36 | Mèo đúng đầu/nửa bàn, thắng, hết tim, giảm chuyển động | “Nice/Great”/sticker đúng mốc; màn thắng/thua khác nhau; nút Next/Retry luôn dùng được; giảm chuyển động giữ thông tin |
 | QA-56 | Hint đã dùng rồi reload/Back, hoặc Retry/Restart; `NoHint` | Reload/Back giữ trạng thái đã dùng; Retry/Restart cấp lại đúng một Hint; `NoHint` không tiêu thụ hoặc cấp thêm |

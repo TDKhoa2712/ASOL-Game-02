@@ -16,7 +16,6 @@ const CAT_LIGHT := Color("#F7CFA8")
 
 var engine
 var level: Dictionary = {}
-var tutorial_highlight: Array = []
 var _touch_in_progress := false
 
 
@@ -146,12 +145,6 @@ func _draw() -> void:
 			2.0
 		)
 	_draw_region_borders(board_rect, cell_size, count)
-	if tutorial_highlight.size() == 2:
-		var row := int(tutorial_highlight[0])
-		var column := int(tutorial_highlight[1])
-		if row >= 0 and column >= 0 and row < count and column < count:
-			var marked := Rect2(board_rect.position + Vector2(column, row) * cell_size, Vector2.ONE * cell_size)
-			draw_rect(marked.grow(-6.0), Color("#D97706"), false, 8.0)
 
 
 func _board_rect() -> Rect2:

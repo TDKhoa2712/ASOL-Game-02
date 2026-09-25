@@ -38,14 +38,14 @@ Bước tiếp theo: R1-B, regression Win → Home → Play/successor và termin
 ## B–E — Tiến độ trên nhánh R1, chưa nghiệm thu toàn chặng
 
 - B: Flow chỉ điều hướng, runtime nắm level/progress. Integration từ scene tree kiểm Win → Home/Next → L02, Fail → Home/reload → Retry, bốn level → hết nội dung, score Result và Help quay về đúng nơi.
-- B: Theo RST-003, sau L04 màn Result Home hoạt động; Home bật `Chơi lại từ L01` trong MVP. Replay tạo lượt mới với session fresh, giữ `currentLevelId = null` và `completedLevelIds` đã hoàn thành; cờ `MVP_ALLOW_CAMPAIGN_REPLAY` là điểm tắt trước release.
+- B: Theo RST-003, Result L01–L03 giữ `Tiếp tục`; chỉ Result sau L04 đổi nút chính thành `Chơi lại từ L01`, đồng thời vẫn có Home. Replay trực tiếp hoặc từ Home tạo lượt mới với session fresh; vòng replay vẫn đi L01 → L04 nhưng giữ `currentLevelId = null` và `completedLevelIds` đã hoàn thành; cờ `MVP_ALLOW_CAMPAIGN_REPLAY` là điểm tắt trước release.
 - C: Lỗi ghi session/progress (kể cả milestone tutorial) được báo, Home không bỏ phiên chưa lưu; Win chỉ phát khi progress đã ghi. Có thử lại và khôi phục Win pending sau mở lại. Progress primary hỏng/mất không còn làm mất backup hợp lệ khi lưu lại; primary hỏng được giữ ở `.corrupt`. Dữ liệu progress không thêm trường schema mới; target mèo tutorial được suy lại khi tải.
-- D: Board thực phát milestone T1–T6; T6 chỉ xong sau khi đóng phần Hint. Miễn phạt sai chỉ ở ô tutorial đang chỉ, sai ô khác mất tim. Hint/Help có đường người chơi thật trong integration headless.
+- D: Board thực phát milestone T1–T6; T6 chỉ xong sau khi đóng phần Hint. Theo RST-004, board không tô sáng ô tutorial; T1/T2 gọi rõ ô (2,2), T4 gọi tọa độ mèo. Miễn phạt sai chỉ ở ô tutorial được chỉ định, sai ô khác mất tim. Hint/Help có đường người chơi thật trong integration headless.
 - E: Sửa toolbar tràn ngang, thêm bốn luật luôn thấy và hàng tiến độ vùng lấy từ board/given. Smoke đo 4/5/6 level ở viewport logic 1080×1920, nút và ô đạt tối thiểu 44 px logic. Đây chưa phải quan sát GUI/thiết bị.
 
 ### Kiểm chứng mới ngày 2026-09-25
 
-Revision kiểm: nhánh `fix/r1-playable-loop` trên `e5829f9` cộng diff B–E chưa tích hợp; Godot `4.7.2.stable.official.ed1daf0bf` trên Windows.
+Revision kiểm: nhánh `fix/r1-playable-loop` trên `3d99a14` cộng diff R1 chưa tích hợp; Godot `4.7.2.stable.official.ed1daf0bf` trên Windows.
 
 | Lệnh | Kết quả |
 | --- | --- |
@@ -56,6 +56,6 @@ Revision kiểm: nhánh `fix/r1-playable-loop` trên `e5829f9` cộng diff B–E
 | `rtk python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json` | 5/5 fixture hợp lệ |
 | `rtk git diff --check` | PASS |
 
-Đã chụp render Windows/Godot Vulkan từ entry scene thật trên profile cô lập: [Home](../evidence/r1/home.png), [Puzzle](../evidence/r1/puzzle.png), [Win](../evidence/r1/result_win.png), [Fail](../evidence/r1/result_fail.png). Quan sát phát hiện Title/Score/Message màn Result trắng trên nền sáng; sửa màu chữ và thêm regression `run_ui_shell_tests`; chụp lại hai Result đã đọc được. Script tái tạo: `game/tests/capture_r1_screens.gd`, Godot 4.7.2 chạy không `--headless`, exit 0.
+Đã chụp render Windows/Godot Vulkan từ entry scene thật trên profile cô lập: [Home](../evidence/r1/home.png), [Puzzle](../evidence/r1/puzzle.png), [Win](../evidence/r1/result_win.png), [Fail](../evidence/r1/result_fail.png). Quan sát phát hiện Title/Score/Message màn Result trắng trên nền sáng; sửa màu chữ và thêm regression `run_ui_shell_tests`; chụp lại hai Result đã đọc được. Sau RST-004, ảnh Puzzle được chụp lại và xác nhận lời dẫn hiển thị ô (2,2) mà không có viền sáng riêng trên ô. Script tái tạo: `game/tests/capture_r1_screens.gd`, Godot 4.7.2 chạy không `--headless`, exit 0.
 
 Chưa đạt bằng chứng R1-E đầy đủ: chưa thao tác gesture GUI thật vì Computer Use trong phiên lỗi khởi tạo (`windows sandbox failed: helper_unknown_error`); ADB có nhưng `adb devices -l` không liệt kê thiết bị Android. Settings hiện là placeholder, chưa kiểm chữ lớn +30%, grayscale hoặc reduced motion. Ảnh render không thay thế QA thao tác trên thiết bị. Chưa review/integrate code R1 về dev.

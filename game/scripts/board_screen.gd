@@ -282,19 +282,16 @@ func _refresh() -> void:
 	_refresh_region_progress()
 	if runtime_controller != null and level.get("id") == "L01":
 		var step: String = runtime_controller.tutorial_controller.current_step(runtime_controller.tutorial_state)
+		var x_cell_text := _tutorial_cell_text(runtime_controller.tutorial_state.get("tutorialHighlight", []))
+		var cat_cell_text := _tutorial_cell_text(runtime_controller.tutorial_state.get("tutorialCatCell", []))
 		tutorial_label.text = {
-			"T1": "Hướng dẫn: chạm ô đang sáng để đánh X.",
-			"T2": "Chạm lại ô đó để xóa X.",
+			"T1": "Hướng dẫn: chạm ô %s để đánh X." % x_cell_text,
+			"T2": "Chạm lại ô %s để xóa X." % x_cell_text,
 			"T3": "Kéo qua ít nhất hai ô để đánh dấu nhiều X.",
-			"T4": "Chạm đôi ô mèo đang sáng để xác nhận.",
+			"T4": "Chạm đôi ô %s để xác nhận mèo." % cat_cell_text,
 			"T5": "Mở Trợ giúp để xem bốn luật và ví dụ X đỏ.",
 			"T6": "Mở Gợi ý để xem cách suy luận.",
 		}.get(step, "")
-		board_view.tutorial_highlight = (
-			runtime_controller.tutorial_state.get("tutorialHighlight", []).duplicate() if step in ["T1", "T2"]
-			else runtime_controller.tutorial_state.get("tutorialCatCell", []).duplicate() if step == "T4"
-			else []
-		)
 	if hint_label != null and latest == "HintShown" and runtime_controller != null and not hint_explanation_closed:
 		hint_label.text = _hint_text(runtime_controller.last_hint)
 		close_hint_button.visible = true
@@ -304,6 +301,12 @@ func _refresh() -> void:
 			hint_label.text = "Gợi ý đã dùng trong lượt này. Đóng phần giải thích để tiếp tục."
 			close_hint_button.visible = true
 	board_view.queue_redraw()
+
+
+func _tutorial_cell_text(cell: Array) -> String:
+	if cell.size() != 2:
+		return "được chỉ định"
+	return "(%d,%d)" % [int(cell[0]) + 1, int(cell[1]) + 1]
 
 
 func _refresh_region_progress() -> void:

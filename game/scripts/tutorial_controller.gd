@@ -57,7 +57,7 @@ func try_cat_policy(level_id: String, attempted_cell: Array, highlighted_cell: A
 		return {
 			"penalize": false,
 			"tutorialMessage": true,
-			"reason": "Hãy thử chạm đôi trên ô đang sáng để xác nhận mèo."
+			"reason": "Đây là ô tutorial được chỉ định. Hãy làm theo hướng dẫn hiện tại."
 		}
 	return {"penalize": true, "tutorialMessage": false, "reason": ""}
 

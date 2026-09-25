@@ -29,13 +29,13 @@ func _run() -> void:
 	_check(runtime.engine != null, "runtime creates gesture engine")
 	_check(runtime.engine.level.get("id", "") == "L01", "engine uses campaign L01")
 
-	runtime.apply_action({"type": "MarkX", "cell": [0, 0]})
-	_check(runtime.engine.session.cell_state([0, 0]) == "x", "committed action reaches session")
+	runtime.apply_action({"type": "MarkX", "cell": [1, 1]})
+	_check(runtime.engine.session.cell_state([1, 1]) == "x", "committed action reaches session")
 	_check(runtime.has_saved_session(), "committed session is persisted")
 
 	var resumed = Runtime.new(profile)
 	resumed.initialize()
-	_check(resumed.engine.session.cell_state([0, 0]) == "x", "new runtime resumes saved X")
+	_check(resumed.engine.session.cell_state([1, 1]) == "x", "new runtime resumes saved X")
 	_check(resumed.current_level_id == "L01", "resume keeps current level")
 
 	var hint := resumed.use_hint()

@@ -99,8 +99,14 @@ func _render() -> void:
 		Flow.SCREEN_RESULT_WIN:
 			screen = WinScene.instantiate()
 			_wrap_result_content(screen)
-			_connect_button(screen, "SafeArea/Content/Stack/ContinueButton", "next")
+			var campaign_complete: bool = runtime.progress.get("currentLevelId") == null
+			var at_campaign_end: bool = campaign_complete and runtime.current_level_id == runtime.level_ids[-1]
+			var continue_action := "replay_campaign" if at_campaign_end and MVP_ALLOW_CAMPAIGN_REPLAY else "next"
+			_connect_button(screen, "SafeArea/Content/Stack/ContinueButton", continue_action)
 			_connect_button(screen, "SafeArea/Content/Stack/HomeButton", "home")
+			var continue_button = screen.get_node_or_null("SafeArea/Content/Stack/ContinueButton")
+			if continue_button != null and continue_action == "replay_campaign":
+				continue_button.text = "Chơi lại từ L01"
 			var win_score = screen.get_node_or_null("SafeArea/Content/Stack/ScoreLabel")
 			if win_score != null:
 				var result: Dictionary = runtime.progress.get("results", {}).get(runtime.current_level_id, {})
@@ -162,7 +168,10 @@ func _on_action(action: String) -> void:
 	if action == "start_game" and runtime.engine != null and runtime.engine.session.hearts <= 0:
 		flow.dispatch("resume_fail")
 		return
-	if action == "next" and runtime.progress.get("currentLevelId") == null:
+	if action == "replay_campaign":
+		if not MVP_ALLOW_CAMPAIGN_REPLAY or runtime.progress.get("currentLevelId") != null:
+			return
+	if action == "next" and runtime.progress.get("currentLevelId") == null and runtime.current_level_id == runtime.level_ids[-1]:
 		flow.dispatch("home")
 		return
 	var from_puzzle: bool = flow.current_screen == Flow.SCREEN_PUZZLE
@@ -195,7 +204,9 @@ func _build_puzzle_screen() -> Control:
 	if saved_level == null:
 		if not MVP_ALLOW_CAMPAIGN_REPLAY or runtime.level_ids.is_empty():
 			return _build_info_shell("Đã hoàn thành", ["Bản phát hành chính thức không cho chơi lại từ Level 1."])
-		level_id = runtime.level_ids[0]
+		var current_index: int = runtime.level_ids.find(runtime.current_level_id)
+		var continuing_replay: bool = flow.previous_screen == Flow.SCREEN_RESULT_WIN and current_index >= 0 and current_index + 1 < runtime.level_ids.size()
+		level_id = runtime.level_ids[current_index + 1] if continuing_replay else runtime.level_ids[0]
 		resume = false
 	if flow.previous_screen == Flow.SCREEN_RESULT_FAIL:
 		level_id = runtime.current_level_id
