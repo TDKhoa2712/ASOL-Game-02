@@ -12,7 +12,7 @@ Cập nhật: 2026-09-25. **Chủ dự án đã mở R1 và duyệt tích hợp 
 
 ## Công việc hiện tại
 
-R0 đã tích hợp vào dev; R1 đang thực hiện trên `fix/r1-playable-loop`. Đã cô lập profile test, nối Home/Puzzle/Result và save/retry, nối tutorial với phiên chơi, sửa clipping toolbar, thêm bốn luật và tiến độ vùng. Chi tiết tại [nhật ký R1](plans/R1-progress.md). Chưa tích hợp code R1 vào dev.
+R0 đã tích hợp vào dev; R1 đang thực hiện trên `fix/r1-playable-loop`. Đã cô lập profile test, nối Home/Puzzle/Result và save/retry, nối tutorial với phiên chơi, sửa clipping toolbar, thêm bốn luật và tiến độ vùng. Ảnh render từ entry scene phát hiện và đã sửa chữ Result trắng trên nền sáng. Chi tiết tại [nhật ký R1](plans/R1-progress.md). Chưa tích hợp code R1 vào dev.
 
 ## Các vấn đề được chuyển từ hồ sơ cũ
 
@@ -30,4 +30,4 @@ Ngày 2026-09-25, trên nhánh R1: 15/15 bộ Godot PASS; 8/8 Python game và 23
 
 Đã soạn [rà thiết kế và cấu trúc đích](reviews/05-design-and-structure-review.md) và [kế hoạch nghiệm thu R1](plans/R1-playable-loop.md), dựa trên khảo sát tĩnh tại `1600898`. R1-A đã cô lập profile và thay test gọi `_ready()` thủ công bằng scene tree thực.
 
-Bước tiếp theo: quan sát và thao tác từ entry scene GUI thật, kiểm chữ lớn/grayscale/reduced motion và Settings không còn placeholder, rồi QA Android offline. Công cụ điều khiển Windows của phiên này lỗi khởi tạo; chưa có bằng chứng GUI/Android và chưa tuyên bố R1 hoàn thành hay đủ điều kiện phát hành.
+Bước tiếp theo: thao tác tay từ entry scene GUI thật, kiểm chữ lớn/grayscale/reduced motion và Settings không còn placeholder, rồi QA Android offline. Đã quan sát bốn ảnh render Home/Puzzle/Win/Fail trên Windows; công cụ điều khiển Windows của phiên này lỗi khởi tạo nên chưa kiểm gesture trực tiếp. ADB có nhưng không có thiết bị kết nối. Chưa tuyên bố R1 hoàn thành hay đủ điều kiện phát hành.

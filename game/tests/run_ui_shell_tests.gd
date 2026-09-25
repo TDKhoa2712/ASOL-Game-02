@@ -49,6 +49,9 @@ func _check_result(path: String, screen_id: String, action_name: String, action_
 		_check(_large_enough(action), "%s primary action meets touch target" % screen_id)
 	_check(result.get_node_or_null("SafeArea/Content/HomeButton") != null, "%s has Home action" % screen_id)
 	_check(result.get_node_or_null("SafeArea/Content/ScoreLabel") != null, "%s exposes score" % screen_id)
+	for child_name in ["Title", "ScoreLabel", "StickerLabel" if screen_id == "win" else "Message"]:
+		var label: Label = result.get_node_or_null("SafeArea/Content/%s" % child_name)
+		_check(label != null and label.has_theme_color_override("font_color") and label.get_theme_color("font_color").get_luminance() < 0.4, "%s %s has readable dark text" % [screen_id, child_name])
 	result.free()
 
 func _large_enough(control: Control) -> bool:

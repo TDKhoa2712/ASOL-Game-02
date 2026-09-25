@@ -55,4 +55,6 @@ Revision kiểm: nhánh `fix/r1-playable-loop` trên `e5829f9` cộng diff B–E
 | `rtk python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json` | 5/5 fixture hợp lệ |
 | `rtk git diff --check` | PASS |
 
-Chưa đạt bằng chứng R1-E đầy đủ: chưa thao tác/quan sát GUI từ entry scene vì Computer Use trong phiên lỗi khởi tạo (`windows sandbox failed: helper_unknown_error`); chưa QA Android offline. Settings hiện là placeholder, chưa kiểm chữ lớn +30%, grayscale hoặc reduced motion. Không coi smoke headless là chứng nhận UX trên thiết bị. Chưa review/integrate code R1 về dev.
+Đã chụp render Windows/Godot Vulkan từ entry scene thật trên profile cô lập: [Home](../evidence/r1/home.png), [Puzzle](../evidence/r1/puzzle.png), [Win](../evidence/r1/result_win.png), [Fail](../evidence/r1/result_fail.png). Quan sát phát hiện Title/Score/Message màn Result trắng trên nền sáng; sửa màu chữ và thêm regression `run_ui_shell_tests`; chụp lại hai Result đã đọc được. Script tái tạo: `game/tests/capture_r1_screens.gd`, Godot 4.7.2 chạy không `--headless`, exit 0.
+
+Chưa đạt bằng chứng R1-E đầy đủ: chưa thao tác gesture GUI thật vì Computer Use trong phiên lỗi khởi tạo (`windows sandbox failed: helper_unknown_error`); ADB có nhưng `adb devices -l` không liệt kê thiết bị Android. Settings hiện là placeholder, chưa kiểm chữ lớn +30%, grayscale hoặc reduced motion. Ảnh render không thay thế QA thao tác trên thiết bị. Chưa review/integrate code R1 về dev.

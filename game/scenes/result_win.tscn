@@ -55,18 +55,21 @@ theme_override_styles/panel = SubResource("StylePanel")
 
 [node name="Title" type="Label" parent="SafeArea/Content"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
 theme_override_font_sizes/font_size = 42
 text = "Hoan hô!"
 horizontal_alignment = 1
 
 [node name="ScoreLabel" type="Label" parent="SafeArea/Content"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
 theme_override_font_sizes/font_size = 28
 text = "Điểm: 0"
 horizontal_alignment = 1
 
 [node name="StickerLabel" type="Label" parent="SafeArea/Content"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.278431, 0.329412, 0.403922, 1)
 theme_override_font_sizes/font_size = 24
 text = "Mèo đã hoàn thành level"
 horizontal_alignment = 1
