@@ -72,7 +72,10 @@ func _check_bootstrap_scene() -> void:
 	var bootstrap = scene.instantiate()
 	_check(bootstrap.get_script() != null, "bootstrap has flow script")
 	_check(bootstrap.get_node_or_null("ScreenHost") != null, "bootstrap has screen host")
-	bootstrap._ready()
+	var profile := OS.get_user_data_dir().path_join("r1_flow_%s_%s" % [OS.get_process_id(), Time.get_ticks_usec()])
+	bootstrap.runtime = load("res://scripts/mvp_runtime.gd").new(profile)
+	root.add_child(bootstrap)
+	await process_frame
 	var home = bootstrap.get_node("ScreenHost").get_child(0)
 	home.get_node("SafeArea/Content/Stack/PlayButton").emit_signal("pressed")
 	await process_frame
@@ -87,7 +90,10 @@ func _check_bootstrap_scene() -> void:
 	home.get_node("SafeArea/Content/Stack/SettingsButton").emit_signal("pressed")
 	await process_frame
 	_check(bootstrap.flow.current_screen == "settings", "Home Settings button routes to settings")
+	var test_runtime = bootstrap.runtime
 	bootstrap.free()
+	test_runtime.clear_saved_state()
+	DirAccess.remove_absolute(profile)
 
 
 func _check(condition: bool, label: String) -> void:

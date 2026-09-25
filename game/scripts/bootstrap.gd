@@ -15,7 +15,8 @@ var screen_host: Control
 func _ready() -> void:
 	add_to_group("mvp_bootstrap")
 	screen_host = get_node("ScreenHost")
-	runtime = Runtime.new()
+	if runtime == null:
+		runtime = Runtime.new()
 	if not runtime.initialize():
 		push_error("MVP runtime failed to load campaign")
 		return

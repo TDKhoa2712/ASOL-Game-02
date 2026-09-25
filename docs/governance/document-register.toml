@@ -197,3 +197,9 @@ path = "docs/plans/R1-playable-loop.md"
 class = "plan"
 status = "ACTIVE"
 owner = "Project Owner"
+
+[[documents]]
+path = "docs/plans/R1-progress.md"
+class = "evidence"
+status = "ACTIVE"
+owner = "Project Owner"

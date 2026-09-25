@@ -4,8 +4,8 @@ Cập nhật: 2026-09-25. **Chủ dự án đã mở R1 và duyệt tích hợp 
 
 ## Nền hiện tại
 
-- `dev`: `008f0d962d291ca6d5614f6613e8129b64673f41`, chứa toàn bộ lịch sử các nhánh công việc và file đang làm được bảo toàn.
-- Nhánh cải tổ: `refactor/project-reset`; được duyệt fast-forward về dev theo RST-002. Mốc `008f0d9` ở trên là mốc bảo toàn trước cải tổ, không phải HEAD sau tích hợp.
+- `dev`: `f8c4933`, đã fast-forward toàn bộ cải tổ và quyết định mở R1. Mốc bảo toàn trước cải tổ là `008f0d962d291ca6d5614f6613e8129b64673f41`.
+- Nhánh triển khai hiện tại: `fix/r1-playable-loop`, tách từ dev. `refactor/project-reset` giữ mốc cải tổ đã tích hợp.
 - `main` giữ mốc cũ; không coi đây là bản phát hành đã nghiệm thu.
 - Có client Godot và bốn level; chủ dự án xác nhận còn rời rạc và chưa ổn định. Không có build được chứng nhận chơi liền mạch trong đợt này.
 - Không có remote được cấu hình. Hai stash cũ được giữ nguyên; file untracked trong đó trùng byte với nội dung đã lưu ở dev. Phần state M1-A07 trong stash là ảnh chụp cũ, không ghi đè trạng thái về sau.
@@ -26,8 +26,8 @@ R0 đã được chủ dự án duyệt; tiến hành tích hợp và mở R1, b
 
 ## Kiểm chứng và bước tiếp theo
 
-Đợt này kiểm Git, bảo toàn file, diff tài liệu, đăng ký tài liệu và liên kết. Không chạy lại game, không kết luận gameplay đã ổn định từ thao tác gom nhánh.
+Đợt cải tổ chỉ kiểm tài liệu/Git. Khi mở R1 đã chạy baseline mới: 8/8 test Python game, 23/23 test GDD, hai validator đều đạt; 11/12 bộ Godot đạt. `run_board_scene_smoke` còn FAIL `Status label is clipped`. Chi tiết lệnh và giới hạn tại [nhật ký R1](plans/R1-progress.md).
 
-Đã soạn [rà thiết kế và cấu trúc đích](reviews/05-design-and-structure-review.md) và [kế hoạch nghiệm thu R1](plans/R1-playable-loop.md), dựa trên khảo sát tĩnh tại `1600898`. Chưa chạy kiểm chứng gameplay mới.
+Đã soạn [rà thiết kế và cấu trúc đích](reviews/05-design-and-structure-review.md) và [kế hoạch nghiệm thu R1](plans/R1-playable-loop.md), dựa trên khảo sát tĩnh tại `1600898`. R1-A đã cô lập profile và thay test gọi `_ready()` thủ công bằng scene tree thực.
 
-Bước tiếp theo: R1-A, cô lập save test và kiểm baseline an toàn; sau đó thống nhất tiến trình và save/resume. Chưa có bằng chứng đạt R1 hoặc đủ điều kiện phát hành.
+Bước tiếp theo: R1-B thống nhất tiến trình, sau đó save/resume, tutorial và layout. Chưa có bằng chứng đạt R1, QA Android thật hoặc đủ điều kiện phát hành.

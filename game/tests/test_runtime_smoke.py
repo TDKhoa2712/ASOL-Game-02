@@ -26,11 +26,12 @@ class RuntimeSmokeTests(unittest.TestCase):
                 "--headless",
                 "--path",
                 str(GAME_DIR),
-                "--quit-after",
-                "2",
+                "--script",
+                "res://tests/run_bootstrap_profile_tests.gd",
             ],
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=60,
             check=False,
         )
@@ -40,7 +41,9 @@ class RuntimeSmokeTests(unittest.TestCase):
             0,
             msg=f"Godot runtime smoke failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}",
         )
-        self.assertIn("M0_A01_BOOTSTRAP_READY", result.stdout)
+        self.assertIn("R1_BOOTSTRAP_PROFILE_PASS", result.stdout)
+        self.assertNotIn("SCRIPT ERROR", result.stdout + result.stderr)
+        self.assertNotIn("ERROR:", result.stdout + result.stderr)
 
 
 if __name__ == "__main__":

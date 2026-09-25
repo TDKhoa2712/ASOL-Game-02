@@ -20,8 +20,8 @@ func _finish() -> void:
 
 
 func _run() -> void:
-	var root := OS.get_user_data_dir().path_join("m1_a08_runtime_tests")
-	var runtime = Runtime.new(root)
+	var profile := OS.get_user_data_dir().path_join("r1_runtime_%s_%s" % [OS.get_process_id(), Time.get_ticks_usec()])
+	var runtime = Runtime.new(profile)
 	runtime.clear_saved_state()
 	runtime.initialize()
 	_check(runtime.level_ids == ["L01", "L02", "L03", "L04"], "campaign levels load in order")
@@ -33,7 +33,7 @@ func _run() -> void:
 	_check(runtime.engine.session.cell_state([0, 0]) == "x", "committed action reaches session")
 	_check(runtime.has_saved_session(), "committed session is persisted")
 
-	var resumed = Runtime.new(root)
+	var resumed = Runtime.new(profile)
 	resumed.initialize()
 	_check(resumed.engine.session.cell_state([0, 0]) == "x", "new runtime resumes saved X")
 	_check(resumed.current_level_id == "L01", "resume keeps current level")
@@ -61,18 +61,15 @@ func _run() -> void:
 
 	var bootstrap_scene = load("res://scenes/bootstrap.tscn")
 	var bootstrap = bootstrap_scene.instantiate()
-	bootstrap._ready()
-	bootstrap._on_action("start_game")
+	var win_profile := profile.path_join("win")
+	bootstrap.runtime = Runtime.new(win_profile)
+	root.add_child(bootstrap)
+	await process_frame
+	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
+	await process_frame
 	var active_screen = bootstrap.get_node("ScreenHost").get_child(0)
-	active_screen._ready()
 	_check(active_screen.get_script() == load("res://scripts/board_screen.gd"), "bootstrap opens real board screen")
 	_check(active_screen.get_session() != null, "real board screen receives runtime session")
-	bootstrap.runtime.clear_saved_state()
-	bootstrap.runtime.progress = bootstrap.runtime.repository.new_progress("L01")
-	bootstrap.runtime.start_level("L01", false)
-	bootstrap.flow.current_screen = "home"
-	bootstrap.flow.current_level_index = 0
-	bootstrap._on_action("start_game")
 	for row in range(4):
 		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
 	_check(bootstrap.flow.current_screen == "puzzle", "win result waits until current input completes")
@@ -82,11 +79,17 @@ func _run() -> void:
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack") != null, "win result has managed layout stack")
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton") != null, "win result has Continue button")
 
-	bootstrap.runtime.progress = bootstrap.runtime.repository.new_progress("L01")
-	bootstrap.runtime.start_level("L01", false)
-	bootstrap.flow.current_screen = "home"
-	bootstrap.flow.current_level_index = 0
-	bootstrap._on_action("start_game")
+	var win_runtime = bootstrap.runtime
+	bootstrap.free()
+	win_runtime.clear_saved_state()
+	DirAccess.remove_absolute(win_profile)
+	var fail_profile := profile.path_join("fail")
+	bootstrap = bootstrap_scene.instantiate()
+	bootstrap.runtime = Runtime.new(fail_profile)
+	root.add_child(bootstrap)
+	await process_frame
+	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
+	await process_frame
 	for wrong_cell in [[0, 0], [1, 0], [2, 1]]:
 		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
 	_check(bootstrap.flow.current_screen == "puzzle", "fail result waits until current input completes")
@@ -95,9 +98,13 @@ func _run() -> void:
 	_check(bootstrap.get_node("ScreenHost").get_child(0).get_meta("screen_id", "") == "result_fail", "fail result screen is visible")
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack") != null, "fail result has managed layout stack")
 	_check(bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack/RetryButton") != null, "fail result has Retry button")
+	var fail_runtime = bootstrap.runtime
 	bootstrap.free()
+	fail_runtime.clear_saved_state()
+	DirAccess.remove_absolute(fail_profile)
 
 	resumed.clear_saved_state()
+	DirAccess.remove_absolute(profile)
 	_finish()
 
 
