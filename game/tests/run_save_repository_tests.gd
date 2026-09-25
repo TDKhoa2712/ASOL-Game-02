@@ -68,6 +68,38 @@ func _run() -> void:
 	_check(recovered["data"]["currentLevelId"] == "L02", "backup recovery preserves progress")
 
 	repository.clear_all()
+	_backup_survives_recovery_save()
+	_backup_survives_missing_primary()
+
+func _backup_survives_recovery_save() -> void:
+	var root := OS.get_user_data_dir().path_join("r1_backup_%s_%s" % [OS.get_process_id(), Time.get_ticks_usec()])
+	var repository := Repository.new(root)
+	_check(repository.save_progress(repository.new_progress("L01")), "seed recoverable progress")
+	_check(repository.save_progress(repository.new_progress("L02")), "seed valid backup")
+	_check(repository.corrupt_for_test("progress"), "corrupt primary before recovery save")
+	_check(repository.save_progress(repository.new_progress("L03")), "write new progress after backup recovery")
+	_check(repository.corrupt_for_test("progress"), "simulate crash-damaged new primary")
+	var recovered := repository.load_progress()
+	_check(recovered.get("ok", false) and recovered.get("recovered", false), "old valid backup survives recovery save")
+	if recovered.get("ok", false):
+		_check(recovered["data"]["currentLevelId"] == "L01", "backup retains last valid state")
+	repository.clear_all()
+	DirAccess.remove_absolute(root.path_join("progress.json.corrupt"))
+	DirAccess.remove_absolute(root)
+
+func _backup_survives_missing_primary() -> void:
+	var root := OS.get_user_data_dir().path_join("r1_missing_primary_%s_%s" % [OS.get_process_id(), Time.get_ticks_usec()])
+	var repository := Repository.new(root)
+	_check(repository.save_progress(repository.new_progress("L01")), "seed backup source")
+	_check(repository.save_progress(repository.new_progress("L02")), "create backup before interrupted write")
+	_check(DirAccess.remove_absolute(root.path_join("progress.json")) == OK, "simulate crash after primary rotation")
+	_check(repository.load_progress().get("recovered", false), "backup remains loadable without primary")
+	_check(repository.save_progress(repository.new_progress("L03")), "save after missing-primary recovery")
+	_check(repository.corrupt_for_test("progress"), "damage newly saved primary")
+	var recovered := repository.load_progress()
+	_check(recovered.get("ok", false) and recovered.get("recovered", false), "backup survives missing-primary save")
+	repository.clear_all()
+	DirAccess.remove_absolute(root)
 
 func _check(condition: bool, label: String) -> void:
 	if not condition:

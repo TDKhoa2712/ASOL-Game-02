@@ -24,7 +24,6 @@ func _run() -> void:
 func _check_flow_routes() -> void:
 	var flow = Flow.new(["L01", "L02", "L03", "L04"])
 	_check(flow.current_screen == Flow.SCREEN_HOME, "flow starts at home")
-	_check(flow.current_level_id == "L01", "flow starts at L01")
 
 	_check(flow.dispatch("start_game"), "home accepts start_game")
 	_check(flow.current_screen == Flow.SCREEN_PUZZLE, "start_game opens puzzle")
@@ -32,13 +31,11 @@ func _check_flow_routes() -> void:
 	_check(flow.current_screen == Flow.SCREEN_RESULT_WIN, "win opens result win")
 	_check(flow.dispatch("next"), "result win accepts next")
 	_check(flow.current_screen == Flow.SCREEN_PUZZLE, "next opens next puzzle")
-	_check(flow.current_level_id == "L02", "next advances to L02")
 
 	_check(flow.dispatch("fail"), "puzzle accepts fail")
 	_check(flow.current_screen == Flow.SCREEN_RESULT_FAIL, "fail opens result fail")
 	_check(flow.dispatch("retry"), "result fail accepts retry")
 	_check(flow.current_screen == Flow.SCREEN_PUZZLE, "retry opens puzzle")
-	_check(flow.current_level_id == "L02", "retry keeps current level")
 
 	_check(flow.dispatch("help"), "puzzle accepts help")
 	_check(flow.current_screen == Flow.SCREEN_HELP, "help opens help screen")
@@ -59,9 +56,8 @@ func _check_flow_routes() -> void:
 		_check(flow.dispatch("win"), "puzzle can win %s" % level_id)
 		_check(flow.dispatch("next"), "result can advance after %s" % level_id)
 	_check(flow.dispatch("win"), "puzzle can win L04")
-	_check(flow.dispatch("next"), "final result returns home")
-	_check(flow.current_screen == Flow.SCREEN_HOME, "winning final level returns home")
-	_check(flow.current_level_id == "L04", "final level remains selected after campaign end")
+	_check(flow.dispatch("next"), "result accepts next")
+	_check(flow.current_screen == Flow.SCREEN_PUZZLE, "flow leaves level selection to runtime")
 
 
 func _check_bootstrap_scene() -> void:

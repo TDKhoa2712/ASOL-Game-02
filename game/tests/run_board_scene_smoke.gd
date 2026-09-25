@@ -47,8 +47,21 @@ func _run() -> void:
 	var hearts: Control = screen.find_child("HeartsLabel", true, false)
 	var status: Control = screen.find_child("StatusLabel", true, false)
 	var board_view: Control = screen.find_child("BoardView", true, false)
+	var rules: Control = screen.find_child("RuleStrip", true, false)
+	var regions: Control = screen.find_child("RegionProgress", true, false)
+	_expect(rules != null and rules.get_child_count() == 4, "Four rule labels stay visible", failures)
+	_expect(regions != null and regions.get_child_count() == int(screen.level["size"]), "Region progress has one slot per region", failures)
 	_expect(hearts.get_global_rect().position.x >= 0.0, "Hearts label is clipped", failures)
 	_expect(status.get_global_rect().end.x <= 1080.0, "Status label is clipped", failures)
+	if rules != null and regions != null:
+		_expect(rules.get_global_rect().end.y < board_view.get_global_rect().position.y, "Rules precede board", failures)
+		_expect(regions.get_global_rect().position.y > board_view.get_global_rect().end.y, "Region progress follows board", failures)
+		_expect(regions.get_global_rect().end.y <= 1920.0, "Region progress is visible", failures)
+	for node_name in ["UndoButton", "HintButton", "RestartButton", "HomeButton", "HelpButton", "SettingsButton"]:
+		var action: Control = screen.find_child(node_name, true, false)
+		_expect(action.get_global_rect().end.y <= 1920.0, "%s is not clipped below screen" % node_name, failures)
+		_expect(action.get_global_rect().size.y >= 44.0, "%s has minimum vertical touch target" % node_name, failures)
+	_expect(board_view.get_global_rect().size.x / float(screen.level["size"]) >= 44.0, "Board cell reaches minimum touch target", failures)
 
 	var session = screen.get_session()
 	board_view._gui_input(_mouse_button(Vector2(100.0, 100.0), true))
@@ -129,6 +142,22 @@ func _run() -> void:
 	_expect(restarted["hearts"] == 3, "Restart must restore hearts", failures)
 
 	screen.queue_free()
+	await process_frame
+	var campaign: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/campaign_m1.json"))
+	for level_data in campaign.get("levels", []):
+		var candidate = packed_scene.instantiate()
+		candidate.configure(level_data)
+		root.add_child(candidate)
+		await process_frame
+		var level_id: String = str(level_data.get("id", ""))
+		var candidate_board: Control = candidate.find_child("BoardView", true, false)
+		var candidate_regions: Control = candidate.find_child("RegionProgress", true, false)
+		var candidate_settings: Control = candidate.find_child("SettingsButton", true, false)
+		_expect(candidate_regions.get_child_count() == int(level_data["size"]), "%s region slots match size" % level_id, failures)
+		_expect(candidate_board.get_global_rect().size.x / float(level_data["size"]) >= 44.0, "%s cells reach touch minimum" % level_id, failures)
+		_expect(candidate_settings.get_global_rect().end.y <= 1920.0, "%s Settings remains visible" % level_id, failures)
+		candidate.queue_free()
+		await process_frame
 	if failures.is_empty():
 		print("M0_A02_BOARD_SCENE_PASS")
 		quit(0)

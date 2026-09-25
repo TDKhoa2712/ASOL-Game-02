@@ -18,17 +18,28 @@ func _ready() -> void:
 	if runtime == null:
 		runtime = Runtime.new()
 	if not runtime.initialize():
-		push_error("MVP runtime failed to load campaign")
+		var error_screen := Control.new()
+		error_screen.name = "SaveLoadError"
+		error_screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		var message := Label.new()
+		message.text = "Không thể đọc tiến trình đã lưu. Dữ liệu được giữ nguyên; hãy thử mở lại trò chơi."
+		message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		message.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		message.custom_minimum_size = Vector2(640, 120)
+		error_screen.add_child(message)
+		screen_host.add_child(error_screen)
 		return
-	flow = Flow.new(runtime.level_ids)
-	flow.current_level_index = maxi(0, runtime.level_ids.find(runtime.current_level_id))
+	flow = Flow.new()
 	flow.changed.connect(_on_flow_changed)
 	runtime.level_won.connect(_on_runtime_level_won)
 	runtime.level_failed.connect(_on_runtime_level_failed)
+	runtime.save_failed.connect(_on_save_failed)
+	if runtime.engine != null and runtime.engine.session.attempt_state == "Won":
+		runtime.retry_pending_save()
 	_render()
 
 
-func _on_flow_changed(_screen_id: String, _level_id: String) -> void:
+func _on_flow_changed(_screen_id: String) -> void:
 	_render()
 
 
@@ -49,6 +60,12 @@ func _dispatch_result(action: String) -> void:
 func return_home() -> void:
 	flow.dispatch("home")
 
+func open_help() -> void:
+	_on_action("help")
+
+func open_settings() -> void:
+	_on_action("settings")
+
 
 func _render() -> void:
 	for child in screen_host.get_children():
@@ -63,7 +80,13 @@ func _render() -> void:
 			_connect_button(screen, "SafeArea/Content/Stack/SettingsButton", "settings")
 			var level_label = screen.get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
 			if level_label != null:
-				level_label.text = "Level hiện tại: %s" % flow.current_level_id
+				if runtime.progress.get("currentLevelId") == null:
+					level_label.text = "Bạn đã hoàn thành các level hiện có"
+				else:
+					level_label.text = "Level hiện tại: %s" % str(runtime.progress.get("currentLevelId", ""))
+			var play_button = screen.get_node_or_null("SafeArea/Content/Stack/PlayButton")
+			if play_button != null:
+				play_button.disabled = runtime.progress.get("currentLevelId") == null
 		Flow.SCREEN_PUZZLE:
 			screen = _build_puzzle_screen()
 		Flow.SCREEN_RESULT_WIN:
@@ -73,7 +96,8 @@ func _render() -> void:
 			_connect_button(screen, "SafeArea/Content/Stack/HomeButton", "home")
 			var win_score = screen.get_node_or_null("SafeArea/Content/Stack/ScoreLabel")
 			if win_score != null:
-				win_score.text = "%s đã hoàn thành" % flow.current_level_id
+				var result: Dictionary = runtime.progress.get("results", {}).get(runtime.current_level_id, {})
+				win_score.text = "Điểm: %d" % int(result.get("score", 0))
 		Flow.SCREEN_RESULT_FAIL:
 			screen = FailScene.instantiate()
 			_wrap_result_content(screen)
@@ -81,12 +105,13 @@ func _render() -> void:
 			_connect_button(screen, "SafeArea/Content/Stack/HomeButton", "home")
 			var fail_score = screen.get_node_or_null("SafeArea/Content/Stack/ScoreLabel")
 			if fail_score != null:
-				fail_score.text = "Level hiện tại: %s" % flow.current_level_id
+				fail_score.text = "Điểm: %d" % runtime.engine.session.scorecard()
 		Flow.SCREEN_HELP:
 			screen = _build_info_shell("Trợ giúp / Luật", [
-				"Điền đúng bốn biểu tượng vào hàng, cột và vùng.",
-				"Chạm để đánh dấu; chạm đôi hoặc kéo để thao tác nhanh.",
-				"Màn hướng dẫn đầy đủ sẽ được nối ở M1-A08.",
+				"Mỗi hàng, cột và vùng có đúng một mèo.",
+				"Hai mèo không được chạm nhau ở góc.",
+				"Chạm để đánh hoặc xóa X; chạm đôi để thử đặt mèo.",
+				"Bạn có ba lượt sai và một gợi ý mỗi lượt.",
 			])
 		Flow.SCREEN_SETTINGS:
 			screen = _build_info_shell("Cài đặt", [
@@ -124,11 +149,42 @@ func _wrap_result_content(screen: Control) -> void:
 
 
 func _on_action(action: String) -> void:
-	flow.dispatch(action)
+	if action == "start_game" and runtime.progress.get("currentLevelId") == null:
+		return
+	if action == "start_game" and runtime.engine != null and runtime.engine.session.hearts <= 0:
+		flow.dispatch("resume_fail")
+		return
+	if action == "next" and runtime.progress.get("currentLevelId") == null:
+		flow.dispatch("home")
+		return
+	var from_puzzle: bool = flow.current_screen == Flow.SCREEN_PUZZLE
+	if flow.dispatch(action) and action == "help" and from_puzzle:
+		runtime.process_tutorial_action({"type": "ViewRules"})
+
+func _on_save_failed(reason: String) -> void:
+	var dialog = get_node_or_null("SaveErrorDialog")
+	if dialog == null:
+		dialog = ConfirmationDialog.new()
+		dialog.name = "SaveErrorDialog"
+		dialog.title = "Chưa lưu được"
+		dialog.get_ok_button().text = "Thử lưu lại"
+		dialog.confirmed.connect(_retry_pending_save)
+		add_child(dialog)
+	dialog.dialog_text = reason
+	dialog.popup_centered(Vector2i(640, 220))
+
+func _retry_pending_save() -> void:
+	if runtime.retry_pending_save():
+		var dialog = get_node_or_null("SaveErrorDialog")
+		if dialog != null:
+			dialog.hide()
 
 
 func _build_puzzle_screen() -> Control:
-	runtime.start_level(flow.current_level_id)
+	var level_id := str(runtime.progress.get("currentLevelId", ""))
+	if flow.previous_screen == Flow.SCREEN_RESULT_FAIL:
+		level_id = runtime.current_level_id
+	runtime.start_level(level_id, flow.previous_screen != Flow.SCREEN_RESULT_FAIL)
 	var screen = BoardScene.instantiate()
 	screen.configure(runtime.active_level, runtime.engine, runtime, runtime.contract)
 	return screen

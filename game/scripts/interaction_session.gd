@@ -16,6 +16,8 @@ var undo_diff: Variant = null
 var events: Array = []
 var domain_events: Array = []
 var detailed_events: Array = []
+var last_action: Dictionary = {}
+var tutorial_safe_cell: Array = []
 
 
 func _init(level_data: Dictionary) -> void:
@@ -33,6 +35,7 @@ func reset_attempt(event_name: String = "") -> void:
 	events = []
 	domain_events = []
 	detailed_events = []
+	last_action = {}
 	if not event_name.is_empty():
 		events.append(event_name)
 	changed.emit()
@@ -52,6 +55,7 @@ func load_initial(initial: Dictionary) -> void:
 	events = []
 	domain_events = []
 	detailed_events = []
+	last_action = {}
 	changed.emit()
 
 
@@ -95,6 +99,7 @@ func write_cell(cell: Array, value: String) -> void:
 
 
 func apply_action(action: Dictionary) -> void:
+	last_action = action.duplicate(true)
 	var action_type := str(action["type"])
 	if (
 		action_type in ["MarkX", "ClearX", "MarkStroke", "TryCat"]
@@ -190,6 +195,9 @@ func _apply_undo() -> void:
 func _apply_try_cat(raw_cell: Array) -> void:
 	undo_diff = null
 	var cell := [int(raw_cell[0]), int(raw_cell[1])]
+	if cell == tutorial_safe_cell and int(level["solution"][cell[0]]) != cell[1]:
+		events.append("TutorialSafeMistake")
+		return
 	var result: Dictionary = PuzzleCore.try_cat(level, cells, hearts, mistake_count, cell)
 	cells = result["cells"]
 	hearts = int(result["hearts"])

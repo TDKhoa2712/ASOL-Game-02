@@ -10,35 +10,28 @@ const SCREEN_RESULT_FAIL := "result_fail"
 const SCREEN_HELP := "help"
 const SCREEN_SETTINGS := "settings"
 
-signal changed(screen_id: String, level_id: String)
+signal changed(screen_id: String)
 
-var level_ids: Array[String] = []
-var current_level_index := 0
 var current_screen := SCREEN_HOME
 var previous_screen := SCREEN_HOME
 
 
-func _init(campaign_level_ids: Array = []) -> void:
-	for level_id in campaign_level_ids:
-		level_ids.append(str(level_id))
-	if level_ids.is_empty():
-		level_ids = ["L01"]
+func _init(_campaign_level_ids: Array = []) -> void:
+	pass
 
-
-var current_level_id: String:
-	get:
-		return level_ids[current_level_index]
 
 
 func dispatch(action: String) -> bool:
 	var next_screen := current_screen
-	var next_level_index := current_level_index
 	var accepted := true
 
 	match action:
 		"start_game":
 			accepted = current_screen == SCREEN_HOME
 			next_screen = SCREEN_PUZZLE
+		"resume_fail":
+			accepted = current_screen == SCREEN_HOME
+			next_screen = SCREEN_RESULT_FAIL
 		"win":
 			accepted = current_screen == SCREEN_PUZZLE
 			next_screen = SCREEN_RESULT_WIN
@@ -47,11 +40,7 @@ func dispatch(action: String) -> bool:
 			next_screen = SCREEN_RESULT_FAIL
 		"next":
 			accepted = current_screen == SCREEN_RESULT_WIN
-			if accepted and current_level_index + 1 < level_ids.size():
-				next_level_index += 1
-				next_screen = SCREEN_PUZZLE
-			elif accepted:
-				next_screen = SCREEN_HOME
+			next_screen = SCREEN_PUZZLE
 		"retry":
 			accepted = current_screen == SCREEN_RESULT_FAIL
 			next_screen = SCREEN_PUZZLE
@@ -74,7 +63,6 @@ func dispatch(action: String) -> bool:
 		return false
 
 	previous_screen = current_screen
-	current_level_index = next_level_index
 	current_screen = next_screen
-	changed.emit(current_screen, current_level_id)
+	changed.emit(current_screen)
 	return true

@@ -39,11 +39,11 @@ func process_action(state: Dictionary, action: Dictionary) -> Dictionary:
 		_add_milestone(updated, "T2", completed)
 	elif action_type == "MarkStroke" and action.get("cells", []).size() >= 2:
 		_add_milestone(updated, "T3", completed)
-	elif action_type == "TryCat" and action_cell == target and bool(action.get("correct", false)):
+	elif action_type == "TryCat" and action_cell == updated.get("tutorialCatCell", target) and bool(action.get("correct", false)):
 		_add_milestone(updated, "T4", completed)
 	elif action_type in ["ViewRules", "OpenRules"]:
 		_add_milestone(updated, "T5", completed)
-	elif action_type == "UseHint" and bool(action.get("valid", true)):
+	elif action_type == "CloseHint" and bool(action.get("valid", false)):
 		_add_milestone(updated, "T6", completed)
 	return {
 		"state": updated,

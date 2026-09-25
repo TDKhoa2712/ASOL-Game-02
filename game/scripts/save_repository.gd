@@ -43,7 +43,8 @@ func load_progress() -> Dictionary:
 	var backup := _read_json("progress", true)
 	if backup.get("ok", false) and _is_valid_progress(backup["data"]):
 		return {"ok": true, "data": backup["data"], "recovered": true}
-	return {"ok": false, "reason": "progress is missing or invalid", "recovered": false}
+	var missing := not FileAccess.file_exists(_path("progress")) and not FileAccess.file_exists(_path("progress", true))
+	return {"ok": false, "reason": "missing" if missing else "invalid", "recovered": false}
 
 func load_session(expected_level_id: String, expected_puzzle_hash: String) -> Dictionary:
 	var result := _read_json("session")
@@ -114,6 +115,22 @@ func _atomic_write(kind: String, data: Dictionary) -> bool:
 
 	var target := _path(kind)
 	var backup := _path(kind, true)
+	if kind == "progress" and not FileAccess.file_exists(target) and FileAccess.file_exists(backup):
+		var restore_result := DirAccess.rename_absolute(temporary, target)
+		if restore_result != OK:
+			DirAccess.remove_absolute(temporary)
+		return restore_result == OK
+	if kind == "progress" and FileAccess.file_exists(target):
+		var existing := _read_json(kind)
+		if not existing.get("ok", false) or not _is_valid_progress(existing["data"]):
+			var quarantine := target + ".corrupt"
+			if FileAccess.file_exists(quarantine) or DirAccess.rename_absolute(target, quarantine) != OK:
+				DirAccess.remove_absolute(temporary)
+				return false
+			if DirAccess.rename_absolute(temporary, target) != OK:
+				DirAccess.rename_absolute(quarantine, target)
+				return false
+			return true
 	if FileAccess.file_exists(backup):
 		DirAccess.remove_absolute(backup)
 	if FileAccess.file_exists(target) and DirAccess.rename_absolute(target, backup) != OK:

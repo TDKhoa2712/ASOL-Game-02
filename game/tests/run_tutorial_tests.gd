@@ -45,6 +45,8 @@ func _run() -> void:
 	state = controller.process_action(state, {"type": "TryCat", "cell": [0, 1], "correct": true})["state"]
 	state = controller.process_action(state, {"type": "ViewRules"})["state"]
 	state = controller.process_action(state, {"type": "UseHint", "valid": true})["state"]
+	_check(not controller.all_complete(state), "opening Hint alone does not finish T6")
+	state = controller.process_action(state, {"type": "CloseHint", "valid": true})["state"]
 	_check(controller.all_complete(state), "T1-T6 complete from persisted actions")
 	_check(controller.current_step(state) == "", "completed tutorial has no next step")
 

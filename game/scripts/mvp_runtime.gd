@@ -12,8 +12,10 @@ signal level_ready(level_id: String)
 signal session_changed(level_id: String, state: Dictionary)
 signal level_won(level_id: String, next_level_id: String)
 signal level_failed(level_id: String)
+signal save_failed(reason: String)
 
 var repository
+var progress_save_pending := false
 var campaign_path := CAMPAIGN_PATH
 var contract: Dictionary = {}
 var levels: Dictionary = {}
@@ -56,8 +58,22 @@ func initialize() -> bool:
 	if loaded_progress.get("ok", false):
 		progress = loaded_progress["data"].duplicate(true)
 	else:
+		if loaded_progress.get("reason") != "missing":
+			return false
 		progress = repository.new_progress(level_ids[0])
-	current_level_id = str(progress.get("currentLevelId", level_ids[0]))
+	var saved_level = progress.get("currentLevelId", level_ids[0])
+	if saved_level == null:
+		current_level_id = ""
+		for candidate in level_ids:
+			if not progress.get("completedLevelIds", []).has(candidate):
+				current_level_id = candidate
+				progress["currentLevelId"] = candidate
+				break
+	else:
+		current_level_id = str(saved_level)
+	if current_level_id.is_empty():
+		initialized = true
+		return true
 	if not levels.has(current_level_id):
 		current_level_id = level_ids[0]
 		progress["currentLevelId"] = current_level_id
@@ -73,7 +89,9 @@ func start_level(level_id: String, resume: bool = true) -> bool:
 		return false
 	current_level_id = level_id
 	progress["currentLevelId"] = level_id
-	repository.save_progress(progress)
+	progress_save_pending = not repository.save_progress(progress)
+	if progress_save_pending:
+		save_failed.emit("Không lưu được tiến trình level. Hãy thử lại.")
 	return _load_active_level(level_id, resume)
 
 
@@ -100,9 +118,18 @@ func use_hint() -> Dictionary:
 
 func process_tutorial_action(action: Dictionary) -> Dictionary:
 	var result: Dictionary = tutorial_controller.process_action(tutorial_state, action)
+	if result.get("completed", []).is_empty():
+		return result
 	tutorial_state = result.get("state", tutorial_state).duplicate(true)
-	progress["tutorialState"] = tutorial_state.duplicate(true)
-	repository.save_progress(progress)
+	if engine != null and tutorial_controller.current_step(tutorial_state) not in ["T1", "T2", "T3"]:
+		engine.session.tutorial_safe_cell = []
+	progress["tutorialState"] = _persistable_tutorial_state()
+	if engine != null and engine.session.attempt_state == "Won":
+		progress_save_pending = true
+		return result
+	progress_save_pending = not repository.save_progress(progress)
+	if progress_save_pending:
+		save_failed.emit("Không lưu được tiến trình hướng dẫn. Hãy thử lại.")
 	return result
 
 
@@ -115,7 +142,12 @@ func has_saved_session() -> bool:
 func save_current_session() -> bool:
 	if engine == null or active_level.is_empty():
 		return false
-	return repository.save_session(_session_snapshot())
+	if not _flush_pending_progress():
+		return false
+	if repository.save_session(_session_snapshot()):
+		return true
+	save_failed.emit("Không lưu được lượt chơi. Hãy thử lại.")
+	return false
 
 
 func clear_saved_state() -> void:
@@ -126,10 +158,12 @@ func _load_active_level(level_id: String, resume: bool = true) -> bool:
 	active_level = levels[level_id].duplicate(true)
 	current_level_id = level_id
 	engine = GestureEngine.new(active_level, contract)
+	if level_id == "L01" and tutorial_controller.current_step(tutorial_state) in ["T1", "T2", "T3"]:
+		engine.session.tutorial_safe_cell = tutorial_state.get("tutorialHighlight", []).duplicate()
 	var restored := false
 	if resume:
 		var saved: Dictionary = repository.load_session(level_id, repository.puzzle_hash(active_level))
-		if saved.get("ok", false) and int(saved["data"].get("hearts", 0)) > 0:
+		if saved.get("ok", false):
 			engine.session.load_initial(_to_session_initial(saved["data"]))
 			restored = true
 	if not restored:
@@ -144,9 +178,17 @@ func _on_session_changed() -> void:
 	if engine == null:
 		return
 	var snapshot := _session_snapshot()
-	repository.save_session(snapshot)
+	var session_saved: bool = repository.save_session(snapshot)
 	var events: Array = engine.session.events
 	var latest := str(events[-1]) if not events.is_empty() else ""
+	if not session_saved and latest != "LevelWon":
+		save_failed.emit("Không lưu được lượt chơi. Hãy thử lại.")
+	if current_level_id == "L01" and latest in ["MarkX", "ClearX", "MarkStroke", "CatPlaced"]:
+		var tutorial_action: Dictionary = engine.session.last_action.duplicate(true)
+		if latest == "CatPlaced":
+			tutorial_action["correct"] = true
+		if latest != "MarkStroke" or (engine.session.undo_diff != null and engine.session.undo_diff.size() >= 2):
+			process_tutorial_action(tutorial_action)
 	if latest == "LevelWon":
 		_complete_level()
 	elif latest == "LevelFailed":
@@ -154,7 +196,16 @@ func _on_session_changed() -> void:
 	session_changed.emit(current_level_id, snapshot)
 
 
-func _complete_level() -> void:
+func retry_pending_save() -> bool:
+	if engine == null:
+		return false
+	if engine.session.attempt_state != "Won":
+		return save_current_session()
+	if progress.get("completedLevelIds", []).has(current_level_id):
+		return false
+	return _complete_level()
+
+func _complete_level() -> bool:
 	var result := {
 		"score": engine.session.scorecard(),
 		"mistakes": engine.session.mistake_count,
@@ -163,13 +214,18 @@ func _complete_level() -> void:
 	}
 	var completed: Dictionary = repository.complete_level(progress, current_level_id, result, level_ids)
 	if not completed.get("ok", false):
-		return
-	progress = completed["data"].duplicate(true)
-	progress["tutorialState"] = tutorial_state.duplicate(true)
-	repository.save_progress(progress)
+		return false
+	var updated_progress: Dictionary = completed["data"].duplicate(true)
+	updated_progress["tutorialState"] = _persistable_tutorial_state()
+	if not repository.save_progress(updated_progress):
+		save_failed.emit("Không lưu được tiến trình. Hãy thử lại.")
+		return false
+	progress = updated_progress
+	progress_save_pending = false
 	repository.clear_session()
 	var next_level := str(progress.get("currentLevelId", ""))
 	level_won.emit(current_level_id, next_level)
+	return true
 
 
 func _session_snapshot() -> Dictionary:
@@ -217,14 +273,39 @@ func _hint_session_payload() -> Dictionary:
 
 func _read_tutorial_state() -> Dictionary:
 	var saved = progress.get("tutorialState", {})
-	if typeof(saved) == TYPE_DICTIONARY and not saved.is_empty():
-		return saved.duplicate(true)
+	var seen: Array = saved.get("tutorialSeenIds", []) if typeof(saved) == TYPE_DICTIONARY else []
+	var tutorial_level: Dictionary = levels.get("L01", {})
 	var highlight := [0, 0]
-	var trace: Array = active_level.get("logicTrace", [])
+	var solution: Array = tutorial_level.get("solution", [])
+	for row in range(solution.size()):
+		if int(solution[row]) != 0:
+			highlight = [row, 0]
+			break
+	var cat_cell := [0, 0]
+	var trace: Array = tutorial_level.get("logicTrace", [])
 	if not trace.is_empty() and typeof(trace[0]) == TYPE_DICTIONARY:
 		var conclusion: Dictionary = trace[0].get("conclusion", {})
-		highlight = [int(conclusion.get("r", 0)), int(conclusion.get("c", 0))]
-	return tutorial_controller.new_state("L01", highlight)
+		cat_cell = [int(conclusion.get("r", 0)), int(conclusion.get("c", 0))]
+	var state: Dictionary = tutorial_controller.new_state("L01", highlight)
+	state["tutorialCatCell"] = cat_cell
+	state["tutorialSeenIds"] = seen.duplicate()
+	return state
+
+
+func _persistable_tutorial_state() -> Dictionary:
+	var saved: Dictionary = tutorial_state.duplicate(true)
+	saved.erase("tutorialCatCell")
+	return saved
+
+
+func _flush_pending_progress() -> bool:
+	if not progress_save_pending:
+		return true
+	if repository.save_progress(progress):
+		progress_save_pending = false
+		return true
+	save_failed.emit("Không lưu được tiến trình hướng dẫn. Hãy thử lại.")
+	return false
 
 
 func _read_json(path: String) -> Dictionary:

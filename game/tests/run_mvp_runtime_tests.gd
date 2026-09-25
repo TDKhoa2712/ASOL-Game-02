@@ -44,10 +44,7 @@ func _run() -> void:
 	_check(resumed.engine.session.cell_state([3, 2]) != "cat", "Hint does not place a cat")
 	_check(not resumed.use_hint().get("ok", false), "second Hint is rejected")
 
-	var tutorial_target: Array = resumed.tutorial_state.get("tutorialHighlight", [])
-	var tutorial_result := resumed.process_tutorial_action({"type": "MarkX", "cell": tutorial_target})
-	_check(tutorial_result.get("completed", []).has("T1"), "L01 tutorial receives runtime action")
-	_check(resumed.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T1"), "tutorial state is saved in progress")
+	_check(resumed.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T1"), "committed X records tutorial T1")
 
 	for row in range(4):
 		resumed.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
@@ -90,7 +87,7 @@ func _run() -> void:
 	await process_frame
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
-	for wrong_cell in [[0, 0], [1, 0], [2, 1]]:
+	for wrong_cell in [[0, 2], [1, 0], [2, 1]]:
 		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
 	_check(bootstrap.flow.current_screen == "puzzle", "fail result waits until current input completes")
 	await process_frame
