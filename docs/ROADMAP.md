@@ -15,6 +15,8 @@ R0 hoàn thành khi có một nguồn hướng dẫn thống nhất, thiết k�
 
 ## R1 — Một bản chơi liền mạch bốn level
 
+Chi tiết: [kế hoạch R1](plans/R1-playable-loop.md), căn cứ [rà thiết kế và kiến trúc](reviews/05-design-and-structure-review.md). Thứ tự: cô lập test → thống nhất tiến trình → bảo toàn save → nối tutorial/input → kiểm layout và hành trình thật. Chỉ triển khai sau khi kết thúc tạm ngưng.
+
 Hoàn thiện xuyên scene/controller/runtime: Home → Puzzle → Win/Fail → Next/Retry/Home; save/resume, tutorial, Hint, Undo, Restart đúng luật trên cùng build. Sửa lỗi input, chuyển scene và bố cục chặn thao tác trong cùng mục tiêu.
 
 Nghiệm thu từ entry scene thật: lượt mới qua bốn level; thua/retry; đóng/mở giữa level; quay Home/resume; kết thúc level cuối. Chạy unit/contract, validator, kiểm hình ảnh/thao tác và Android thực tế. Ghi riêng phạm vi đã kiểm, không lấy test module thay bằng chứng trải nghiệm.

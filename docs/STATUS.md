@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-Cập nhật: 2026-09-24. **Tạm ngưng mọi triển khai game, nội dung và asset; đang cải tổ tổ chức dự án.** Không tự khởi động lại các package cũ.
+Cập nhật: 2026-09-25. **Tạm ngưng mọi triển khai game, nội dung và asset; đang cải tổ tổ chức dự án.** Không tự khởi động lại các package cũ.
 
 ## Nền hiện tại
 
@@ -22,10 +22,12 @@ R0: gom nhánh, bảo toàn công việc, dọn nhánh đã hợp nhất, thay �
 | Evidence A12 ghi smoke `Status label is clipped` còn fail | Tái hiện cùng các lỗi UI/input trong R1; chưa sửa trong đợt này |
 | Tutorial còn cần kiểm kết nối gesture/milestone thực tế | Kiểm tích hợp ở R1, người mới ở R2 |
 | Thiếu kiểm thử thiết bị/asset đại diện và nguồn lực iOS | Lập danh sách người/thiết bị trong R0; giữ QA nền tảng ở R4 |
-| Thiết kế/phạm vi cần được rà lại trước kế hoạch chi tiết | Bước tiếp theo trên nhánh cải tổ; mọi đề xuất thay luật ghi riêng, chưa áp dụng |
+| Phạm vi 24 level và đề xuất Endless cần được phân biệt | Giữ GDD hiện hành; chỉ đổi phạm vi khi chủ dự án quyết định |
 
 ## Kiểm chứng và bước tiếp theo
 
 Đợt này kiểm Git, bảo toàn file, diff tài liệu, đăng ký tài liệu và liên kết. Không chạy lại game, không kết luận gameplay đã ổn định từ thao tác gom nhánh.
 
-Bước tiếp theo: rà thiết kế và cấu trúc đích trên nhánh cải tổ, chốt phạm vi cùng tiêu chí hoàn thành, rồi chuẩn bị thay đổi để tích hợp về dev. Chưa bắt đầu R1 trong khi lệnh tạm ngưng còn hiệu lực.
+Đã soạn [rà thiết kế và cấu trúc đích](reviews/05-design-and-structure-review.md) và [kế hoạch nghiệm thu R1](plans/R1-playable-loop.md), dựa trên khảo sát tĩnh tại `1600898`. Chưa chạy kiểm chứng gameplay mới.
+
+Bước tiếp theo: chủ dự án review kế hoạch và lựa chọn phạm vi 24 level/Endless; tích hợp cải tổ về dev khi được giao. Khi chưa có quyết định thay đổi, GDD 24 level vẫn áp dụng. Chưa tuyên bố toàn bộ R0 hoàn tất, chưa bắt đầu R1 khi lệnh tạm ngưng còn hiệu lực.

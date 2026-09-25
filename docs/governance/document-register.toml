@@ -67,8 +67,8 @@ owner = "Game Design"
 
 [[documents]]
 path = "GDD/11-ke-hoach-meta-va-sinh-level.md"
-class = "canonical"
-status = "CANONICAL"
+class = "canonical-proposal"
+status = "PROPOSED"
 owner = "Game Design"
 
 [[documents]]
@@ -184,4 +184,16 @@ owner = "Project Owner"
 path = "docs/reviews/04-project-reset-proposal.md"
 class = "review"
 status = "HISTORICAL"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/reviews/05-design-and-structure-review.md"
+class = "review"
+status = "ACTIVE"
+owner = "Project Owner"
+
+[[documents]]
+path = "docs/plans/R1-playable-loop.md"
+class = "plan"
+status = "PROPOSED"
 owner = "Project Owner"
