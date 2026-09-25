@@ -5,7 +5,7 @@
 ## 1. Đọc và xác định phạm vi
 
 - Đọc [trạng thái](docs/STATUS.md), [kế hoạch](docs/ROADMAP.md) và mục tiêu người dùng giao trước khi hành động.
-- Hiện tạm ngưng triển khai game và package cũ. Chỉ thực hiện công việc cải tổ được giao; không tự chạy tiếp R1 hoặc các gói còn review/blocked.
+- Ngày 2026-09-25 chủ dự án kết thúc tạm ngưng và cho triển khai R1 theo docs/plans/R1-playable-loop.md. Bản đầu giữ 24 level, Endless để sau. Không tự khởi động lại package cũ hoặc mở rộng sang R2–R4.
 - [GDD 02](GDD/02-luat-choi-va-trang-thai.md) giữ luật gameplay chuẩn; GDD sản phẩm và QA vẫn áp dụng. [Quyết định mới](docs/DECISIONS.md) xác định phần quy trình đã thay thế.
 - Quy trình hiện hành nằm tại AGENTS; lịch thực hiện tại ROADMAP; tiến độ tại STATUS. Work package, state, handoff và kế hoạch M0–M3 là lịch sử, không cấp quyền làm việc mới.
 

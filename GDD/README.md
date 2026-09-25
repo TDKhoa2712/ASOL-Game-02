@@ -1,6 +1,6 @@
 # GDD — Vườn Mèo (tên tạm)
 
-**Phiên bản thiết kế:** 0.5.0 · **Ngày thiết kế:** 2026-09-21. Client đã tồn tại nhưng chưa ổn định/liền mạch. Đang tạm ngưng triển khai để cải tổ theo [STATUS](../docs/STATUS.md), cập nhật 2026-09-24. Luật sản phẩm chưa thay đổi; kế hoạch thực hiện chuyển sang [ROADMAP](../docs/ROADMAP.md).
+**Phiên bản thiết kế:** 0.5.0 · **Ngày thiết kế:** 2026-09-21. Client chưa ổn định/liền mạch. Ngày 2026-09-25 chủ dự án mở R1, giữ 24 level cho bản đầu và Endless để sau theo [quyết định](../docs/DECISIONS.md). Luật sản phẩm chưa thay đổi; xem [STATUS](../docs/STATUS.md) và [ROADMAP](../docs/ROADMAP.md).
 
 ## Đọc theo thứ tự
 

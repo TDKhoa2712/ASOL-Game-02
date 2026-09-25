@@ -2,7 +2,7 @@
 
 Dự án phát triển game giải đố logic "Vườn Mèo".
 
-> **Trạng thái hiện tại:** Tạm ngưng triển khai game để cải tổ. Đã có client Godot và bốn level, nhưng trải nghiệm chưa ổn định/liền mạch. Code hiện có đã gom vào `dev`; thay đổi tổ chức thực hiện trên `refactor/project-reset`. Xem [STATUS](docs/STATUS.md).
+> **Trạng thái hiện tại:** Chủ dự án đã duyệt tích hợp cải tổ vào `dev` và mở R1 ngày 2026-09-25. Bản đầu giữ 24 level, Endless để sau. Client bốn level chưa được chứng nhận ổn định/liền mạch. Xem [STATUS](docs/STATUS.md).
 
 ---
 

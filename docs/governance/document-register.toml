@@ -195,5 +195,5 @@ owner = "Project Owner"
 [[documents]]
 path = "docs/plans/R1-playable-loop.md"
 class = "plan"
-status = "PROPOSED"
+status = "ACTIVE"
 owner = "Project Owner"

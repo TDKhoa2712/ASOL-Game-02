@@ -1,6 +1,6 @@
 # Hướng dẫn đóng góp (Contributing Guide)
 
-Quy trình hiện hành nằm tại [AGENTS.md](AGENTS.md). Đọc [STATUS](docs/STATUS.md) trước khi làm việc; game đang tạm ngưng triển khai để cải tổ trên `refactor/project-reset` từ `dev`.
+Quy trình hiện hành nằm tại [AGENTS.md](AGENTS.md). Đọc [STATUS](docs/STATUS.md) trước khi làm việc; chủ dự án đã mở R1 ngày 2026-09-25 theo [quyết định](docs/DECISIONS.md). Không khởi động lại package cũ.
 
 Giao việc theo kết quả trong [ROADMAP](docs/ROADMAP.md), không theo mã package. Hướng dẫn chạy nằm ở [README](README.md). Dùng commit rõ mục đích; kiểm chứng phù hợp trước khi bàn giao và tích hợp.
 
