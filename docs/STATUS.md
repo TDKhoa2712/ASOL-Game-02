@@ -12,7 +12,7 @@ Cập nhật: 2026-09-25. **Chủ dự án đã mở R1 và duyệt tích hợp 
 
 ## Công việc hiện tại
 
-R0 đã tích hợp vào dev; R1 đang thực hiện trên `fix/r1-playable-loop`. Đã cô lập profile test, nối Home/Puzzle/Result và save/retry, nối tutorial với phiên chơi, sửa clipping toolbar, thêm bốn luật và tiến độ vùng. Ảnh render từ entry scene phát hiện và đã sửa chữ Result trắng trên nền sáng. Chi tiết tại [nhật ký R1](plans/R1-progress.md). Chưa tích hợp code R1 vào dev.
+R0 đã tích hợp vào dev; R1 đang thực hiện trên `fix/r1-playable-loop`. Đã cô lập profile test, nối Home/Puzzle/Result và save/retry, nối tutorial với phiên chơi, sửa clipping toolbar, thêm bốn luật và tiến độ vùng. Ảnh render từ entry scene phát hiện và đã sửa chữ Result trắng trên nền sáng. Theo RST-003, MVP hiện cho Home và replay từ L01 sau khi hoàn thành campaign, không làm mất mốc hoàn thành. Chi tiết tại [nhật ký R1](plans/R1-progress.md). Chưa tích hợp code R1 vào dev.
 
 ## Các vấn đề được chuyển từ hồ sơ cũ
 

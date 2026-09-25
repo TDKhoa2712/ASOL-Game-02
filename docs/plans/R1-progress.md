@@ -38,6 +38,7 @@ Bước tiếp theo: R1-B, regression Win → Home → Play/successor và termin
 ## B–E — Tiến độ trên nhánh R1, chưa nghiệm thu toàn chặng
 
 - B: Flow chỉ điều hướng, runtime nắm level/progress. Integration từ scene tree kiểm Win → Home/Next → L02, Fail → Home/reload → Retry, bốn level → hết nội dung, score Result và Help quay về đúng nơi.
+- B: Theo RST-003, sau L04 màn Result Home hoạt động; Home bật `Chơi lại từ L01` trong MVP. Replay tạo lượt mới với session fresh, giữ `currentLevelId = null` và `completedLevelIds` đã hoàn thành; cờ `MVP_ALLOW_CAMPAIGN_REPLAY` là điểm tắt trước release.
 - C: Lỗi ghi session/progress (kể cả milestone tutorial) được báo, Home không bỏ phiên chưa lưu; Win chỉ phát khi progress đã ghi. Có thử lại và khôi phục Win pending sau mở lại. Progress primary hỏng/mất không còn làm mất backup hợp lệ khi lưu lại; primary hỏng được giữ ở `.corrupt`. Dữ liệu progress không thêm trường schema mới; target mèo tutorial được suy lại khi tải.
 - D: Board thực phát milestone T1–T6; T6 chỉ xong sau khi đóng phần Hint. Miễn phạt sai chỉ ở ô tutorial đang chỉ, sai ô khác mất tim. Hint/Help có đường người chơi thật trong integration headless.
 - E: Sửa toolbar tràn ngang, thêm bốn luật luôn thấy và hàng tiến độ vùng lấy từ board/given. Smoke đo 4/5/6 level ở viewport logic 1080×1920, nút và ô đạt tối thiểu 44 px logic. Đây chưa phải quan sát GUI/thiết bị.

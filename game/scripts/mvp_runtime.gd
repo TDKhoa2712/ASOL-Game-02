@@ -62,6 +62,7 @@ func initialize() -> bool:
 			return false
 		progress = repository.new_progress(level_ids[0])
 	var saved_level = progress.get("currentLevelId", level_ids[0])
+	tutorial_state = _read_tutorial_state()
 	if saved_level == null:
 		current_level_id = ""
 		for candidate in level_ids:
@@ -77,21 +78,21 @@ func initialize() -> bool:
 	if not levels.has(current_level_id):
 		current_level_id = level_ids[0]
 		progress["currentLevelId"] = current_level_id
-	tutorial_state = _read_tutorial_state()
 	initialized = true
 	return _load_active_level(current_level_id)
 
 
-func start_level(level_id: String, resume: bool = true) -> bool:
+func start_level(level_id: String, resume: bool = true, persist_level: bool = true) -> bool:
 	if not initialized and not initialize():
 		return false
 	if not levels.has(level_id):
 		return false
 	current_level_id = level_id
-	progress["currentLevelId"] = level_id
-	progress_save_pending = not repository.save_progress(progress)
-	if progress_save_pending:
-		save_failed.emit("Không lưu được tiến trình level. Hãy thử lại.")
+	if persist_level:
+		progress["currentLevelId"] = level_id
+		progress_save_pending = not repository.save_progress(progress)
+		if progress_save_pending:
+			save_failed.emit("Không lưu được tiến trình level. Hãy thử lại.")
 	return _load_active_level(level_id, resume)
 
 
@@ -167,6 +168,7 @@ func _load_active_level(level_id: String, resume: bool = true) -> bool:
 			engine.session.load_initial(_to_session_initial(saved["data"]))
 			restored = true
 	if not restored:
+		repository.clear_session()
 		engine.session.reset_attempt()
 	if not engine.session.changed.is_connected(_on_session_changed):
 		engine.session.changed.connect(_on_session_changed)

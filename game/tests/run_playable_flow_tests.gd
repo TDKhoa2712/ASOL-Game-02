@@ -106,10 +106,31 @@ func _complete_campaign() -> void:
 				bootstrap.runtime.apply_action({"type": "TryCat", "cell": cell})
 		await process_frame
 		_check(bootstrap.flow.current_screen == "result_win", "win screen after " + level_id)
-		_press(bootstrap, "ResultWin/SafeArea/Content/Stack/ContinueButton")
-		await process_frame
-	_check(bootstrap.flow.current_screen == "home", "last Continue returns Home")
+		if level_id == "L04":
+			_press(bootstrap, "ResultWin/SafeArea/Content/Stack/HomeButton")
+			await process_frame
+		else:
+			_press(bootstrap, "ResultWin/SafeArea/Content/Stack/ContinueButton")
+			await process_frame
+	_check(bootstrap.flow.current_screen == "home", "last Result Home returns Home")
 	_check(bootstrap.runtime.progress.get("currentLevelId", "missing") == null, "campaign stores completion marker")
+	var replay_button = bootstrap.get_node_or_null("ScreenHost/Home/SafeArea/Content/Stack/PlayButton")
+	_check(replay_button != null and not replay_button.disabled, "MVP Home enables replay after campaign completion")
+	_check(replay_button != null and replay_button.text == "Chơi lại từ L01", "MVP Home labels campaign replay explicitly")
+	_press(bootstrap, "Home/SafeArea/Content/Stack/PlayButton")
+	await process_frame
+	_check(bootstrap.flow.current_screen == "puzzle", "MVP replay opens puzzle")
+	_check(bootstrap.runtime.current_level_id == "L01", "MVP replay starts at L01")
+	_check(bootstrap.runtime.engine.session.attempt_state == "Playing", "MVP replay creates a fresh attempt")
+	var replay_board = bootstrap.get_node("ScreenHost").get_child(0)
+	var replay_home = replay_board.find_child("HomeButton", true, false)
+	_check(replay_home != null, "MVP replay board exposes Home")
+	if replay_home != null:
+		replay_home.pressed.emit()
+	await process_frame
+	await process_frame
+	_check(bootstrap.flow.current_screen == "home", "MVP replay can return Home")
+	_check(bootstrap.runtime.progress.get("completedLevelIds", []).size() == 4, "MVP replay preserves completed level history")
 	var runtime = bootstrap.runtime
 	bootstrap.free()
 	bootstrap = BootstrapScene.instantiate()
@@ -118,7 +139,7 @@ func _complete_campaign() -> void:
 	await process_frame
 	_check(bootstrap.runtime.progress.get("currentLevelId", "missing") == null, "reload preserves completed campaign")
 	var play = bootstrap.get_node_or_null("ScreenHost/Home/SafeArea/Content/Stack/PlayButton")
-	_check(play != null and play.disabled, "Home Play is disabled after current content")
+	_check(play != null and not play.disabled, "Home Play stays available for MVP replay")
 	var resumed_runtime = bootstrap.runtime
 	bootstrap.free()
 	resumed_runtime.clear_saved_state()

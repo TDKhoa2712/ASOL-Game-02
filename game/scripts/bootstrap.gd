@@ -7,6 +7,10 @@ const WinScene = preload("res://scenes/result_win.tscn")
 const FailScene = preload("res://scenes/result_fail.tscn")
 const BoardScene = preload("res://scenes/board.tscn")
 
+# MVP verification switch. Set false before the official release to make a
+# completed campaign terminal again instead of exposing a Level 1 replay.
+const MVP_ALLOW_CAMPAIGN_REPLAY := true
+
 var flow
 var runtime
 var screen_host: Control
@@ -81,12 +85,15 @@ func _render() -> void:
 			var level_label = screen.get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
 			if level_label != null:
 				if runtime.progress.get("currentLevelId") == null:
-					level_label.text = "Bạn đã hoàn thành các level hiện có"
+					level_label.text = "Đã hoàn thành các level hiện có · MVP cho phép kiểm tra lại từ L01"
 				else:
 					level_label.text = "Level hiện tại: %s" % str(runtime.progress.get("currentLevelId", ""))
 			var play_button = screen.get_node_or_null("SafeArea/Content/Stack/PlayButton")
 			if play_button != null:
-				play_button.disabled = runtime.progress.get("currentLevelId") == null
+				var campaign_complete: bool = runtime.progress.get("currentLevelId") == null
+				play_button.disabled = campaign_complete and not MVP_ALLOW_CAMPAIGN_REPLAY
+				if campaign_complete and MVP_ALLOW_CAMPAIGN_REPLAY:
+					play_button.text = "Chơi lại từ L01"
 		Flow.SCREEN_PUZZLE:
 			screen = _build_puzzle_screen()
 		Flow.SCREEN_RESULT_WIN:
@@ -150,7 +157,8 @@ func _wrap_result_content(screen: Control) -> void:
 
 func _on_action(action: String) -> void:
 	if action == "start_game" and runtime.progress.get("currentLevelId") == null:
-		return
+		if not MVP_ALLOW_CAMPAIGN_REPLAY:
+			return
 	if action == "start_game" and runtime.engine != null and runtime.engine.session.hearts <= 0:
 		flow.dispatch("resume_fail")
 		return
@@ -181,10 +189,17 @@ func _retry_pending_save() -> void:
 
 
 func _build_puzzle_screen() -> Control:
-	var level_id := str(runtime.progress.get("currentLevelId", ""))
+	var saved_level = runtime.progress.get("currentLevelId")
+	var resume: bool = flow.previous_screen != Flow.SCREEN_RESULT_FAIL
+	var level_id := str(saved_level) if saved_level != null else ""
+	if saved_level == null:
+		if not MVP_ALLOW_CAMPAIGN_REPLAY or runtime.level_ids.is_empty():
+			return _build_info_shell("Đã hoàn thành", ["Bản phát hành chính thức không cho chơi lại từ Level 1."])
+		level_id = runtime.level_ids[0]
+		resume = false
 	if flow.previous_screen == Flow.SCREEN_RESULT_FAIL:
 		level_id = runtime.current_level_id
-	runtime.start_level(level_id, flow.previous_screen != Flow.SCREEN_RESULT_FAIL)
+	runtime.start_level(level_id, resume, saved_level != null)
 	var screen = BoardScene.instantiate()
 	screen.configure(runtime.active_level, runtime.engine, runtime, runtime.contract)
 	return screen
