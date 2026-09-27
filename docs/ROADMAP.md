@@ -1,6 +1,6 @@
 # Kế hoạch thực hiện mới
 
-Kế hoạch theo kết quả sản phẩm, thay thứ tự package/gate M0–M3. Trạng thái chỉ duy trì tại [STATUS](STATUS.md); quyền thực hiện theo [AGENTS](../AGENTS.md). Đề xuất nền được lưu tại [review cải tổ](reviews/04-project-reset-proposal.md).
+Kế hoạch theo kết quả sản phẩm, thay thứ tự package/gate M0–M3. Trạng thái chỉ duy trì tại [STATUS](STATUS.md); quyền thực hiện theo [AGENTS](../AGENTS.md). Đề xuất nền được lưu tại [tag lịch sử](HISTORY.md).
 
 ## R0 — Cải tổ trước khi tiếp tục phát triển
 
@@ -15,7 +15,7 @@ R0 hoàn thành khi có một nguồn hướng dẫn thống nhất, thiết k�
 
 ## R1 — Một bản chơi liền mạch bốn level
 
-Chi tiết: [kế hoạch R1](plans/R1-playable-loop.md), căn cứ [rà thiết kế và kiến trúc](reviews/05-design-and-structure-review.md). Thứ tự: cô lập test → thống nhất tiến trình → bảo toàn save → nối tutorial/input → kiểm layout và hành trình thật. Chỉ triển khai sau khi kết thúc tạm ngưng.
+Chi tiết: [kế hoạch R1](plans/R1-playable-loop.md), căn cứ kiến trúc trong kế hoạch R1 và [khảo sát lịch sử](HISTORY.md). Thứ tự: cô lập test → thống nhất tiến trình → bảo toàn save → nối tutorial/input → kiểm layout và hành trình thật. Đã được mở theo RST-002; hiện tập trung nghiệm thu các phần còn thiếu trong STATUS.
 
 Hoàn thiện xuyên scene/controller/runtime: Home → Puzzle → Win/Fail → Next/Retry/Home; save/resume, tutorial, Hint, Undo, Restart đúng luật trên cùng build. Sửa lỗi input, chuyển scene và bố cục chặn thao tác trong cùng mục tiêu.
 
@@ -36,3 +36,7 @@ QA trên Android/iOS với asset/workload đại diện: offline, tải, frame t
 ## Nhịp làm việc
 
 Một kết quả chính đang làm; agent tự chia bước và tích hợp đến cùng trong quyền đã giao. Báo cáo build/revision, hành vi đã đạt, bằng chứng, lỗi chặn và bước kế tiếp. Đo thời gian tới build chơi được, thời gian chờ, regression sau tích hợp và hành trình đã kiểm. Chưa hứa lịch ngày cho cả dự án khi chưa có baseline R1 và lịch thiết bị/người chơi.
+
+## Vận hành agent sau cải tổ 2026-09-27
+
+Áp dụng [AGENTS](../AGENTS.md) và [phân công agent/chủ dự án](../refactor/pipeline-cleanup-plan.md). Pipeline là công cụ hỗ trợ R1, không là chặng sản phẩm mới. Chỉ yêu cầu người dùng xử lý quyết định/thiết bị/quyền truy cập còn thiếu; tiếp tục phần độc lập trong quyền đã giao.

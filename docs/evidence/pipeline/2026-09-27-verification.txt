@@ -1,0 +1,365 @@
+UTC: 20260927T113432.646072Z
+Python: 3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]
+Revision: 8f2876d492f63bad783d6244ce6e99818684469c
+Branch: codex/pipeline-cleanup
+Working tree:
+M AGENTS.md
+ M CONTRIBUTING.md
+ M GDD/08-ke-hoach-trien-khai-cho-agent.md
+ M GDD/09-ra-soat-thiet-ke.md
+ M README.md
+D  docs/BRANCH-CONSOLIDATION.md
+ M docs/DECISIONS.md
+ M docs/ROADMAP.md
+D  docs/archive/agent-history/superpowers-sdd/2026-09-21-mvp-game-design-resolution-progress.md
+D  docs/archive/agent-history/superpowers-sdd/2026-09-22-repository-restructure-agent-pipeline-progress.md
+D  docs/archive/agent-history/superpowers/plans/2026-09-21-controlled-level-generator.md
+D  docs/archive/agent-history/superpowers/plans/2026-09-21-mvp-game-design-resolution.md
+D  docs/archive/agent-history/superpowers/plans/2026-09-22-repository-restructure-agent-pipeline.md
+D  docs/archive/agent-history/superpowers/specs/2026-09-21-mvp-game-design-resolution-design.md
+D  docs/archive/agent-history/superpowers/specs/2026-09-22-repository-restructure-agent-pipeline-design.md
+D  docs/archive/reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md
+D  docs/archive/reviews/02-danh-gia-ban-thiet-ke-v04.md
+D  docs/archive/reviews/README.md
+D  docs/governance/00-design-status.md
+D  docs/governance/01-open-questions.md
+D  docs/governance/02-decision-log.md
+D  docs/governance/03-risk-register.md
+D  docs/governance/04-assumptions.md
+D  docs/governance/05-research-backlog.md
+D  docs/governance/06-design-freeze-checklist.md
+D  docs/governance/README.md
+D  docs/governance/document-register.toml
+ M docs/plans/R1-playable-loop.md
+D  docs/reviews/01-mvp-game-design-review.md
+D  docs/reviews/03-mobile-rendering-spike.md
+D  docs/reviews/04-project-reset-proposal.md
+D  docs/reviews/05-design-and-structure-review.md
+ M game/scripts/board_view.gd
+D  tools/agent_pipeline.py
+D  tools/tests/test_agent_pipeline.py
+D  work/README.md
+D  work/asset-briefs/M0-UI-ASSET-BRIEFS.md
+D  work/asset-briefs/M0-UI-ASSET-PROMPTS.md
+D  work/evidence/M0-A01/android-export-smoke.txt
+D  work/evidence/M0-A01/ios-export-smoke.txt
+D  work/evidence/M0-A01/toolchain-baseline.md
+D  work/evidence/M0-A01/verification.txt
+D  work/evidence/M0-A02/editor-prototype.png
+D  work/evidence/M0-A02/prototype-design.md
+D  work/evidence/M0-A02/prototype-plan.md
+D  work/evidence/M0-A02/runtime-interaction-results.md
+D  work/evidence/M0-A02/verification.txt
+D  work/evidence/M0-A03/emulator-manual-measure-before.png
+D  work/evidence/M0-A03/emulator-manual-measure-result.png
+D  work/evidence/M0-A03/emulator-offline-rendering-spike.png
+D  work/evidence/M0-A03/emulator-offline-t01.png
+D  work/evidence/M0-A03/emulator-offline-tap.png
+D  work/evidence/M0-A03/emulator-success-feedback.png
+D  work/evidence/M0-A03/mobile-performance-results.md
+D  "work/evidence/M0-A03/redmi-note-13-pro-5g/k\303\251t-qua-do-20-giay.jpg"
+D  work/evidence/M0-A03/rendering-spike-desktop.png
+D  work/evidence/M0-A03/spike-plan.md
+D  work/evidence/M0-A03/verification.txt
+D  work/evidence/M0-DEFER/check_dependencies.py
+D  work/evidence/M0-DEFER/dependency-review.md
+D  work/evidence/M0-DEFER/verification.txt
+D  work/evidence/M0-PREFLIGHT/level-validator.txt
+D  work/evidence/M0-PREFLIGHT/review-verification.txt
+D  work/evidence/M0-PREFLIGHT/verification.txt
+D  work/evidence/M0-REPLAN/replan-plan.md
+D  work/evidence/M0-REPLAN/replan-spec.md
+D  work/evidence/M0-REPLAN/replan-summary.md
+D  work/evidence/M0-REPLAN/verification.txt
+D  work/evidence/M0-UI-ASSET-BRIEFS/verification.txt
+D  work/evidence/M1-A01/verification.txt
+D  work/evidence/M1-A02/verification.txt
+D  work/evidence/M1-A03/verification.txt
+D  work/evidence/M1-A04/verification.txt
+D  work/evidence/M1-A05/verification.txt
+D  work/evidence/M1-A06/verification.txt
+D  work/evidence/M1-A07/full-regression.txt
+D  work/evidence/M1-A07/verification.txt
+D  work/evidence/M1-A08/full-regression.txt
+D  work/evidence/M1-A08/verification.txt
+D  work/evidence/M1-A09/full-regression.txt
+D  work/evidence/M1-A09/verification.txt
+D  work/evidence/M1-A10/full-regression.txt
+D  work/evidence/M1-A10/verification.txt
+D  work/evidence/M1-A11/full-regression.txt
+D  work/evidence/M1-A11/verification.txt
+D  work/evidence/M1-A12/full-regression.txt
+D  work/evidence/M1-A12/verification.txt
+D  work/evidence/M1-C01/level-review.md
+D  work/evidence/M1-C01/verification.txt
+D  work/evidence/M1-PLAN/package-map.md
+D  work/evidence/M1-PLAN/verification.txt
+D  work/evidence/SETUP-001/verification.txt
+D  work/handoffs/M0-A01.md
+D  work/handoffs/M0-A02.md
+D  work/handoffs/M0-A03.md
+D  work/handoffs/M0-DEFER.md
+D  work/handoffs/M0-PREFLIGHT.md
+D  work/handoffs/M0-REPLAN.md
+D  work/handoffs/M0-UI-ASSET-BRIEFS.md
+D  work/handoffs/M1-A01.md
+D  work/handoffs/M1-A02.md
+D  work/handoffs/M1-A03.md
+D  work/handoffs/M1-A04.md
+D  work/handoffs/M1-A05.md
+D  work/handoffs/M1-A06.md
+D  work/handoffs/M1-A07.md
+D  work/handoffs/M1-A08.md
+D  work/handoffs/M1-A09.md
+D  work/handoffs/M1-A10.md
+D  work/handoffs/M1-A11.md
+D  work/handoffs/M1-A12.md
+D  work/handoffs/M1-C01.md
+D  work/handoffs/M1-PLAN.md
+D  work/handoffs/SETUP-001.md
+D  work/packages/M0-A01.md
+D  work/packages/M0-A02.md
+D  work/packages/M0-A03.md
+D  work/packages/M0-DEFER.md
+D  work/packages/M0-GATE.md
+D  work/packages/M0-PREFLIGHT.md
+D  work/packages/M0-REPLAN.md
+D  work/packages/M0-UI-ASSET-BRIEFS.md
+D  work/packages/M1-A01.md
+D  work/packages/M1-A02.md
+D  work/packages/M1-A03.md
+D  work/packages/M1-A04.md
+D  work/packages/M1-A05.md
+D  work/packages/M1-A06.md
+D  work/packages/M1-A07.md
+D  work/packages/M1-A08.md
+D  work/packages/M1-A09.md
+D  work/packages/M1-A10.md
+D  work/packages/M1-A11.md
+D  work/packages/M1-A12.md
+D  work/packages/M1-C01.md
+D  work/packages/M1-GATE.md
+D  work/packages/M1-PLAN.md
+D  work/packages/SETUP-001.md
+D  work/state/M0-A01.toml
+D  work/state/M0-A02.toml
+D  work/state/M0-A03.toml
+D  work/state/M0-DEFER.toml
+D  work/state/M0-PREFLIGHT.toml
+D  work/state/M0-REPLAN.toml
+D  work/state/M0-UI-ASSET-BRIEFS.toml
+D  work/state/M1-A01.toml
+D  work/state/M1-A02.toml
+D  work/state/M1-A03.toml
+D  work/state/M1-A04.toml
+D  work/state/M1-A05.toml
+D  work/state/M1-A06.toml
+D  work/state/M1-A07.toml
+D  work/state/M1-A08.toml
+D  work/state/M1-A09.toml
+D  work/state/M1-A10.toml
+D  work/state/M1-A11.toml
+D  work/state/M1-A12.toml
+D  work/state/M1-C01.toml
+D  work/state/M1-PLAN.toml
+D  work/state/SETUP-001.toml
+D  work/templates/handoff.md
+D  work/templates/package.md
+?? "C\357\200\272Userskhoat.claudesettings.json"
+?? "D\357\200\272WorkAlpaca_SolutionASOL-Game-02.claudesettings.local.json"
+?? docs/HISTORY.md
+?? project.xml
+?? refactor/
+?? tools/tests/
+?? tools/verify.py
+Source SHA256: 5f660b94237b5d4acb0411d0c67963816b7b556b7886f48c35951f70f97fc659
+
+## godot-version
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --version
+4.7.2.stable.official.ed1daf0bf
+
+PASS godot-version exit=0 duration=0.33s
+
+## python:game/tests
+Command: "D:\Program Files\Python312\python.exe" -B -m unittest discover game/tests -p test_*.py
+........
+----------------------------------------------------------------------
+Ran 8 tests in 1.774s
+
+OK
+
+PASS python:game/tests exit=0 duration=1.86s
+
+## python:GDD/tools
+Command: "D:\Program Files\Python312\python.exe" -B -m unittest discover GDD/tools -p test_*.py
+.......................
+----------------------------------------------------------------------
+Ran 23 tests in 0.009s
+
+OK
+
+PASS python:GDD/tools exit=0 duration=0.08s
+
+## python:tools/tests
+Command: "D:\Program Files\Python312\python.exe" -B -m unittest discover tools/tests -p test_*.py
+FAIL bad exit=7 duration=0.03s
+PASS good exit=0 duration=0.02s
+FAIL: read failed
+FAIL full headless verification; duration=0.00s
+Evidence: C:\Users\khoat\AppData\Local\Temp\tmpu5y4bbte\scratch\verification\20260927T113435.299739Z.txt
+FAIL check exit=unavailable/timeout duration=0.00s
+FAIL check exit=unavailable/timeout duration=0.08s
+FAIL godot exit=0 duration=0.05s
+FAIL python:empty exit=0 duration=0.01s
+FAIL python:empty exit=0 duration=0.03s
+.......
+----------------------------------------------------------------------
+Ran 7 tests in 0.267s
+
+OK
+
+PASS python:tools/tests exit=0 duration=0.39s
+
+## levels:game/data/campaign_m1.json
+Command: "D:\Program Files\Python312\python.exe" -B GDD/tools/validate_levels.py game/data/campaign_m1.json
+OK   L01: 4x4, unique solution, connected regions, S2 trace
+OK   L02: 5x5, unique solution, connected regions, S2 trace
+OK   L03: 6x6, unique solution, connected regions, S2 trace
+OK   L04: 6x6, unique solution, connected regions, S2 trace
+Validated 4 level(s); 0 duplicate geometry warning(s).
+
+PASS levels:game/data/campaign_m1.json exit=0 duration=0.05s
+
+## levels:GDD/data/levels.sample.json
+Command: "D:\Program Files\Python312\python.exe" -B GDD/tools/validate_levels.py GDD/data/levels.sample.json
+OK   T01: 4x4, unique solution, connected regions, S2 trace
+OK   E01: 5x5, unique solution, connected regions, S2 trace
+OK   E02: 6x6, unique solution, connected regions, S2 trace
+OK   N12: 12x12, unique solution, connected regions, empty trace
+OK   S301: 4x4, unique solution, connected regions, S2/S3 trace
+Validated 5 level(s); 0 duplicate geometry warning(s).
+
+PASS levels:GDD/data/levels.sample.json exit=0 duration=0.05s
+
+## godot:run_board_scene_smoke
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_board_scene_smoke.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M0_A02_BOARD_SCENE_PASS
+
+PASS godot:run_board_scene_smoke exit=0 duration=0.38s
+
+## godot:run_bootstrap_profile_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_bootstrap_profile_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+R1_BOOTSTRAP_PROFILE_PASS
+
+PASS godot:run_bootstrap_profile_tests exit=0 duration=0.28s
+
+## godot:run_hint_engine_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_hint_engine_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A04_HINT_ENGINE_PASS
+
+PASS godot:run_hint_engine_tests exit=0 duration=0.17s
+
+## godot:run_interaction_contract
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_interaction_contract.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M0_A02_INTERACTION_CONTRACT_PASS gestures=16 boundaries=2 segmented=1 ownership=1 terminals=2 sessions=14
+
+PASS godot:run_interaction_contract exit=0 duration=0.17s
+
+## godot:run_level_loader_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_level_loader_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A02_LEVEL_LOADER_PASS
+
+PASS godot:run_level_loader_tests exit=0 duration=0.17s
+
+## godot:run_mobile_rendering_spike_smoke
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_mobile_rendering_spike_smoke.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M0_A03_RENDERING_SPIKE_PASS
+
+PASS godot:run_mobile_rendering_spike_smoke exit=0 duration=1.20s
+
+## godot:run_mvp_runtime_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_mvp_runtime_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A08_MVP_RUNTIME_PASS
+
+PASS godot:run_mvp_runtime_tests exit=0 duration=0.38s
+
+## godot:run_playable_flow_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_playable_flow_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+R1_PLAYABLE_FLOW_PASS
+
+PASS godot:run_playable_flow_tests exit=0 duration=0.55s
+
+## godot:run_puzzle_core_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_puzzle_core_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A01_PUZZLE_CORE_PASS
+
+PASS godot:run_puzzle_core_tests exit=0 duration=0.19s
+
+## godot:run_save_failure_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_save_failure_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+R1_SAVE_FAILURE_PASS
+
+PASS godot:run_save_failure_tests exit=0 duration=0.47s
+
+## godot:run_save_repository_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_save_repository_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A03_SAVE_REPOSITORY_PASS
+
+PASS godot:run_save_repository_tests exit=0 duration=0.17s
+
+## godot:run_tutorial_integration_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_tutorial_integration_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+R1_TUTORIAL_INTEGRATION_PASS
+
+PASS godot:run_tutorial_integration_tests exit=0 duration=0.36s
+
+## godot:run_tutorial_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_tutorial_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A06_TUTORIAL_PASS
+
+PASS godot:run_tutorial_tests exit=0 duration=0.20s
+
+## godot:run_ui_flow_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_ui_flow_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A07_UI_FLOW_PASS
+
+PASS godot:run_ui_flow_tests exit=0 duration=0.26s
+
+## godot:run_ui_shell_tests
+Command: C:\Users\khoat\AppData\Local\Microsoft\WinGet\Packages\GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe\Godot_v4.7.2-stable_win64.exe --headless --path game --script res://tests/run_ui_shell_tests.gd
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+M1_A05_UI_SHELL_PASS
+
+PASS godot:run_ui_shell_tests exit=0 duration=0.19s
+
+PASS full headless verification; duration=8.16s
+GUI/device acceptance: NOT RUN

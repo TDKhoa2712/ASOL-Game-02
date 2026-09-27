@@ -1,8 +1,0 @@
-package_id = "M1-A06"
-agent = "codex"
-status = "done"
-branch = "work/m1-a06-level-1-tutorial-and-resumed-milestones"
-base_revision = "48353dfa0cc6e5bc79e1247442851c3f7529f816"
-started_at = "2026-09-24T08:09:36Z"
-updated_at = "2026-09-24T08:10:14Z"
-blocker_reason = ""

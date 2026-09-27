@@ -1,8 +1,0 @@
-package_id = "M1-A02"
-agent = "codex"
-status = "done"
-branch = "work/m1-a02-runtime-schema-v4-level-loader-and-s3-parity"
-base_revision = "ede82962cbe48b352a17ab3e2a2787f4a9fe7dc6"
-started_at = "2026-09-24T05:09:12Z"
-updated_at = "2026-09-24T07:56:10Z"
-blocker_reason = ""

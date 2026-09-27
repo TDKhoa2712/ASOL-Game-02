@@ -1,50 +1,40 @@
 # ASOL-Game-02 — Vườn Mèo
 
-Dự án phát triển game giải đố logic "Vườn Mèo".
+Game giải đố logic gốc, Godot. Bản đầu 24 level, Endless để sau. Code R1 bốn level đã có trên dev; chưa nghiệm thu đầy đủ GUI/thiết bị. Xem [STATUS](docs/STATUS.md).
 
-> **Trạng thái hiện tại:** Chủ dự án đã duyệt tích hợp cải tổ vào `dev` và mở R1 ngày 2026-09-25. Bản đầu giữ 24 level, Endless để sau. Client bốn level chưa được chứng nhận ổn định/liền mạch. Xem [STATUS](docs/STATUS.md).
+## Nguồn chính
 
----
+- [GDD](GDD/README.md): thiết kế, luật, dữ liệu và tiêu chí QA.
+- [game](game/project.godot): client, scene, script và test.
+- [AGENTS](AGENTS.md): cách làm; [CONTRIBUTING](CONTRIBUTING.md): đóng góp.
+- [ROADMAP](docs/ROADMAP.md): thứ tự; [STATUS](docs/STATUS.md): hiện trạng; [DECISIONS](docs/DECISIONS.md): quyết định.
+- [Kế hoạch pipeline và phân công](refactor/pipeline-cleanup-plan.md); [tra lịch sử](docs/HISTORY.md).
 
-## Cấu trúc Repository
+## Chạy và kiểm chứng
 
-- [`GDD/`](GDD/README.md): Nguồn thiết kế chuẩn (Canonical Game Design Document v0.5.0), dữ liệu mẫu (fixtures) và công cụ kiểm chứng logic level.
-- [`game/`](game/project.godot): Client Godot, scene, script, dữ liệu và test.
-- [`docs/ROADMAP.md`](docs/ROADMAP.md): Kế hoạch theo kết quả sản phẩm; [`STATUS`](docs/STATUS.md) là tiến độ hiện tại; [`DECISIONS`](docs/DECISIONS.md) ghi quyết định mới.
-- [`docs/governance/`](docs/governance/README.md) và [`work/`](work/README.md): Hồ sơ cũ được giữ để truy vết, không điều hành công việc mới.
-- [`tools/`](tools/agent_pipeline.py): Công cụ cũ vẫn được bảo tồn; pipeline package không còn là cổng bắt buộc.
+Godot 4.7.2 là phiên bản đã dùng kiểm dự án. Thay `godot` bằng executable trên máy nếu không có trong PATH.
 
----
-
-## Lệnh Vận Hành Nhanh
-
-Mở project hiện tại (cần Godot phù hợp với project):
 ```text
-godot --editor --path game
+rtk godot --editor --path game
+rtk godot --path game
+rtk godot --headless --path game --script res://tests/run_mvp_runtime_tests.gd
 ```
 
-Chạy game hiện tại; đây chưa phải bản đã nghiệm thu:
+Kiểm đầy đủ cuối chặng (Python 3.11+, Godot):
+
 ```text
-godot --path game
+rtk python -B tools/verify.py --godot <duong-dan-Godot>
 ```
 
-Kiểm tra runtime hiện có:
+Cũng có thể đặt `GODOT_BIN` rồi chạy `rtk python -B tools/verify.py`. Runner tự truyền biến đó cho Python smoke. Log từng lần chạy và `latest.txt` nằm ở `scratch/verification/` (Git ignore), ghi command, version, revision, trạng thái dirty, fingerprint, exit code và thời gian. Exit 0 là tất cả kiểm tra headless đạt; exit 1 là lỗi/thiếu công cụ/timeout. Có thể đặt `--timeout 180` (giây mỗi bước). GUI/thiết bị luôn được ghi NOT RUN.
+
+Trong vòng sửa, chỉ chạy suite liên quan; ví dụ:
+
 ```text
-godot --headless --path game --script res://tests/run_mvp_runtime_tests.gd
+rtk python -B -m unittest discover tools/tests -p test_verify.py
+rtk python -B -m unittest discover GDD/tools -p test_*.py
+rtk python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json
+rtk python -B GDD/tools/validate_levels.py game/data/campaign_m1.json
 ```
 
-Chạy kiểm thử GDD và level fixture:
-```text
-python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json
-python -B GDD/tools/validate_levels.py game/data/campaign_m1.json
-python -B -m unittest discover GDD/tools -p "test_*.py"
-```
-
-Các lệnh trên là những kiểm tra riêng lẻ, không đại diện toàn bộ QA hoặc chứng minh game chơi liền mạch. Kế hoạch kiểm tra tích hợp sẽ được chốt trong chặng R1 sau khi tiếp tục phát triển.
-
----
-
-## Quy định Đóng góp và Phát triển
-
-- Dành cho nhà phát triển và coding agent: đọc [`AGENTS.md`](AGENTS.md) và [`CONTRIBUTING.md`](CONTRIBUTING.md).
-- Toàn bộ tài sản hình ảnh, âm thanh, cấp độ và mã nguồn phải là tác phẩm gốc, không sao chép từ bất kỳ tựa game thương mại nào.
+Không lấy kết quả headless thay QA từ entry scene/thiết bị trong [kế hoạch R1](docs/plans/R1-playable-loop.md). Toàn bộ nội dung và tài sản phải là tác phẩm gốc.

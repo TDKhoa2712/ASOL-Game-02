@@ -1,8 +1,0 @@
-package_id = "M1-C01"
-agent = "codex"
-status = "done"
-branch = "work/m1-c01-four-original-release-order-levels-for-vertical-slice"
-base_revision = "28f2698d5b91288cab0e492f22c15c239490dd9a"
-started_at = "2026-09-24T07:56:36Z"
-updated_at = "2026-09-24T07:58:08Z"
-blocker_reason = ""

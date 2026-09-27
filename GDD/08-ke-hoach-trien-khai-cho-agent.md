@@ -23,7 +23,7 @@ flowchart LR
     H --> I[QA + release]
 ```
 
-Theo [DEC-018](../docs/governance/02-decision-log.md), mũi tên M0 → B là phụ thuộc kỹ thuật/đầu ra, không buộc chờ nghiệm thu toàn bộ thiết bị để bắt đầu viết core. Khi package `M0-DEFER` đã được nghiệm thu, các package triển khai/content M1 có thể chạy có điều kiện trên baseline Godot và gesture M0-A01/A02. Điều này không đổi điều kiện qua M0 ở §3; `M0-A03` vẫn phải hoàn tất trước `M0-GATE`, và `M1-GATE` vẫn phụ thuộc `M0-GATE`.
+Theo DEC-018 (lịch sử: `git show pre-reset-pipeline-2026-09-27:docs/governance/02-decision-log.md`), mũi tên M0 → B là phụ thuộc kỹ thuật/đầu ra, không buộc chờ nghiệm thu toàn bộ thiết bị để bắt đầu viết core. Khi package `M0-DEFER` đã được nghiệm thu, các package triển khai/content M1 có thể chạy có điều kiện trên baseline Godot và gesture M0-A01/A02. Điều này không đổi điều kiện qua M0 ở §3; `M0-A03` vẫn phải hoàn tất trước `M0-GATE`, và `M1-GATE` vẫn phụ thuộc `M0-GATE`.
 
 Core không đo thời gian chạm hay phát animation. Gesture layer hiển thị X preview tức thì rồi tạo `MarkX`/`ClearX`/`MarkStroke`/`TryCat`/`UndoX`/`RestartLevel`; session service chỉ lưu action đã xác nhận, không lưu khe Undo; UI trình bày events. Content tool, save và Hint chỉ làm song song sau khi schema v4, hành vi X đỏ/scorecard và S3 được khóa. Không dùng S4/S5 ở level phát hành.
 

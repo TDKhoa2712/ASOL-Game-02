@@ -1,8 +1,0 @@
-package_id = "M1-A11"
-agent = "codex"
-status = "review"
-branch = "work/m1-a11-gameplay-result-screen-routing-correction"
-base_revision = "395c4c3f4f2c7d0f09e3d9c9f55b1d8604216cb8"
-started_at = "2026-09-24T13:38:01Z"
-updated_at = "2026-09-24T13:43:39Z"
-blocker_reason = ""

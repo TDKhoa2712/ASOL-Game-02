@@ -1,8 +1,0 @@
-package_id = "M1-A12"
-agent = "codex"
-status = "review"
-branch = "work/m1-a12-defer-gameplay-result-transition-until-input-completes"
-base_revision = "13dd53a7dc72de488f7b943d816ade48de42c3ef"
-started_at = "2026-09-24T14:42:08Z"
-updated_at = "2026-09-24T14:47:47Z"
-blocker_reason = ""

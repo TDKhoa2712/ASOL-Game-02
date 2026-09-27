@@ -1,5 +1,12 @@
 # Quyết định điều hành hiện hành
 
+## RST-005 — Pipeline gọn theo mục tiêu
+
+Ngày 2026-09-27, chủ dự án yêu cầu rà soát/chỉnh kế hoạch rồi triển khai cải tổ pipeline. Chọn một agent chính, một plan khi cần, một STATUS hiện hành; tự thực hiện bước kỹ thuật đã giao, không thêm vòng duyệt/hồ sơ lặp từ workflow. Thay pipeline quản trị bằng `tools/verify.py`; kiểm tra liên quan trong vòng sửa và đầy đủ cuối chặng, giữ nguyên yêu cầu GUI/thiết bị.
+
+Hồ sơ tracked cũ bảo toàn tại `pre-reset-pipeline-2026-09-27` (`8f2876d`) trước khi bỏ khỏi checkout; cách tra ở [HISTORY](HISTORY.md). Giữ nguyên file untracked và sửa sẵn của người dùng. Không thay luật/schema/phạm vi phát hành; không tự sửa cấu hình agent toàn máy. Quyết định này thay yêu cầu giữ hồ sơ cũ trong working tree của RST-001; không sửa trạng thái lịch sử.
+
+
 ## RST-003 — Cho phép replay campaign trong MVP
 
 Ngày 2026-09-25. Chủ dự án xác nhận: sau khi hoàn thành level hiện có, bản MVP phải cho quay về Home và chơi lại từ L01 để kiểm chứng; bản chính thức sau này không cho replay từ L01.

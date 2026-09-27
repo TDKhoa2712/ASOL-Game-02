@@ -1,8 +1,0 @@
-package_id = "M1-A07"
-agent = "codex"
-status = "done"
-branch = "work/m1-a07-mvp-ui-flow-shell"
-base_revision = "72f97244bf2cfa84637343452d2047fac7b6391f"
-started_at = "2026-09-24T09:20:50Z"
-updated_at = "2026-09-24T12:28:32Z"
-blocker_reason = ""

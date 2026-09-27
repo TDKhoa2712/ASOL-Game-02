@@ -8,9 +8,9 @@ Trạng thái: chủ dự án duyệt triển khai ngày 2026-09-25 theo RST-002
 
 **Công nghệ:** Godot/GDScript và Python validator/test hiện có.
 
-**Đặc tả:** [review kiến trúc](../reviews/05-design-and-structure-review.md), [luật](../../GDD/02-luat-choi-va-trang-thai.md), [UX](../../GDD/03-luong-man-hinh-va-ux.md), [dữ liệu](../../GDD/05-kien-truc-va-du-lieu.md), [QA](../../GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md).
+**Đặc tả:** [khảo sát kiến trúc lịch sử](../HISTORY.md), [luật](../../GDD/02-luat-choi-va-trang-thai.md), [UX](../../GDD/03-luong-man-hinh-va-ux.md), [dữ liệu](../../GDD/05-kien-truc-va-du-lieu.md), [QA](../../GDD/07-kiem-thu-va-tieu-chi-nghiem-thu.md).
 
-Đây là kế hoạch nghiệm thu và thứ tự sửa, không phải bản patch đã thiết kế chi tiết. Khi được mở triển khai, dùng `superpowers:executing-plans`, tái hiện từng vấn đề và viết test cụ thể trước code; không đoán chữ ký API mới trong giai đoạn tạm ngưng.
+Đây là tiêu chí nghiệm thu, không phải bảng tiến độ. Đối chiếu STATUS và evidence trước khi làm; ô chưa đánh dấu dưới đây không có nghĩa phải triển khai lại code đã có. Thực hiện theo AGENTS, tái hiện vấn đề còn tồn tại và thêm regression trước sửa.
 
 ## Ràng buộc
 
@@ -82,9 +82,11 @@ Thiếu thiết bị vẫn tiếp tục công việc độc lập, nhưng không
 
 ## Bộ kiểm tra cuối chặng
 
+Lệnh hiện hành: `rtk python -B tools/verify.py --godot <executable>`. Runner tìm tất cả `run_*.gd`, gồm các regression R1 bổ sung. Danh sách gốc dưới đây chỉ để tham khảo phạm vi; không dùng thay danh sách tự tìm.
+
 Sau bước A, chạy toàn bộ test áp dụng, không chỉ suite vừa sửa:
 
-- Python unit tests tại `GDD/tools/tests` và `game/tests`; đặt Godot executable theo cơ chế `GODOT_BIN` của suite.
+- Python unit tests tại `GDD/tools` và `game/tests`; đặt Godot executable theo cơ chế `GODOT_BIN` của suite.
 - Level validator hiện có cho corpus/GDD tương ứng.
 - Godot suites: `run_puzzle_core_tests.gd`, `run_level_loader_tests.gd`, `run_save_repository_tests.gd`, `run_hint_engine_tests.gd`, `run_tutorial_tests.gd`, `run_interaction_contract.gd`, `run_ui_shell_tests.gd`, `run_ui_flow_tests.gd`, `run_mvp_runtime_tests.gd`, `run_board_scene_smoke.gd`, `run_mobile_rendering_spike_smoke.gd` trong `game/tests/`.
 
