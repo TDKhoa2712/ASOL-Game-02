@@ -1,13 +1,14 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-28. Mục tiêu phiên này: làm sạch Git và artefact project sau khi tích hợp bản UI tham chiếu đầu. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-28. Mục tiêu phiên này: tích hợp thiết kế giao diện Home theo HOME_UI_Redesign_Spec.md (phong cách Meow Doku) với bộ asset placeholder, ui_tokens, side-rail và cấu hình mở. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
 
 ## Nền hiện tại
 
-- `dev` tại `3bce30b` đã có code R1 bốn level, cải tổ pipeline và UI tham chiếu đầu.
-- UI tham chiếu đã fast-forward từ `codex/ui-reference-style` vào `dev` qua hai commit `0798f9f` và `c1ebc9d`; revision code tích hợp là `c1ebc9d`.
+- `dev` tại `2a9cc5a` đã tích hợp giao diện Home tái cấu trúc, bộ asset placeholder `res://assets/ui/home/`, tokens `ui_tokens.gd`, cấu hình `home_ui_config.json` và đặc tả `HOME_UI_Redesign_Spec.md`.
+- Giao diện Home đã fast-forward từ `codex/home-ui-refinement` vào `dev` qua bốn commit (`f3f31c7`, `ca6f33c`, `8072a31`, `2a9cc5a`).
+- Kiểm chứng trên `2a9cc5a`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 11,44s; log tại `scratch/verification/20260928T141002.059730Z.txt`.
+- Đã xuất ảnh chụp màn hình kiểm chứng tại `scratch/home_spec_verify/home.png` (bản mặc định) và `scratch/home_spec_all/home.png` (bản bật đầy đủ tính năng).
 - Cải tổ đã được tích hợp từ `codex/pipeline-cleanup` vào dev. Tag `pre-reset-pipeline-2026-09-27` bảo toàn hồ sơ đã commit. [Cách tra lịch sử](HISTORY.md).
-- R1-E code tại `4675e20` và trạng thái tại `a1e8a9f` đã fast-forward vào `dev`. Phần màu vùng F tồn đọng đã được bảo toàn riêng tại `3047ef9`; hai config lạc tên và bản nháp `refactor/AGENTS.md` đã được gỡ trong đợt làm sạch.
 - `main` giữ mốc hiện có, không mặc định là bản phát hành. Không thay stash/remote hoặc tích hợp nhánh trong đợt này.
 
 ## Làm sạch Git/project
