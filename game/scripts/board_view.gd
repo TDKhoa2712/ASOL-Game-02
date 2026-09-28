@@ -6,6 +6,7 @@ const REGION_COLORS := {
 	"B": Color("#CFE8E1"),
 	"C": Color("#D9D6F4"),
 	"D": Color("#F6E7AC"),
+	"F": Color("#63520d")
 }
 const INK := Color("#344054")
 const GRID := Color("#667085")
