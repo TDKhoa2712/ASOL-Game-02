@@ -20,7 +20,7 @@ Kiểm chứng trên `607d872`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16
 
 ## Kết quả pipeline
 
-Đã rút gọn AGENTS/README/CONTRIBUTING; thống nhất hướng dẫn và phân công trong [kế hoạch](../refactor/pipeline-cleanup-plan.md). Đã thay bộ quản trị cũ bằng `tools/verify.py`; gỡ hồ sơ tracked đã được tag bảo toàn, sửa link lịch sử. Không sửa gameplay hoặc cấu hình Codex toàn máy.
+Đã rút gọn AGENTS/README/CONTRIBUTING và thống nhất hướng dẫn trong AGENTS. Đã thay bộ quản trị cũ bằng `tools/verify.py`; gỡ hồ sơ tracked đã được tag bảo toàn, sửa link lịch sử. Không sửa gameplay hoặc cấu hình Codex toàn máy.
 
 Kiểm chứng cải tổ ngày 2026-09-27, Godot `4.7.2.stable.official.ed1daf0bf`: **15/15 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 8,16 giây. [Bằng chứng pipeline](evidence/pipeline/2026-09-27-verification.txt) ghi revision `8f2876d` + diff cải tổ và sửa sẵn được nêu trong log. GUI/device: NOT RUN trong đợt pipeline.
 

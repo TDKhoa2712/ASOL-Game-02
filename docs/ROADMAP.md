@@ -39,4 +39,4 @@ Một kết quả chính đang làm; agent tự chia bước và tích hợp đ�
 
 ## Vận hành agent sau cải tổ 2026-09-27
 
-Áp dụng [AGENTS](../AGENTS.md) và [phân công agent/chủ dự án](../refactor/pipeline-cleanup-plan.md). Pipeline là công cụ hỗ trợ R1, không là chặng sản phẩm mới. Chỉ yêu cầu người dùng xử lý quyết định/thiết bị/quyền truy cập còn thiếu; tiếp tục phần độc lập trong quyền đã giao.
+Áp dụng [AGENTS](../AGENTS.md). Pipeline là công cụ hỗ trợ R1, không là chặng sản phẩm mới. Chỉ yêu cầu người dùng xử lý quyết định/thiết bị/quyền truy cập còn thiếu; tiếp tục phần độc lập trong quyền đã giao.

@@ -8,7 +8,7 @@ Game giải đố logic gốc, Godot. Bản đầu 24 level, Endless để sau. 
 - [game](game/project.godot): client, scene, script và test.
 - [AGENTS](AGENTS.md): cách làm; [CONTRIBUTING](CONTRIBUTING.md): đóng góp.
 - [ROADMAP](docs/ROADMAP.md): thứ tự; [STATUS](docs/STATUS.md): hiện trạng; [DECISIONS](docs/DECISIONS.md): quyết định.
-- [Kế hoạch pipeline và phân công](refactor/pipeline-cleanup-plan.md); [tra lịch sử](docs/HISTORY.md).
+- [Tra lịch sử pipeline cũ](docs/HISTORY.md).
 
 ## Chạy và kiểm chứng
 

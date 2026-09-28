@@ -36,4 +36,4 @@ Trong ba mục tiêu đầu sau cải tổ, ghi ngắn thời gian thực hiện
 
 Asset, level, câu chữ, mã nguồn phải là tác phẩm gốc; không sao chép tên thương mại, giao diện, âm thanh, nhân vật hoặc cấu trúc level của game thương mại khác.
 
-Hồ sơ vận hành cũ được bảo toàn tại tag `pre-reset-pipeline-2026-09-27`. Cách tra: [lịch sử](docs/HISTORY.md). Phân công agent/chủ dự án: [kế hoạch cải tổ](refactor/pipeline-cleanup-plan.md).
+Hồ sơ vận hành cũ được bảo toàn tại tag `pre-reset-pipeline-2026-09-27`. Cách tra: [lịch sử](docs/HISTORY.md).
