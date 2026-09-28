@@ -6,7 +6,7 @@ Cập nhật 2026-09-28. Mục tiêu phiên này: hoàn thiện R1-E Settings/ac
 
 - `dev` tại `501c797` đã có code R1 bốn level và đã tích hợp cải tổ pipeline.
 - Cải tổ đã được tích hợp từ `codex/pipeline-cleanup` vào dev. Tag `pre-reset-pipeline-2026-09-27` bảo toàn hồ sơ đã commit. [Cách tra lịch sử](HISTORY.md).
-- R1-E đang ở nhánh `codex/r1-e-settings`, nền `501c797`. Có sửa sẵn ngoài phạm vi ở `game/scripts/board_view.gd`, hai config lạc tên và bản nháp `refactor/AGENTS.md`; giữ nguyên, không đưa vào commit R1-E. Test dưới đây chạy trên workspace gồm sửa sẵn đó.
+- R1-E đã commit tại `4675e20` trên nhánh `codex/r1-e-settings`, nền `501c797`. Có sửa sẵn ngoài phạm vi ở `game/scripts/board_view.gd`, hai config lạc tên và bản nháp `refactor/AGENTS.md`; giữ nguyên, không đưa vào commit R1-E. Test dưới đây chạy trên workspace gồm sửa sẵn đó.
 - `main` giữ mốc hiện có, không mặc định là bản phát hành. Không thay stash/remote hoặc tích hợp nhánh trong đợt này.
 
 ## Kết quả pipeline
@@ -21,7 +21,7 @@ Tự review phát hiện và sửa hai tình huống runner báo đạt sai (l�
 
 Khảo sát cũ ở `1600898` được giữ trong tag; các dòng sau phân biệt bản sửa đã có với phần chưa nghiệm thu. [Nhật ký R1](plans/R1-progress.md) là bằng chứng lịch sử, không phải trạng thái hiện hành.
 
-R1-E hiện tại, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 8,31 giây; [log](../scratch/verification/20260928T051618.801160Z.txt) ghi revision nền `501c797`, nhánh, working diff và fingerprint nguồn. Regression `run_settings_tests.gd` đã tái hiện FAIL rồi PASS: store cô lập, signal toggle thật, persistence, Back route, chữ lớn và tương phản trên board. GUI desktop từ entry scene đã kiểm Home → Settings → Back, Home → Puzzle → Settings → Back, bật/tắt Large Text, chạm/đánh X và chạm lại/xóa X; chưa chạy trọn bốn level hoặc Android.
+R1-E hiện tại, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 8,31 giây; [log](../scratch/verification/20260928T051618.801160Z.txt) ghi revision nền `501c797`, nhánh, working diff và fingerprint nguồn tương đương commit code `4675e20`. Regression `run_settings_tests.gd` đã tái hiện FAIL rồi PASS: store cô lập, signal toggle thật, persistence, Back route, chữ lớn và tương phản trên board. GUI desktop từ entry scene đã kiểm Home → Settings → Back, Home → Puzzle → Settings → Back, bật/tắt Large Text, chạm/đánh X và chạm lại/xóa X; chưa chạy trọn bốn level hoặc Android.
 
 Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đến full run đầu; hai full run do self-review phát hiện thêm IO profile ở BoardScreen; một regression được mở lại; không có thời gian chờ nội bộ, Android vẫn chờ thiết bị.
 
