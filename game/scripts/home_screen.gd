@@ -1,54 +1,44 @@
 extends Control
 
-const UiTheme = preload("res://scripts/ui_theme.gd")
+const Tokens = preload("res://scripts/ui_tokens.gd")
+const SettingsScript = preload("res://scripts/settings.gd")
 
 @export_group("Text & Content")
-@export var game_title: String = "MÈO DOKU"
-@export var subtitle: String = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
-@export var play_text: String = "Tiếp Tục"
-@export var level_format: String = "Màn %s"
+@export var game_title: String = "MÈO LOGIC"
+@export var tagline: String = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
+@export var play_text_fresh: String = "Chơi"
+@export var play_text_resume: String = "Tiếp Tục"
+@export var play_text_complete: String = "Chơi lại từ L01"
+@export var level_format: String = "Level %s"
 @export var daily_text: String = "Thử Thách Hằng Ngày"
 @export var daily_timer_text: String = "09:48:34"
-@export var event_timer_text: String = "23:50:22"
+@export var leaderboard_timer_text: String = "23:50:22"
 @export var currency_count: int = 7
 
-@export_group("Colors & Theme")
-@export var primary_color: Color = Color("#F28D24")
-@export var primary_pressed: Color = Color("#D87815")
-@export var secondary_color: Color = Color("#859CF8")
-@export var secondary_pressed: Color = Color("#6F86E5")
-@export var timer_badge_color: Color = Color("#6B82E6")
-@export var event_badge_bg: Color = Color("#3B3435")
-@export var text_dark_color: Color = Color("#6D4A45")
-@export var text_light_color: Color = Color("#FFFFFF")
-@export var button_corner_radius: int = 44
-
-@export_group("Visibility")
+@export_group("Feature Flags")
 @export var show_avatar: bool = true
-@export var show_currency: bool = true
+@export var show_currency: bool = false
 @export var show_top_settings: bool = true
-@export var show_hero_card: bool = false
-@export var show_title_text: bool = false
-@export var show_event_badge: bool = true
-@export var show_current_level_label: bool = false
-@export var show_daily_challenge: bool = true
-@export var show_bottom_buttons: bool = false
-@export var show_help_button: bool = true
-@export var show_settings_button: bool = true
-@export var show_progress_hint: bool = false
+@export var show_leaderboard: bool = false
+@export var show_daily: bool = false
+@export var show_tagline: bool = false
+@export var show_progress_hint: bool = true
 
-@export_group("Config File")
+@export_group("External Config")
 @export var config_file_path: String = "res://data/home_ui_config.json"
 @export var use_external_config: bool = true
 
 var _current_level_id: String = "1"
+var _campaign_complete: bool = false
+var _settings: SettingsScript
 
 
 func _ready() -> void:
+	_settings = SettingsScript.new()
 	if use_external_config:
 		_load_from_json()
 	apply_configuration()
-	_wire_internal_signals()
+	_wire_signals_and_tweens()
 
 
 func _load_from_json() -> void:
@@ -62,209 +52,157 @@ func _load_from_json() -> void:
 	if json.parse(content) != OK or not (json.data is Dictionary):
 		return
 	var data: Dictionary = json.data
-	if data.has("theme") and data["theme"] is Dictionary:
-		var theme_dict: Dictionary = data["theme"]
-		if theme_dict.has("primary_button_color"):
-			primary_color = Color(theme_dict["primary_button_color"])
-		if theme_dict.has("primary_button_pressed"):
-			primary_pressed = Color(theme_dict["primary_button_pressed"])
-		if theme_dict.has("secondary_button_color"):
-			secondary_color = Color(theme_dict["secondary_button_color"])
-		if theme_dict.has("secondary_button_pressed"):
-			secondary_pressed = Color(theme_dict["secondary_button_pressed"])
-		if theme_dict.has("timer_badge_color"):
-			timer_badge_color = Color(theme_dict["timer_badge_color"])
-		if theme_dict.has("event_badge_bg"):
-			event_badge_bg = Color(theme_dict["event_badge_bg"])
-		if theme_dict.has("text_dark_color"):
-			text_dark_color = Color(theme_dict["text_dark_color"])
-		if theme_dict.has("button_corner_radius"):
-			button_corner_radius = int(theme_dict["button_corner_radius"])
 	if data.has("content") and data["content"] is Dictionary:
-		var content_dict: Dictionary = data["content"]
-		if content_dict.has("game_title"):
-			game_title = str(content_dict["game_title"])
-		if content_dict.has("subtitle"):
-			subtitle = str(content_dict["subtitle"])
-		if content_dict.has("play_button_text"):
-			play_text = str(content_dict["play_button_text"])
-		if content_dict.has("level_format"):
-			level_format = str(content_dict["level_format"])
-		if content_dict.has("daily_challenge_text"):
-			daily_text = str(content_dict["daily_challenge_text"])
-		if content_dict.has("daily_timer"):
-			daily_timer_text = str(content_dict["daily_timer"])
-		if content_dict.has("event_timer"):
-			event_timer_text = str(content_dict["event_timer"])
-		if content_dict.has("currency_count"):
-			currency_count = int(content_dict["currency_count"])
+		var c: Dictionary = data["content"]
+		if c.has("game_title"): game_title = str(c["game_title"])
+		if c.has("tagline"): tagline = str(c["tagline"])
+		if c.has("play_button_text"): play_text_resume = str(c["play_button_text"])
+		if c.has("level_format"): level_format = str(c["level_format"])
+		if c.has("daily_challenge_text"): daily_text = str(c["daily_challenge_text"])
+		if c.has("daily_timer"): daily_timer_text = str(c["daily_timer"])
+		if c.has("leaderboard_timer"): leaderboard_timer_text = str(c["leaderboard_timer"])
+		if c.has("currency_count"): currency_count = int(c["currency_count"])
 	if data.has("visibility") and data["visibility"] is Dictionary:
-		var vis: Dictionary = data["visibility"]
-		if vis.has("show_avatar"):
-			show_avatar = bool(vis["show_avatar"])
-		if vis.has("show_currency"):
-			show_currency = bool(vis["show_currency"])
-		if vis.has("show_top_settings"):
-			show_top_settings = bool(vis["show_top_settings"])
-		if vis.has("show_hero_card"):
-			show_hero_card = bool(vis["show_hero_card"])
-		if vis.has("show_title_text"):
-			show_title_text = bool(vis["show_title_text"])
-		if vis.has("show_event_badge"):
-			show_event_badge = bool(vis["show_event_badge"])
-		if vis.has("show_current_level_label"):
-			show_current_level_label = bool(vis["show_current_level_label"])
-		if vis.has("show_daily_challenge"):
-			show_daily_challenge = bool(vis["show_daily_challenge"])
-		if vis.has("show_bottom_buttons"):
-			show_bottom_buttons = bool(vis["show_bottom_buttons"])
-		if vis.has("show_help_button"):
-			show_help_button = bool(vis["show_help_button"])
-		if vis.has("show_settings_button"):
-			show_settings_button = bool(vis["show_settings_button"])
-		if vis.has("show_progress_hint"):
-			show_progress_hint = bool(vis["show_progress_hint"])
+		var v: Dictionary = data["visibility"]
+		if v.has("show_avatar"): show_avatar = bool(v["show_avatar"])
+		if v.has("show_currency"): show_currency = bool(v["show_currency"])
+		if v.has("show_top_settings"): show_top_settings = bool(v["show_top_settings"])
+		if v.has("show_leaderboard"): show_leaderboard = bool(v["show_leaderboard"])
+		if v.has("show_daily"): show_daily = bool(v["show_daily"])
+		if v.has("show_tagline"): show_tagline = bool(v["show_tagline"])
+		if v.has("show_progress_hint"): show_progress_hint = bool(v["show_progress_hint"])
 
 
 func apply_configuration() -> void:
 	# Top bar
-	var avatar = get_node_or_null("SafeArea/TopBar/AvatarContainer")
+	var avatar = get_node_or_null("SafeArea/TopBar/AvatarButton")
 	if avatar != null:
 		avatar.visible = show_avatar
-	var currency = get_node_or_null("SafeArea/TopBar/CurrencyBadge")
+	var currency = get_node_or_null("SafeArea/TopBar/CurrencyPill")
 	if currency != null:
 		currency.visible = show_currency
-		var count_lbl: Label = currency.get_node_or_null("HBox/CountLabel")
-		if count_lbl != null:
-			count_lbl.text = str(currency_count)
+		var val_lbl: Label = currency.get_node_or_null("HBox/CurrencyValue")
+		if val_lbl != null:
+			val_lbl.text = str(currency_count)
 	var top_settings = get_node_or_null("SafeArea/TopBar/TopSettingsButton")
 	if top_settings != null:
 		top_settings.visible = show_top_settings
 
-	# Hero Card & Title
-	var hero_card = get_node_or_null("SafeArea/Content/Stack/HeroCard")
-	if hero_card != null:
-		hero_card.visible = show_hero_card
-	var hero_lbl: Label = get_node_or_null("SafeArea/Content/Stack/HeroCard/HeroText")
-	if hero_lbl != null:
-		hero_lbl.text = subtitle
+	# Logo & Title
+	var logo_img: TextureRect = get_node_or_null("SafeArea/Content/Stack/LogoBlock/LogoImage")
+	var title_lbl: Label = get_node_or_null("SafeArea/Content/Stack/LogoBlock/Title")
+	if logo_img != null and title_lbl != null:
+		if logo_img.texture != null:
+			logo_img.visible = true
+			title_lbl.visible = false
+		else:
+			logo_img.visible = false
+			title_lbl.visible = true
+			title_lbl.text = game_title
 
-	var title_lbl: Label = get_node_or_null("SafeArea/Content/Stack/Title")
-	if title_lbl != null:
-		title_lbl.visible = show_title_text
-		title_lbl.text = game_title
-		title_lbl.add_theme_color_override("font_color", text_dark_color)
+	var tagline_card = get_node_or_null("SafeArea/Content/Stack/HeroCard")
+	if tagline_card != null:
+		tagline_card.visible = show_tagline
+		var hero_text: Label = tagline_card.get_node_or_null("HeroText")
+		if hero_text != null:
+			hero_text.text = tagline
 
-	# Event Badge
-	var event_badge = get_node_or_null("SafeArea/Content/Stack/EventRow/EventBadge")
-	if event_badge != null:
-		event_badge.visible = show_event_badge
-		if "timer_text" in event_badge:
-			event_badge.timer_text = event_timer_text
-			event_badge.queue_redraw()
+	# Side rail: HelpButton is visible; LeaderboardEntry depends on flag
+	var ldr = get_node_or_null("SafeArea/Content/Stack/SideRailLeft/LeaderboardEntry")
+	if ldr != null:
+		ldr.visible = show_leaderboard
 
-	# Current level label (optional separate label)
-	var cur_lvl_lbl = get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
-	if cur_lvl_lbl != null:
-		cur_lvl_lbl.visible = show_current_level_label
+	# Daily Button
+	var daily = get_node_or_null("SafeArea/Content/Stack/DailyButton")
+	if daily != null:
+		daily.visible = show_daily
+		daily.text = daily_text
+		var timer_lbl: Label = daily.get_node_or_null("DailyTimerTab/TimerLabel")
+		if timer_lbl != null:
+			timer_lbl.text = "⏱ " + daily_timer_text
 
-	# Play Button
-	var play_btn: Button = get_node_or_null("SafeArea/Content/Stack/PlayButton")
-	if play_btn != null:
-		var play_style := StyleBoxFlat.new()
-		play_style.bg_color = primary_color
-		play_style.set_corner_radius_all(button_corner_radius)
-		play_style.shadow_color = Color(primary_color.r * 0.7, primary_color.g * 0.4, primary_color.b * 0.2, 0.35)
-		play_style.shadow_size = 14
-		play_style.shadow_offset = Vector2(0, 8)
-		play_style.content_margin_top = 16.0
-		play_style.content_margin_bottom = 16.0
-		play_style.content_margin_left = 32.0
-		play_style.content_margin_right = 32.0
-		var play_pressed_style: StyleBoxFlat = play_style.duplicate()
-		play_pressed_style.bg_color = primary_pressed
-		play_btn.add_theme_stylebox_override("normal", play_style)
-		play_btn.add_theme_stylebox_override("hover", play_style)
-		play_btn.add_theme_stylebox_override("pressed", play_pressed_style)
-
-		# Display two lines: "Tiếp Tục\nMàn %s"
-		var display_level: String = _current_level_id
-		if display_level.begins_with("L0"):
-			display_level = str(int(display_level.substr(1)))
-		elif display_level.begins_with("L"):
-			display_level = str(int(display_level.substr(1)))
-		play_btn.text = "%s\n%s" % [play_text, level_format % display_level]
-
-	# Daily Challenge
-	var daily_box = get_node_or_null("SafeArea/Content/Stack/DailyContainer")
-	if daily_box != null:
-		daily_box.visible = show_daily_challenge
-		var daily_btn: Button = daily_box.get_node_or_null("DailyButton")
-		if daily_btn != null:
-			var daily_style := StyleBoxFlat.new()
-			daily_style.bg_color = secondary_color
-			daily_style.set_corner_radius_all(button_corner_radius)
-			daily_style.shadow_color = Color(secondary_color.r * 0.6, secondary_color.g * 0.6, secondary_color.b * 0.9, 0.28)
-			daily_style.shadow_size = 12
-			daily_style.shadow_offset = Vector2(0, 7)
-			daily_style.content_margin_top = 18.0
-			daily_style.content_margin_bottom = 18.0
-			daily_btn.add_theme_stylebox_override("normal", daily_style)
-			daily_btn.add_theme_stylebox_override("hover", daily_style)
-			var daily_pressed_style: StyleBoxFlat = daily_style.duplicate()
-			daily_pressed_style.bg_color = secondary_pressed
-			daily_btn.add_theme_stylebox_override("pressed", daily_pressed_style)
-			daily_btn.text = daily_text
-		var daily_timer_pill = daily_box.get_node_or_null("DailyTimerPill")
-		if daily_timer_pill != null:
-			var pill_style := StyleBoxFlat.new()
-			pill_style.bg_color = timer_badge_color
-			pill_style.set_corner_radius_all(20)
-			pill_style.content_margin_left = 16.0
-			pill_style.content_margin_right = 16.0
-			pill_style.content_margin_top = 4.0
-			pill_style.content_margin_bottom = 4.0
-			daily_timer_pill.add_theme_stylebox_override("panel", pill_style)
-			var daily_timer_lbl: Label = daily_timer_pill.get_node_or_null("TimerLabel")
-			if daily_timer_lbl != null:
-				daily_timer_lbl.text = "⏱ " + daily_timer_text
-
-	# Help & Settings & ProgressHint
-	var help_btn = get_node_or_null("SafeArea/Content/Stack/HelpButton")
-	if help_btn != null:
-		help_btn.visible = show_bottom_buttons and show_help_button
-	var settings_btn = get_node_or_null("SafeArea/Content/Stack/SettingsButton")
-	if settings_btn != null:
-		settings_btn.visible = show_bottom_buttons and show_settings_button
+	# Progress Hint
 	var hint = get_node_or_null("SafeArea/Content/Stack/ProgressHint")
 	if hint != null:
 		hint.visible = show_progress_hint
 
+	_refresh_play_button_text()
+
+
+func set_campaign_state(level_id, is_complete: bool) -> void:
+	_campaign_complete = is_complete
+	if level_id != null:
+		_current_level_id = str(level_id)
+	_refresh_play_button_text()
+
 
 func update_level(level_id: String) -> void:
 	_current_level_id = level_id
+	_refresh_play_button_text()
+
+
+func _refresh_play_button_text() -> void:
 	var play_btn: Button = get_node_or_null("SafeArea/Content/Stack/PlayButton")
-	if play_btn != null:
-		var display_level: String = level_id
-		if display_level.begins_with("L0"):
-			display_level = str(int(display_level.substr(1)))
-		elif display_level.begins_with("L"):
-			display_level = str(int(display_level.substr(1)))
-		play_btn.text = "%s\n%s" % [play_text, level_format % display_level]
-	var current_level_label := get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
-	if current_level_label is Label:
-		current_level_label.text = "Level hiện tại: %s" % level_id
+	if play_btn == null:
+		return
+	if _campaign_complete:
+		play_btn.text = "%s\n%s" % [play_text_complete, "Đã hoàn thành các level"]
+	else:
+		var display_id := _current_level_id
+		if display_id.begins_with("L0"):
+			display_id = str(int(display_id.substr(1)))
+		elif display_id.begins_with("L"):
+			display_id = str(int(display_id.substr(1)))
+		var is_first: bool = (display_id == "1" or display_id == "01")
+		var main_action := play_text_fresh if is_first else play_text_resume
+		play_btn.text = "%s\n%s" % [main_action, level_format % display_id]
 
 
-func _wire_internal_signals() -> void:
+func _wire_signals_and_tweens() -> void:
 	var top_settings = get_node_or_null("SafeArea/TopBar/TopSettingsButton")
 	var stack_settings = get_node_or_null("SafeArea/Content/Stack/SettingsButton")
 	if top_settings != null and stack_settings != null:
 		if not top_settings.pressed.is_connected(_on_top_settings_pressed):
 			top_settings.pressed.connect(_on_top_settings_pressed)
 
+	# Wire interactive micro-animation for buttons
+	var play_btn: Button = get_node_or_null("SafeArea/Content/Stack/PlayButton")
+	_wire_button_tween(play_btn)
+	var daily_btn: Button = get_node_or_null("SafeArea/Content/Stack/DailyButton")
+	_wire_button_tween(daily_btn)
+	var help_btn: Button = get_node_or_null("SafeArea/Content/Stack/HelpButton")
+	_wire_button_tween(help_btn)
+	if top_settings != null:
+		_wire_button_tween(top_settings)
+
 
 func _on_top_settings_pressed() -> void:
 	var stack_settings = get_node_or_null("SafeArea/Content/Stack/SettingsButton")
 	if stack_settings != null:
 		stack_settings.emit_signal("pressed")
+
+
+func _wire_button_tween(btn: Button) -> void:
+	if btn == null:
+		return
+	btn.pivot_offset = btn.custom_minimum_size * 0.5
+	btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
+	btn.button_down.connect(func():
+		if _is_reduced_motion():
+			return
+		var t = create_tween()
+		t.tween_property(btn, "scale", Vector2(0.96, 0.96), 0.08).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	)
+	btn.button_up.connect(func():
+		if _is_reduced_motion():
+			btn.scale = Vector2.ONE
+			return
+		var t = create_tween()
+		t.tween_property(btn, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	)
+
+
+func _is_reduced_motion() -> bool:
+	if _settings != null:
+		return _settings.is_reduced_motion()
+	return false

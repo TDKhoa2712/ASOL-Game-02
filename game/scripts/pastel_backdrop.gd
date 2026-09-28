@@ -1,9 +1,13 @@
 extends Control
 
-
 const UiTheme = preload("res://scripts/ui_theme.gd")
+const Tokens = preload("res://scripts/ui_tokens.gd")
 
-@export_enum("home", "board", "settings") var variant := "home"
+@export_enum("home", "board", "settings") var variant: String = "home"
+@export var tile_color: Color = Color("#FAF5F0")
+@export var deco_color: Color = Color("#F5E3D0")
+@export var columns: int = 6
+@export var fade_center_alpha: float = 0.15
 
 
 func _ready() -> void:
@@ -13,49 +17,72 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(Vector2.ZERO, size), Color("#FAF6F0") if variant == "home" else UiTheme.CREAM)
-	if variant == "home":
-		# Soft rounded sudoku grid pattern matching reference design
-		var tile_fill := Color(0.965, 0.925, 0.885, 0.72)
-		var tile := StyleBoxFlat.new()
-		tile.bg_color = tile_fill
-		tile.set_corner_radius_all(24)
-		var tile_size := 180.0
-		var gap := 22.0
-		var step := tile_size + gap
-		var start_x := (fposmod(size.x, step) - step) * 0.5
-		var start_y := -20.0
-		var y := start_y
-		var row := 0
-		while y < size.y + tile_size:
-			var x := start_x
-			var col := 0
-			while x < size.x + tile_size:
-				var rect := Rect2(x, y, tile_size, tile_size)
-				draw_style_box(tile, rect)
-				# Faint decorative X in top row/col (like in reference image)
-				if (row == 0 and col == 1) or (row == 3 and col == 4) or (row == 7 and col == 0):
-					var cx := x + tile_size * 0.5
-					var cy := y + tile_size * 0.5
-					var d := 32.0
-					var cross_color := Color(0.89, 0.82, 0.75, 0.45)
-					draw_line(Vector2(cx - d, cy - d), Vector2(cx + d, cy + d), cross_color, 14.0, true)
-					draw_line(Vector2(cx + d, cy - d), Vector2(cx - d, cy + d), cross_color, 14.0, true)
-				x += step
-				col += 1
-			y += step
-			row += 1
+	var bg: Color = Tokens.BG_CREAM if variant == "home" else UiTheme.CREAM
+	draw_rect(Rect2(Vector2.ZERO, size), bg)
+	
+	if variant != "home":
+		var tile_fill := Color("#F7EDE4") if variant != "board" else Color("#F3E9DF")
+		var tile_line := Color("#EEDFD2")
+		var tile := UiTheme.rounded(tile_fill, 34, tile_line, 3)
+		var tile_size := Vector2(210, 210)
+		for py in range(-70, int(size.y) + 210, 280):
+			draw_style_box(tile, Rect2(Vector2(-145, py), tile_size))
+			draw_style_box(tile, Rect2(Vector2(size.x - 65, py + 120), tile_size))
+		var motif_center := Vector2(size.x * 0.5, 110)
+		for offset in [Vector2(-22, 0), Vector2(22, 0), Vector2(0, -22), Vector2(0, 22)]:
+			draw_circle(motif_center + offset, 24, Color("#F3C9A9"))
+		draw_circle(motif_center, 14, UiTheme.CORAL)
 		return
 
-	var tile_fill := Color("#F7EDE4") if variant != "board" else Color("#F3E9DF")
-	var tile_line := Color("#EEDFD2")
-	var tile := UiTheme.rounded(tile_fill, 34, tile_line, 3)
-	var tile_size := Vector2(210, 210)
-	for py in range(-70, int(size.y) + 210, 280):
-		draw_style_box(tile, Rect2(Vector2(-145, py), tile_size))
-		draw_style_box(tile, Rect2(Vector2(size.x - 65, py + 120), tile_size))
-	# Original four-petal mark: a quiet visual motif, not a character or logo.
-	var motif_center := Vector2(size.x * 0.5, 170 if variant == "home" else 110)
-	for offset in [Vector2(-22, 0), Vector2(22, 0), Vector2(0, -22), Vector2(0, 22)]:
-		draw_circle(motif_center + offset, 24, Color("#F3C9A9"))
-	draw_circle(motif_center, 14, UiTheme.CORAL)
+	# HOME BACKDROP according to Spec §4.1:
+	# 6-column rounded grid with Y-fade and deterministic decorative marks
+	var cols: int = maxi(4, columns)
+	var margin_x: float = 16.0
+	var gap: float = 12.0
+	var total_gaps: float = gap * float(cols - 1)
+	var available_w: float = size.x - (margin_x * 2.0) - total_gaps
+	var tile_dim: float = available_w / float(cols)
+	var corner_rad: int = int(tile_dim * 0.22)
+	
+	var rows: int = int(ceil((size.y + 40.0) / (tile_dim + gap))) + 1
+	var step: float = tile_dim + gap
+	
+	for r in range(rows):
+		var y: float = float(r) * step - 20.0
+		var norm_y: float = clampf(y / maxf(1.0, size.y), 0.0, 1.0)
+		
+		# Alpha fade along Y: higher at top (0-15%) & bottom (85-100%), fading to fade_center_alpha at center (30-70%)
+		var alpha_mult: float = fade_center_alpha
+		if norm_y < 0.20:
+			alpha_mult = lerpf(1.0, fade_center_alpha, norm_y / 0.20)
+		elif norm_y > 0.80:
+			alpha_mult = lerpf(fade_center_alpha, 1.0, (norm_y - 0.80) / 0.20)
+		
+		var tile_style := StyleBoxFlat.new()
+		tile_style.bg_color = Color(tile_color.r, tile_color.g, tile_color.b, tile_color.a * alpha_mult)
+		tile_style.set_corner_radius_all(corner_rad)
+		
+		for c in range(cols):
+			var x: float = margin_x + float(c) * step
+			var rect := Rect2(x, y, tile_dim, tile_dim)
+			draw_style_box(tile_style, rect)
+			
+			# Deterministic decorative marks (fixed rows/cols like §4.1)
+			if (r == 0 and c == 1) or (r == 3 and c == 4) or (r == 8 and c == 0):
+				# Decorative soft 'X'
+				var cx: float = x + tile_dim * 0.5
+				var cy: float = y + tile_dim * 0.5
+				var d: float = tile_dim * 0.26
+				var x_col := Color(deco_color.r, deco_color.g, deco_color.b, 0.45 * alpha_mult)
+				draw_line(Vector2(cx - d, cy - d), Vector2(cx + d, cy + d), x_col, 10.0, true)
+				draw_line(Vector2(cx + d, cy - d), Vector2(cx - d, cy + d), x_col, 10.0, true)
+			elif (r == 1 and c == 5) or (r == 9 and c == 4):
+				# Decorative cat ears outline
+				var cx: float = x + tile_dim * 0.5
+				var cy: float = y + tile_dim * 0.5
+				var cat_col := Color(deco_color.r, deco_color.g, deco_color.b, 0.35 * alpha_mult)
+				draw_arc(Vector2(cx, cy + 4.0), tile_dim * 0.24, PI * 0.2, PI * 0.8, 16, cat_col, 6.0, true)
+				draw_line(Vector2(cx - 14.0, cy - 6.0), Vector2(cx - 24.0, cy - 22.0), cat_col, 6.0, true)
+				draw_line(Vector2(cx - 24.0, cy - 22.0), Vector2(cx - 6.0, cy - 14.0), cat_col, 6.0, true)
+				draw_line(Vector2(cx + 6.0, cy - 14.0), Vector2(cx + 24.0, cy - 22.0), cat_col, 6.0, true)
+				draw_line(Vector2(cx + 24.0, cy - 22.0), Vector2(cx + 14.0, cy - 6.0), cat_col, 6.0, true)

@@ -94,13 +94,15 @@ func _render() -> void:
 					level_label.text = "Đã hoàn thành các level hiện có · MVP cho phép kiểm tra lại từ L01"
 				else:
 					level_label.text = "Level hiện tại: %s" % str(runtime.progress.get("currentLevelId", ""))
-			if screen.has_method("update_level"):
+			var campaign_complete: bool = runtime.progress.get("currentLevelId") == null
+			if screen.has_method("set_campaign_state"):
+				screen.set_campaign_state(runtime.progress.get("currentLevelId"), campaign_complete)
+			elif screen.has_method("update_level"):
 				var cur_id = runtime.progress.get("currentLevelId")
 				if cur_id != null:
 					screen.update_level(str(cur_id))
 			var play_button = screen.get_node_or_null("SafeArea/Content/Stack/PlayButton")
 			if play_button != null:
-				var campaign_complete: bool = runtime.progress.get("currentLevelId") == null
 				play_button.disabled = campaign_complete and not MVP_ALLOW_CAMPAIGN_REPLAY
 				if campaign_complete and MVP_ALLOW_CAMPAIGN_REPLAY:
 					play_button.text = "Chơi lại từ L01"

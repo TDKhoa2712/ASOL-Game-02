@@ -1,85 +1,90 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/home_screen.gd" id="1_home"]
 [ext_resource type="Script" path="res://scripts/pastel_backdrop.gd" id="2_backdrop"]
-[ext_resource type="Script" path="res://scripts/home_avatar_view.gd" id="3_avatar"]
-[ext_resource type="Script" path="res://scripts/home_feather_icon.gd" id="4_feather"]
-[ext_resource type="Script" path="res://scripts/home_gear_icon.gd" id="5_gear"]
-[ext_resource type="Script" path="res://scripts/home_logo_view.gd" id="6_logo"]
-[ext_resource type="Script" path="res://scripts/home_event_badge.gd" id="7_event"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/avatar_default.png" id="3_avatar_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/icon_currency.png" id="4_currency_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/icon_settings.png" id="5_settings_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/logo.png" id="6_logo_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/icon_help.png" id="7_help_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/icon_leaderboard.png" id="8_ldr_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/home/icon_timer.png" id="9_timer_tex"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleContentEmpty"]
 
 [sub_resource type="StyleBoxFlat" id="StyleCurrencyPill"]
 bg_color = Color(1, 1, 1, 0.96)
-corner_radius_top_left = 32
-corner_radius_top_right = 32
-corner_radius_bottom_right = 32
-corner_radius_bottom_left = 32
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
 shadow_color = Color(0.35, 0.22, 0.18, 0.1)
 shadow_size = 10
-shadow_offset = Vector2(0, 5)
-content_margin_left = 22.0
+shadow_offset = Vector2(0, 4)
+content_margin_left = 18.0
 content_margin_top = 8.0
-content_margin_right = 26.0
+content_margin_right = 24.0
 content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleTopSettings"]
 bg_color = Color(1, 1, 1, 0.96)
-corner_radius_top_left = 34
-corner_radius_top_right = 34
-corner_radius_bottom_right = 34
-corner_radius_bottom_left = 34
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
 shadow_color = Color(0.35, 0.22, 0.18, 0.1)
 shadow_size = 10
-shadow_offset = Vector2(0, 5)
+shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxFlat" id="StylePlayButton"]
-bg_color = Color(0.94902, 0.556863, 0.141176, 1)
-corner_radius_top_left = 46
-corner_radius_top_right = 46
-corner_radius_bottom_right = 46
-corner_radius_bottom_left = 46
-shadow_color = Color(0.85, 0.45, 0.15, 0.32)
-shadow_size = 16
-shadow_offset = Vector2(0, 8)
+bg_color = Color(0.941176, 0.576471, 0.164706, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.941176, 0.576471, 0.164706, 0.35)
+shadow_size = 20
+shadow_offset = Vector2(0, 6)
 content_margin_left = 32.0
 content_margin_top = 18.0
 content_margin_right = 32.0
 content_margin_bottom = 18.0
 
 [sub_resource type="StyleBoxFlat" id="StyleDailyButton"]
-bg_color = Color(0.505882, 0.6, 0.972549, 1)
-corner_radius_top_left = 44
-corner_radius_top_right = 44
-corner_radius_bottom_right = 44
-corner_radius_bottom_left = 44
-shadow_color = Color(0.42, 0.5, 0.85, 0.28)
-shadow_size = 14
-shadow_offset = Vector2(0, 7)
+bg_color = Color(0.560784, 0.647059, 0.945098, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.560784, 0.647059, 0.945098, 0.35)
+shadow_size = 16
+shadow_offset = Vector2(0, 6)
 content_margin_left = 32.0
 content_margin_top = 18.0
 content_margin_right = 32.0
 content_margin_bottom = 18.0
 
-[sub_resource type="StyleBoxFlat" id="StyleTimerPill"]
-bg_color = Color(0.419608, 0.509804, 0.866667, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
+[sub_resource type="StyleBoxFlat" id="StyleDailyTimerTab"]
+bg_color = Color(0.556863, 0.623529, 0.909804, 1)
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 content_margin_left = 16.0
 content_margin_top = 4.0
 content_margin_right = 16.0
 content_margin_bottom = 4.0
 
+[sub_resource type="StyleBoxFlat" id="StyleHelpRound"]
+bg_color = Color(1, 1, 1, 0.95)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.35, 0.22, 0.18, 0.12)
+shadow_size = 10
+shadow_offset = Vector2(0, 4)
+
 [sub_resource type="StyleBoxFlat" id="StyleQuiet"]
 bg_color = Color(1, 1, 1, 0.85)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.905882, 0.839216, 0.788235, 1)
 corner_radius_top_left = 28
 corner_radius_top_right = 28
 corner_radius_bottom_right = 28
@@ -125,35 +130,42 @@ offset_bottom = 88.0
 grow_horizontal = 2
 alignment = 1
 
-[node name="AvatarContainer" type="Control" parent="SafeArea/TopBar"]
+[node name="AvatarButton" type="TextureButton" parent="SafeArea/TopBar"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
-script = ExtResource("3_avatar")
+texture_normal = ExtResource("3_avatar_tex")
+ignore_texture_size = true
+stretch_mode = 5
 
 [node name="SpacerLeft" type="Control" parent="SafeArea/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="CurrencyBadge" type="PanelContainer" parent="SafeArea/TopBar"]
-custom_minimum_size = Vector2(170, 60)
+[node name="CurrencyPill" type="PanelContainer" parent="SafeArea/TopBar"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(160, 56)
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_styles/panel = SubResource("StyleCurrencyPill")
 
-[node name="HBox" type="HBoxContainer" parent="SafeArea/TopBar/CurrencyBadge"]
+[node name="HBox" type="HBoxContainer" parent="SafeArea/TopBar/CurrencyPill"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="FeatherIcon" type="Control" parent="SafeArea/TopBar/CurrencyBadge/HBox"]
+[node name="CurrencyIcon" type="TextureRect" parent="SafeArea/TopBar/CurrencyPill/HBox"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-script = ExtResource("4_feather")
+texture = ExtResource("4_currency_tex")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="CountLabel" type="Label" parent="SafeArea/TopBar/CurrencyBadge/HBox"]
+[node name="CurrencyValue" type="Label" parent="SafeArea/TopBar/CurrencyPill/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.658824, 0.352941, 0.0392157, 1)
+theme_override_font_sizes/font_size = 30
 text = "7"
 horizontal_alignment = 1
 
@@ -162,6 +174,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="TopSettingsButton" type="Button" parent="SafeArea/TopBar"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(68, 68)
 layout_mode = 2
 size_flags_vertical = 4
@@ -169,7 +182,7 @@ theme_override_styles/normal = SubResource("StyleTopSettings")
 theme_override_styles/hover = SubResource("StyleTopSettings")
 theme_override_styles/pressed = SubResource("StyleTopSettings")
 
-[node name="GearIcon" type="Control" parent="SafeArea/TopBar/TopSettingsButton"]
+[node name="SettingsIcon" type="TextureRect" parent="SafeArea/TopBar/TopSettingsButton"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -183,7 +196,9 @@ offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("5_gear")
+texture = ExtResource("5_settings_tex")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="Content" type="PanelContainer" parent="SafeArea"]
 layout_mode = 1
@@ -201,10 +216,34 @@ theme_override_constants/separation = 16
 alignment = 1
 
 [node name="TopSpacer" type="Control" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 
+[node name="LogoBlock" type="VBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="LogoImage" type="TextureRect" parent="SafeArea/Content/Stack/LogoBlock"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(480, 240)
+layout_mode = 2
+texture = ExtResource("6_logo_tex")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.545098, 0.352941, 0.235294, 1)
+theme_override_font_sizes/font_size = 54
+text = "MÈO LOGIC"
+horizontal_alignment = 1
+
 [node name="HeroCard" type="PanelContainer" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 size_flags_horizontal = 4
@@ -216,38 +255,48 @@ theme_override_font_sizes/font_size = 20
 text = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
 horizontal_alignment = 1
 
-[node name="LogoView" type="Control" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(480, 250)
-layout_mode = 2
-size_flags_horizontal = 4
-script = ExtResource("6_logo")
-
-[node name="Title" type="Label" parent="SafeArea/Content/Stack"]
-visible = false
-layout_mode = 2
-theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_font_sizes/font_size = 38
-text = "MÈO DOKU"
-horizontal_alignment = 1
-
 [node name="MidSpacerTop" type="Control" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
-[node name="EventRow" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+[node name="SideRailLeft" type="HBoxContainer" parent="SafeArea/Content/Stack"]
 layout_mode = 2
 alignment = 0
 
-[node name="EventBadge" type="Control" parent="SafeArea/Content/Stack/EventRow"]
-custom_minimum_size = Vector2(170, 160)
+[node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(84, 84)
 layout_mode = 2
-script = ExtResource("7_event")
+size_flags_horizontal = 0
+theme_override_styles/normal = SubResource("StyleHelpRound")
+theme_override_styles/hover = SubResource("StyleHelpRound")
+theme_override_styles/pressed = SubResource("StyleHelpRound")
+tooltip_text = "Xem luật hàng, cột, vùng và cử chỉ"
+
+[node name="HelpIcon" type="TextureRect" parent="SafeArea/Content/Stack/HelpButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -26.0
+offset_top = -26.0
+offset_right = 26.0
+offset_bottom = 26.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_help_tex")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MidSpacerBottom" type="Control" parent="SafeArea/Content/Stack"]
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CurrentLevelLabel" type="Label" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
@@ -256,6 +305,7 @@ text = "Level hiện tại: 1"
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(560, 114)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -267,54 +317,49 @@ theme_override_styles/pressed = SubResource("StylePlayButton")
 text = "Chơi / Tiếp tục"
 tooltip_text = "Mở level hiện tại hoặc tiếp tục lượt đang lưu"
 
-[node name="DailyContainer" type="VBoxContainer" parent="SafeArea/Content/Stack"]
-layout_mode = 2
-theme_override_constants/separation = -12
-alignment = 1
-
-[node name="DailyButton" type="Button" parent="SafeArea/Content/Stack/DailyContainer"]
+[node name="DailyButton" type="Button" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
+visible = false
 custom_minimum_size = Vector2(560, 96)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 28
 theme_override_styles/normal = SubResource("StyleDailyButton")
 theme_override_styles/hover = SubResource("StyleDailyButton")
 theme_override_styles/pressed = SubResource("StyleDailyButton")
 text = "Thử Thách Hằng Ngày"
 
-[node name="DailyTimerPill" type="PanelContainer" parent="SafeArea/Content/Stack/DailyContainer"]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleTimerPill")
+[node name="DailyTimerTab" type="PanelContainer" parent="SafeArea/Content/Stack/DailyButton"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -6.0
+offset_right = 80.0
+offset_bottom = 34.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleDailyTimerTab")
 
-[node name="TimerLabel" type="Label" parent="SafeArea/Content/Stack/DailyContainer/DailyTimerPill"]
+[node name="TimerLabel" type="Label" parent="SafeArea/Content/Stack/DailyButton/DailyTimerTab"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 20
 text = "⏱ 09:48:34"
 horizontal_alignment = 1
 
 [node name="BottomSpacer" type="Control" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-
-[node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
-visible = false
-custom_minimum_size = Vector2(320, 60)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_styles/normal = SubResource("StyleQuiet")
-theme_override_styles/hover = SubResource("StyleQuiet")
-theme_override_styles/pressed = SubResource("StyleQuiet")
-text = "Trợ giúp / Luật"
-tooltip_text = "Xem luật hàng, cột, vùng và cử chỉ"
 
 [node name="SettingsButton" type="Button" parent="SafeArea/Content/Stack"]
+unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(320, 60)
+custom_minimum_size = Vector2(280, 56)
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 22
@@ -326,9 +371,9 @@ text = "Cài đặt"
 tooltip_text = "Âm thanh, rung, giảm chuyển động và phân biệt vùng"
 
 [node name="ProgressHint" type="Label" parent="SafeArea/Content/Stack"]
-visible = false
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
+theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 0.8)
 theme_override_font_sizes/font_size = 20
 text = "Tiến trình được lưu tự động"
 horizontal_alignment = 1
