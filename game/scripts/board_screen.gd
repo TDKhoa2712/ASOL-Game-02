@@ -3,6 +3,7 @@ extends Control
 
 const GestureEngineScript = preload("res://scripts/gesture_engine.gd")
 const BoardViewScript = preload("res://scripts/board_view.gd")
+const SettingsScript = preload("res://scripts/settings.gd")
 const LEVEL_PATH := "res://data/t01.json"
 const CONTRACT_PATH := "res://tests/fixtures/interactions.v2.json"
 
@@ -14,6 +15,7 @@ var runtime_controller
 var level: Dictionary = {}
 var contract: Dictionary = {}
 var engine
+var settings: SettingsScript
 var hearts_label: Label
 var status_label: Label
 var tutorial_label: Label
@@ -28,11 +30,24 @@ var last_terminal_event := ""
 var hint_explanation_closed := false
 
 
-func configure(level_data: Dictionary, engine_instance = null, runtime = null, contract_data: Dictionary = {}) -> void:
+func _font_size(base: float) -> int:
+	if settings != null and settings.is_large_text():
+		return int(base * 1.3)
+	return int(base)
+
+
+func _text_color(primary: Color, secondary: Color) -> Color:
+	if settings != null and settings.is_high_contrast():
+		return Color.BLACK
+	return primary
+
+
+func configure(level_data: Dictionary, engine_instance = null, runtime = null, contract_data: Dictionary = {}, settings_instance = null) -> void:
 	configured_level = level_data.duplicate(true)
 	configured_engine = engine_instance
 	runtime_controller = runtime
 	configured_contract = contract_data.duplicate(true)
+	settings = settings_instance
 
 
 func _ready() -> void:
@@ -100,15 +115,15 @@ func _build_interface() -> void:
 	var title := Label.new()
 	title.text = "KHU VƯỜN BỐN MÙA"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 46)
-	title.add_theme_color_override("font_color", Color("#344054"))
+	title.add_theme_font_size_override("font_size", _font_size(46))
+	title.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
 	content.add_child(title)
 
 	var subtitle := Label.new()
 	subtitle.text = "Level %s · Chạm, chạm đôi và kéo" % str(level.get("id", ""))
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	subtitle.add_theme_font_size_override("font_size", 25)
-	subtitle.add_theme_color_override("font_color", Color("#667085"))
+	subtitle.add_theme_font_size_override("font_size", _font_size(25))
+	subtitle.add_theme_color_override("font_color", _text_color(Color("#667085"), Color("#667085")))
 	content.add_child(subtitle)
 
 	var top_bar := HBoxContainer.new()
@@ -117,8 +132,8 @@ func _build_interface() -> void:
 
 	hearts_label = Label.new()
 	hearts_label.name = "HeartsLabel"
-	hearts_label.add_theme_font_size_override("font_size", 30)
-	hearts_label.add_theme_color_override("font_color", Color("#B42318"))
+	hearts_label.add_theme_font_size_override("font_size", _font_size(30))
+	hearts_label.add_theme_color_override("font_color", _text_color(Color("#B42318"), Color("#B42318")))
 	top_bar.add_child(hearts_label)
 
 	var spacer := Control.new()
@@ -130,15 +145,15 @@ func _build_interface() -> void:
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	status_label.add_theme_font_size_override("font_size", 26)
-	status_label.add_theme_color_override("font_color", Color("#475467"))
+	status_label.add_theme_font_size_override("font_size", _font_size(26))
+	status_label.add_theme_color_override("font_color", _text_color(Color("#475467"), Color("#475467")))
 	top_bar.add_child(status_label)
 
 	tutorial_label = Label.new()
 	tutorial_label.name = "TutorialLabel"
 	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	tutorial_label.add_theme_font_size_override("font_size", 24)
-	tutorial_label.add_theme_color_override("font_color", Color("#344054"))
+	tutorial_label.add_theme_font_size_override("font_size", _font_size(24))
+	tutorial_label.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
 	content.add_child(tutorial_label)
 
 	var rules := GridContainer.new()
@@ -150,8 +165,8 @@ func _build_interface() -> void:
 		var rule := Label.new()
 		rule.text = rule_text
 		rule.custom_minimum_size = Vector2(460, 36)
-		rule.add_theme_font_size_override("font_size", 22)
-		rule.add_theme_color_override("font_color", Color("#344054"))
+		rule.add_theme_font_size_override("font_size", _font_size(22))
+		rule.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
 		rules.add_child(rule)
 	content.add_child(rules)
 
@@ -174,8 +189,8 @@ func _build_interface() -> void:
 		slot.name = "Region%s" % region_id
 		slot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		slot.custom_minimum_size = Vector2(100, 54)
-		slot.add_theme_font_size_override("font_size", 23)
-		slot.add_theme_color_override("font_color", Color("#344054"))
+		slot.add_theme_font_size_override("font_size", _font_size(23))
+		slot.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
 		region_progress.add_child(slot)
 		region_labels[region_id] = slot
 	content.add_child(region_progress)
@@ -184,8 +199,8 @@ func _build_interface() -> void:
 	guide.text = "Chạm: đánh / xóa X     ·     Chạm đôi: thử đặt mèo     ·     Kéo: đánh dấu nhiều ô"
 	guide.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	guide.add_theme_font_size_override("font_size", 23)
-	guide.add_theme_color_override("font_color", Color("#667085"))
+	guide.add_theme_font_size_override("font_size", _font_size(23))
+	guide.add_theme_color_override("font_color", _text_color(Color("#667085"), Color("#667085")))
 	content.add_child(guide)
 
 	var actions := HBoxContainer.new()
@@ -224,8 +239,8 @@ func _build_interface() -> void:
 	hint_label.name = "HintLabel"
 	hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	hint_label.add_theme_font_size_override("font_size", 21)
-	hint_label.add_theme_color_override("font_color", Color("#475467"))
+	hint_label.add_theme_font_size_override("font_size", _font_size(21))
+	hint_label.add_theme_color_override("font_color", _text_color(Color("#475467"), Color("#475467")))
 	content.add_child(hint_label)
 	close_hint_button = _make_button("CloseHintButton", "Đóng gợi ý", Color("#FFFFFF"), Color("#344054"))
 	close_hint_button.visible = false
@@ -248,9 +263,9 @@ func _make_button(node_name: String, text_value: String, fill: Color, ink: Color
 	button.name = node_name
 	button.text = text_value
 	button.custom_minimum_size = Vector2(210.0, 84.0)
-	button.add_theme_font_size_override("font_size", 27)
-	button.add_theme_color_override("font_color", ink)
-	button.add_theme_color_override("font_hover_color", ink)
+	button.add_theme_font_size_override("font_size", _font_size(27))
+	button.add_theme_color_override("font_color", _text_color(ink, ink))
+	button.add_theme_color_override("font_hover_color", _text_color(ink, ink))
 	button.add_theme_stylebox_override("normal", _button_style(fill))
 	button.add_theme_stylebox_override("hover", _button_style(fill.lightened(0.06)))
 	button.add_theme_stylebox_override("pressed", _button_style(fill.darkened(0.08)))
@@ -321,7 +336,9 @@ func _refresh_region_progress() -> void:
 		var complete: bool = found.has(region_id)
 		slot.text = "%s  %s" % ["●" if complete else "○", region_id]
 		slot.tooltip_text = "Vùng %s: %s" % [region_id, "đã tìm mèo" if complete else "chưa tìm mèo"]
-		slot.add_theme_color_override("font_color", Color("#344054") if complete else Color("#667085"))
+		var complete_color := _text_color(Color("#344054"), Color("#344054"))
+		var incomplete_color := _text_color(Color("#667085"), Color("#667085"))
+		slot.add_theme_color_override("font_color", complete_color if complete else incomplete_color)
 
 
 func _status_text(event_name: String) -> String:

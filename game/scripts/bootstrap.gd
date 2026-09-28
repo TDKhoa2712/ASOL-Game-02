@@ -2,10 +2,12 @@ extends Control
 
 const Flow = preload("res://scripts/ui_flow_controller.gd")
 const Runtime = preload("res://scripts/mvp_runtime.gd")
+const SettingsScript = preload("res://scripts/settings.gd")
 const HomeScene = preload("res://scenes/home.tscn")
 const WinScene = preload("res://scenes/result_win.tscn")
 const FailScene = preload("res://scenes/result_fail.tscn")
 const BoardScene = preload("res://scenes/board.tscn")
+const SettingsScene = preload("res://scenes/settings.tscn")
 
 # MVP verification switch. Set false before the official release to make a
 # completed campaign terminal again instead of exposing a Level 1 replay.
@@ -13,12 +15,15 @@ const MVP_ALLOW_CAMPAIGN_REPLAY := true
 
 var flow
 var runtime
+var settings: SettingsScript
 var screen_host: Control
 
 
 func _ready() -> void:
 	add_to_group("mvp_bootstrap")
 	screen_host = get_node("ScreenHost")
+	if settings == null:
+		settings = SettingsScript.new()
 	if runtime == null:
 		runtime = Runtime.new()
 	if not runtime.initialize():
@@ -127,11 +132,8 @@ func _render() -> void:
 				"Bạn có ba lượt sai và một gợi ý mỗi lượt.",
 			])
 		Flow.SCREEN_SETTINGS:
-			screen = _build_info_shell("Cài đặt", [
-				"Âm thanh và rung: sẽ lấy từ cài đặt phiên chơi.",
-				"Giảm chuyển động và phân biệt vùng: placeholder MVP.",
-				"Các tuỳ chọn thật sẽ được nối ở M1-A08.",
-			])
+			screen = SettingsScene.instantiate()
+			_connect_settings_toggles(screen)
 		_:
 			screen = _build_info_shell("Màn hình chưa hỗ trợ", ["Route không hợp lệ."])
 
@@ -212,7 +214,7 @@ func _build_puzzle_screen() -> Control:
 		level_id = runtime.current_level_id
 	runtime.start_level(level_id, resume, saved_level != null)
 	var screen = BoardScene.instantiate()
-	screen.configure(runtime.active_level, runtime.engine, runtime, runtime.contract)
+	screen.configure(runtime.active_level, runtime.engine, runtime, runtime.contract, settings)
 	return screen
 
 
@@ -260,3 +262,49 @@ func _make_button(label: String) -> Button:
 	button.custom_minimum_size = Vector2(240, 56)
 	button.add_theme_font_size_override("font_size", 22)
 	return button
+
+
+func _connect_settings_toggles(screen: Control) -> void:
+	var audio_switch = screen.get_node_or_null("SafeArea/Content/Stack/AudioToggle/AudioSwitch")
+	if audio_switch != null:
+		audio_switch.button_pressed = settings.is_audio_enabled()
+		audio_switch.toggled.connect(_on_audio_toggled)
+	var haptics_switch = screen.get_node_or_null("SafeArea/Content/Stack/HapticsToggle/HapticsSwitch")
+	if haptics_switch != null:
+		haptics_switch.button_pressed = settings.is_haptics_enabled()
+		haptics_switch.toggled.connect(_on_haptics_toggled)
+	var reduced_motion_switch = screen.get_node_or_null("SafeArea/Content/Stack/ReducedMotionToggle/ReducedMotionSwitch")
+	if reduced_motion_switch != null:
+		reduced_motion_switch.button_pressed = settings.is_reduced_motion()
+		reduced_motion_switch.toggled.connect(_on_reduced_motion_toggled)
+	var high_contrast_switch = screen.get_node_or_null("SafeArea/Content/Stack/HighContrastToggle/HighContrastSwitch")
+	if high_contrast_switch != null:
+		high_contrast_switch.button_pressed = settings.is_high_contrast()
+		high_contrast_switch.toggled.connect(_on_high_contrast_toggled)
+	var large_text_switch = screen.get_node_or_null("SafeArea/Content/Stack/LargeTextToggle/LargeTextSwitch")
+	if large_text_switch != null:
+		large_text_switch.button_pressed = settings.is_large_text()
+		large_text_switch.toggled.connect(_on_large_text_toggled)
+	var back_button = screen.get_node_or_null("SafeArea/Content/Stack/BackButton")
+	if back_button != null:
+		back_button.pressed.connect(_on_action.bind("back"), CONNECT_DEFERRED)
+
+
+func _on_audio_toggled(pressed: bool) -> void:
+	settings.set_value("audioEnabled", pressed)
+
+
+func _on_haptics_toggled(pressed: bool) -> void:
+	settings.set_value("hapticsEnabled", pressed)
+
+
+func _on_reduced_motion_toggled(pressed: bool) -> void:
+	settings.set_value("reducedMotion", pressed)
+
+
+func _on_high_contrast_toggled(pressed: bool) -> void:
+	settings.set_value("highContrast", pressed)
+
+
+func _on_large_text_toggled(pressed: bool) -> void:
+	settings.set_value("largeText", pressed)

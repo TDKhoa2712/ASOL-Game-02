@@ -1,0 +1,234 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="StyleBoxFlat" id="StylePanel"]
+bg_color = Color(0.972549, 0.960784, 0.92549, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+content_margin_left = 28.0
+content_margin_top = 28.0
+content_margin_right = 28.0
+content_margin_bottom = 28.0
+
+[sub_resource type="StyleBoxFlat" id="StyleToggle"]
+bg_color = Color(0.956863, 0.576471, 0.352941, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+
+[sub_resource type="StyleBoxFlat" id="StyleToggleOff"]
+bg_color = Color(0.741176, 0.780392, 0.823529, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+
+[node name="Settings" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/screen_id = "settings"
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.92549, 0.905882, 0.854902, 1)
+
+[node name="SafeArea" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="Content" type="PanelContainer" parent="SafeArea"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StylePanel")
+
+[node name="Stack" type="VBoxContainer" parent="SafeArea/Content"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 42
+text = "Cài đặt"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.439216, 0.52549, 1)
+theme_override_font_sizes/font_size = 20
+text = "Tùy chỉnh trải nghiệm chơi"
+horizontal_alignment = 1
+
+[node name="AudioToggle" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="AudioLabel" type="Label" parent="SafeArea/Content/Stack/AudioToggle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 24
+text = "Âm thanh"
+horizontal_alignment = 0
+custom_minimum_size = Vector2(300, 48)
+size_flags_horizontal = 1
+
+[node name="AudioSwitch" type="CheckButton" parent="SafeArea/Content/Stack/AudioToggle"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+theme_override_styles/checked = SubResource("StyleToggle")
+theme_override_styles/checked_hover = SubResource("StyleToggle")
+theme_override_styles/checked_pressed = SubResource("StyleToggle")
+custom_minimum_size = Vector2(72, 40)
+tooltip_text = "Bật/tắt âm thanh (kết nối tại R3)"
+
+[node name="HapticsToggle" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="HapticsLabel" type="Label" parent="SafeArea/Content/Stack/HapticsToggle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 24
+text = "Rung (haptic)"
+horizontal_alignment = 0
+custom_minimum_size = Vector2(300, 48)
+size_flags_horizontal = 1
+
+[node name="HapticsSwitch" type="CheckButton" parent="SafeArea/Content/Stack/HapticsToggle"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+theme_override_styles/checked = SubResource("StyleToggle")
+theme_override_styles/checked_hover = SubResource("StyleToggle")
+theme_override_styles/checked_pressed = SubResource("StyleToggle")
+custom_minimum_size = Vector2(72, 40)
+tooltip_text = "Bật/tắt rung (kết nối tại R3)"
+
+[node name="Separator1" type="HSeparator" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_colors/separator_color = Color(0.815686, 0.835294, 0.87451, 1)
+
+[node name="ReducedMotionToggle" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="ReducedMotionLabel" type="Label" parent="SafeArea/Content/Stack/ReducedMotionToggle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 24
+text = "Giảm chuyển động"
+horizontal_alignment = 0
+custom_minimum_size = Vector2(300, 48)
+size_flags_horizontal = 1
+
+[node name="ReducedMotionSwitch" type="CheckButton" parent="SafeArea/Content/Stack/ReducedMotionToggle"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+theme_override_styles/checked = SubResource("StyleToggle")
+theme_override_styles/checked_hover = SubResource("StyleToggle")
+theme_override_styles/checked_pressed = SubResource("StyleToggle")
+custom_minimum_size = Vector2(72, 40)
+tooltip_text = "Giảm animation và hiệu ứng chuyển cảnh"
+
+[node name="HighContrastToggle" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="HighContrastLabel" type="Label" parent="SafeArea/Content/Stack/HighContrastToggle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 24
+text = "Độ tương phản cao / Grayscale"
+horizontal_alignment = 0
+custom_minimum_size = Vector2(300, 48)
+size_flags_horizontal = 1
+
+[node name="HighContrastSwitch" type="CheckButton" parent="SafeArea/Content/Stack/HighContrastToggle"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+theme_override_styles/checked = SubResource("StyleToggle")
+theme_override_styles/checked_hover = SubResource("StyleToggle")
+theme_override_styles/checked_pressed = SubResource("StyleToggle")
+custom_minimum_size = Vector2(72, 40)
+tooltip_text = "Chế độ độ tương phản cao cho người khuyết tật thị giác"
+
+[node name="Separator2" type="HSeparator" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_colors/separator_color = Color(0.815686, 0.835294, 0.87451, 1)
+
+[node name="LargeTextToggle" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 2
+
+[node name="LargeTextLabel" type="Label" parent="SafeArea/Content/Stack/LargeTextToggle"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_font_sizes/font_size = 24
+text = "Chữ to (+30%)"
+horizontal_alignment = 0
+custom_minimum_size = Vector2(300, 48)
+size_flags_horizontal = 1
+
+[node name="LargeTextSwitch" type="CheckButton" parent="SafeArea/Content/Stack/LargeTextToggle"]
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+theme_override_styles/checked = SubResource("StyleToggle")
+theme_override_styles/checked_hover = SubResource("StyleToggle")
+theme_override_styles/checked_pressed = SubResource("StyleToggle")
+custom_minimum_size = Vector2(72, 40)
+tooltip_text = "Tăng cỡ chữ lên 30% để dễ đọc hơn"
+
+[node name="Spacer" type="Control" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="BackButton" type="Button" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+custom_minimum_size = Vector2(240, 56)
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.203922, 0.25098, 0.329412, 1)
+theme_override_styles/normal = SubResource("StyleToggleOff")
+theme_override_styles/hover = SubResource("StyleToggleOff")
+theme_override_styles/pressed = SubResource("StyleToggleOff")
+text = "Quay lại"
