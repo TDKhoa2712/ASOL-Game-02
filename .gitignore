@@ -15,6 +15,7 @@ htmlcov/
 meowdoku-clone.xml
 *.repomix.xml
 .codegraph/
+.codex-remote-attachments/
 
 # Temporary and local logs
 *.tmp
