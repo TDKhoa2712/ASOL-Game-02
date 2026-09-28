@@ -140,7 +140,14 @@ custom_minimum_size = Vector2(0, 118)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleHero")
 
-
+[node name="HeroText" type="Label" parent="SafeArea/Content/Stack/HeroCard"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.854902, 0.443137, 0.270588, 1)
+theme_override_font_sizes/font_size = 26
+text = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
 
 [node name="Title" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2

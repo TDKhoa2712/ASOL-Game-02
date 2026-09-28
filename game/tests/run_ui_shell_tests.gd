@@ -25,6 +25,8 @@ func _check_home() -> void:
 	_check(home.get_node_or_null("Backdrop") != null, "Home has original pastel backdrop")
 	_check(home.get_node_or_null("SafeArea/TopBar") != null, "Home has floating top actions")
 	_check(home.get_node_or_null("SafeArea/Content/Stack/HeroCard") != null, "Home content has a hero card")
+	var hero_text: Label = home.get_node_or_null("SafeArea/Content/Stack/HeroCard/HeroText")
+	_check(hero_text != null and not hero_text.text.is_empty(), "Home hero card carries original supporting copy")
 	var content = home.get_node_or_null("SafeArea/Content")
 	var stack = home.get_node_or_null("SafeArea/Content/Stack")
 	_check(stack != null, "Home has content stack")
