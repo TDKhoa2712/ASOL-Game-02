@@ -1,0 +1,38 @@
+{
+  "theme": {
+    "background_color": "#FAF6F0",
+    "primary_button_color": "#F28D24",
+    "primary_button_hover": "#F89E3D",
+    "primary_button_pressed": "#D87815",
+    "secondary_button_color": "#859CF8",
+    "secondary_button_hover": "#94A9FA",
+    "secondary_button_pressed": "#6F86E5",
+    "timer_badge_color": "#6B82E6",
+    "event_badge_bg": "#3B3435",
+    "text_dark_color": "#6D4A45",
+    "text_light_color": "#FFFFFF",
+    "button_corner_radius": 44
+  },
+  "content": {
+    "game_title": "MÈO DOKU",
+    "subtitle": "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI",
+    "play_button_text": "Tiếp Tục",
+    "level_format": "Màn %s",
+    "daily_challenge_text": "Thử Thách Hằng Ngày",
+    "daily_timer": "09:48:34",
+    "event_timer": "23:50:22",
+    "currency_count": 7
+  },
+  "visibility": {
+    "show_avatar": true,
+    "show_currency": true,
+    "show_top_settings": true,
+    "show_hero_card": false,
+    "show_title_text": false,
+    "show_event_badge": true,
+    "show_current_level_label": false,
+    "show_daily_challenge": true,
+    "show_bottom_buttons": false,
+    "show_progress_hint": false
+  }
+}

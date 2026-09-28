@@ -87,12 +87,17 @@ func _render() -> void:
 			_connect_button(screen, "SafeArea/Content/Stack/PlayButton", "start_game")
 			_connect_button(screen, "SafeArea/Content/Stack/HelpButton", "help")
 			_connect_button(screen, "SafeArea/Content/Stack/SettingsButton", "settings")
+			_connect_button(screen, "SafeArea/TopBar/TopSettingsButton", "settings")
 			var level_label = screen.get_node_or_null("SafeArea/Content/Stack/CurrentLevelLabel")
 			if level_label != null:
 				if runtime.progress.get("currentLevelId") == null:
 					level_label.text = "Đã hoàn thành các level hiện có · MVP cho phép kiểm tra lại từ L01"
 				else:
 					level_label.text = "Level hiện tại: %s" % str(runtime.progress.get("currentLevelId", ""))
+			if screen.has_method("update_level"):
+				var cur_id = runtime.progress.get("currentLevelId")
+				if cur_id != null:
+					screen.update_level(str(cur_id))
 			var play_button = screen.get_node_or_null("SafeArea/Content/Stack/PlayButton")
 			if play_button != null:
 				var campaign_complete: bool = runtime.progress.get("currentLevelId") == null

@@ -1,69 +1,89 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://scripts/pastel_backdrop.gd" id="1_backdrop"]
+[ext_resource type="Script" path="res://scripts/home_screen.gd" id="1_home"]
+[ext_resource type="Script" path="res://scripts/pastel_backdrop.gd" id="2_backdrop"]
+[ext_resource type="Script" path="res://scripts/home_avatar_view.gd" id="3_avatar"]
+[ext_resource type="Script" path="res://scripts/home_feather_icon.gd" id="4_feather"]
+[ext_resource type="Script" path="res://scripts/home_gear_icon.gd" id="5_gear"]
+[ext_resource type="Script" path="res://scripts/home_logo_view.gd" id="6_logo"]
+[ext_resource type="Script" path="res://scripts/home_event_badge.gd" id="7_event"]
 
-[sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(1, 0.992157, 0.984314, 0.96)
-corner_radius_top_left = 44
-corner_radius_top_right = 44
-corner_radius_bottom_right = 44
-corner_radius_bottom_left = 44
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.917647, 0.854902, 0.807843, 1)
-shadow_color = Color(0.35, 0.22, 0.18, 0.12)
-shadow_size = 18
-shadow_offset = Vector2(0, 10)
-content_margin_left = 44.0
-content_margin_top = 44.0
-content_margin_right = 44.0
-content_margin_bottom = 44.0
+[sub_resource type="StyleBoxEmpty" id="StyleContentEmpty"]
 
-[sub_resource type="StyleBoxFlat" id="StyleButton"]
-bg_color = Color(0.94902, 0.584314, 0.392157, 1)
-corner_radius_top_left = 36
-corner_radius_top_right = 36
-corner_radius_bottom_right = 36
-corner_radius_bottom_left = 36
-shadow_color = Color(0.55, 0.31, 0.2, 0.2)
-shadow_size = 12
-shadow_offset = Vector2(0, 7)
-content_margin_left = 18.0
-content_margin_top = 12.0
-content_margin_right = 18.0
-content_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxFlat" id="StyleHero"]
-bg_color = Color(0.968627, 0.929412, 0.898039, 1)
-corner_radius_top_left = 28
-corner_radius_top_right = 28
-corner_radius_bottom_right = 28
-corner_radius_bottom_left = 28
-content_margin_left = 20.0
-content_margin_top = 18.0
-content_margin_right = 20.0
-content_margin_bottom = 18.0
-
-[sub_resource type="StyleBoxFlat" id="StyleSecondary"]
-bg_color = Color(0.537255, 0.619608, 0.941176, 1)
+[sub_resource type="StyleBoxFlat" id="StyleCurrencyPill"]
+bg_color = Color(1, 1, 1, 0.96)
 corner_radius_top_left = 32
 corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
+shadow_color = Color(0.35, 0.22, 0.18, 0.1)
+shadow_size = 10
+shadow_offset = Vector2(0, 5)
+content_margin_left = 22.0
+content_margin_top = 8.0
+content_margin_right = 26.0
+content_margin_bottom = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleTopSettings"]
+bg_color = Color(1, 1, 1, 0.96)
+corner_radius_top_left = 34
+corner_radius_top_right = 34
+corner_radius_bottom_right = 34
+corner_radius_bottom_left = 34
+shadow_color = Color(0.35, 0.22, 0.18, 0.1)
+shadow_size = 10
+shadow_offset = Vector2(0, 5)
+
+[sub_resource type="StyleBoxFlat" id="StylePlayButton"]
+bg_color = Color(0.94902, 0.556863, 0.141176, 1)
+corner_radius_top_left = 46
+corner_radius_top_right = 46
+corner_radius_bottom_right = 46
+corner_radius_bottom_left = 46
+shadow_color = Color(0.85, 0.45, 0.15, 0.32)
+shadow_size = 16
+shadow_offset = Vector2(0, 8)
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="StyleDailyButton"]
+bg_color = Color(0.505882, 0.6, 0.972549, 1)
+corner_radius_top_left = 44
+corner_radius_top_right = 44
+corner_radius_bottom_right = 44
+corner_radius_bottom_left = 44
+shadow_color = Color(0.42, 0.5, 0.85, 0.28)
+shadow_size = 14
+shadow_offset = Vector2(0, 7)
+content_margin_left = 32.0
+content_margin_top = 18.0
+content_margin_right = 32.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="StyleTimerPill"]
+bg_color = Color(0.419608, 0.509804, 0.866667, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+content_margin_left = 16.0
+content_margin_top = 4.0
+content_margin_right = 16.0
+content_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleQuiet"]
-bg_color = Color(1, 1, 1, 0.88)
+bg_color = Color(1, 1, 1, 0.85)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.905882, 0.839216, 0.788235, 1)
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
 
 [node name="Home" type="Control"]
 layout_mode = 3
@@ -72,6 +92,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_home")
 metadata/screen_id = "home"
 
 [node name="Backdrop" type="Control" parent="."]
@@ -82,17 +103,17 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-script = ExtResource("1_backdrop")
+script = ExtResource("2_backdrop")
 
 [node name="SafeArea" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 54.0
-offset_top = 70.0
-offset_right = -54.0
-offset_bottom = -66.0
+offset_left = 40.0
+offset_top = 56.0
+offset_right = -40.0
+offset_bottom = -54.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -100,93 +121,203 @@ grow_vertical = 2
 layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 80.0
+offset_bottom = 88.0
 grow_horizontal = 2
+alignment = 1
 
-[node name="ProfileLabel" type="Label" parent="SafeArea/TopBar"]
+[node name="AvatarContainer" type="Control" parent="SafeArea/TopBar"]
+custom_minimum_size = Vector2(88, 88)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_font_sizes/font_size = 23
-text = "✦  VƯỜN NHỎ"
+script = ExtResource("3_avatar")
 
-[node name="Spacer" type="Control" parent="SafeArea/TopBar"]
+[node name="SpacerLeft" type="Control" parent="SafeArea/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SavedLabel" type="Label" parent="SafeArea/TopBar"]
+[node name="CurrencyBadge" type="PanelContainer" parent="SafeArea/TopBar"]
+custom_minimum_size = Vector2(170, 60)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/panel = SubResource("StyleCurrencyPill")
+
+[node name="HBox" type="HBoxContainer" parent="SafeArea/TopBar/CurrencyBadge"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="FeatherIcon" type="Control" parent="SafeArea/TopBar/CurrencyBadge/HBox"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+script = ExtResource("4_feather")
+
+[node name="CountLabel" type="Label" parent="SafeArea/TopBar/CurrencyBadge/HBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_font_sizes/font_size = 23
-text = "●  ĐÃ LƯU"
+theme_override_font_sizes/font_size = 34
+text = "7"
+horizontal_alignment = 1
+
+[node name="SpacerRight" type="Control" parent="SafeArea/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="TopSettingsButton" type="Button" parent="SafeArea/TopBar"]
+custom_minimum_size = Vector2(68, 68)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleTopSettings")
+theme_override_styles/hover = SubResource("StyleTopSettings")
+theme_override_styles/pressed = SubResource("StyleTopSettings")
+
+[node name="GearIcon" type="Control" parent="SafeArea/TopBar/TopSettingsButton"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("5_gear")
 
 [node name="Content" type="PanelContainer" parent="SafeArea"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.08
-anchor_top = 0.2
-anchor_right = 0.92
-anchor_bottom = 0.92
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 100.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StylePanel")
+theme_override_styles/panel = SubResource("StyleContentEmpty")
 
 [node name="Stack" type="VBoxContainer" parent="SafeArea/Content"]
 layout_mode = 2
-theme_override_constants/separation = 22
+theme_override_constants/separation = 16
 alignment = 1
 
-[node name="HeroCard" type="PanelContainer" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(0, 118)
+[node name="TopSpacer" type="Control" parent="SafeArea/Content/Stack"]
+custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleHero")
+
+[node name="HeroCard" type="PanelContainer" parent="SafeArea/Content/Stack"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="HeroText" type="Label" parent="SafeArea/Content/Stack/HeroCard"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.854902, 0.443137, 0.270588, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.85098, 0.443137, 0.270588, 1)
+theme_override_font_sizes/font_size = 20
 text = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
 horizontal_alignment = 1
-vertical_alignment = 1
-autowrap_mode = 2
+
+[node name="LogoView" type="Control" parent="SafeArea/Content/Stack"]
+custom_minimum_size = Vector2(480, 250)
+layout_mode = 2
+size_flags_horizontal = 4
+script = ExtResource("6_logo")
 
 [node name="Title" type="Label" parent="SafeArea/Content/Stack"]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
-theme_override_font_sizes/font_size = 64
-text = "MÈO LOGIC"
+theme_override_font_sizes/font_size = 38
+text = "MÈO DOKU"
 horizontal_alignment = 1
 
+[node name="MidSpacerTop" type="Control" parent="SafeArea/Content/Stack"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="EventRow" type="HBoxContainer" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+alignment = 0
+
+[node name="EventBadge" type="Control" parent="SafeArea/Content/Stack/EventRow"]
+custom_minimum_size = Vector2(170, 160)
+layout_mode = 2
+script = ExtResource("7_event")
+
+[node name="MidSpacerBottom" type="Control" parent="SafeArea/Content/Stack"]
+layout_mode = 2
+size_flags_vertical = 3
+
 [node name="CurrentLevelLabel" type="Label" parent="SafeArea/Content/Stack"]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 24
 text = "Level hiện tại: 1"
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 92)
+custom_minimum_size = Vector2(560, 114)
 layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 30
-theme_override_styles/normal = SubResource("StyleButton")
+theme_override_font_sizes/font_size = 36
+theme_override_styles/normal = SubResource("StylePlayButton")
+theme_override_styles/hover = SubResource("StylePlayButton")
+theme_override_styles/pressed = SubResource("StylePlayButton")
 text = "Chơi / Tiếp tục"
 tooltip_text = "Mở level hiện tại hoặc tiếp tục lượt đang lưu"
 
-[node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 76)
+[node name="DailyContainer" type="VBoxContainer" parent="SafeArea/Content/Stack"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 25
+theme_override_constants/separation = -12
+alignment = 1
+
+[node name="DailyButton" type="Button" parent="SafeArea/Content/Stack/DailyContainer"]
+custom_minimum_size = Vector2(560, 96)
+layout_mode = 2
+size_flags_horizontal = 4
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_styles/normal = SubResource("StyleSecondary")
-theme_override_styles/hover = SubResource("StyleSecondary")
-theme_override_styles/pressed = SubResource("StyleSecondary")
+theme_override_font_sizes/font_size = 30
+theme_override_styles/normal = SubResource("StyleDailyButton")
+theme_override_styles/hover = SubResource("StyleDailyButton")
+theme_override_styles/pressed = SubResource("StyleDailyButton")
+text = "Thử Thách Hằng Ngày"
+
+[node name="DailyTimerPill" type="PanelContainer" parent="SafeArea/Content/Stack/DailyContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("StyleTimerPill")
+
+[node name="TimerLabel" type="Label" parent="SafeArea/Content/Stack/DailyContainer/DailyTimerPill"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 21
+text = "⏱ 09:48:34"
+horizontal_alignment = 1
+
+[node name="BottomSpacer" type="Control" parent="SafeArea/Content/Stack"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
+visible = false
+custom_minimum_size = Vector2(320, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
+theme_override_styles/normal = SubResource("StyleQuiet")
+theme_override_styles/hover = SubResource("StyleQuiet")
+theme_override_styles/pressed = SubResource("StyleQuiet")
 text = "Trợ giúp / Luật"
 tooltip_text = "Xem luật hàng, cột, vùng và cử chỉ"
 
 [node name="SettingsButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 76)
+visible = false
+custom_minimum_size = Vector2(320, 60)
 layout_mode = 2
-theme_override_font_sizes/font_size = 25
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 22
 theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
 theme_override_styles/normal = SubResource("StyleQuiet")
 theme_override_styles/hover = SubResource("StyleQuiet")
@@ -195,8 +326,9 @@ text = "Cài đặt"
 tooltip_text = "Âm thanh, rung, giảm chuyển động và phân biệt vùng"
 
 [node name="ProgressHint" type="Label" parent="SafeArea/Content/Stack"]
+visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
-theme_override_font_sizes/font_size = 21
+theme_override_font_sizes/font_size = 20
 text = "Tiến trình được lưu tự động"
 horizontal_alignment = 1
