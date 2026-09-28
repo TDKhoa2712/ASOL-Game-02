@@ -56,6 +56,9 @@ func _check_settings_scene_structure() -> void:
 	var scene = SettingsScene.instantiate()
 	_check(scene.get_meta("screen_id", "") == "settings", "settings has screen metadata")
 	_check(scene.get_node_or_null("SafeArea") != null, "settings uses safe area container")
+	_check(scene.get_node_or_null("Backdrop") != null, "settings keeps a soft game backdrop")
+	_check(scene.get_node_or_null("Dimmer") != null, "settings reads as a modal overlay")
+	_check(scene.get_node_or_null("SafeArea/ModalCard") != null, "settings has a floating modal card")
 	for toggle_name in ["AudioToggle", "HapticsToggle", "ReducedMotionToggle", "HighContrastToggle", "LargeTextToggle"]:
 		var toggle = scene.get_node_or_null("SafeArea/Content/Stack/%s" % toggle_name)
 		_check(toggle != null, "settings has %s row" % toggle_name)

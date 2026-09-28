@@ -4,6 +4,8 @@ extends Control
 const GestureEngineScript = preload("res://scripts/gesture_engine.gd")
 const BoardViewScript = preload("res://scripts/board_view.gd")
 const SettingsScript = preload("res://scripts/settings.gd")
+const UiTheme = preload("res://scripts/ui_theme.gd")
+const BackdropScript = preload("res://scripts/pastel_backdrop.gd")
 const LEVEL_PATH := "res://data/t01.json"
 const CONTRACT_PATH := "res://tests/fixtures/interactions.v2.json"
 
@@ -94,46 +96,52 @@ func _settle_input() -> void:
 func _build_interface() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
-	var background := ColorRect.new()
-	background.color = Color("#F5F1E8")
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var background := BackdropScript.new()
+	background.name = "Backdrop"
+	background.variant = "board"
 	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
 
 	var margin := MarginContainer.new()
 	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	margin.add_theme_constant_override("margin_left", 70)
-	margin.add_theme_constant_override("margin_right", 70)
-	margin.add_theme_constant_override("margin_top", 50)
-	margin.add_theme_constant_override("margin_bottom", 40)
+	margin.add_theme_constant_override("margin_left", 58)
+	margin.add_theme_constant_override("margin_right", 58)
+	margin.add_theme_constant_override("margin_top", 46)
+	margin.add_theme_constant_override("margin_bottom", 36)
 	add_child(margin)
 
 	var content := VBoxContainer.new()
-	content.add_theme_constant_override("separation", 16)
+	content.add_theme_constant_override("separation", 14)
 	margin.add_child(content)
 
+	var header_card := _make_card("HeaderCard", Color("#FFFDFC"), 34)
+	content.add_child(header_card)
+	var header_stack := VBoxContainer.new()
+	header_stack.add_theme_constant_override("separation", 8)
+	header_card.add_child(header_stack)
+
 	var title := Label.new()
-	title.text = "KHU VƯỜN BỐN MÙA"
+	title.text = "VƯỜN MÈO"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", _font_size(46))
-	title.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
-	content.add_child(title)
+	title.add_theme_font_size_override("font_size", _font_size(44))
+	title.add_theme_color_override("font_color", _text_color(UiTheme.INK, UiTheme.INK))
+	header_stack.add_child(title)
 
 	var subtitle := Label.new()
-	subtitle.text = "Level %s · Chạm, chạm đôi và kéo" % str(level.get("id", ""))
+	subtitle.text = "Màn %s  ·  tìm một mèo trong mỗi vùng" % str(level.get("id", ""))
 	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	subtitle.add_theme_font_size_override("font_size", _font_size(25))
-	subtitle.add_theme_color_override("font_color", _text_color(Color("#667085"), Color("#667085")))
-	content.add_child(subtitle)
+	subtitle.add_theme_color_override("font_color", _text_color(UiTheme.MUTED_INK, UiTheme.MUTED_INK))
+	header_stack.add_child(subtitle)
 
 	var top_bar := HBoxContainer.new()
 	top_bar.add_theme_constant_override("separation", 20)
-	content.add_child(top_bar)
+	header_stack.add_child(top_bar)
 
 	hearts_label = Label.new()
 	hearts_label.name = "HeartsLabel"
 	hearts_label.add_theme_font_size_override("font_size", _font_size(30))
-	hearts_label.add_theme_color_override("font_color", _text_color(Color("#B42318"), Color("#B42318")))
+	hearts_label.add_theme_color_override("font_color", _text_color(Color("#C65C55"), Color("#C65C55")))
 	top_bar.add_child(hearts_label)
 
 	var spacer := Control.new()
@@ -146,16 +154,18 @@ func _build_interface() -> void:
 	status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status_label.add_theme_font_size_override("font_size", _font_size(26))
-	status_label.add_theme_color_override("font_color", _text_color(Color("#475467"), Color("#475467")))
+	status_label.add_theme_color_override("font_color", _text_color(UiTheme.MUTED_INK, UiTheme.MUTED_INK))
 	top_bar.add_child(status_label)
 
 	tutorial_label = Label.new()
 	tutorial_label.name = "TutorialLabel"
 	tutorial_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	tutorial_label.add_theme_font_size_override("font_size", _font_size(24))
-	tutorial_label.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
-	content.add_child(tutorial_label)
+	tutorial_label.add_theme_color_override("font_color", _text_color(UiTheme.INK, UiTheme.INK))
+	header_stack.add_child(tutorial_label)
 
+	var rule_card := _make_card("RuleCard", Color("#FFF9F4"), 28)
+	content.add_child(rule_card)
 	var rules := GridContainer.new()
 	rules.name = "RuleStrip"
 	rules.columns = 2
@@ -166,13 +176,15 @@ func _build_interface() -> void:
 		rule.text = rule_text
 		rule.custom_minimum_size = Vector2(460, 36)
 		rule.add_theme_font_size_override("font_size", _font_size(22))
-		rule.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
+		rule.add_theme_color_override("font_color", _text_color(UiTheme.INK, UiTheme.INK))
 		rules.add_child(rule)
-	content.add_child(rules)
+	rule_card.add_child(rules)
 
+	var board_card := _make_card("BoardCard", Color.WHITE, 30)
+	content.add_child(board_card)
 	var board_center := CenterContainer.new()
 	board_center.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	content.add_child(board_center)
+	board_card.add_child(board_center)
 
 	board_view = BoardViewScript.new()
 	board_view.name = "BoardView"
@@ -190,7 +202,8 @@ func _build_interface() -> void:
 		slot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		slot.custom_minimum_size = Vector2(100, 54)
 		slot.add_theme_font_size_override("font_size", _font_size(23))
-		slot.add_theme_color_override("font_color", _text_color(Color("#344054"), Color("#344054")))
+		slot.add_theme_color_override("font_color", _text_color(UiTheme.INK, UiTheme.INK))
+		slot.add_theme_stylebox_override("normal", UiTheme.rounded(Color("#FFFDFC"), 20, UiTheme.LINE, 2))
 		region_progress.add_child(slot)
 		region_labels[region_id] = slot
 	content.add_child(region_progress)
@@ -200,38 +213,44 @@ func _build_interface() -> void:
 	guide.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	guide.add_theme_font_size_override("font_size", _font_size(23))
-	guide.add_theme_color_override("font_color", _text_color(Color("#667085"), Color("#667085")))
+	guide.add_theme_color_override("font_color", _text_color(UiTheme.MUTED_INK, UiTheme.MUTED_INK))
 	content.add_child(guide)
+
+	var bottom_dock := _make_card("BottomDock", Color("#FFFDFC"), 30)
+	content.add_child(bottom_dock)
+	var dock_stack := VBoxContainer.new()
+	dock_stack.add_theme_constant_override("separation", 12)
+	bottom_dock.add_child(dock_stack)
 
 	var actions := HBoxContainer.new()
 	actions.alignment = BoxContainer.ALIGNMENT_CENTER
 	actions.add_theme_constant_override("separation", 20)
-	content.add_child(actions)
+	dock_stack.add_child(actions)
 
-	undo_button = _make_button("UndoButton", "Hoàn tác", Color("#FFFFFF"), Color("#344054"))
+	undo_button = _make_button("UndoButton", "Hoàn tác", Color("#FFF8F2"), UiTheme.INK)
 	undo_button.pressed.connect(undo_last_x)
 	actions.add_child(undo_button)
 
-	hint_button = _make_button("HintButton", "Gợi ý", Color("#FFF7D6"), Color("#344054"))
+	hint_button = _make_button("HintButton", "Gợi ý", Color("#F6D886"), UiTheme.INK)
 	hint_button.pressed.connect(_on_hint_pressed)
 	actions.add_child(hint_button)
 
-	var restart_button := _make_button("RestartButton", "Chơi lại", Color("#344054"), Color.WHITE)
+	var restart_button := _make_button("RestartButton", "Chơi lại", UiTheme.CORAL, Color.WHITE)
 	restart_button.pressed.connect(request_restart)
 	actions.add_child(restart_button)
 
-	var home_button := _make_button("HomeButton", "Về Home", Color("#FFFFFF"), Color("#344054"))
+	var home_button := _make_button("HomeButton", "Về Home", Color("#FFF8F2"), UiTheme.INK)
 	home_button.pressed.connect(_on_home_pressed)
 	actions.add_child(home_button)
 
 	var info_actions := HBoxContainer.new()
 	info_actions.alignment = BoxContainer.ALIGNMENT_CENTER
 	info_actions.add_theme_constant_override("separation", 20)
-	content.add_child(info_actions)
-	var help_button := _make_button("HelpButton", "Trợ giúp", Color("#FFFFFF"), Color("#344054"))
+	dock_stack.add_child(info_actions)
+	var help_button := _make_button("HelpButton", "Trợ giúp", Color("#F0EDFF"), UiTheme.INK)
 	help_button.pressed.connect(_on_help_pressed)
 	info_actions.add_child(help_button)
-	var settings_button := _make_button("SettingsButton", "Cài đặt", Color("#FFFFFF"), Color("#344054"))
+	var settings_button := _make_button("SettingsButton", "Cài đặt", Color("#EAF7ED"), UiTheme.INK)
 	settings_button.pressed.connect(_on_settings_pressed)
 	info_actions.add_child(settings_button)
 
@@ -258,11 +277,23 @@ func _build_interface() -> void:
 	add_child(restart_dialog)
 
 
+func _make_card(node_name: String, fill: Color, radius: int) -> PanelContainer:
+	var panel := PanelContainer.new()
+	panel.name = node_name
+	var style := UiTheme.card(fill, radius)
+	style.content_margin_left = 18.0
+	style.content_margin_top = 14.0
+	style.content_margin_right = 18.0
+	style.content_margin_bottom = 14.0
+	panel.add_theme_stylebox_override("panel", style)
+	return panel
+
+
 func _make_button(node_name: String, text_value: String, fill: Color, ink: Color) -> Button:
 	var button := Button.new()
 	button.name = node_name
 	button.text = text_value
-	button.custom_minimum_size = Vector2(210.0, 84.0)
+	button.custom_minimum_size = Vector2(210.0, 78.0)
 	button.add_theme_font_size_override("font_size", _font_size(27))
 	button.add_theme_color_override("font_color", _text_color(ink, ink))
 	button.add_theme_color_override("font_hover_color", _text_color(ink, ink))
@@ -276,9 +307,12 @@ func _make_button(node_name: String, text_value: String, fill: Color, ink: Color
 func _button_style(fill: Color) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = fill
-	style.border_color = Color("#D0D5DD")
+	style.border_color = UiTheme.LINE
 	style.set_border_width_all(2)
-	style.set_corner_radius_all(22)
+	style.set_corner_radius_all(28)
+	style.shadow_color = Color(0.35, 0.22, 0.18, 0.08)
+	style.shadow_size = 6
+	style.shadow_offset = Vector2(0, 4)
 	style.content_margin_left = 28.0
 	style.content_margin_right = 28.0
 	return style

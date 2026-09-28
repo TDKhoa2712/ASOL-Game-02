@@ -1,31 +1,69 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/pastel_backdrop.gd" id="1_backdrop"]
 
 [sub_resource type="StyleBoxFlat" id="StylePanel"]
-bg_color = Color(0.972549, 0.960784, 0.92549, 1)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
+bg_color = Color(1, 0.992157, 0.984314, 0.96)
+corner_radius_top_left = 44
+corner_radius_top_right = 44
+corner_radius_bottom_right = 44
+corner_radius_bottom_left = 44
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.878431, 0.839216, 0.760784, 1)
-content_margin_left = 28.0
-content_margin_top = 28.0
-content_margin_right = 28.0
-content_margin_bottom = 28.0
+border_color = Color(0.917647, 0.854902, 0.807843, 1)
+shadow_color = Color(0.35, 0.22, 0.18, 0.12)
+shadow_size = 18
+shadow_offset = Vector2(0, 10)
+content_margin_left = 44.0
+content_margin_top = 44.0
+content_margin_right = 44.0
+content_margin_bottom = 44.0
 
 [sub_resource type="StyleBoxFlat" id="StyleButton"]
-bg_color = Color(0.956863, 0.576471, 0.352941, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+bg_color = Color(0.94902, 0.584314, 0.392157, 1)
+corner_radius_top_left = 36
+corner_radius_top_right = 36
+corner_radius_bottom_right = 36
+corner_radius_bottom_left = 36
+shadow_color = Color(0.55, 0.31, 0.2, 0.2)
+shadow_size = 12
+shadow_offset = Vector2(0, 7)
 content_margin_left = 18.0
 content_margin_top = 12.0
 content_margin_right = 18.0
 content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleHero"]
+bg_color = Color(0.968627, 0.929412, 0.898039, 1)
+corner_radius_top_left = 28
+corner_radius_top_right = 28
+corner_radius_bottom_right = 28
+corner_radius_bottom_left = 28
+content_margin_left = 20.0
+content_margin_top = 18.0
+content_margin_right = 20.0
+content_margin_bottom = 18.0
+
+[sub_resource type="StyleBoxFlat" id="StyleSecondary"]
+bg_color = Color(0.537255, 0.619608, 0.941176, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleQuiet"]
+bg_color = Color(1, 1, 1, 0.88)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.905882, 0.839216, 0.788235, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
 
 [node name="Home" type="Control"]
 layout_mode = 3
@@ -36,7 +74,7 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/screen_id = "home"
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Backdrop" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,68 +82,114 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.92549, 0.905882, 0.854902, 1)
+script = ExtResource("1_backdrop")
 
-[node name="SafeArea" type="MarginContainer" parent="."]
+[node name="SafeArea" type="Control" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 54.0
+offset_top = 70.0
+offset_right = -54.0
+offset_bottom = -66.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 32
-theme_override_constants/margin_top = 32
-theme_override_constants/margin_right = 32
-theme_override_constants/margin_bottom = 32
+
+[node name="TopBar" type="HBoxContainer" parent="SafeArea"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 80.0
+grow_horizontal = 2
+
+[node name="ProfileLabel" type="Label" parent="SafeArea/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
+theme_override_font_sizes/font_size = 23
+text = "✦  VƯỜN NHỎ"
+
+[node name="Spacer" type="Control" parent="SafeArea/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SavedLabel" type="Label" parent="SafeArea/TopBar"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
+theme_override_font_sizes/font_size = 23
+text = "●  ĐÃ LƯU"
 
 [node name="Content" type="PanelContainer" parent="SafeArea"]
-custom_minimum_size = Vector2(0, 420)
-layout_mode = 2
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.08
+anchor_top = 0.2
+anchor_right = 0.92
+anchor_bottom = 0.92
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_styles/panel = SubResource("StylePanel")
 
 [node name="Stack" type="VBoxContainer" parent="SafeArea/Content"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 22
+alignment = 1
+
+[node name="HeroCard" type="PanelContainer" parent="SafeArea/Content/Stack"]
+custom_minimum_size = Vector2(0, 118)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleHero")
+
+
 
 [node name="Title" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.203922, 0.25098, 0.341176, 1)
-theme_override_font_sizes/font_size = 42
-text = "Mèo Logic"
+theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
+theme_override_font_sizes/font_size = 64
+text = "MÈO LOGIC"
 horizontal_alignment = 1
 
 [node name="CurrentLevelLabel" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.439216, 0.52549, 1)
-theme_override_font_sizes/font_size = 22
+theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
+theme_override_font_sizes/font_size = 26
 text = "Level hiện tại: 1"
 horizontal_alignment = 1
 
 [node name="PlayButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 64)
+custom_minimum_size = Vector2(240, 92)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 30
 theme_override_styles/normal = SubResource("StyleButton")
 text = "Chơi / Tiếp tục"
 tooltip_text = "Mở level hiện tại hoặc tiếp tục lượt đang lưu"
 
 [node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 52)
+custom_minimum_size = Vector2(240, 76)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_styles/normal = SubResource("StyleSecondary")
+theme_override_styles/hover = SubResource("StyleSecondary")
+theme_override_styles/pressed = SubResource("StyleSecondary")
 text = "Trợ giúp / Luật"
 tooltip_text = "Xem luật hàng, cột, vùng và cử chỉ"
 
 [node name="SettingsButton" type="Button" parent="SafeArea/Content/Stack"]
-custom_minimum_size = Vector2(240, 52)
+custom_minimum_size = Vector2(240, 76)
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 25
+theme_override_colors/font_color = Color(0.427451, 0.290196, 0.270588, 1)
+theme_override_styles/normal = SubResource("StyleQuiet")
+theme_override_styles/hover = SubResource("StyleQuiet")
+theme_override_styles/pressed = SubResource("StyleQuiet")
 text = "Cài đặt"
 tooltip_text = "Âm thanh, rung, giảm chuyển động và phân biệt vùng"
 
 [node name="ProgressHint" type="Label" parent="SafeArea/Content/Stack"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.439216, 0.52549, 1)
+theme_override_colors/font_color = Color(0.556863, 0.439216, 0.419608, 1)
+theme_override_font_sizes/font_size = 21
 text = "Tiến trình được lưu tự động"
 horizontal_alignment = 1

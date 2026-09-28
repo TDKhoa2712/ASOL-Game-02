@@ -27,12 +27,28 @@ func _capture() -> void:
 		_cleanup(screen, profile)
 		quit(1)
 		return
+	screen.get_node("ScreenHost/Home/SafeArea/Content/Stack/SettingsButton").pressed.emit()
+	await process_frame
+	if not await _save_frame(output_dir.path_join("settings_home.png")):
+		_cleanup(screen, profile)
+		quit(1)
+		return
+	screen.get_node("ScreenHost/Settings/SafeArea/Content/Stack/BackButton").pressed.emit()
+	await process_frame
 	screen.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
 	if not await _save_frame(output_dir.path_join("puzzle.png")):
 		_cleanup(screen, profile)
 		quit(1)
 		return
+	screen.get_node("ScreenHost/BoardScreen").find_child("SettingsButton", true, false).pressed.emit()
+	await process_frame
+	if not await _save_frame(output_dir.path_join("settings_board.png")):
+		_cleanup(screen, profile)
+		quit(1)
+		return
+	screen.get_node("ScreenHost/Settings/SafeArea/Content/Stack/BackButton").pressed.emit()
+	await process_frame
 	for row in range(4):
 		screen.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
 	await process_frame

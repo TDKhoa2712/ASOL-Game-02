@@ -22,6 +22,9 @@ func _check_home() -> void:
 	var home = scene.instantiate()
 	_check(home.get_meta("screen_id", "") == "home", "Home has screen metadata")
 	_check(home.get_node_or_null("SafeArea") != null, "Home uses safe area container")
+	_check(home.get_node_or_null("Backdrop") != null, "Home has original pastel backdrop")
+	_check(home.get_node_or_null("SafeArea/TopBar") != null, "Home has floating top actions")
+	_check(home.get_node_or_null("SafeArea/Content/Stack/HeroCard") != null, "Home content has a hero card")
 	var content = home.get_node_or_null("SafeArea/Content")
 	var stack = home.get_node_or_null("SafeArea/Content/Stack")
 	_check(stack != null, "Home has content stack")
@@ -32,6 +35,10 @@ func _check_home() -> void:
 		_check(stack != null and stack.get_node_or_null(child_name) != null, "Home stack has %s" % child_name)
 	_check(stack != null and stack.get_node("PlayButton").text == "Chơi / Tiếp tục", "Home Play label is explicit")
 	_check(stack != null and _large_enough(stack.get_node("PlayButton")), "Home Play meets touch target")
+	if stack != null:
+		var play: Button = stack.get_node("PlayButton")
+		var play_style: StyleBox = play.get_theme_stylebox("normal")
+		_check(play_style is StyleBoxFlat and play_style.corner_radius_top_left >= 28, "Home Play uses a rounded primary style")
 	home.free()
 
 func _check_result(path: String, screen_id: String, action_name: String, action_text: String) -> void:

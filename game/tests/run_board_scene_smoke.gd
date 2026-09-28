@@ -32,6 +32,10 @@ func _run() -> void:
 		failures
 	)
 	for node_name in [
+		"HeaderCard",
+		"RuleCard",
+		"BoardCard",
+		"BottomDock",
 		"HeartsLabel",
 		"StatusLabel",
 		"BoardView",
