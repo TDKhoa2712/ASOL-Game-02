@@ -1,14 +1,22 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-28. Mục tiêu phiên này: tích hợp bản UI tham chiếu đầu cho Home, Puzzle/Board và Settings trên R1 hiện có. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-28. Mục tiêu phiên này: làm sạch Git và artefact project sau khi tích hợp bản UI tham chiếu đầu. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
 
 ## Nền hiện tại
 
-- `dev` tại `501c797` đã có code R1 bốn level và đã tích hợp cải tổ pipeline.
+- `dev` tại `3bce30b` đã có code R1 bốn level, cải tổ pipeline và UI tham chiếu đầu.
 - UI tham chiếu đã fast-forward từ `codex/ui-reference-style` vào `dev` qua hai commit `0798f9f` và `c1ebc9d`; revision code tích hợp là `c1ebc9d`.
 - Cải tổ đã được tích hợp từ `codex/pipeline-cleanup` vào dev. Tag `pre-reset-pipeline-2026-09-27` bảo toàn hồ sơ đã commit. [Cách tra lịch sử](HISTORY.md).
-- R1-E code tại `4675e20` và trạng thái tại `a1e8a9f` đã fast-forward vào `dev`. Có sửa sẵn ngoài phạm vi ở `game/scripts/board_view.gd`, hai config lạc tên và bản nháp `refactor/AGENTS.md`; giữ nguyên, không đưa vào commit R1-E. Test dưới đây chạy trên workspace gồm sửa sẵn đó.
+- R1-E code tại `4675e20` và trạng thái tại `a1e8a9f` đã fast-forward vào `dev`. Phần màu vùng F tồn đọng đã được bảo toàn riêng tại `3047ef9`; hai config lạc tên và bản nháp `refactor/AGENTS.md` đã được gỡ trong đợt làm sạch.
 - `main` giữ mốc hiện có, không mặc định là bản phát hành. Không thay stash/remote hoặc tích hợp nhánh trong đợt này.
+
+## Làm sạch Git/project
+
+Nhánh `codex/git-project-cleanup` có mốc code và ignore sạch tại `607d872` (`3047ef9` bảo toàn màu vùng F, `607d872` ignore thư mục đính kèm Codex). Đã xóa năm nhánh local cũ đã nằm trọn trong `dev`; giữ `dev`, `main` và nhánh cleanup hiện hành. `git fsck --no-dangling` không báo lỗi; repository không có remote nên không push.
+
+Đã gỡ build Android/toolchain cũ, cache Godot/Python, thư mục đính kèm, hai config sai tên, bản nháp AGENTS lỗi mã hóa, ảnh nháp trùng, script dùng một lần và log verification cũ không còn cần; giải phóng khoảng 242 MB. Giữ `.codegraph/`, `.claude/settings.local.json`, ảnh UI cuối và các log đang được STATUS tham chiếu. Working tree không còn file tracked/untracked tồn đọng.
+
+Kiểm chứng trên `607d872`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 7,53 giây; [log](../scratch/verification/20260928T084349.521716Z.txt) ghi source SHA256 `0362557a397af1b26fe5ffac56e9157a9a0708f60f857a4b772cb231c2b8916f` và working tree sạch. Có hai full run (baseline và sau cleanup), không có regression mở lại, không có thời gian chờ; khoảng 10 phút từ khảo sát đến nghiệm thu. Không chạy GUI vì đợt này không đổi UI/input/điều hướng.
 
 ## Kết quả pipeline
 
