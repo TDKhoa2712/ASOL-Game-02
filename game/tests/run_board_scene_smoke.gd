@@ -59,8 +59,8 @@ func _run() -> void:
 	_expect(status.get_global_rect().end.x <= 1080.0, "Status label is clipped", failures)
 	if rules != null and regions != null:
 		_expect(rules.get_global_rect().end.y < board_view.get_global_rect().position.y, "Rules precede board", failures)
-		_expect(regions.get_global_rect().position.y > board_view.get_global_rect().end.y, "Region progress follows board", failures)
-		_expect(regions.get_global_rect().end.y <= 1920.0, "Region progress is visible", failures)
+		_expect(regions.get_global_rect().end.y < board_view.get_global_rect().position.y, "Region progress precedes board", failures)
+		_expect(regions.get_global_rect().position.y >= 0.0, "Region progress is visible", failures)
 	for node_name in ["UndoButton", "HintButton", "RestartButton", "HomeButton", "HelpButton", "SettingsButton"]:
 		var action: Control = screen.find_child(node_name, true, false)
 		_expect(action.get_global_rect().end.y <= 1920.0, "%s is not clipped below screen" % node_name, failures)

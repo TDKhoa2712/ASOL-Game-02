@@ -1,23 +1,23 @@
 extends Control
 
 
-const REGION_COLORS := {
-	"A": Color("#F9D8C5"),
-	"B": Color("#CFE8E1"),
-	"C": Color("#D9D6F4"),
-	"D": Color("#F6E7AC"),
-	"F": Color("#63520d")
-}
+const UiTheme = preload("res://scripts/ui_theme.gd")
+const UiTokens = preload("res://scripts/ui_tokens.gd")
+const CAT_TEXTURE_PATH := "res://assets/ui/board/cat_face_cell.png"
+
+const ERROR := Color("#E53935")
 const INK := Color("#344054")
-const GRID := Color("#667085")
-const ERROR := Color("#D64550")
 const CAT := Color("#A56643")
 const CAT_LIGHT := Color("#F7CFA8")
 
+# Option to show region letters for accessibility
+var show_region_letters: bool = false
 
 var engine
 var level: Dictionary = {}
 var _touch_in_progress := false
+var _cat_texture: Texture2D = null
+var _cell_styles: Dictionary = {}
 
 
 func _ready() -> void:
@@ -25,6 +25,8 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	set_process(true)
+	if ResourceLoader.exists(CAT_TEXTURE_PATH):
+		_cat_texture = load(CAT_TEXTURE_PATH)
 
 
 func configure(gesture_engine, level_data: Dictionary) -> void:
@@ -94,58 +96,28 @@ func _move_pointer(pointer_id: int, local_position: Vector2) -> void:
 	engine.move_pointer(pointer_id, cell, _to_contract_position(local_position))
 
 
+func _cell_gap(board_width: float, count: int) -> float:
+	return maxf(3.0, round(board_width * 0.008))
+
+
 func _cell_at(local_position: Vector2) -> Array:
 	var board_rect := _board_rect()
 	if not board_rect.has_point(local_position):
 		return []
-	var cell_size := board_rect.size.x / float(level["size"])
-	return [
-		mini(int((local_position.y - board_rect.position.y) / cell_size), int(level["size"]) - 1),
-		mini(int((local_position.x - board_rect.position.x) / cell_size), int(level["size"]) - 1),
-	]
+	var count := int(level.get("size", 4))
+	if count <= 0:
+		return []
+	var gap := _cell_gap(board_rect.size.x, count)
+	var step := (board_rect.size.x - gap * (count - 1)) / float(count) + gap
+	var col := clampi(int((local_position.x - board_rect.position.x) / step), 0, count - 1)
+	var row := clampi(int((local_position.y - board_rect.position.y) / step), 0, count - 1)
+	return [row, col]
 
 
 func _to_contract_position(local_position: Vector2) -> Vector2:
 	var board_rect := _board_rect()
 	var scale := float(engine.contract.get("cellLogicalPx", 100)) / (board_rect.size.x / float(level["size"]))
 	return (local_position - board_rect.position) * scale
-
-
-func _draw() -> void:
-	if level.is_empty() or engine == null:
-		return
-	var board_rect := _board_rect()
-	var count := int(level["size"])
-	var cell_size := board_rect.size.x / float(count)
-	draw_rect(board_rect.grow(7.0), Color("#FFFFFF"), true)
-	draw_rect(board_rect.grow(7.0), Color("#D0D5DD"), false, 3.0)
-
-	for row in range(count):
-		for column in range(count):
-			var rect := Rect2(
-				board_rect.position + Vector2(column, row) * cell_size,
-				Vector2.ONE * cell_size
-			)
-			var region := _region_at(row, column)
-			draw_rect(rect, REGION_COLORS.get(region, Color("#F2F4F7")), true)
-			_draw_region_pattern(rect, region, row, column)
-			_draw_cell_state(rect, [row, column])
-
-	for index in range(count + 1):
-		var offset := float(index) * cell_size
-		draw_line(
-			board_rect.position + Vector2(offset, 0.0),
-			board_rect.position + Vector2(offset, board_rect.size.y),
-			GRID,
-			2.0
-		)
-		draw_line(
-			board_rect.position + Vector2(0.0, offset),
-			board_rect.position + Vector2(board_rect.size.x, offset),
-			GRID,
-			2.0
-		)
-	_draw_region_borders(board_rect, cell_size, count)
 
 
 func _board_rect() -> Rect2:
@@ -157,42 +129,68 @@ func _region_at(row: int, column: int) -> String:
 	return str(level["regions"][row]).substr(column, 1)
 
 
-func _draw_region_pattern(rect: Rect2, region: String, row: int, column: int) -> void:
-	var accent := Color("#FFFFFF80")
-	if (row + column) % 2 == 0:
-		draw_circle(rect.position + rect.size * Vector2(0.22, 0.23), rect.size.x * 0.035, accent)
-	if region in ["B", "D"]:
-		draw_line(
-			rect.position + rect.size * Vector2(0.72, 0.14),
-			rect.position + rect.size * Vector2(0.88, 0.30),
-			accent,
-			5.0
-		)
-	var font := ThemeDB.fallback_font
-	draw_string(
-		font,
-		rect.position + Vector2(12.0, rect.size.y - 12.0),
-		region,
-		HORIZONTAL_ALIGNMENT_LEFT,
-		-1.0,
-		18,
-		Color("#47546766")
-	)
+func _get_region_color(region: String) -> Color:
+	var idx := 0
+	if region.length() > 0:
+		var code := region.unicode_at(0)
+		if code >= 65 and code <= 90:
+			idx = code - 65
+		elif code >= 48 and code <= 57:
+			idx = code - 48
+	return UiTokens.REGION_PALETTE[idx % UiTokens.REGION_PALETTE.size()]
 
 
-func _draw_region_borders(board_rect: Rect2, cell_size: float, count: int) -> void:
+func _get_cell_style(color: Color, radius: int) -> StyleBoxFlat:
+	var key := "%s_%d" % [color.to_html(), radius]
+	if not _cell_styles.has(key):
+		var s := StyleBoxFlat.new()
+		s.bg_color = color
+		s.set_corner_radius_all(radius)
+		_cell_styles[key] = s
+	return _cell_styles[key]
+
+
+func _draw() -> void:
+	if level.is_empty() or engine == null:
+		return
+	var board_rect := _board_rect()
+	var count := int(level["size"])
+	if count <= 0:
+		return
+
+	# Card background (white rounded container)
+	var card_radius: int = maxi(16, int(board_rect.size.x * 0.04))
+	var card_style := _get_cell_style(Color.WHITE, card_radius)
+	draw_style_box(card_style, board_rect.grow(8.0))
+
+	var gap := _cell_gap(board_rect.size.x, count)
+	var cell_size := (board_rect.size.x - gap * (count - 1)) / float(count)
+	var corner_radius: int = maxi(4, int(cell_size * 0.14))
+
 	for row in range(count):
 		for column in range(count):
-			var top_left := board_rect.position + Vector2(column, row) * cell_size
+			var cell_pos := board_rect.position + Vector2(column, row) * (cell_size + gap)
+			var rect := Rect2(cell_pos, Vector2.ONE * cell_size)
 			var region := _region_at(row, column)
-			if row == 0 or _region_at(row - 1, column) != region:
-				draw_line(top_left, top_left + Vector2(cell_size, 0.0), INK, 7.0)
-			if column == 0 or _region_at(row, column - 1) != region:
-				draw_line(top_left, top_left + Vector2(0.0, cell_size), INK, 7.0)
-			if row == count - 1:
-				draw_line(top_left + Vector2(0.0, cell_size), top_left + Vector2(cell_size, cell_size), INK, 7.0)
-			if column == count - 1:
-				draw_line(top_left + Vector2(cell_size, 0.0), top_left + Vector2(cell_size, cell_size), INK, 7.0)
+			var cell_color := _get_region_color(region)
+
+			# Flat colored cell with rounded corners
+			draw_style_box(_get_cell_style(cell_color, corner_radius), rect)
+
+			# Accessibility: optional region letters
+			if show_region_letters:
+				var font := ThemeDB.fallback_font
+				draw_string(
+					font,
+					rect.position + Vector2(8.0, rect.size.y - 8.0),
+					region,
+					HORIZONTAL_ALIGNMENT_LEFT,
+					-1.0,
+					maxi(12, int(cell_size * 0.22)),
+					Color(0.2, 0.2, 0.2, 0.45)
+				)
+
+			_draw_cell_state(rect, [row, column])
 
 
 func _draw_cell_state(rect: Rect2, cell: Array) -> void:
@@ -204,29 +202,39 @@ func _draw_cell_state(rect: Rect2, cell: Array) -> void:
 
 
 func _draw_x(rect: Rect2, is_error: bool) -> void:
-	var color := ERROR if is_error else INK
-	var padding := rect.size.x * 0.31
-	draw_line(rect.position + Vector2(padding, padding), rect.end - Vector2(padding, padding), color, 10.0, true)
+	var color := ERROR if is_error else Color(1.0, 1.0, 1.0, 0.88)
+	var padding := rect.size.x * 0.28
+	var thickness := maxf(4.0, rect.size.x * 0.09)
+	draw_line(rect.position + Vector2(padding, padding), rect.end - Vector2(padding, padding), color, thickness, true)
 	draw_line(
 		rect.position + Vector2(rect.size.x - padding, padding),
 		rect.position + Vector2(padding, rect.size.y - padding),
 		color,
-		10.0,
+		thickness,
 		true
 	)
 	if is_error:
 		var badge_center := rect.position + rect.size * Vector2(0.78, 0.22)
 		draw_circle(badge_center, rect.size.x * 0.09, Color.WHITE)
-		draw_arc(badge_center, rect.size.x * 0.05, PI, TAU, 12, ERROR, 4.0)
-		draw_rect(Rect2(badge_center + Vector2(-7.0, 0.0), Vector2(14.0, 11.0)), ERROR, true)
+		draw_circle(badge_center, rect.size.x * 0.07, ERROR)
 
 
 func _draw_cat(rect: Rect2, is_given: bool) -> void:
-	var center := rect.get_center()
-	var radius := rect.size.x * 0.22
-	var outline := Color("#7F4A2F")
 	if is_given:
-		draw_circle(center, radius * 1.45, Color("#FFF7D6"))
+		draw_circle(rect.get_center(), rect.size.x * 0.38, Color("#FFF7D6"))
+
+	if _cat_texture != null:
+		var cat_size := rect.size * 0.74
+		var cat_rect := Rect2(rect.position + (rect.size - cat_size) * 0.5, cat_size)
+		draw_texture_rect(_cat_texture, cat_rect, false)
+	else:
+		_draw_cat_procedural(rect)
+
+
+func _draw_cat_procedural(rect: Rect2) -> void:
+	var center := rect.get_center()
+	var radius := rect.size.x * 0.25
+	var outline := Color("#7F4A2F")
 	var left_ear := PackedVector2Array([
 		center + Vector2(-radius * 0.85, -radius * 0.35),
 		center + Vector2(-radius * 0.68, -radius * 1.25),
