@@ -6,7 +6,7 @@ Cập nhật 2026-09-28. Mục tiêu phiên này: hoàn thiện R1-E Settings/ac
 
 - `dev` tại `501c797` đã có code R1 bốn level và đã tích hợp cải tổ pipeline.
 - Cải tổ đã được tích hợp từ `codex/pipeline-cleanup` vào dev. Tag `pre-reset-pipeline-2026-09-27` bảo toàn hồ sơ đã commit. [Cách tra lịch sử](HISTORY.md).
-- R1-E đã commit tại `4675e20` trên nhánh `codex/r1-e-settings`, nền `501c797`. Có sửa sẵn ngoài phạm vi ở `game/scripts/board_view.gd`, hai config lạc tên và bản nháp `refactor/AGENTS.md`; giữ nguyên, không đưa vào commit R1-E. Test dưới đây chạy trên workspace gồm sửa sẵn đó.
+- R1-E code tại `4675e20` và trạng thái tại `a1e8a9f` đã fast-forward vào `dev`. Có sửa sẵn ngoài phạm vi ở `game/scripts/board_view.gd`, hai config lạc tên và bản nháp `refactor/AGENTS.md`; giữ nguyên, không đưa vào commit R1-E. Test dưới đây chạy trên workspace gồm sửa sẵn đó.
 - `main` giữ mốc hiện có, không mặc định là bản phát hành. Không thay stash/remote hoặc tích hợp nhánh trong đợt này.
 
 ## Kết quả pipeline
@@ -21,9 +21,9 @@ Tự review phát hiện và sửa hai tình huống runner báo đạt sai (l�
 
 Khảo sát cũ ở `1600898` được giữ trong tag; các dòng sau phân biệt bản sửa đã có với phần chưa nghiệm thu. [Nhật ký R1](plans/R1-progress.md) là bằng chứng lịch sử, không phải trạng thái hiện hành.
 
-R1-E hiện tại, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 8,31 giây; [log](../scratch/verification/20260928T051618.801160Z.txt) ghi revision nền `501c797`, nhánh, working diff và fingerprint nguồn tương đương commit code `4675e20`. Regression `run_settings_tests.gd` đã tái hiện FAIL rồi PASS: store cô lập, signal toggle thật, persistence, Back route, chữ lớn và tương phản trên board. GUI desktop từ entry scene đã kiểm Home → Settings → Back, Home → Puzzle → Settings → Back, bật/tắt Large Text, chạm/đánh X và chạm lại/xóa X; chưa chạy trọn bốn level hoặc Android.
+R1-E hiện tại, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run sau tích hợp trên `dev` 7,59 giây; [log](../scratch/verification/20260928T052302.150584Z.txt) ghi revision `a1e8a9f`, working diff và fingerprint nguồn. Regression `run_settings_tests.gd` đã tái hiện FAIL rồi PASS: store cô lập, signal toggle thật, persistence, Back route, chữ lớn và tương phản trên board. GUI desktop từ entry scene đã kiểm Home → Settings → Back, Home → Puzzle → Settings → Back, bật/tắt Large Text, chạm/đánh X và chạm lại/xóa X; chưa chạy trọn bốn level hoặc Android.
 
-Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đến full run đầu; hai full run do self-review phát hiện thêm IO profile ở BoardScreen; một regression được mở lại; không có thời gian chờ nội bộ, Android vẫn chờ thiết bị.
+Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đến full run đầu; bốn full run tổng cộng (hai vòng implementation/self-review, một trước và một sau tích hợp); một regression được mở lại; không có thời gian chờ nội bộ, Android vẫn chờ thiết bị.
 
 | Vấn đề cũ | Trạng thái và bước tiếp |
 | --- | --- |
@@ -42,6 +42,7 @@ Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đ�
 | Sandbox shell lỗi khởi tạo trong phiên này | Agent dùng cơ chế quyền hiện có; chủ dự án xử lý môi trường ứng dụng nếu cần | Lệnh ngoài sandbox đã chạy; không tiếp tục thăm dò cùng lỗi. Khi môi trường đổi mới kiểm lại sandbox. Lỗi GUI cũ chưa được kiểm lại trong đợt pipeline |
 | R1 chưa có đủ hành trình GUI/gesture trên build được chốt | Agent | Đã kiểm Settings, Back route và tap/xóa X từ entry scene desktop; tiếp tục fresh → bốn level, Fail/Retry, Home/resume và cuối campaign trên revision bàn giao |
 | Android QA chưa đủ; lần kiểm 2026-09-25 chưa có thiết bị ADB | Chủ dự án + agent | Chủ dự án kết nối/ủy quyền thiết bị hoặc nhận build để thử; agent chuẩn bị fresh/resume/Win/Fail/retry/cuối campaign, ghi model/OS/build/kết quả. Chỉ kiểm lại ADB khi thiết bị sẵn sàng |
+| Không thể push `dev`: repository chưa cấu hình Git remote và không có URL trong tài liệu | Chủ dự án | Cung cấp URL remote (và tên nếu không dùng `origin`); agent cấu hình rồi push `dev` và nhánh R1-E. Thử lại khi có endpoint |
 | Nguồn lực iOS và người thử R2 | Chủ dự án | Xác nhận iPhone/Mac/signing trước R4 và người thử trước R2; không chặn công việc R1 độc lập |
 
-Bước tiếp theo: bàn giao R1-E trên nhánh ngắn, sau đó nghiệm thu trọn hành trình desktop và Android theo [kế hoạch R1](plans/R1-playable-loop.md). Không tuyên bố R1 hoàn thành hay đủ điều kiện phát hành.
+Bước tiếp theo: cấu hình remote để push `dev`, sau đó nghiệm thu trọn hành trình desktop và Android theo [kế hoạch R1](plans/R1-playable-loop.md). Không tuyên bố R1 hoàn thành hay đủ điều kiện phát hành.
