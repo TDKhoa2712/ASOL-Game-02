@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" path="res://assets/ui/icons/icon_text_size.svg" id="5_text"]
 [ext_resource type="Texture2D" path="res://assets/ui/icons/icon_close.svg" id="6_close"]
 [ext_resource type="Script" path="res://scripts/ui/pill_switch.gd" id="7_pill_switch"]
+[ext_resource type="Script" path="res://scripts/ui/settings_screen.gd" id="8_settings_screen"]
 
 [sub_resource type="StyleBoxFlat" id="StylePanel"]
 bg_color = Color(1, 0.992157, 0.984314, 0.98)
@@ -95,6 +96,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("8_settings_screen")
 metadata/screen_id = "settings"
 
 [node name="Backdrop" type="Control" parent="."]

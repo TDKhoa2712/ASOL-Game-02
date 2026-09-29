@@ -1,16 +1,18 @@
 class_name PillSwitch
 extends Button
 
-@export var on_color := Color("5DBB74")
-@export var off_color := Color("C9B8AD")
-@export var knob_color := Color.WHITE
-@export var pill_size := Vector2(64, 30)
+const SettingsUIConfig = preload("res://scripts/ui/settings_ui_config.gd")
+
+@export var on_color := SettingsUIConfig.SWITCH_ON
+@export var off_color := SettingsUIConfig.SWITCH_OFF
+@export var knob_color := SettingsUIConfig.SWITCH_KNOB
+@export var pill_size := SettingsUIConfig.PILL_SIZE
 @export var on_text := "ON"
 @export var off_text := "OFF"
-@export var font_size_px := 12
+@export var font_size_px := SettingsUIConfig.FONT_SIZE_PILL
 @export var icon_target: TextureRect
-@export var icon_on_color := Color("6D4A45")
-@export var icon_off_color := Color("B9A79C")
+@export var icon_on_color := SettingsUIConfig.ICON_ON
+@export var icon_off_color := SettingsUIConfig.ICON_OFF
 
 var _t: float = 0.0 # 0 = OFF, 1 = ON
 var _tween: Tween
