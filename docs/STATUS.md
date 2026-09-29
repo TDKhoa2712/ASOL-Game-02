@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-29. Mục tiêu: dọn phần không còn sử dụng sau chuyển **CanDoKu** và tích hợp local về `dev`, theo RST-009. Nền `b335b1891d1b9927e3b55f2ec8945dda252c779f`. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-29. Đã dọn phần không còn sử dụng sau chuyển **CanDoKu** và tích hợp local về `dev`, theo RST-009. Commit sản phẩm `93bc627`, fast-forward từ `b335b1891d1b9927e3b55f2ec8945dda252c779f`. Mục tiêu sản phẩm tiếp theo vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
 
 ## Dọn và tích hợp CanDoKu — 2026-09-29
 
@@ -8,6 +8,7 @@ Cập nhật 2026-09-29. Mục tiêu: dọn phần không còn sử dụng sau c
 - Trước tích hợp: **17/17 Godot suite, 8/8 Python game, 23/23 Python GDD, 7/7 runner, hai validator PASS**; [log](../scratch/verification/20260929T032029.887573Z.txt), exit 0, 8,80 giây, source SHA256 `a0b082fd8d53f4776a4d6cccd012d58b6cc2ff855339a68aef1182405014dffd`. Log ghi nền và diff thực tế; tài liệu trạng thái cập nhật sau kiểm, runtime không đổi.
 - Capture GPU từ bootstrap với profile runtime riêng đã chạy lại Home/Settings/Puzzle/Win/Fail; đã xem Home sau dọn, không mất tên hoặc các nút hiện hành. Ảnh ở `scratch/candoku-ui/`. Gesture cửa sổ thật/Android/iOS chưa kiểm; giới hạn Computer Use như mục dưới. Không báo nghiệm thu R1.
 - Bảy thay đổi import icon đang dùng của người dùng được giữ ngoài commit và mang theo checkout `dev`. Không push/phát hành.
+- Sau merge trên `dev` tại `93bc627`: full runner **PASS**, exit 0, 8,05 giây; [log tích hợp](../scratch/verification/20260929T032353.149784Z.txt) ghi revision và working diff bảy import được giữ. 17 suite Godot, ba nhóm Python và hai validator đều PASS. Hai full run cho lượt dọn/tích hợp; không có regression mở lại. Thời gian chờ chủ yếu do shell sandbox lỗi khởi tạo và cấp quyền; không giảm QA. Cập nhật STATUS sau log chỉ là văn bản.
 
 ## CanDoKu — chuyển đồng bộ GDD và client (trước lượt dọn)
 
