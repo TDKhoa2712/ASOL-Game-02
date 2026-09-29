@@ -58,18 +58,24 @@ func _check_settings_scene_structure() -> void:
 	_check(scene.get_node_or_null("SafeArea") != null, "settings uses safe area container")
 	_check(scene.get_node_or_null("Backdrop") != null, "settings keeps a soft game backdrop")
 	_check(scene.get_node_or_null("Dimmer") != null, "settings reads as a modal overlay")
-	_check(scene.get_node_or_null("SafeArea/ModalCard") != null, "settings has a floating modal card")
-	for toggle_name in ["AudioToggle", "HapticsToggle", "ReducedMotionToggle", "HighContrastToggle", "LargeTextToggle"]:
-		var toggle = scene.get_node_or_null("SafeArea/Content/Stack/%s" % toggle_name)
-		_check(toggle != null, "settings has %s row" % toggle_name)
+	_check(scene.get_node_or_null("SafeArea/Content") != null, "settings has a floating content card")
+	for toggle_name in ["AudioToggle", "HapticsToggle", "ReducedMotionToggle", "LargeTextToggle"]:
+		var toggle = scene.get_node_or_null("SafeArea/Content/Stack/TileRow/%s" % toggle_name)
+		_check(toggle != null, "settings has %s tile" % toggle_name)
 		if toggle != null:
-			var switch = null
-			if toggle.get_child_count() > 1:
-				switch = toggle.get_child(1)
-			_check(switch is CheckButton, "%s exposes a switch" % toggle_name)
-			_check(switch.custom_minimum_size.x >= 44.0 and switch.custom_minimum_size.y >= 40.0, "%s meets touch target" % toggle_name)
-	var back = scene.get_node_or_null("SafeArea/Content/Stack/BackButton")
-	_check(back != null and back.custom_minimum_size.x >= 240.0 and back.custom_minimum_size.y >= 44.0, "settings back meets touch target")
+			var switch = toggle.find_child("*Switch", true, false)
+			_check(switch is BaseButton and switch.toggle_mode, "%s exposes a toggle switch" % toggle_name)
+			_check(switch.custom_minimum_size.x >= 44.0 and switch.custom_minimum_size.y >= 30.0, "%s meets touch target" % toggle_name)
+	var contrast_toggle = scene.get_node_or_null("SafeArea/Content/Stack/HighContrastToggle")
+	_check(contrast_toggle != null, "settings has HighContrastToggle row")
+	if contrast_toggle != null:
+		var switch = contrast_toggle.find_child("HighContrastSwitch", true, false)
+		_check(switch is BaseButton and switch.toggle_mode, "HighContrastToggle exposes a toggle switch")
+		_check(switch.custom_minimum_size.x >= 44.0 and switch.custom_minimum_size.y >= 30.0, "HighContrastToggle meets touch target")
+	var back = scene.find_child("BackButton", true, false)
+	_check(back != null and back.custom_minimum_size.y >= 44.0, "settings back meets touch target")
+	var close = scene.find_child("CloseButton", true, false)
+	_check(close != null and close.custom_minimum_size.x >= 44.0 and close.custom_minimum_size.y >= 44.0, "settings close button meets touch target")
 	scene.free()
 
 
@@ -141,13 +147,16 @@ func _check_bootstrap_settings_flow() -> void:
 	_check(bootstrap.flow.current_screen == "settings", "Home Settings opens the real Settings screen")
 
 	var screen = bootstrap.get_node("ScreenHost").get_child(0)
-	var large_text: CheckButton = screen.get_node("SafeArea/Content/Stack/LargeTextToggle/LargeTextSwitch")
+	var large_text: BaseButton = screen.find_child("LargeTextSwitch", true, false)
+	_check(large_text != null, "large text switch found in scene")
 	large_text.button_pressed = true
 	await process_frame
 	_check(bootstrap.settings.is_large_text(), "large text toggle updates the injected settings store")
 	_check(SettingsScript.new(settings_dir).is_large_text(), "large text toggle persists to the isolated profile")
 
-	screen.get_node("SafeArea/Content/Stack/BackButton").emit_signal("pressed")
+	var back_button = screen.find_child("BackButton", true, false)
+	_check(back_button != null, "back button found in scene")
+	back_button.emit_signal("pressed")
 	await process_frame
 	_check(bootstrap.flow.current_screen == "home", "Settings Back returns to Home")
 

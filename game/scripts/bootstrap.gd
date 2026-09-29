@@ -272,29 +272,42 @@ func _make_button(label: String) -> Button:
 
 
 func _connect_settings_toggles(screen: Control) -> void:
-	var audio_switch = screen.get_node_or_null("SafeArea/Content/Stack/AudioToggle/AudioSwitch")
+	var audio_switch = screen.find_child("AudioSwitch", true, false)
 	if audio_switch != null:
 		audio_switch.button_pressed = settings.is_audio_enabled()
+		if audio_switch.has_method("sync_state"):
+			audio_switch.sync_state()
 		audio_switch.toggled.connect(_on_audio_toggled)
-	var haptics_switch = screen.get_node_or_null("SafeArea/Content/Stack/HapticsToggle/HapticsSwitch")
+	var haptics_switch = screen.find_child("HapticsSwitch", true, false)
 	if haptics_switch != null:
 		haptics_switch.button_pressed = settings.is_haptics_enabled()
+		if haptics_switch.has_method("sync_state"):
+			haptics_switch.sync_state()
 		haptics_switch.toggled.connect(_on_haptics_toggled)
-	var reduced_motion_switch = screen.get_node_or_null("SafeArea/Content/Stack/ReducedMotionToggle/ReducedMotionSwitch")
+	var reduced_motion_switch = screen.find_child("ReducedMotionSwitch", true, false)
 	if reduced_motion_switch != null:
 		reduced_motion_switch.button_pressed = settings.is_reduced_motion()
+		if reduced_motion_switch.has_method("sync_state"):
+			reduced_motion_switch.sync_state()
 		reduced_motion_switch.toggled.connect(_on_reduced_motion_toggled)
-	var high_contrast_switch = screen.get_node_or_null("SafeArea/Content/Stack/HighContrastToggle/HighContrastSwitch")
+	var high_contrast_switch = screen.find_child("HighContrastSwitch", true, false)
 	if high_contrast_switch != null:
 		high_contrast_switch.button_pressed = settings.is_high_contrast()
+		if high_contrast_switch.has_method("sync_state"):
+			high_contrast_switch.sync_state()
 		high_contrast_switch.toggled.connect(_on_high_contrast_toggled)
-	var large_text_switch = screen.get_node_or_null("SafeArea/Content/Stack/LargeTextToggle/LargeTextSwitch")
+	var large_text_switch = screen.find_child("LargeTextSwitch", true, false)
 	if large_text_switch != null:
 		large_text_switch.button_pressed = settings.is_large_text()
+		if large_text_switch.has_method("sync_state"):
+			large_text_switch.sync_state()
 		large_text_switch.toggled.connect(_on_large_text_toggled)
-	var back_button = screen.get_node_or_null("SafeArea/Content/Stack/BackButton")
+	var back_button = screen.find_child("BackButton", true, false)
 	if back_button != null:
 		back_button.pressed.connect(_on_action.bind("back"), CONNECT_DEFERRED)
+	var close_button = screen.find_child("CloseButton", true, false)
+	if close_button != null:
+		close_button.pressed.connect(_on_action.bind("back"), CONNECT_DEFERRED)
 
 
 func _on_audio_toggled(pressed: bool) -> void:

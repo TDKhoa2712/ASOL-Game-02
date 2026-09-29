@@ -270,28 +270,43 @@ func _build_interface() -> void:
 	help_btn.pressed.connect(_on_help_pressed)
 	top_bar.add_child(help_btn)
 
-	# Settings button (circular white, replaces Cài đặt)
+	# Restart button (circular white, positioned to the right of Help button)
+	var restart_btn := _make_circle_button("RestartButton", _icon_restart_tex, Vector2(88, 88))
+	restart_btn.pressed.connect(request_restart)
+	top_bar.add_child(restart_btn)
+
+	# Settings button (circular white)
 	var settings_btn := _make_circle_button("SettingsButton", _icon_settings_tex, Vector2(88, 88))
 	settings_btn.pressed.connect(_on_settings_pressed)
 	top_bar.add_child(settings_btn)
 
-	# 2. StatusRow: Pill tiến độ vùng + Pill lượt sai (3 cá vàng)
+	# 2. StatusRow: Pill tiến độ vùng + Pill lượt sai (kích thước nhỏ gọn)
 	var status_row := HBoxContainer.new()
 	status_row.name = "StatusRow"
 	status_row.add_theme_constant_override("separation", 16)
 	root_stack.add_child(status_row)
 
-	# Region progress pill
+	# Region progress pill (compact)
 	var region_pill := PanelContainer.new()
 	region_pill.name = "RegionProgressPill"
 	region_pill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	region_pill.add_theme_stylebox_override("panel", UiTokens.make_pill_style(Color.WHITE, UiTokens.SHADOW_SOFT, 8, Vector2(0, 3)))
+	var r_style := StyleBoxFlat.new()
+	r_style.bg_color = Color.WHITE
+	r_style.set_corner_radius_all(UiTokens.PILL_RADIUS)
+	r_style.shadow_color = UiTokens.SHADOW_SOFT
+	r_style.shadow_size = 8
+	r_style.shadow_offset = Vector2(0, 3)
+	r_style.content_margin_left = 18.0
+	r_style.content_margin_right = 18.0
+	r_style.content_margin_top = 8.0
+	r_style.content_margin_bottom = 8.0
+	region_pill.add_theme_stylebox_override("panel", r_style)
 	status_row.add_child(region_pill)
 
 	var region_hbox := HBoxContainer.new()
 	region_hbox.name = "RegionProgress"
 	region_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	region_hbox.add_theme_constant_override("separation", 12)
+	region_hbox.add_theme_constant_override("separation", 10)
 	region_pill.add_child(region_hbox)
 
 	region_labels.clear()
@@ -304,7 +319,7 @@ func _build_interface() -> void:
 		candy_icon.texture = _candy_progress_tex
 		candy_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		candy_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		candy_icon.custom_minimum_size = Vector2(46, 46)
+		candy_icon.custom_minimum_size = Vector2(34, 34)
 		var color := UiTokens.REGION_PALETTE[index % UiTokens.REGION_PALETTE.size()]
 		candy_icon.modulate = color.lerp(Color.WHITE, 0.35)
 		candy_icon.modulate.a = 0.65
@@ -318,15 +333,25 @@ func _build_interface() -> void:
 		candy_icon.add_child(slot_lbl)
 		region_labels[region_id] = slot_lbl
 
-	# Lives pill (Hearts / Hearts)
+	# Lives pill (Hearts compact)
 	var lives_pill := PanelContainer.new()
 	lives_pill.name = "LivesPill"
-	lives_pill.add_theme_stylebox_override("panel", UiTokens.make_pill_style(Color.WHITE, UiTokens.SHADOW_SOFT, 8, Vector2(0, 3)))
+	var l_style := StyleBoxFlat.new()
+	l_style.bg_color = Color.WHITE
+	l_style.set_corner_radius_all(UiTokens.PILL_RADIUS)
+	l_style.shadow_color = UiTokens.SHADOW_SOFT
+	l_style.shadow_size = 8
+	l_style.shadow_offset = Vector2(0, 3)
+	l_style.content_margin_left = 16.0
+	l_style.content_margin_right = 16.0
+	l_style.content_margin_top = 8.0
+	l_style.content_margin_bottom = 8.0
+	lives_pill.add_theme_stylebox_override("panel", l_style)
 	status_row.add_child(lives_pill)
 
 	var lives_hbox := HBoxContainer.new()
 	lives_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	lives_hbox.add_theme_constant_override("separation", 8)
+	lives_hbox.add_theme_constant_override("separation", 6)
 	lives_pill.add_child(lives_hbox)
 
 	life_icons.clear()
@@ -336,7 +361,7 @@ func _build_interface() -> void:
 		heart.texture = _life_heart_tex
 		heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		heart.custom_minimum_size = Vector2(48, 42)
+		heart.custom_minimum_size = Vector2(36, 30)
 		lives_hbox.add_child(heart)
 		life_icons.append(heart)
 
@@ -508,10 +533,6 @@ func _build_interface() -> void:
 		hint_button.add_child(badge_panel)
 	actions.add_child(hint_button)
 
-	var restart_button := _make_circle_button("RestartButton", _icon_restart_tex, Vector2(110, 110))
-	restart_button.pressed.connect(request_restart)
-	actions.add_child(restart_button)
-
 	# Restart confirmation dialog
 	restart_dialog = ConfirmationDialog.new()
 	restart_dialog.name = "RestartDialog"
@@ -540,22 +561,32 @@ func _make_circle_button(node_name: String, icon_tex: Texture2D, btn_size: Vecto
 	btn.add_theme_stylebox_override("pressed", pressed_style)
 	btn.add_theme_stylebox_override("disabled", disabled_style)
 
-	if icon_tex != null:
-		var center_box := CenterContainer.new()
-		center_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		center_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		btn.add_child(center_box)
+	var center_box := CenterContainer.new()
+	center_box.name = "IconCenter"
+	center_box.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(center_box)
 
-		var icon_rect := TextureRect.new()
-		icon_rect.texture = icon_tex
-		icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		var icon_size := btn_size * 0.54
-		icon_rect.custom_minimum_size = icon_size
-		icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		center_box.add_child(icon_rect)
+	var icon_rect := TextureRect.new()
+	icon_rect.name = "Icon"
+	icon_rect.texture = icon_tex
+	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	var icon_size := btn_size * 0.54
+	icon_rect.custom_minimum_size = icon_size
+	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center_box.add_child(icon_rect)
 
 	return btn
+
+
+## Helper cho phép thay đổi texture icon của nút bất cứ lúc nào
+func set_button_icon(btn: Button, new_texture: Texture2D) -> void:
+	if btn == null:
+		return
+	var icon_rect: TextureRect = btn.find_child("Icon", true, false)
+	if icon_rect != null:
+		icon_rect.texture = new_texture
 
 
 func _refresh() -> void:
