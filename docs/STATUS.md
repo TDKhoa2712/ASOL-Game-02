@@ -1,11 +1,12 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-29. README đã viết lại, commit `745026e` và fast-forward vào `dev`; publish repository public `TDKhoa2712/CanDoKu` đang chờ chủ dự án xác thực GitHub. Code CanDoKu đã tích hợp local tại `93bc627` (RST-009). Mục tiêu sản phẩm tiếp theo vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-29. README đã viết lại, commit `745026e` và fast-forward vào `dev`; đã xác thực `TDKhoa2712` và tạo repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02), đang push `dev`. Tên repo giữ theo project, tên game là CanDoKu. Code CanDoKu đã tích hợp local tại `93bc627` (RST-009). Mục tiêu sản phẩm tiếp theo vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
 
 ## README và publish repository — 2026-09-29
 
 - Viết lại README: giới thiệu CanDoKu, luật/thao tác, phân biệt client bốn level với thiết kế 24 level, cách chạy/kiểm thử và hai tài liệu nền suy luận/sinh level. Không đổi code, asset hoặc luật.
-- Chủ dự án chọn tài khoản `TDKhoa2712`, tên game hiện tại và public. Đích dự kiến `https://github.com/TDKhoa2712/CanDoKu`; chưa tạo/publish, local chưa có remote. Winget chờ tải đã dừng; MSI ký hợp lệ bởi GitHub tải được nhưng cài hệ thống lỗi 1603. Giải nén MSI vào `scratch/github-cli-msi/` thành công; CLI chưa có tài khoản đăng nhập. Đã khởi động device login và yêu cầu chủ dự án xác thực; không ghi token vào tài liệu.
+- Chủ dự án chọn tài khoản `TDKhoa2712`, public và xác nhận tên repo giống project: `ASOL-Game-02`, không phải tên game CanDoKu. Device login thành công đúng tài khoản; đã tạo repo public và cấu hình `origin` tới `https://github.com/TDKhoa2712/ASOL-Game-02.git`. Đang push riêng `dev`; không push nhánh lịch sử/task/tag hoặc tạo release.
+- Chuẩn bị CLI: Winget chờ tải đã dừng; MSI ký hợp lệ bởi GitHub tải được nhưng cài hệ thống lỗi 1603. Giải nén MSI vào `scratch/github-cli-msi/` thành công và cấu hình Git dùng CLI đã xác thực. Không ghi token vào tài liệu.
 - Kiểm trên nền `b99218d`, diff README/STATUS: `rtk git diff --check` PASS; PowerShell kiểm 14 liên kết README, không thiếu đích. README Git blob `2708f64b14298ab9f0d909418a03bc0bee173dfa`, được bảo toàn trong `745026e`. Quét lịch sử `dev` bằng `git log -G` không thấy mẫu GitHub token/private key; quét tên file `.env`, credentials, keystore/JKS/PEM không có kết quả. Đây là kiểm có giới hạn, không chứng nhận toàn bộ lịch sử không có thông tin nhạy cảm.
 - Giữ các import có sẵn ngoài commit (bảy PNG ban đầu; ba SVG import xuất hiện thêm trong lúc làm được giữ nguyên). Lượt này chỉ sửa tài liệu, không chạy lại game/full suite (0 lượt); không có regression code mở lại hoặc hành trình GUI được kiểm thêm. Kết quả code tại `93bc627` ở mục bên dưới không phải chứng nhận R1 đã nghiệm thu. Thời gian chờ tập trung ở sandbox và chuẩn bị CLI/xác thực.
 
@@ -100,7 +101,7 @@ Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đ�
 | Sandbox shell lỗi khởi tạo trong phiên này | Agent dùng cơ chế quyền hiện có; chủ dự án xử lý môi trường ứng dụng nếu cần | Lệnh ngoài sandbox đã chạy; không tiếp tục thăm dò cùng lỗi. Khi môi trường đổi mới kiểm lại sandbox. Lỗi GUI cũ chưa được kiểm lại trong đợt pipeline |
 | R1 chưa có đủ hành trình GUI/gesture trên build được chốt | Agent | Đã kiểm Settings, Back route và tap/xóa X từ entry scene desktop; tiếp tục fresh → bốn level, Fail/Retry, Home/resume và cuối campaign trên revision bàn giao |
 | Android QA chưa đủ; lần kiểm 2026-09-25 chưa có thiết bị ADB | Chủ dự án + agent | Chủ dự án kết nối/ủy quyền thiết bị hoặc nhận build để thử; agent chuẩn bị fresh/resume/Win/Fail/retry/cuối campaign, ghi model/OS/build/kết quả. Chỉ kiểm lại ADB khi thiết bị sẵn sàng |
-| Chưa publish repo public `TDKhoa2712/CanDoKu`: chờ xác thực GitHub, local chưa có remote | Chủ dự án + agent | Chủ dự án hoàn tất device login bằng tài khoản TDKhoa2712; agent kiểm tài khoản rồi tạo repo/push dev khi đăng nhập thành công. Nếu mã hết hạn, tạo device login mới. Không tự push nhánh khác hoặc tạo release |
+| Publish repo public `TDKhoa2712/ASOL-Game-02` đang thực hiện; xác thực/remote đã sẵn sàng | Agent | Push dev, đặt nhánh mặc định dev và đối chiếu SHA remote/local; chỉ kết luận publish xong khi các kiểm tra này đạt |
 | Nguồn lực iOS và người thử R2 | Chủ dự án | Xác nhận iPhone/Mac/signing trước R4 và người thử trước R2; không chặn công việc R1 độc lập |
 
 Bước tiếp theo: agent kiểm gesture thật và nghiệm thu hành trình R1 trên CanDoKu khi GUI/thiết bị sẵn sàng; chủ dự án phối hợp môi trường desktop/Android/iOS và remote. Chỉ thử lại Computer Use khi lỗi khởi tạo môi trường đã được xử lý. Không tuyên bố R1 hoàn thành hoặc đủ điều kiện phát hành từ headless và ảnh capture.
