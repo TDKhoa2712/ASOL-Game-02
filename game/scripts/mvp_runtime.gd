@@ -185,9 +185,9 @@ func _on_session_changed() -> void:
 	var latest := str(events[-1]) if not events.is_empty() else ""
 	if not session_saved and latest != "LevelWon":
 		save_failed.emit("Không lưu được lượt chơi. Hãy thử lại.")
-	if current_level_id == "L01" and latest in ["MarkX", "ClearX", "MarkStroke", "CatPlaced"]:
+	if current_level_id == "L01" and latest in ["MarkX", "ClearX", "MarkStroke", "CandyFound"]:
 		var tutorial_action: Dictionary = engine.session.last_action.duplicate(true)
-		if latest == "CatPlaced":
+		if latest == "CandyFound":
 			tutorial_action["correct"] = true
 		if latest != "MarkStroke" or (engine.session.undo_diff != null and engine.session.undo_diff.size() >= 2):
 			process_tutorial_action(tutorial_action)
@@ -288,20 +288,20 @@ func _read_tutorial_state() -> Dictionary:
 					break
 			if highlight != [1, 1]:
 				break
-	var cat_cell := [0, 0]
+	var candy_cell := [0, 0]
 	var trace: Array = tutorial_level.get("logicTrace", [])
 	if not trace.is_empty() and typeof(trace[0]) == TYPE_DICTIONARY:
 		var conclusion: Dictionary = trace[0].get("conclusion", {})
-		cat_cell = [int(conclusion.get("r", 0)), int(conclusion.get("c", 0))]
+		candy_cell = [int(conclusion.get("r", 0)), int(conclusion.get("c", 0))]
 	var state: Dictionary = tutorial_controller.new_state("L01", highlight)
-	state["tutorialCatCell"] = cat_cell
+	state["tutorialCandyCell"] = candy_cell
 	state["tutorialSeenIds"] = seen.duplicate()
 	return state
 
 
 func _persistable_tutorial_state() -> Dictionary:
 	var saved: Dictionary = tutorial_state.duplicate(true)
-	saved.erase("tutorialCatCell")
+	saved.erase("tutorialCandyCell")
 	return saved
 
 

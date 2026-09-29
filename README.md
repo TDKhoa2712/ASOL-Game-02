@@ -1,6 +1,6 @@
-# ASOL-Game-02 — Vườn Mèo
+# ASOL-Game-02 — CanDoKu
 
-Game giải đố logic gốc, Godot. Bản đầu 24 level, Endless để sau. Code R1 bốn level đã có trên dev; chưa nghiệm thu đầy đủ GUI/thiết bị. Xem [STATUS](docs/STATUS.md).
+Game suy luận tìm kẹo bị đánh rơi trong vườn, Godot. GDD CanDoKu 0.6.0 là thiết kế đích; client R1 bốn level đã chuyển thuật ngữ sang CanDoKu; vẫn cần nghiệm thu đầy đủ GUI/thiết bị. Bản đầu 24 level, Endless để sau. Xem [STATUS](docs/STATUS.md).
 
 ## Nguồn chính
 

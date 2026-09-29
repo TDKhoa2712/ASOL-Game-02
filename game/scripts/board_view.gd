@@ -3,12 +3,12 @@ extends Control
 
 const UiTheme = preload("res://scripts/ui_theme.gd")
 const UiTokens = preload("res://scripts/ui_tokens.gd")
-const CAT_TEXTURE_PATH := "res://assets/ui/board/cat_face_cell.png"
+const CANDY_TEXTURE_PATH := "res://assets/ui/board/candy.svg"
 
 const ERROR := Color("#E53935")
 const INK := Color("#344054")
-const CAT := Color("#A56643")
-const CAT_LIGHT := Color("#F7CFA8")
+const CANDY := Color("#A56643")
+const CANDY_LIGHT := Color("#F7CFA8")
 
 # Option to show region letters for accessibility
 var show_region_letters: bool = false
@@ -16,7 +16,7 @@ var show_region_letters: bool = false
 var engine
 var level: Dictionary = {}
 var _touch_in_progress := false
-var _cat_texture: Texture2D = null
+var _candy_texture: Texture2D = null
 var _cell_styles: Dictionary = {}
 
 
@@ -25,8 +25,8 @@ func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	clip_contents = true
 	set_process(true)
-	if ResourceLoader.exists(CAT_TEXTURE_PATH):
-		_cat_texture = load(CAT_TEXTURE_PATH)
+	if ResourceLoader.exists(CANDY_TEXTURE_PATH):
+		_candy_texture = load(CANDY_TEXTURE_PATH)
 
 
 func configure(gesture_engine, level_data: Dictionary) -> void:
@@ -195,8 +195,8 @@ func _draw() -> void:
 
 func _draw_cell_state(rect: Rect2, cell: Array) -> void:
 	var state: String = engine.session.cell_state(cell)
-	if engine.session.is_given(cell) or state == "cat":
-		_draw_cat(rect, engine.session.is_given(cell))
+	if engine.session.is_given(cell) or state == "candy":
+		_draw_candy(rect, engine.session.is_given(cell))
 	elif state in ["x", "x_error"]:
 		_draw_x(rect, state == "x_error")
 
@@ -219,40 +219,33 @@ func _draw_x(rect: Rect2, is_error: bool) -> void:
 		draw_circle(badge_center, rect.size.x * 0.07, ERROR)
 
 
-func _draw_cat(rect: Rect2, is_given: bool) -> void:
+func _draw_candy(rect: Rect2, is_given: bool) -> void:
 	if is_given:
 		draw_circle(rect.get_center(), rect.size.x * 0.38, Color("#FFF7D6"))
 
-	if _cat_texture != null:
-		var cat_size := rect.size * 0.74
-		var cat_rect := Rect2(rect.position + (rect.size - cat_size) * 0.5, cat_size)
-		draw_texture_rect(_cat_texture, cat_rect, false)
+	if _candy_texture != null:
+		var candy_size := rect.size * 0.74
+		var candy_rect := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
+		draw_texture_rect(_candy_texture, candy_rect, false)
 	else:
-		_draw_cat_procedural(rect)
+		_draw_candy_procedural(rect)
 
 
-func _draw_cat_procedural(rect: Rect2) -> void:
+func _draw_candy_procedural(rect: Rect2) -> void:
 	var center := rect.get_center()
 	var radius := rect.size.x * 0.25
 	var outline := Color("#7F4A2F")
-	var left_ear := PackedVector2Array([
-		center + Vector2(-radius * 0.85, -radius * 0.35),
-		center + Vector2(-radius * 0.68, -radius * 1.25),
-		center + Vector2(-radius * 0.08, -radius * 0.75),
-	])
-	var right_ear := PackedVector2Array([
-		center + Vector2(radius * 0.85, -radius * 0.35),
-		center + Vector2(radius * 0.68, -radius * 1.25),
-		center + Vector2(radius * 0.08, -radius * 0.75),
-	])
-	draw_colored_polygon(left_ear, CAT)
-	draw_colored_polygon(right_ear, CAT)
-	draw_circle(center, radius, CAT)
-	draw_circle(center + Vector2(0.0, radius * 0.16), radius * 0.62, CAT_LIGHT)
 	for direction in [-1.0, 1.0]:
-		draw_circle(center + Vector2(radius * 0.36 * direction, -radius * 0.22), radius * 0.08, outline)
-	draw_circle(center + Vector2(0.0, radius * 0.12), radius * 0.09, outline)
-	draw_arc(center + Vector2(0.0, radius * 0.10), radius * 0.30, 0.25, PI - 0.25, 12, outline, 3.0)
+		var wrapper := PackedVector2Array([
+			center + Vector2(direction * radius * 0.65, 0),
+			center + Vector2(direction * radius * 1.6, -radius * 0.65),
+			center + Vector2(direction * radius * 1.6, radius * 0.65),
+		])
+		draw_colored_polygon(wrapper, CANDY_LIGHT)
+		draw_polyline(wrapper, outline, 2.0, true)
+	draw_circle(center, radius, CANDY)
+	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, CANDY_LIGHT, radius * 0.22, true)
+
 
 
 func _on_engine_changed() -> void:

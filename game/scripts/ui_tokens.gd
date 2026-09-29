@@ -1,7 +1,7 @@
 extends RefCounted
 class_name UITokens
 
-# Color tokens according to HOME_UI_Redesign_Spec.md §1.3 & §5
+# Shared CanDoKu UI colors.
 const BG_CREAM := Color("#F7F1EC")
 const BG_TILE := Color("#FAF5F0")
 const DECO_PEACH := Color("#F5E3D0")
@@ -23,7 +23,7 @@ const INK := TEXT_DARK
 const PILL_RADIUS := 999
 const BTN_GLOW_ALPHA := 0.35
 
-# Board tokens according to board_screen_restyle_spec.md §3
+# Board colors.
 const BOARD_BG := Color("#F8F1EC")
 const BOARD_CARD := Color("#FFFFFF")
 const BOARD_TILE := Color("#FAF3EE")
@@ -35,7 +35,7 @@ const BADGE_COUNT := Color("#E53935")
 const BADGE_AD := Color("#12B84B")
 const SHADOW_SOFT := Color(0.545, 0.353, 0.290, 0.18)
 
-# 10 Region colors according to §3.2
+# Region colors, stable by region label.
 const REGION_PALETTE: Array[Color] = [
 	Color("#8BD87B"), # 0: Xanh lá nhạt
 	Color("#8B7BD8"), # 1: Tím

@@ -121,7 +121,7 @@ static func validate_level(level: Dictionary, release: bool = false) -> Dictiona
 		if n > 6 or level["difficulty"] == "hard":
 			return _failure(str(level_id), "release supports size 4..6 and no hard level")
 		if n - givens.size() < 2:
-			return _failure(str(level_id), "release needs at least two playable cats")
+			return _failure(str(level_id), "release needs at least two playable candies")
 		var rules: Array = []
 		for step in level["logicTrace"]:
 			if typeof(step) == TYPE_DICTIONARY:
@@ -139,7 +139,7 @@ static func validate_level(level: Dictionary, release: bool = false) -> Dictiona
 static func _validate_trace(level: Dictionary, given_by_row: Dictionary) -> String:
 	var rows: Array = level["regions"]
 	var n: int = level["size"]
-	var cats := given_by_row.duplicate()
+	var candies := given_by_row.duplicate()
 	var eliminated := {}
 	for index in range(level["logicTrace"].size()):
 		var step_value = level["logicTrace"][index]
@@ -148,7 +148,7 @@ static func _validate_trace(level: Dictionary, given_by_row: Dictionary) -> Stri
 			return "%s: step must be an object" % label
 		var step: Dictionary = step_value
 		if step.get("rule", "") == "S3":
-			var s3_error := _validate_s3(rows, cats, eliminated, step)
+			var s3_error := _validate_s3(rows, candies, eliminated, step)
 			if not s3_error.is_empty():
 				return "%s: %s" % [label, s3_error]
 			continue
@@ -166,16 +166,16 @@ static func _validate_trace(level: Dictionary, given_by_row: Dictionary) -> Stri
 		var unit := _unit_cells(rows, focus)
 		if unit.is_empty():
 			return "%s: invalid focus" % label
-		if _unit_contains_cat(unit, cats):
-			return "%s: focus already contains a cat" % label
-		var candidates := _possible_cells(rows, cats, eliminated)
+		if _unit_contains_candy(unit, candies):
+			return "%s: focus already contains a candy" % label
+		var candidates := _possible_cells(rows, candies, eliminated)
 		var focus_candidates := _intersect(candidates, unit)
 		var conclusion = step["conclusion"]
 		if typeof(conclusion) != TYPE_DICTIONARY:
 			return "%s: conclusion must be an object" % label
 		var conclusion_error := _require_keys(conclusion, ["type", "r", "c"], "conclusion")
 		if not conclusion_error.is_empty() or conclusion.get("type") != "place":
-			return "%s: S2 conclusion must place a cat" % label
+			return "%s: S2 conclusion must place a candy" % label
 		if not _is_int(conclusion["r"]) or not _is_int(conclusion["c"]) or not focus_candidates.has(_cell_key(conclusion["r"], conclusion["c"])):
 			return "%s: S2 target is not the sole candidate" % label
 		var target_key := _cell_key(conclusion["r"], conclusion["c"])
@@ -184,13 +184,13 @@ static func _validate_trace(level: Dictionary, given_by_row: Dictionary) -> Stri
 		var expected_text := "hint.single.%s" % str(focus["type"])
 		if step["textKey"] != expected_text:
 			return "%s: textKey does not match focus" % label
-		cats[int(conclusion["r"])] = int(conclusion["c"])
-	if cats.size() != n:
-		return "trace ends with %d/%d cats" % [cats.size(), n]
+		candies[int(conclusion["r"])] = int(conclusion["c"])
+	if candies.size() != n:
+		return "trace ends with %d/%d candies" % [candies.size(), n]
 	return ""
 
 
-static func _validate_s3(rows: Array, cats: Dictionary, eliminated: Dictionary, step: Dictionary) -> String:
+static func _validate_s3(rows: Array, candies: Dictionary, eliminated: Dictionary, step: Dictionary) -> String:
 	var keys_error := _require_keys(step, S3_KEYS, "S3 step")
 	if not keys_error.is_empty():
 		return keys_error
@@ -206,9 +206,9 @@ static func _validate_s3(rows: Array, cats: Dictionary, eliminated: Dictionary, 
 	var target_unit := _unit_cells(rows, target)
 	if source_unit.is_empty() or target_unit.is_empty():
 		return "S3 source or target is invalid"
-	if _unit_contains_cat(source_unit, cats) or _unit_contains_cat(target_unit, cats):
-		return "S3 units must not already contain a cat"
-	var candidates := _possible_cells(rows, cats, eliminated)
+	if _unit_contains_candy(source_unit, candies) or _unit_contains_candy(target_unit, candies):
+		return "S3 units must not already contain a candy"
+	var candidates := _possible_cells(rows, candies, eliminated)
 	var source_candidates := _intersect(candidates, source_unit)
 	if source_candidates.is_empty() or not _is_subset(source_candidates, target_unit):
 		return "S3 source candidates must be nonempty and contained in target"
@@ -308,13 +308,13 @@ static func _count_solutions(rows: Array, solution: Array, givens: Dictionary, r
 
 
 static func _s2_only_reaches_solution(rows: Array, givens: Dictionary) -> bool:
-	var cats := givens.duplicate()
+	var candies := givens.duplicate()
 	var n: int = rows.size()
-	while cats.size() < n:
-		var candidates := _possible_cells(rows, cats, {})
+	while candies.size() < n:
+		var candidates := _possible_cells(rows, candies, {})
 		var placements := {}
 		for unit in _all_units(rows, n):
-			if _unit_contains_cat(unit, cats):
+			if _unit_contains_candy(unit, candies):
 				continue
 			var remaining := _intersect(candidates, unit)
 			if remaining.size() == 1:
@@ -323,7 +323,7 @@ static func _s2_only_reaches_solution(rows: Array, givens: Dictionary) -> bool:
 			return false
 		for key in placements:
 			var parts := str(key).split(",")
-			cats[int(parts[0])] = int(parts[1])
+			candies[int(parts[0])] = int(parts[1])
 	return true
 
 
@@ -369,29 +369,29 @@ static func _unit_cells(rows: Array, spec: Dictionary) -> Dictionary:
 	return result
 
 
-static func _possible_cells(rows: Array, cats: Dictionary, eliminated: Dictionary) -> Dictionary:
+static func _possible_cells(rows: Array, candies: Dictionary, eliminated: Dictionary) -> Dictionary:
 	var result := {}
 	var n: int = rows.size()
 	for row in range(n):
 		for column in range(n):
 			var key: String = _cell_key(row, column)
-			if cats.has(row) or eliminated.has(key):
+			if candies.has(row) or eliminated.has(key):
 				continue
-			if _exclusion_reason(rows, cats, row, column) == "":
+			if _exclusion_reason(rows, candies, row, column) == "":
 				result[key] = true
 	return result
 
 
-static func _exclusion_reason(rows: Array, cats: Dictionary, row: int, column: int) -> String:
-	for cat_row in cats:
-		var cat_column: int = cats[cat_row]
-		if cat_row == row:
+static func _exclusion_reason(rows: Array, candies: Dictionary, row: int, column: int) -> String:
+	for candy_row in candies:
+		var candy_column: int = candies[candy_row]
+		if candy_row == row:
 			return "row"
-		if cat_column == column:
+		if candy_column == column:
 			return "column"
-		if rows[cat_row].substr(cat_column, 1) == rows[row].substr(column, 1):
+		if rows[candy_row].substr(candy_column, 1) == rows[row].substr(column, 1):
 			return "region"
-		if abs(cat_row - row) == 1 and abs(cat_column - column) == 1:
+		if abs(candy_row - row) == 1 and abs(candy_column - column) == 1:
 			return "diagonal"
 	return ""
 
@@ -412,9 +412,9 @@ static func _cells_from_json(value, n: int):
 	return result
 
 
-static func _unit_contains_cat(unit: Dictionary, cats: Dictionary) -> bool:
-	for row in cats:
-		if unit.has(_cell_key(row, cats[row])):
+static func _unit_contains_candy(unit: Dictionary, candies: Dictionary) -> bool:
+	for row in candies:
+		if unit.has(_cell_key(row, candies[row])):
 			return true
 	return false
 

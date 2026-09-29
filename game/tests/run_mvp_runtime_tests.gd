@@ -41,13 +41,13 @@ func _run() -> void:
 	var hint := resumed.use_hint()
 	_check(hint.get("ok", false), "runtime exposes current Hint evidence")
 	_check(resumed.engine.session.hint_count == 1, "valid Hint consumes one Hint")
-	_check(resumed.engine.session.cell_state([3, 2]) != "cat", "Hint does not place a cat")
+	_check(resumed.engine.session.cell_state([3, 2]) != "candy", "Hint does not place a candy")
 	_check(not resumed.use_hint().get("ok", false), "second Hint is rejected")
 
 	_check(resumed.progress.get("tutorialState", {}).get("tutorialSeenIds", []).has("T1"), "committed X records tutorial T1")
 
 	for row in range(4):
-		resumed.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		resumed.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	_check(resumed.progress.get("completedLevelIds", []).has("L01"), "winning L01 updates progress")
 	_check(resumed.progress.get("currentLevelId", "") == "L02", "winning L01 selects successor")
 	_check(not resumed.has_saved_session(), "winning L01 clears active session")
@@ -68,7 +68,7 @@ func _run() -> void:
 	_check(active_screen.get_script() == load("res://scripts/board_screen.gd"), "bootstrap opens real board screen")
 	_check(active_screen.get_session() != null, "real board screen receives runtime session")
 	for row in range(4):
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	_check(bootstrap.flow.current_screen == "puzzle", "win result waits until current input completes")
 	await process_frame
 	_check(bootstrap.flow.current_screen == "result_win", "real gameplay routes to win result")
@@ -88,7 +88,7 @@ func _run() -> void:
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
 	for wrong_cell in [[0, 2], [1, 0], [2, 1]]:
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": wrong_cell})
 	_check(bootstrap.flow.current_screen == "puzzle", "fail result waits until current input completes")
 	await process_frame
 	_check(bootstrap.flow.current_screen == "result_fail", "real gameplay routes to fail result")

@@ -3,7 +3,7 @@ extends RefCounted
 const EMPTY := "empty"
 const X := "x"
 const X_ERROR := "x_error"
-const CAT := "cat"
+const CANDY := "candy"
 
 func get_hint(level: Dictionary, session: Dictionary) -> Dictionary:
 	if int(session.get("hintCount", 0)) != 0:
@@ -35,7 +35,7 @@ func _find_s2(level: Dictionary, session: Dictionary, units: Array, known: Dicti
 			"textKey": "hint.single." + str(unit["type"])
 		}
 		if current == X:
-			evidence["action"] = "try_cat"
+			evidence["action"] = "try_candy"
 		return evidence
 	return {}
 
@@ -112,7 +112,7 @@ func _known_cells(level: Dictionary, session: Dictionary) -> Dictionary:
 		known[_key([int(given.get("r", -1)), int(given.get("c", -1))])] = true
 	for row in size:
 		for col in size:
-			if _cell_value(session, [row, col], size) == CAT:
+			if _cell_value(session, [row, col], size) == CANDY:
 				known[_key([row, col])] = true
 	return known
 

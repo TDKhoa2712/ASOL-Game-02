@@ -52,7 +52,7 @@ File trọng tâm: `game/scripts/save_repository.gd`, `game/scripts/mvp_runtime.
 - [ ] Test lỗi ghi file, crash giữa lưu progress và xóa session, primary hỏng/backup tốt, session hỏng và progress hợp lệ.
 - [ ] Phân biệt chưa có save với save không hợp lệ; không ghi đè bản còn phục hồi được như một lượt mới.
 - [ ] Không báo thắng bền vững/xóa session nếu lưu tiến trình thất bại; có thông báo và đường thử lại, không nhân đôi kết quả.
-- [ ] Lưu/khôi phục trạng thái terminal, tim, X/X đỏ/Cat, Hint đã dùng, điểm và thời gian theo hợp đồng; không cấp lại Hint khi resume.
+- [ ] Lưu/khôi phục trạng thái terminal, tim, X/X đỏ/Candy, Hint đã dùng, điểm và thời gian theo hợp đồng; không cấp lại Hint khi resume.
 - [ ] Background khi tap đã thả nhưng còn chờ phân loại: commit theo luật. Khi còn giữ drag: hủy phần chưa commit. Kiểm cả Home và focus-out.
 
 Đạt khi khởi động lại từ các điểm gián đoạn không mất tiến trình hợp lệ hoặc tự cấp lượt mới ngoài luật.
@@ -61,11 +61,11 @@ File trọng tâm: `game/scripts/save_repository.gd`, `game/scripts/mvp_runtime.
 
 File trọng tâm: `game/scripts/tutorial_controller.gd`, `game/scripts/mvp_runtime.gd`, `game/scripts/board_screen.gd`, `game/scripts/bootstrap.gd`; test tutorial/hint/interaction và hành trình UI.
 
-- [ ] Milestone nhận hành vi đã commit trên board: đặt X, xóa X, kéo ít nhất hai ô, Cat đúng target, xem luật, dùng Hint hợp lệ/đóng hướng dẫn theo GDD.
+- [ ] Milestone nhận hành vi đã commit trên board: đặt X, xóa X, kéo ít nhất hai ô, Candy đúng target, xem luật, dùng Hint hợp lệ/đóng hướng dẫn theo GDD.
 - [ ] Tải đúng level trước chọn target; kiểm hành động sai thứ tự và resume giữa tutorial, không gọi API milestone trực tiếp thay thao tác người chơi trong integration.
 - [ ] Miễn phạt chỉ đúng ô/tình huống hướng dẫn; thao tác sai ngoài phạm vi vẫn mất tim theo luật.
 - [ ] Hint không có gợi ý thì không tiêu lượt; Hint thành công hiển thị căn cứ và giữ trạng thái qua resume.
-- [ ] Undo không vượt TryCat; drag là một nhóm undo; Restart theo đúng hợp đồng. Help không còn placeholder hoặc mô tả sai luật.
+- [ ] Undo không vượt TryCandy; drag là một nhóm undo; Restart theo đúng hợp đồng. Help không còn placeholder hoặc mô tả sai luật.
 
 Đạt khi lượt mới đi qua tutorial bằng input thật và các luật trên có regression tương ứng.
 

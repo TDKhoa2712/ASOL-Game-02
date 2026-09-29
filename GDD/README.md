@@ -1,48 +1,51 @@
-# GDD — Vườn Mèo (tên tạm)
+# CanDoKu — Game Design Document
 
-**Phiên bản thiết kế:** 0.5.0 · **Ngày thiết kế:** 2026-09-21. Client chưa ổn định/liền mạch. Ngày 2026-09-25 chủ dự án mở R1, giữ 24 level cho bản đầu và Endless để sau theo [quyết định](../docs/DECISIONS.md). Luật sản phẩm chưa thay đổi; xem [STATUS](../docs/STATUS.md) và [ROADMAP](../docs/ROADMAP.md).
+**Phiên bản 0.6.0 · 2026-09-28 · Thiết kế đích để triển khai.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề tìm kẹo trong vườn; không chứng nhận client đã chuyển đổi hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
 
-## Đọc theo thứ tự
+## Điểm bắt đầu
 
-| Tài liệu | Vai trò |
+Người chơi dùng hàng, cột và các luống vườn để suy ra vị trí kẹo. Một chạm ghi chú X, kéo đánh/xóa nhiều X, hai chạm xác nhận tìm kẹo. Đúng thì hé lộ viên kẹo; sai mất một tim. Mục tiêu là tìm đủ kẹo bằng suy luận, không tìm vật thể bằng thị lực hay thử từng ô.
+
+| Tài liệu | Nội dung |
 | --- | --- |
-| [01-tam-nhin-va-pham-vi.md](01-tam-nhin-va-pham-vi.md) | Sản phẩm, phạm vi, điểm, tiến trình level |
-| [02-luat-choi-va-trang-thai.md](02-luat-choi-va-trang-thai.md) | **Nguồn chuẩn của luật GR** và thao tác ô |
-| [03-luong-man-hinh-va-ux.md](03-luong-man-hinh-va-ux.md) | Luồng màn hình, chạm/kéo/chạm đôi, kết quả, tutorial |
-| [04-thiet-ke-level.md](04-thiet-ke-level.md) | Suy luận, biên tập và duyệt level |
-| [05-kien-truc-va-du-lieu.md](05-kien-truc-va-du-lieu.md) | Chọn engine, schema, API, save và cache asset mèo |
-| [06-my-thuat-va-am-thanh.md](06-my-thuat-va-am-thanh.md) | Mèo đang chọn độc lập với màu vùng, sprite từ model 3D, sticker, âm thanh |
-| [07-kiem-thu-va-tieu-chi-nghiem-thu.md](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | Ca QA và cổng phát hành |
-| [08-ke-hoach-trien-khai-cho-agent.md](08-ke-hoach-trien-khai-cho-agent.md) | Kế hoạch cũ đã được ROADMAP thay thế, chỉ để truy vết |
-| [09-ra-soat-thiet-ke.md](09-ra-soat-thiet-ke.md) | Quyết định cho từng mã review từ bản 0.3 |
-| [10-nghien-cuu-quy-tac-suy-luan.md](10-nghien-cuu-quy-tac-suy-luan.md) | Đặc tả S3 cho MVP; nghiên cứu S4/S5 sau MVP |
-| [11-ke-hoach-meta-va-sinh-level.md](11-ke-hoach-meta-va-sinh-level.md) | Kế hoạch vàng, cứu lượt, bộ sưu tập mèo và sinh level sau MVP |
-| [12-sinh-level-do-kho-va-endless.md](12-sinh-level-do-kho-va-endless.md) | **Ứng viên chờ duyệt văn bản:** generator có kiểm soát difficulty, nhịp 3 Medium + 1–2 Hard và Endless Garden |
-| [data/levels.sample.json](data/levels.sample.json) | Fixture kỹ thuật, không thuộc nội dung phát hành |
-| [data/interactions.sample.json](data/interactions.sample.json) | Vector hành vi chạm/kéo và ô khóa cho prototype |
-| [tools/validate_levels.py](tools/validate_levels.py) | Validator schema v4, nghiệm, trace S2/S3 và thứ tự release |
+| [01 — Tầm nhìn](01-tam-nhin-va-pham-vi.md) | Bối cảnh, người chơi, vòng lặp và phạm vi |
+| [02 — Luật chuẩn](02-luat-choi-va-trang-thai.md) | GR, trạng thái, input, tim, điểm, Hint và save |
+| [03 — UX](03-luong-man-hinh-va-ux.md) | Màn hình, bố cục, tutorial và câu chữ |
+| [04 — Level](04-thiet-ke-level.md) | 24 màn gốc, đường cong học, trace và biên tập |
+| [05 — Kỹ thuật](05-kien-truc-va-du-lieu.md) | Module, schema/API hiện có, tương thích save và chuyển chủ đề |
+| [06 — Mỹ thuật/âm thanh](06-my-thuat-va-am-thanh.md) | Kẹo, vườn, asset, chuyển động và âm |
+| [07 — Nghiệm thu](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | QA gameplay, chủ đề, nội dung và thiết bị |
+| [09 — Rà soát CanDoKu](09-ra-soat-thiet-ke.md) | Những điểm sửa, rủi ro còn lại và thứ tự triển khai |
+| [10 — Nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md) | Mô hình toán, S1–S5/X1–X4, chứng minh, phản ví dụ, trace và Hint; phân biệt hiện hành/mở rộng |
+| [11 — Sinh level và độ khó](11-sinh-level-va-danh-gia-do-kho.md) | Profile/seed, sinh nghiệm/vùng/givens, kiểm nghiệm, thang độ khó thử nghiệm, playtest và mẫu giao việc |
 
-## Các quyết định hiện hành
+Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài liệu 08/11/12 cũ đã được tinh gọn khỏi GDD theo yêu cầu; cách khôi phục từ Git ở [09](09-ra-soat-thiet-ke.md#6-tinh-gọn-và-truy-vết). File 11 mới chuyên về sinh level/độ khó theo yêu cầu bổ sung, không khôi phục đề án kinh tế/bộ sưu tập cũ. Hai tài liệu 10/11 là nền thiết kế công cụ, chưa triển khai generator hoặc mở Endless.
 
-| ID | Quyết định |
+## Quyết định hiện hành
+
+| ID | Thiết kế |
 | --- | --- |
-| D-01 | Một dãy level liên tiếp. Bản đầu 24 level gốc, thứ tự `1..24`, bàn N=4–6. Sau này có thể mở tới N=12 vùng/mèo/màu khi UI, solver, asset và QA đạt cổng riêng. Không có chương hoặc màn chọn level. |
-| D-02 | Level 1–18 dùng S1/S2. Mỗi level 19–24 bắt buộc có ít nhất một bước S3 cần thiết trong trace máy kiểm được; S4/S5 để sau MVP. |
-| D-03 | Ô có đúng bốn trạng thái `empty`, `x`, `x_error`, `cat`. Một chạm đổi X/empty; hai chạm cùng ô xác nhận mèo. Sai thành `x_error`, mất một trong ba tim. |
-| D-04 | Một chạm hiện X/xóa X ngay bằng preview và xác nhận sau cửa sổ chạm đôi; giữ và rê sẽ tô/xóa X theo trạng thái ô đầu. Chạm đôi cùng ô hủy preview rồi thử mèo. Có Undo một action X gần nhất và Restart có xác nhận; không Undo qua `TryCat`, không Redo. |
-| D-05 | Màn chơi không hiện điểm; điểm chỉ là scorecard ở Result. Hàng N báo tiến độ theo màu/nhãn/họa tiết vùng. Mỗi lượt có một Hint miễn phí. Chỉ level hiện tại được chơi; thắng chuyển sang level kế, thua cho Retry miễn phí. |
-| D-06 | Godot 4.x/GDScript cho game 2D; tạo model/animation mèo 3D gốc rồi xuất **một bộ sprite cho mỗi mèo**. Mọi ô `cat` và hoạt ảnh dùng mèo đang chọn, bản đầu là mèo mặc định; màu vùng nằm ở nền/viền/nhãn, không tô mèo theo vùng. Không dùng SubViewport 3D runtime trong bản đầu. |
-| D-07 | Offline Android/iOS, tiếng Việt đầu tiên, không tài khoản/SDK quảng cáo hoặc analytics mạng trong bản đầu. Asset, level và câu chữ gốc. |
-| D-08 | Giữ 3 tim và phạt điểm; `x_error` là kết quả sai cố định trong lượt, không thể xóa/đặt lại/Undo. Hết tim thua; Retry hoặc Restart reset toàn bộ lượt trên cùng level. |
-| D-09 | Mốc level 10/20 được biên tập trước release đầu. Generator, ví vàng, cứu lượt, quảng cáo, điểm danh và mọi nguồn Hint bổ sung đều là nghiên cứu sau MVP; không có interface hoặc lời hứa quy đổi điểm trong MVP. |
-| D-10 | “Vườn Mèo” chỉ là tên tạm. Bộ sưu tập/chọn mèo, nếu làm sau MVP, phải qua quyết định phạm vi riêng; MVP chỉ có mèo mặc định và không có sân vườn tương tác. |
+| D-01 | 24 level liên tiếp, N=4–6, không chọn màn/chương; schema giữ N=4–12 |
+| D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; không yêu cầu đoán |
+| D-03 | Bốn trạng thái kỹ thuật `empty/x/x_error/candy`; `candy` nay trình bày là kẹo đã tìm thấy |
+| D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X; Restart có xác nhận |
+| D-05 | Một Hint/lượt, ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
+| D-06 | Godot 4.x/GDScript, runtime 2D; kẹo bọc giấy gốc và hiệu ứng 2D, không bắt buộc model/rig kẹo |
+| D-07 | Offline, Android/iOS, tiếng Việt; không tài khoản, quảng cáo, IAP hoặc analytics mạng trong bản đầu |
+| D-08 | X đỏ khóa trong lượt; ghi chú X không là chứng cứ của solver/Hint |
+| D-09 | Level 10/20 có motif vườn riêng; generator, Endless, kinh tế và bộ sưu tập để sau |
+| D-10 | Tên sản phẩm **CanDoKu**; chủ đề tìm kẹo đánh rơi, không có nuôi thú hoặc xây vườn |
 
-`GR` trong tài liệu 02 là luật chuẩn. Thay đổi luật, schema, thứ tự tiến trình hoặc cách tính điểm phải sửa GDD, fixture, validator/test và QA cùng thay đổi. Nội dung puzzle của ID đã phát hành không được đổi âm thầm.
+GDD 02 giữ luật chuẩn; [DECISIONS](../docs/DECISIONS.md) ghi ngoại lệ/quyết định mới. Replay L01 của bản kiểm thử bốn level theo RST-003 không phải tính năng của campaign phát hành. Đổi tên hiển thị không đổi schema level v4, progress v2, session v3, ID level hoặc hash puzzle.
 
-## Nguồn đối chiếu
+## Tham khảo có giới hạn
 
-Luật nền được đối chiếu với mô tả chính thức của [Meowdoku trên Google Play](https://play.google.com/store/apps/details?id=com.oakever.meowdoku) và [App Store](https://apps.apple.com/us/app/meowdoku/id6761760135). Lựa chọn engine dựa trên [tài liệu Phaser](https://docs.phaser.io/) và [AnimatedSprite2D của Godot](https://docs.godotengine.org/en/stable/classes/class_animatedsprite2d.html). Dự án không dùng tên, level, giao diện, nhân vật hoặc asset của game tham chiếu.
+Đã đối chiếu ngày 2026-09-28 với [Meowdoku của Oakever trên Google Play](https://play.google.com/store/apps/details?id=com.oakever.meowdoku) và [App Store](https://apps.apple.com/us/app/meowdoku/id6761760135). Mô tả nhà phát hành xác nhận nền suy luận hàng/cột/vùng, không chạm, chạm đôi và ba cơ hội sai. Đây là nguồn tham khảo cơ chế; chưa phải khảo sát trực tiếp toàn bộ phiên bản game. Không dùng các website trùng tên làm nguồn chính thức.
 
-## Kiểm tra fixture
+CanDoKu tự thiết kế bối cảnh, level, layout, câu chữ, logo và asset. Tham khảo không đồng nghĩa đưa daily challenge, leaderboard, quảng cáo hoặc bộ sưu tập vào phạm vi. Chi tiết đối chiếu và các điểm cần kiểm ở [09](09-ra-soat-thiet-ke.md).
 
-Từ thư mục gốc: `python GDD/tools/validate_levels.py GDD/data/levels.sample.json` và `python -m unittest discover GDD/tools -p "test_*.py"`. Cờ `--release` dùng khi có đủ 24 level campaign, thứ tự `1..24`. Fixture `T01/E01/E02/S301/N12` không tính vào số này.
+## Kiểm chứng
+
+[data/levels.sample.json](data/levels.sample.json) là fixture kỹ thuật, không phải 24 level phát hành. [Vector tương tác](data/interactions.sample.json) dùng hoàn toàn token CanDoKu; test migration riêng kiểm save cũ. [Validator](tools/validate_levels.py) kiểm schema/nghiệm/trace; `--release` kiểm campaign 24 level.
+
+Sửa tài liệu: kiểm diff, link và tính nhất quán. Triển khai code: theo runner và GUI/device của [AGENTS](../AGENTS.md). Không lấy GDD hoàn chỉnh hoặc test headless làm bằng chứng game đã hoàn tất.

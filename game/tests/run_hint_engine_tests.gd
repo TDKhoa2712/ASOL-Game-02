@@ -44,12 +44,12 @@ func _run() -> void:
 	var x_state := {"cells": ["empty", "x"], "hintCount": 0}
 	var target_x := engine.get_hint(t01, x_state)
 	_check(target_x.get("ok", false), "hint remains valid when target is X")
-	_check(target_x["evidence"].get("action", "") == "try_cat", "X target asks for direct cat attempt")
+	_check(target_x["evidence"].get("action", "") == "try_candy", "X target asks for direct candy attempt")
 	var error_state := {"cells": ["empty", "x_error"], "hintCount": 0}
 	var error_hint := engine.get_hint(t01, error_state)
 	_check(not error_hint.get("ok", false) or error_hint["evidence"].get("cell", []) != [0, 1], "x_error is never suggested as target")
 
-	var no_hint := engine.get_hint(t01, {"cells": ["cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat", "cat"], "hintCount": 0})
+	var no_hint := engine.get_hint(t01, {"cells": ["candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy", "candy"], "hintCount": 0})
 	_check(no_hint.get("ok", false) == false, "no evidence returns NoHint")
 	_check(no_hint.get("consumeHint", true) == false, "NoHint does not consume hint")
 

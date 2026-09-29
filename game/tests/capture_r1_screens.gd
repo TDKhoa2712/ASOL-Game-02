@@ -50,7 +50,7 @@ func _capture() -> void:
 	screen.get_node("ScreenHost/Settings/SafeArea/Content/Stack/BackButton").pressed.emit()
 	await process_frame
 	for row in range(4):
-		screen.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		screen.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	await process_frame
 	await process_frame
 	var ok := await _save_frame(output_dir.path_join("result_win.png"))
@@ -58,7 +58,7 @@ func _capture() -> void:
 		screen.get_node("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton").pressed.emit()
 		await process_frame
 		for row in range(3):
-			screen.runtime.apply_action({"type": "TryCat", "cell": [row, 0]})
+			screen.runtime.apply_action({"type": "TryCandy", "cell": [row, 0]})
 		await process_frame
 		await process_frame
 		ok = await _save_frame(output_dir.path_join("result_fail.png"))

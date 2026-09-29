@@ -28,7 +28,7 @@ static func is_given(level: Dictionary, cell: Array) -> bool:
 
 static func cell_state(level: Dictionary, cells: Dictionary, cell: Array) -> String:
 	if is_given(level, cell):
-		return "cat"
+		return "candy"
 	return str(cells.get(cell_key(cell), "empty"))
 
 
@@ -36,7 +36,7 @@ static func correct_placed_count(level: Dictionary, cells: Dictionary) -> int:
 	var count := 0
 	for row in range(int(level["size"])):
 		var cell := [row, int(level["solution"][row])]
-		if cell_state(level, cells, cell) == "cat":
+		if cell_state(level, cells, cell) == "candy":
 			count += 1
 	return count
 
@@ -47,7 +47,7 @@ static func mistake_reason(level: Dictionary, cells: Dictionary, cell: Array) ->
 	var region := str(level["regions"][row][col])
 	for other_row in range(int(level["size"])):
 		var other_col := int(level["solution"][other_row])
-		if cell_state(level, cells, [other_row, other_col]) != "cat":
+		if cell_state(level, cells, [other_row, other_col]) != "candy":
 			continue
 		if other_row == row:
 			return "row"
@@ -60,7 +60,7 @@ static func mistake_reason(level: Dictionary, cells: Dictionary, cell: Array) ->
 	return "neutral"
 
 
-static func try_cat(level: Dictionary, cells: Dictionary, hearts: int, mistakes: int, cell: Array) -> Dictionary:
+static func try_candy(level: Dictionary, cells: Dictionary, hearts: int, mistakes: int, cell: Array) -> Dictionary:
 	var result := {"cells": cells.duplicate(true), "hearts": hearts, "mistakeCount": mistakes, "state": "Playing", "events": []}
 	if hearts <= 0:
 		result["state"] = "Failed"
@@ -72,8 +72,8 @@ static func try_cat(level: Dictionary, cells: Dictionary, hearts: int, mistakes:
 	var key := cell_key(cell)
 	var old_score := score(correct_placed_count(level, cells) - level.get("givens", []).size(), mistakes)
 	if int(level["solution"][int(cell[0])]) == int(cell[1]):
-		result["cells"][key] = "cat"
-		result["events"].append("CatPlaced")
+		result["cells"][key] = "candy"
+		result["events"].append("CandyFound")
 		if correct_placed_count(level, result["cells"]) == int(level["size"]):
 			result["state"] = "Won"
 			result["events"].append("LevelWon")

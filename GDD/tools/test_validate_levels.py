@@ -76,7 +76,7 @@ class LevelValidatorTests(unittest.TestCase):
 
         solved_unit = self.s3_level()
         solved_unit["givens"] = [{"r": 0, "c": 1}]
-        mutations.append((solved_unit, "must not already contain a cat"))
+        mutations.append((solved_unit, "must not already contain a candy"))
 
         for level, message in mutations:
             with self.subTest(message=message):
@@ -116,9 +116,9 @@ class LevelValidatorTests(unittest.TestCase):
     def test_s1_witness_distinguishes_row_and_diagonal(self):
         rows = self.level()["regions"]
         self.assertEqual(exclusion_reason(rows, {0: 1}, (0, 0)),
-                         {"sourceCat": (0, 1), "reason": "row"})
+                         {"sourceCandy": (0, 1), "reason": "row"})
         self.assertEqual(exclusion_reason(rows, {0: 1}, (1, 0)),
-                         {"sourceCat": (0, 1), "reason": "diagonal"})
+                         {"sourceCandy": (0, 1), "reason": "diagonal"})
         self.assertIsNone(exclusion_reason(rows, {0: 1}, (1, 3)))
 
     def test_solver_rejects_multiple_and_zero_solutions(self):
@@ -205,7 +205,7 @@ class LevelValidatorTests(unittest.TestCase):
         level = self.level()
         level["givens"] = [{"r": r, "c": c} for r, c in enumerate(level["solution"])]
         level["logicTrace"] = []
-        with self.assertRaisesRegex(ValueError, "at least two playable cats"):
+        with self.assertRaisesRegex(ValueError, "at least two playable candies"):
             validate_document({"levels": [level]}, release=True)
 
     def test_fixture_cannot_pass_release_gate(self):

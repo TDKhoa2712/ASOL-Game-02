@@ -32,9 +32,9 @@
       "cell": [0, 1],
       "intervalMs": 180,
       "preview": "x",
-      "expected": {"0,1": "cat"},
+      "expected": {"0,1": "candy"},
       "hearts": 3,
-      "actions": ["TryCat"]
+      "actions": ["TryCandy"]
     },
     {
       "id": "double_x_wrong_becomes_locked_error",
@@ -45,7 +45,7 @@
       "preview": "empty",
       "expected": {"0,0": "x_error"},
       "hearts": 2,
-      "actions": ["TryCat"]
+      "actions": ["TryCandy"]
     },
     {
       "id": "slow_double_is_two_single_taps",
@@ -127,12 +127,12 @@
     {
       "id": "mark_drag_skips_locked_and_existing",
       "kind": "drag",
-      "initial": {"0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "initial": {"0,1": "candy", "0,2": "x", "0,3": "x_error"},
       "initialHearts": 2,
       "from": [0, 0],
       "to": [0, 3],
       "returnTo": [0, 0],
-      "expected": {"0,0": "x", "0,1": "cat", "0,2": "x", "0,3": "x_error"},
+      "expected": {"0,0": "x", "0,1": "candy", "0,2": "x", "0,3": "x_error"},
       "hearts": 2,
       "actions": ["MarkStroke"]
     },
@@ -207,13 +207,13 @@
       "expected": {"cells": {"0,1": "x", "0,3": "x_error"}, "hearts": 2, "mistakeCount": 1, "hintCount": 0, "undoAvailable": false, "events": ["MarkStroke", "UndoApplied"]}
     },
     {
-      "id": "trycat_clears_undo",
+      "id": "trycandy_clears_undo",
       "actions": [
         {"type": "MarkX", "cell": [0, 0]},
-        {"type": "TryCat", "cell": [0, 1]},
+        {"type": "TryCandy", "cell": [0, 1]},
         {"type": "UndoX"}
       ],
-      "expected": {"cells": {"0,0": "x", "0,1": "cat"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "CatPlaced", "UndoUnavailable"]}
+      "expected": {"cells": {"0,0": "x", "0,1": "candy"}, "hearts": 3, "mistakeCount": 0, "hintCount": 0, "undoAvailable": false, "events": ["MarkX", "CandyFound", "UndoUnavailable"]}
     },
     {
       "id": "back_home_clears_undo",
@@ -228,7 +228,7 @@
       "id": "restart_resets_attempt",
       "actions": [
         {"type": "MarkX", "cell": [0, 0]},
-        {"type": "TryCat", "cell": [0, 2]},
+        {"type": "TryCandy", "cell": [0, 2]},
         {"type": "Hint", "result": "evidence"},
         {"type": "RestartLevel"}
       ],
@@ -298,7 +298,7 @@
       "levelId": "E01",
       "actions": [
         {"type": "MarkX", "cell": [0, 2]},
-        {"type": "TryCat", "cell": [0, 2]},
+        {"type": "TryCandy", "cell": [0, 2]},
         {"type": "MarkStroke", "mode": "mark", "cells": [[0, 1], [0, 2], [0, 3]]},
         {"type": "UndoX"}
       ],

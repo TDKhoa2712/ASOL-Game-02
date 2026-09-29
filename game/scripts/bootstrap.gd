@@ -133,9 +133,9 @@ func _render() -> void:
 				fail_score.text = "Điểm: %d" % runtime.engine.session.scorecard()
 		Flow.SCREEN_HELP:
 			screen = _build_info_shell("Trợ giúp / Luật", [
-				"Mỗi hàng, cột và vùng có đúng một mèo.",
-				"Hai mèo không được chạm nhau ở góc.",
-				"Chạm để đánh hoặc xóa X; chạm đôi để thử đặt mèo.",
+				"Mỗi hàng, cột và vùng có đúng một kẹo.",
+				"Hai kẹo không được chạm nhau ở góc.",
+				"Chạm để đánh hoặc xóa X; chạm đôi để thử tìm kẹo.",
 				"Bạn có ba lượt sai và một gợi ý mỗi lượt.",
 			])
 		Flow.SCREEN_SETTINGS:

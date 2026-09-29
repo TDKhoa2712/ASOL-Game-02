@@ -1,62 +1,63 @@
-# 06 — Mỹ thuật, hoạt ảnh và âm thanh
+# 06 — CanDoKu: mỹ thuật, hoạt ảnh và âm thanh
 
-## 1. Hướng hình ảnh bản chính thức
+## 1. Hướng hình ảnh
 
-Khu vườn tươi sáng, vui và có nhân vật mèo gốc. Mỗi vùng có màu/nền/họa tiết trong cùng bộ theme; **mèo trên ô đúng dùng hình mèo đang chọn**, không lấy màu lông hoặc giống theo ô. Bản đầu dùng mèo mặc định. Màu nhấn và hoạt ảnh khiến việc tìm mèo có phần thưởng cảm xúc, còn nền bàn, viền vùng, X/X đỏ phải đọc được trước trang trí. X đỏ là lỗi người chơi đã thử, **không** là vùng màu đỏ hay mèo màu đỏ.
+Một khu vườn nhỏ trong ngày sáng dịu, với kẹo bọc giấy rơi khỏi giỏ picnic. Hình ảnh 2D mềm, viền rõ, màu kem và xanh lá làm nền; kẹo là điểm chú ý khi được tìm thấy. Bàn là sơ đồ luống vườn nhìn từ trên xuống, có ranh giới chính xác. Không dùng phối cảnh làm méo ô hoặc cây lá phủ đáp án.
+
+Kẹo mặc định có thân tròn hơi dẹt, hai đầu giấy gói xoắn và một dấu xoắn nhỏ; silhouette nhận ra ở ô nhỏ. Một mẫu kẹo dùng chung mọi vùng, không gán hương vị/màu giấy gói thành quy tắc. Giấy gói kín giúp hình ảnh “nhặt lại kẹo” rõ nghĩa. Không cần nhân vật hoặc model/rig 3D trong bản đầu.
 
 | ID | Nguyên tắc |
 | --- | --- |
-| ART-01 | Vùng có màu nền sáng vừa phải, viền rõ, nhãn A–(N) và họa tiết riêng; tối đa 12 cặp màu/họa tiết. |
-| ART-02 | Mèo đang chọn giữ ngoại hình riêng trên mọi ô `cat`; vùng được phân biệt bằng nền/viền/nhãn/họa tiết quanh mèo. Silhouette/icon vẫn đọc ở ô N=6; bản N=12 cần bộ icon và kích thước chạm thực tế được nghiệm thu lại. |
-| ART-03 | `x` là nét X trung tính; `x_error` đỏ đậm **kèm dấu cảnh báo/viền khác** và dấu khóa thao tác, không truyền lỗi chỉ bằng màu. |
-| ART-04 | Sticker/sparkle sprite 2D nằm ngoài vùng chạm bàn hoặc chỉ phủ ngắn, không che ô, vùng luật, tim hay điều hướng. |
-| ART-05 | Asset có manifest nguồn gốc, giấy phép, file nguồn và bản xuất; không dùng ảnh/model/âm thanh của game tham chiếu. |
-| ART-12 | Mỗi mèo mới có `appearanceId` ổn định, silhouette/chi tiết riêng và đủ clip `idle`/`jump`/`celebrate`/`sad` tương ứng trước khi bán. Màu vùng nằm ở bàn và chỉ báo tiến độ, độc lập với mèo. |
-| ART-13 | Một bộ atlas/clip cho mỗi mèo; không xuất 6/12 bản atlas theo vùng. Căn khung và alpha phải khớp từng frame; mặt nạ chỉ dùng nếu cần biến thể ngoại hình, không dùng để tô mèo theo vùng. |
+| ART-01 | Vùng có nền sáng, viền, nhãn A–F và họa tiết riêng; bàn N≤6 của bản đầu |
+| ART-02 | Kẹo nằm gọn trong 60–70% cạnh ô; không che biên vùng, X hoặc tọa độ; cùng mẫu cho given và kẹo tự tìm |
+| ART-03 | X thường nét trung tính; X đỏ có dấu cảnh báo/khóa ngoài màu; hai trạng thái phân biệt khi thang xám |
+| ART-04 | Lá/hoa/giỏ và sparkle ở ngoài vùng thao tác; không che luật, tim, nút hoặc lưới |
+| ART-05 | Logo, kẹo, giỏ, nền, icon và âm thanh có nguồn gốc/giấy phép/file nguồn rõ |
+| ART-12 | Không có gói ngoại hình bán hoặc bộ sưu tập; yêu cầu appearanceId/clip nhân vật cũ ngừng áp dụng cho bản đầu |
+| ART-13 | Một bộ hình kẹo dùng chung; không nhân texture theo sáu vùng; alpha và pivot nhất quán |
 
-### Bảng màu định hướng
+## 2. Màu và luống
 
-| Nhãn | Màu nhấn vùng gợi ý | Họa tiết hỗ trợ |
+| Nhãn | Màu nhấn khởi điểm | Họa tiết |
 | --- | --- | --- |
-| A | san hô `#D76F5D` | chấm |
-| B | xanh ngọc `#328F83` | sọc ngang |
-| C | vàng mật `#A97617` | gạch chéo |
-| D | tím hoa `#8B6EB3` | ô vuông |
-| E | xanh trời `#397FAC` | sóng |
-| F | hồng mận `#AD6287` | vòng nhỏ |
-| G–L | sáu màu/họa tiết bổ sung trước đợt N>6 | không lặp cặp màu/họa tiết |
+| A | San hô #D76F5D | Chấm |
+| B | Xanh ngọc #328F83 | Sọc ngang |
+| C | Vàng mật #A97617 | Gạch chéo |
+| D | Tím hoa #8B6EB3 | Ô vuông |
+| E | Xanh trời #397FAC | Sóng |
+| F | Hồng mận #AD6287 | Vòng nhỏ |
 
-Nền vùng là biến thể sáng nhạt của màu nhấn, không dùng mã màu vùng để tô mèo. Đây là token khởi đầu; QA kiểm tương phản chữ 4.5:1, icon/viền 3:1 và thử thang xám/chế độ hỗ trợ trước khi chốt. Palette 12 cần review bằng thiết bị và người chơi, không dựa vào mã hex tự chứng nhận khả năng phân biệt.
+Nền luống dùng biến thể nhạt; màu nhấn dùng ở biên và nhãn, không làm kẹo đổi màu. Nền chung kem #FFF7E8, chữ xanh đậm #243D32 là token khởi điểm, cần đo tương phản trên màu thực. Chữ đạt 4.5:1, dấu/viền quan trọng đạt 3:1 theo tiêu chí dự án. Họa tiết có độ tương phản thấp hơn dấu X nhưng phải phân biệt ở thang xám. Nhãn và đường viền không được mất khi luống đã tìm đủ kẹo.
 
-## 2. Hoạt ảnh có chủ đích
+Các motif theo dải màn chỉ thay viền trang trí/backdrop, không thay mapping A–F giữa các màn. N=7–12 chưa sản xuất asset; phải bổ sung sáu cặp màu/họa tiết và nghiệm thu riêng trước khi mở.
 
-| ID | Sự kiện | Cách thể hiện |
+## 3. Phản hồi
+
+| ID | Sự kiện | Thiết kế đích |
 | --- | --- | --- |
-| ART-06 | Chạm/kéo X/clear | X đổi trong khung hình đầu, từng ô trên đường kéo đổi ngay; preview có thể hoàn tác sạch khi chạm đôi mà không nháy/giật |
-| ART-07 | Mèo đúng | Mèo đang chọn bật/nhảy ngắn, chỉ báo vùng sáng lên ở hàng tiến độ, chữ “Hay lắm!” (`Nice!` trong bản dịch); lần đầu đạt nửa số mèo cần tìm hiện “Tuyệt!” (`Great!`) |
-| ART-08 | Mèo sai | X đỏ/dấu cảnh báo và tim đổi cùng lúc; rung nhẹ nếu bật, không nhấp nháy mạnh |
-| ART-09 | Thắng | Sticker chúc mừng gốc và mèo nhảy/đùa bằng sprite sheet 2D render từ model 3D gốc, nút Level tiếp theo dùng được ngay |
-| ART-10 | Thua | Biểu cảm tiếc nhẹ, màn kết quả thua riêng; không dùng hiệu ứng trừng phạt/chói |
-| ART-11 | Giảm chuyển động | Chữ/viền/sticker tĩnh thay cho nhảy, lắc, particle; không bỏ thông tin luật |
+| ART-06 | X/clear | Đổi ngay trong khung hình đầu; hủy preview sạch khi nhận chạm đôi |
+| ART-07 | Tìm đúng | Kẹo hiện bằng scale nhẹ 160–220 ms rồi đứng yên; chỉ báo vùng và “Đã tìm k/N” cập nhật; chữ “Tìm thấy rồi!” tối đa 0,7 giây |
+| ART-08 | Tìm sai | X đỏ + dấu cảnh báo và tim mất cùng transaction; phản hồi nhẹ tối đa 200 ms; không tạo hố đất hoặc làm bẩn bàn |
+| ART-09 | Thắng | Giỏ kẹo và vài cánh hoa trên Result; nút Màn tiếp theo/Home dùng ngay, không chờ hoạt ảnh |
+| ART-10 | Thua | Giỏ bên luống và lời động viên; màn riêng, nút Thử lại rõ; không biểu cảm trừng phạt |
+| ART-11 | Giảm chuyển động | Hình tĩnh + thông báo chữ; tắt scale/particle/loop, giữ đầy đủ thông tin |
 
-Hoạt ảnh trên bàn tối đa khoảng 0,7 giây và không khóa điều hướng. Màn thắng có thể chạy loop nhẹ nhưng dừng khi app nền/giảm chuyển động. Khi tính năng chọn mèo được bật, phản hồi đúng/thắng dùng clip của mèo đang chọn; mèo mặc định chỉ là fallback nếu gói asset lỗi tải. Sound đi kèm không phải nguồn thông tin duy nhất: tick X, mèo đúng vui ngắn, lỗi nhẹ, motif thắng dưới 2 giây; âm và rung có nút tắt riêng.
+Kẹo đã tìm luôn ở lại ô. Mốc “Giỏi lắm!” chỉ phát một lần khi đạt ít nhất nửa số kẹo cần tự tìm; kẹo cuối ưu tiên thắng. Có thể dùng giỏ đầy ở màn 24 nhưng không thêm màn phải chờ. Hiệu ứng không tự cộng điểm, mất tim, lưu game hoặc xác định thắng.
 
-## 3. Pipeline model 3D → sprite 2D
+Âm X là tick nhẹ, clear là tick mềm hơn, đúng là tiếng giấy gói/chime ngắn, sai là tiếng trầm nhẹ, thắng là motif dưới hai giây. Không dùng âm thanh động vật. Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. Nhạc nền chưa thuộc asset bắt buộc bản đầu. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
 
-Tạo **một model mèo mặc định gốc** trước, rig và clip `idle`, `jump`, `celebrate`, `sad`. Lưu file nguồn và, nếu hữu ích cho tái sử dụng, xuất glTF. Render mỗi clip với cùng góc máy/ánh sáng/nền trong suốt thành **một bộ frame của mèo mặc định**; không render lại cho từng vùng A–L. Runtime bản đầu chỉ phát sprite. Mèo nhỏ trên bàn dùng icon hoặc ít frame; màn thắng dùng clip dài hơn. Chốt kích thước frame, số frame, atlas và cách nén bằng đo trên thiết bị. 3D realtime hoặc bake clip lúc người chơi đổi mèo là spike tương lai theo TECH-21/QA-51.
+## 4. Bàn giao asset và pipeline
 
-Về sau, mèo được mua có thể dùng cùng rig/clip nếu dáng và chuyển động phù hợp, hoặc có clip riêng nếu đó là phần bản sắc của mèo. Mỗi mèo khác hình dáng cần bộ frame riêng; shader đổi màu không sinh được tai, đuôi, hoa văn hay động tác mới. Danh sách vườn xem icon gọn trước; khi chọn mới nạp clip lớn. Nền/viền/nhãn/họa tiết vùng luôn hiển thị được quanh mèo để puzzle vẫn đọc được.
+| Nhóm | Asset cần có | Nghiệm thu |
+| --- | --- | --- |
+| Nhận diện | Logo chữ CanDoKu, icon app kẹo gốc | Đọc được nhỏ, không dùng bố cục/icon thương mại tham chiếu |
+| Gameplay | Kẹo ô, icon kẹo nhỏ, X, X đỏ/cảnh báo, tim đầy/rỗng, dấu đã tìm | Bốn trạng thái và given đọc rõ N=6, thang xám |
+| Vườn | Nền kem, viền cây, sáu nền/biên/họa tiết vùng, giỏ thường/đầy | Không tiết lộ đáp án hoặc che vùng chạm |
+| UI | Home/Back/Help/Settings/Undo/Restart/Hint và các trạng thái disabled | Vùng chạm ≥44×44 điểm logic; chữ lớn và safe area |
+| Result | Hình thắng/thua riêng, motif hoa màn 10 và picnic màn 20 | Nút luôn thao tác được, giảm chuyển động đầy đủ |
+| SFX | X/clear/đúng/sai/thắng/thua | Âm lượng nhất quán, không clipping, không là kênh thông tin duy nhất |
+| Nguồn | File thiết kế, bản xuất, manifest nguồn/giấy phép/version/kích thước | Mỗi asset truy được tác giả/công cụ và quyền sử dụng |
 
-M0 kiểm kích thước file, texture, RAM/VRAM, FPS, thời gian xuất hiện khung đầu và chất lượng cạnh/đổ bóng của sprite trên Android/iPhone mục tiêu. Chỉ thêm frame/particle khi số đo còn ngân sách. Không tải asset qua mạng trong bản đầu.
+Ưu tiên hình 2D gốc và tween đơn giản; SVG phù hợp icon, PNG nền trong cho raster. Không bắt buộc sprite sheet nếu tween đủ. Có thể render kẹo từ model gốc khi art thực tế cần, nhưng runtime vẫn 2D; không có phụ thuộc model/rig/clip kẹo. Đây là thay đổi art direction có chủ ý so với v0.5.
 
-## 4. Danh mục bàn giao
-
-| Nhóm | Bản đầu |
-| --- | --- |
-| Bàn | 6 màu nền/viền/họa tiết, nhãn vùng, trạng thái X và X đỏ, phiên bản thang xám |
-| Mèo | Một model/rig gốc, một bộ sprite mèo mặc định cho idle/jump/celebrate/sad, icon tĩnh gọn; hàng tiến độ dùng nhãn/họa tiết vùng |
-| UI | Home, Puzzle, Help, Settings, **hai màn kết quả riêng**, tim ở Puzzle, scorecard ở Result, sticker thắng, trạng thái cỡ chữ lớn |
-| SFX/rung | X/clear, đúng, sai, thắng, thua; thiết lập tắt độc lập |
-| Nguồn | File model/texture/animation/audio gốc, manifest quyền, thông số xuất và version asset |
-
-Đợt N=12 thêm 12 màu/nhãn/họa tiết vùng, **không** nhân atlas hoạt ảnh theo 12 màu; kiểm lại board nhỏ, hàng tiến độ cuộn và performance. Không lặp màu đơn thuần để đủ 12; nhãn/họa tiết phải phân biệt khi không nhìn màu.
+Chốt kích thước xuất qua thử N=6 và màn Result trước khi làm toàn bộ asset. Dùng chung resource giữa các ô, chỉ nạp asset cần màn hiện tại, có hình dự phòng nếu tải lỗi. Đo texture thực trong RAM/VRAM, tốc độ nạp và frame time trên Android/iPhone mục tiêu; không lấy kích thước PNG nén làm mức dùng bộ nhớ. Asset cũ đã được thay và không còn tham chiếu có thể dọn theo yêu cầu chủ dự án; bản gốc được bảo toàn trong lịch sử Git.

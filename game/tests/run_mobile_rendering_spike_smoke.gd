@@ -33,17 +33,17 @@ func _run() -> void:
 	for index in range(mini(labels.size(), 6)):
 		_expect(labels[index].text == expected_labels[index], "Region labels must remain ordered", failures)
 
-	var cats := screen.get_node("CatSprites").get_children()
-	_expect(cats.size() == 6, "Probe needs six visible cat placements", failures)
-	if cats.size() == 6:
-		var first_frame: AtlasTexture = cats[0].texture as AtlasTexture
-		_expect(first_frame != null, "Cat must use a frame from the atlas", failures)
-		for cat in cats:
-			var frame: AtlasTexture = cat.texture as AtlasTexture
-			_expect(frame != null, "Cat must use a frame from the atlas", failures)
+	var candies := screen.get_node("CandySprites").get_children()
+	_expect(candies.size() == 6, "Probe needs six visible candy placements", failures)
+	if candies.size() == 6:
+		var first_frame: AtlasTexture = candies[0].texture as AtlasTexture
+		_expect(first_frame != null, "Candy must use a frame from the atlas", failures)
+		for candy in candies:
+			var frame: AtlasTexture = candy.texture as AtlasTexture
+			_expect(frame != null, "Candy must use a frame from the atlas", failures)
 			if frame != null and first_frame != null:
-				_expect(frame.atlas == first_frame.atlas, "Region must not load a separate cat atlas", failures)
-			_expect(cat.modulate == Color.WHITE, "Region tint must not recolor the cat", failures)
+				_expect(frame.atlas == first_frame.atlas, "Region must not load a separate candy atlas", failures)
+			_expect(candy.modulate == Color.WHITE, "Region tint must not recolor the candy", failures)
 
 	var sticker: Control = screen.get_node("Sticker")
 	_expect(not sticker.visible, "Sticker must start hidden", failures)

@@ -129,8 +129,8 @@ func end_pointer(pointer_id: int, time_ms: int) -> void:
 		var try_cell := pending_cell.duplicate()
 		_rollback_preview()
 		pending_tap = false
-		session.apply_action({"type": "TryCat", "cell": try_cell})
-		committed_actions.append("TryCat")
+		session.apply_action({"type": "TryCandy", "cell": try_cell})
+		committed_actions.append("TryCandy")
 		_clear_active()
 		changed.emit()
 		return
@@ -205,8 +205,8 @@ func run_contract_case(case: Dictionary) -> Dictionary:
 				test_session.cell_state(cell) in ["empty", "x"]
 				and int(case["intervalMs"]) <= _double_tap_window_ms()
 			):
-				test_session.apply_action({"type": "TryCat", "cell": cell})
-				actions.append("TryCat")
+				test_session.apply_action({"type": "TryCandy", "cell": cell})
+				actions.append("TryCandy")
 			else:
 				_contract_single(test_session, cell, actions)
 				_contract_single(test_session, cell, actions)

@@ -1,7 +1,8 @@
 extends RefCounted
 
 const PROGRESS_VERSION := 2
-const SESSION_VERSION := 2
+const SESSION_VERSION := 3
+const LegacySessionMigration = preload("res://scripts/legacy_session_migration.gd")
 const EMPTY_PROGRESS_LEVEL := ""
 
 var root_dir: String
@@ -50,7 +51,7 @@ func load_session(expected_level_id: String, expected_puzzle_hash: String) -> Di
 	var result := _read_json("session")
 	if not result.get("ok", false):
 		return {"ok": false, "reason": "session is missing or invalid", "recreate": true}
-	var session: Dictionary = result["data"]
+	var session: Dictionary = LegacySessionMigration.to_current(result["data"])
 	if not _is_valid_session(session):
 		return {"ok": false, "reason": "session schema is invalid", "recreate": true}
 	if session["levelId"] != expected_level_id:
@@ -167,7 +168,7 @@ func _is_valid_session(session: Dictionary) -> bool:
 	if int(session.get("hintCount", -1)) not in [0, 1] or int(session.get("hearts", -1)) < 0:
 		return false
 	for cell in session["cells"]:
-		if cell not in ["empty", "x", "x_error", "cat"]:
+		if cell not in ["empty", "x", "x_error", "candy"]:
 			return false
 	return true
 

@@ -28,7 +28,7 @@ func _run() -> void:
 	_check(loaded_progress["data"]["currentLevelId"] == "L01", "progress keeps current level")
 
 	var session := repository.new_session("L01", "hash-l01", 4)
-	session["cells"] = ["empty", "x", "cat", "x_error"]
+	session["cells"] = ["empty", "x", "candy", "x_error"]
 	session["hearts"] = 2
 	session["mistakeCount"] = 1
 	session["hintCount"] = 1

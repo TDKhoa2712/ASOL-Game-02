@@ -2,14 +2,14 @@ extends Control
 
 
 const BoardScript = preload("res://scripts/spike_board_6x6.gd")
-const CAT_ATLAS := preload("res://assets/spike/cat-probe-atlas.png")
+const CANDY_ATLAS := preload("res://assets/spike/candy-probe-atlas.svg")
 const BACKGROUND := Color("#F6F2EA")
 const INK := Color("#344054")
 const SAFE_SIDE := 54.0
 
 
 var board: Control
-var cats: Node2D
+var candies: Node2D
 var labels: HBoxContainer
 var sticker: PanelContainer
 var error_badge: Label
@@ -40,13 +40,13 @@ func _process(delta: float) -> void:
 		return
 	_jump_elapsed += delta
 	var frame := mini(int(_jump_elapsed / 0.12), 3)
-	for cat in cats.get_children():
-		(cat as Sprite2D).texture.region = Rect2(frame * 128, 0, 128, 128)
+	for candy in candies.get_children():
+		(candy as Sprite2D).texture.region = Rect2(frame * 128, 0, 128, 128)
 	if _jump_elapsed >= 0.7:
 		_jumping = false
 		sticker.hide()
-		for cat in cats.get_children():
-			(cat as Sprite2D).texture.region = Rect2(0, 0, 128, 128)
+		for candy in candies.get_children():
+			(candy as Sprite2D).texture.region = Rect2(0, 0, 128, 128)
 
 
 func start_measurement(duration_sec: float = 20.0, warmup_sec: float = 2.0) -> void:
@@ -134,7 +134,7 @@ func _build() -> void:
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(title)
 
-	var caption := _label("Một atlas mèo dùng trên sáu vùng", 27)
+	var caption := _label("Một atlas kẹo dùng trên sáu vùng", 27)
 	caption.name = "Caption"
 	caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	add_child(caption)
@@ -144,17 +144,17 @@ func _build() -> void:
 	board.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(board)
 
-	cats = Node2D.new()
-	cats.name = "CatSprites"
-	add_child(cats)
+	candies = Node2D.new()
+	candies.name = "CandySprites"
+	add_child(candies)
 	for index in range(6):
 		var frame := AtlasTexture.new()
-		frame.atlas = CAT_ATLAS
+		frame.atlas = CANDY_ATLAS
 		frame.region = Rect2(0, 0, 128, 128)
-		var cat := Sprite2D.new()
-		cat.name = "Cat%d" % index
-		cat.texture = frame
-		cats.add_child(cat)
+		var candy := Sprite2D.new()
+		candy.name = "Candy%d" % index
+		candy.texture = frame
+		candies.add_child(candy)
 
 	labels = HBoxContainer.new()
 	labels.name = "RegionLabels"
@@ -182,7 +182,7 @@ func _build() -> void:
 
 	var success_button := Button.new()
 	success_button.name = "SuccessButton"
-	success_button.text = "Thử mèo nhảy"
+	success_button.text = "Thử kẹo nhảy"
 	success_button.pressed.connect(trigger_success)
 	add_child(success_button)
 
@@ -218,9 +218,9 @@ func _layout_probe() -> void:
 	board.queue_redraw()
 	var cell := side / 6.0
 	for index in range(6):
-		var cat: Sprite2D = cats.get_child(index)
-		cat.position = board.position + Vector2(index + 0.5, index + 0.5) * cell
-		cat.scale = Vector2.ONE * minf(1.0, cell / 140.0)
+		var candy: Sprite2D = candies.get_child(index)
+		candy.position = board.position + Vector2(index + 0.5, index + 0.5) * cell
+		candy.scale = Vector2.ONE * minf(1.0, cell / 140.0)
 	labels.position = Vector2(board.position.x, board.position.y + side + 18.0)
 	labels.size = Vector2(side, 52.0)
 	$Title.position = Vector2(SAFE_SIDE, 95.0)

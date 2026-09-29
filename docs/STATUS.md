@@ -1,8 +1,40 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-28. Mục tiêu phiên này: hoàn thành thiết kế lại toàn diện giao diện màn chơi `BoardScreen` theo `board_screen_restyle_spec.md` (phong cách tương đồng với giao diện tham khảo: TopBar tròn, StatusRow đầu mèo pastel + 3 cá vàng, RulesCard 2x2 có icon 3x3, BoardCard to phẳng bo góc có gap, BottomBar 3 nút tròn có badge). Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-29. Mục tiêu: dọn phần không còn sử dụng sau chuyển **CanDoKu** và tích hợp local về `dev`, theo RST-009. Nền `b335b1891d1b9927e3b55f2ec8945dda252c779f`. Mục tiêu sản phẩm vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
 
-## Nền hiện tại
+## Dọn và tích hợp CanDoKu — 2026-09-29
+
+- Đã xóa 10 ảnh cũ và 10 import tương ứng sau kiểm không còn tham chiếu: atlas bitmap, bốn ảnh mèo/cá trên Board, avatar/logo Home và ba icon tiền/leaderboard/timer. Bản tracked khôi phục được từ revision nền. Xóa hai spec UI cũ theo trạng thái checkout người dùng; sửa chú thích trỏ tới spec đã bỏ. Bỏ các khối Home tiền/daily, avatar không có hành động, cấu hình leaderboard và theme JSON không có consumer. Giữ icon nút hiện hành, SVG, fixture, validator, migration và test.
+- Trước tích hợp: **17/17 Godot suite, 8/8 Python game, 23/23 Python GDD, 7/7 runner, hai validator PASS**; [log](../scratch/verification/20260929T032029.887573Z.txt), exit 0, 8,80 giây, source SHA256 `a0b082fd8d53f4776a4d6cccd012d58b6cc2ff855339a68aef1182405014dffd`. Log ghi nền và diff thực tế; tài liệu trạng thái cập nhật sau kiểm, runtime không đổi.
+- Capture GPU từ bootstrap với profile runtime riêng đã chạy lại Home/Settings/Puzzle/Win/Fail; đã xem Home sau dọn, không mất tên hoặc các nút hiện hành. Ảnh ở `scratch/candoku-ui/`. Gesture cửa sổ thật/Android/iOS chưa kiểm; giới hạn Computer Use như mục dưới. Không báo nghiệm thu R1.
+- Bảy thay đổi import icon đang dùng của người dùng được giữ ngoài commit và mang theo checkout `dev`. Không push/phát hành.
+
+## CanDoKu — chuyển đồng bộ GDD và client (trước lượt dọn)
+
+- RST-008: hợp đồng hiện hành dùng `candy`, `TryCandy`, `try_candy`, `CandyFound`, `sourceCandy`, `tutorialCandyCell`; đồng bộ solver, Hint, tutorial, vector và validator. Token cũ chỉ còn ở converter save v2/test compatibility, không có alias API cũ. Session v3 giữ tim, lỗi, Hint, thời gian, level/hash; đường dẫn profile Windows giữ nguyên. Level v4/progress v2 không đổi.
+- App/export/Home dùng CanDoKu, hình kẹo/tim SVG gốc thay tài nguyên chủ đề cũ trong runtime/probe. Ảnh nguồn cũ và 11 sửa `.png.import` có sẵn được bảo toàn. Hai spec UI được tinh gọn theo GDD; công cụ báo cáo đọc GDD trực tiếp, kiểm cú pháp PASS, chưa tạo Word. Bỏ generator bitmap probe vì SVG là nguồn chỉnh trực tiếp; có thể khôi phục generator từ revision nền.
+- **17/17 suite Godot, 8/8 Python game, 23/23 Python GDD, 7/7 Python runner, hai validator PASS.** Lệnh `rtk python -B tools/verify.py --godot <Godot 4.7.2>`; [log cuối](../scratch/verification/20260929T022900.292660Z.txt), exit 0, 7,78 giây. Revision nền như trên, source SHA256 `cd8db33aa16fd5cecade855d453eccc26854f8ef39b77dfeb0a198fce0fd6fb6`; log ghi working diff thực tế. Tài liệu bàn giao cập nhật sau log, runtime không đổi.
+- Regression API/migration và tên Home đã thấy RED rồi GREEN. Ba full run: lượt đầu timeout do SVG probe chưa import; lượt hai lỗi so sánh Dictionary int/float trong test; lượt cuối PASS sau kiểm file bằng so sánh chuỗi byte chính xác. Probe riêng PASS sau import. Không bỏ test.
+- Render Vulkan Mobile/GPU từ bootstrap thật với profile runtime cô lập: Home → Settings → Back → Puzzle → Settings → Back → Win → màn tiếp → Fail. Đã xem [Home](../scratch/candoku-ui/home.png), [Puzzle](../scratch/candoku-ui/puzzle.png), Settings và Result. Đây là capture harness phát signal/action, **không phải kiểm gesture bằng thao tác cửa sổ thật**. Computer Use lỗi `helper_unknown_error: setup refresh had errors`, reset/thử lại vẫn lỗi; không retry khi môi trường chưa đổi. Android/iOS NOT RUN.
+- Tài liệu: 11 file GDD, 37 link cục bộ không thiếu đích, bảy khối JSON parse thành công; quét nguồn hiện hành không còn thuật ngữ cũ ngoài compatibility. `git diff --check` PASS. Các hash/số liệu bên dưới là lịch sử theo ngày, không dùng để chứng nhận build mới.
+
+Chưa nghiệm thu R1 hoàn chỉnh hoặc phát hành: cần kiểm gesture thật và trọn hành trình bốn level. Campaign 24 màn, generator, rating engine và hiệu chỉnh độ khó vẫn chưa triển khai.
+
+## Lịch sử: tài liệu nền suy luận và sinh level — 2026-09-28
+
+- Đã mở rộng [GDD 10](../GDD/10-nghien-cuu-quy-tac-suy-luan.md) thành mô hình/rules/chứng minh/Hint đầy đủ hơn, gồm kỹ thuật nâng cao có ranh giới hỗ trợ rõ; thêm [GDD 11 mới](../GDD/11-sinh-level-va-danh-gia-do-kho.md) về profile/seed, tạo vùng/givens, uniqueness, trace, difficulty vector, rating thử nghiệm, chống trùng, playtest và mẫu giao AI tạo ứng viên. Xem RST-007.
+- Kiểm tài liệu: `rtk git diff --check` exit 0; đọc lại và quét 36 liên kết cục bộ trong sáu tài liệu liên quan, không đích thiếu; parse ba khối JSON mẫu thành công. Kiểm độc lập bằng JavaScript duyệt hoán vị S301: đúng một nghiệm [1,3,0,2], không single ban đầu, một bước S3 và bốn S2 đều đúng, giải đủ bốn viên. Hai ví dụ rating cho kết quả 23 và 10 như văn bản.
+- Fingerprint nội dung qua `rtk git hash-object GDD/10-nghien-cuu-quy-tac-suy-luan.md GDD/11-sinh-level-va-danh-gia-do-kho.md`: GDD 10 = `06172790896bc574785dcf25182efcfb9617080d`; GDD 11 = `4889f0ca4fb7fdeec96ff5a8e997fd0da78e0bd5`. File 11 mới chưa tracked; chưa commit/merge/push. Fingerprint ở mục GDD 0.6.0 bên dưới là bằng chứng vòng sửa trước, không dùng thay fingerprint mới.
+- Giới hạn: chưa triển khai generator/rating engine/luật mở rộng, chưa sinh campaign hoặc hiệu chỉnh difficulty với người thật. Không sửa code/data/assets; giữ thay đổi có sẵn. Full suite 0 lượt, GUI/device NOT_RUN vì chỉ sửa tài liệu.
+
+## Lịch sử: đợt tài liệu GDD CanDoKu 0.6.0
+
+- Đã viết lại tầm nhìn, hướng hình ảnh kẹo/giỏ/vườn, thống nhất luật/UX/level/kỹ thuật/suy luận và bổ sung QA chuyển chủ đề, tương thích save. Xem [GDD](../GDD/README.md), [rà soát](../GDD/09-ra-soat-thiet-ke.md) và RST-006 trong [DECISIONS](DECISIONS.md).
+- Đã bỏ GDD 08/11/12 không còn nhiệm vụ trong phạm vi hiện hành; giữ fixture/tools/test. Bản cũ bảo toàn trong revision nền, không xóa game assets.
+- Chưa triển khai CanDoKu trong client; tên/asset mèo hiện có không là thiết kế đích. Không đổi token/schema/save hoặc dữ liệu campaign. Các mục lịch sử bên dưới giữ bằng chứng của revision cũ, không chứng nhận CanDoKu đã đạt runtime/GUI.
+- Kiểm chứng tài liệu: `rtk git diff --check` exit 0; quét 39 liên kết cục bộ trong 12 tài liệu GDD/README/DECISIONS, không đích bị thiếu; rà tham chiếu cũ và phạm vi. Fingerprint diff GDD qua `rtk proxy git diff -- GDD | rtk git hash-object --stdin` là `1dcaade7321574e509214a39dfb8eb19224230c5` trên nền nêu trên. Thay đổi `.png.import` có sẵn ngoài phạm vi được giữ nguyên. Không chạy full suite (0 lượt) hoặc game vì chỉ sửa văn bản; GUI/thiết bị CanDoKu chưa kiểm. Shell có lỗi khởi tạo với một số lệnh; lệnh fingerprint chỉ đọc đã chạy qua quyền được cấp. Không commit/merge/push trong đợt này.
+
+## Nền client trước CanDoKu — kết quả lịch sử
 
 - Nhánh `codex/board-ui-restyle` đã tái cấu trúc `game/scripts/board_screen.gd`, `game/scripts/board_view.gd`, bổ sung `game/scripts/ui_tokens.gd`, sinh bộ placeholder assets tại `game/assets/ui/board/` và đồng bộ `game/tests/run_board_scene_smoke.gd`.
 - Kiểm chứng trên nhánh `codex/board-ui-restyle`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 7,97s; log tại `scratch/verification/20260928T144437.830205Z.txt`.
@@ -63,4 +95,4 @@ Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đ�
 | Không thể push `dev`: repository chưa cấu hình Git remote và không có URL trong tài liệu | Chủ dự án | Cung cấp URL remote (và tên nếu không dùng `origin`); agent cấu hình rồi push `dev` và nhánh R1-E. Thử lại khi có endpoint |
 | Nguồn lực iOS và người thử R2 | Chủ dự án | Xác nhận iPhone/Mac/signing trước R4 và người thử trước R2; không chặn công việc R1 độc lập |
 
-Bước tiếp theo: chủ dự án duyệt trực quan bản UI đầu và yêu cầu vòng chỉnh tiếp; song song vẫn cần cấu hình remote để push `dev`, nghiệm thu trọn hành trình desktop và Android theo [kế hoạch R1](plans/R1-playable-loop.md). Không tuyên bố R1 hoàn thành hay đủ điều kiện phát hành.
+Bước tiếp theo: agent kiểm gesture thật và nghiệm thu hành trình R1 trên CanDoKu khi GUI/thiết bị sẵn sàng; chủ dự án phối hợp môi trường desktop/Android/iOS và remote. Chỉ thử lại Computer Use khi lỗi khởi tạo môi trường đã được xử lý. Không tuyên bố R1 hoàn thành hoặc đủ điều kiện phát hành từ headless và ảnh capture.

@@ -35,14 +35,14 @@ func _run() -> void:
 	state = t2["state"]
 	_check(t2["completed"].has("T2"), "ClearX completes T2")
 
-	var safe_miss := controller.try_cat_policy("L01", [0, 1], [0, 1])
+	var safe_miss := controller.try_candy_policy("L01", [0, 1], [0, 1])
 	_check(safe_miss["penalize"] == false, "tutorial target miss is safe")
 	_check(safe_miss["tutorialMessage"] == true, "tutorial target miss explains mistake")
-	var normal_miss := controller.try_cat_policy("L01", [1, 1], [0, 1])
+	var normal_miss := controller.try_candy_policy("L01", [1, 1], [0, 1])
 	_check(normal_miss["penalize"] == true, "other tutorial cell uses normal penalty")
-	_check(controller.try_cat_policy("L02", [0, 1], [0, 1])["penalize"], "later levels use normal penalty")
+	_check(controller.try_candy_policy("L02", [0, 1], [0, 1])["penalize"], "later levels use normal penalty")
 
-	state = controller.process_action(state, {"type": "TryCat", "cell": [0, 1], "correct": true})["state"]
+	state = controller.process_action(state, {"type": "TryCandy", "cell": [0, 1], "correct": true})["state"]
 	state = controller.process_action(state, {"type": "ViewRules"})["state"]
 	state = controller.process_action(state, {"type": "UseHint", "valid": true})["state"]
 	_check(not controller.all_complete(state), "opening Hint alone does not finish T6")

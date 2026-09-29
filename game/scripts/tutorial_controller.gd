@@ -39,7 +39,7 @@ func process_action(state: Dictionary, action: Dictionary) -> Dictionary:
 		_add_milestone(updated, "T2", completed)
 	elif action_type == "MarkStroke" and action.get("cells", []).size() >= 2:
 		_add_milestone(updated, "T3", completed)
-	elif action_type == "TryCat" and action_cell == updated.get("tutorialCatCell", target) and bool(action.get("correct", false)):
+	elif action_type == "TryCandy" and action_cell == updated.get("tutorialCandyCell", target) and bool(action.get("correct", false)):
 		_add_milestone(updated, "T4", completed)
 	elif action_type in ["ViewRules", "OpenRules"]:
 		_add_milestone(updated, "T5", completed)
@@ -52,7 +52,7 @@ func process_action(state: Dictionary, action: Dictionary) -> Dictionary:
 		"show": should_show(str(updated.get("tutorialLevelId", "")), updated)
 	}
 
-func try_cat_policy(level_id: String, attempted_cell: Array, highlighted_cell: Array) -> Dictionary:
+func try_candy_policy(level_id: String, attempted_cell: Array, highlighted_cell: Array) -> Dictionary:
 	if is_tutorial_level(level_id) and attempted_cell == highlighted_cell:
 		return {
 			"penalize": false,

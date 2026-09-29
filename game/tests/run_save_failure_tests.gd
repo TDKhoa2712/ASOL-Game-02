@@ -19,7 +19,7 @@ func _run() -> void:
 	var blocker := profile.path_join("progress.json.tmp")
 	_check(DirAccess.make_dir_absolute(blocker) == OK, "create controlled progress write failure")
 	for row in range(4):
-		runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	_check(wins.is_empty(), "no Win signal when progress write fails")
 	_check(runtime.progress.get("currentLevelId") == "L01", "in-memory progress remains L01 on failure")
 	_check(runtime.repository.load_progress().get("ok", false) == false, "no false durable progress")
@@ -61,7 +61,7 @@ func _ui_retry() -> void:
 	var blocker := profile.path_join("progress.json.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	for row in range(4):
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	await process_frame
 	var dialog = bootstrap.get_node_or_null("SaveErrorDialog")
 	_check(dialog != null and dialog.visible, "save error is shown to player")
@@ -86,7 +86,7 @@ func _reload_pending_win() -> void:
 	var blocker := profile.path_join("progress.json.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	for row in range(4):
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	await process_frame
 	bootstrap.free()
 	DirAccess.remove_absolute(blocker)

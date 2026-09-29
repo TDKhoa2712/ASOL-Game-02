@@ -1,26 +1,17 @@
 extends Control
 
-const Tokens = preload("res://scripts/ui_tokens.gd")
 const SettingsScript = preload("res://scripts/settings.gd")
 
 @export_group("Text & Content")
-@export var game_title: String = "MÈO LOGIC"
-@export var tagline: String = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
+@export var game_title: String = "CanDoKu"
+@export var tagline: String = "TÌM KẸO BỊ ĐÁNH RƠI TRONG VƯỜN"
 @export var play_text_fresh: String = "Chơi"
 @export var play_text_resume: String = "Tiếp Tục"
 @export var play_text_complete: String = "Chơi lại từ L01"
 @export var level_format: String = "Level %s"
-@export var daily_text: String = "Thử Thách Hằng Ngày"
-@export var daily_timer_text: String = "09:48:34"
-@export var leaderboard_timer_text: String = "23:50:22"
-@export var currency_count: int = 7
 
 @export_group("Feature Flags")
-@export var show_avatar: bool = true
-@export var show_currency: bool = false
 @export var show_top_settings: bool = true
-@export var show_leaderboard: bool = false
-@export var show_daily: bool = false
 @export var show_tagline: bool = false
 @export var show_progress_hint: bool = true
 
@@ -58,43 +49,27 @@ func _load_from_json() -> void:
 		if c.has("tagline"): tagline = str(c["tagline"])
 		if c.has("play_button_text"): play_text_resume = str(c["play_button_text"])
 		if c.has("level_format"): level_format = str(c["level_format"])
-		if c.has("daily_challenge_text"): daily_text = str(c["daily_challenge_text"])
-		if c.has("daily_timer"): daily_timer_text = str(c["daily_timer"])
-		if c.has("leaderboard_timer"): leaderboard_timer_text = str(c["leaderboard_timer"])
-		if c.has("currency_count"): currency_count = int(c["currency_count"])
 	if data.has("visibility") and data["visibility"] is Dictionary:
 		var v: Dictionary = data["visibility"]
-		if v.has("show_avatar"): show_avatar = bool(v["show_avatar"])
-		if v.has("show_currency"): show_currency = bool(v["show_currency"])
 		if v.has("show_top_settings"): show_top_settings = bool(v["show_top_settings"])
-		if v.has("show_leaderboard"): show_leaderboard = bool(v["show_leaderboard"])
-		if v.has("show_daily"): show_daily = bool(v["show_daily"])
 		if v.has("show_tagline"): show_tagline = bool(v["show_tagline"])
 		if v.has("show_progress_hint"): show_progress_hint = bool(v["show_progress_hint"])
 
 
 func apply_configuration() -> void:
 	# Top bar
-	var avatar = get_node_or_null("SafeArea/TopBar/AvatarButton")
-	if avatar != null:
-		avatar.visible = show_avatar
-	var currency = get_node_or_null("SafeArea/TopBar/CurrencyPill")
-	if currency != null:
-		currency.visible = show_currency
-		var val_lbl: Label = currency.get_node_or_null("HBox/CurrencyValue")
-		if val_lbl != null:
-			val_lbl.text = str(currency_count)
 	var top_settings = get_node_or_null("SafeArea/TopBar/TopSettingsButton")
 	if top_settings != null:
 		top_settings.visible = show_top_settings
 
 	# Logo & Title
 	var logo_img: TextureRect = get_node_or_null("SafeArea/Content/Stack/LogoBlock/LogoImage")
-	var title_lbl: Label = get_node_or_null("SafeArea/Content/Stack/LogoBlock/Title")
+	var title_lbl: Label = get_node_or_null("SafeArea/Content/Stack/Title")
 	if logo_img != null and title_lbl != null:
 		if logo_img.texture != null:
 			logo_img.visible = true
-			title_lbl.visible = false
+			title_lbl.visible = true
+			title_lbl.text = game_title
 		else:
 			logo_img.visible = false
 			title_lbl.visible = true
@@ -102,24 +77,11 @@ func apply_configuration() -> void:
 
 	var tagline_card = get_node_or_null("SafeArea/Content/Stack/HeroCard")
 	if tagline_card != null:
+		tagline_card.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 		tagline_card.visible = show_tagline
 		var hero_text: Label = tagline_card.get_node_or_null("HeroText")
 		if hero_text != null:
 			hero_text.text = tagline
-
-	# Side rail: HelpButton is visible; LeaderboardEntry depends on flag
-	var ldr = get_node_or_null("SafeArea/Content/Stack/SideRailLeft/LeaderboardEntry")
-	if ldr != null:
-		ldr.visible = show_leaderboard
-
-	# Daily Button
-	var daily = get_node_or_null("SafeArea/Content/Stack/DailyButton")
-	if daily != null:
-		daily.visible = show_daily
-		daily.text = daily_text
-		var timer_lbl: Label = daily.get_node_or_null("DailyTimerTab/TimerLabel")
-		if timer_lbl != null:
-			timer_lbl.text = "⏱ " + daily_timer_text
 
 	# Progress Hint
 	var hint = get_node_or_null("SafeArea/Content/Stack/ProgressHint")
@@ -168,8 +130,6 @@ func _wire_signals_and_tweens() -> void:
 	# Wire interactive micro-animation for buttons
 	var play_btn: Button = get_node_or_null("SafeArea/Content/Stack/PlayButton")
 	_wire_button_tween(play_btn)
-	var daily_btn: Button = get_node_or_null("SafeArea/Content/Stack/DailyButton")
-	_wire_button_tween(daily_btn)
 	var help_btn: Button = get_node_or_null("SafeArea/Content/Stack/HelpButton")
 	_wire_button_tween(help_btn)
 	if top_settings != null:

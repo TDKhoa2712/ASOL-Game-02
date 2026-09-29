@@ -1,35 +1,13 @@
 {
-  "theme": {
-    "primary_button_color": "#F0932A",
-    "primary_button_pressed": "#D87D17",
-    "secondary_button_color": "#8FA5F1",
-    "secondary_button_pressed": "#738BE5",
-    "bg_cream": "#F7F1EC",
-    "bg_tile": "#FAF5F0",
-    "deco_peach": "#F5E3D0",
-    "brown_logo": "#8B5A3C",
-    "gear_mauve": "#86546A",
-    "avatar_border": "#7DB843",
-    "timer_dark": "#645858",
-    "currency_text": "#A85A0A"
-  },
   "content": {
-    "game_title": "MÈO LOGIC",
-    "tagline": "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI",
+    "game_title": "CanDoKu",
+    "tagline": "TÌM KẸO BỊ ĐÁNH RƠI TRONG VƯỜN",
     "play_button_text": "Tiếp Tục",
-    "level_format": "Level %s",
-    "daily_challenge_text": "Thử Thách Hằng Ngày",
-    "daily_timer": "09:48:34",
-    "leaderboard_timer": "23:50:22",
-    "currency_count": 7
+    "level_format": "Level %s"
   },
   "visibility": {
-    "show_avatar": true,
-    "show_currency": true,
     "show_top_settings": true,
-    "show_leaderboard": false,
-    "show_daily": true,
-    "show_tagline": false,
+    "show_tagline": true,
     "show_progress_hint": true
   }
 }

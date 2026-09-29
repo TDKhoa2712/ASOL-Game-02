@@ -71,11 +71,11 @@ def run_case(case):
             if case["intervalMs"] <= DATA["doubleTapWindowMs"]:
                 # The first tap was visual preview only, never a committed X.
                 if LEVEL["solution"][cell[0]] == cell[1]:
-                    cells[key(cell)] = "cat"
+                    cells[key(cell)] = "candy"
                 else:
                     cells[key(cell)] = "x_error"
                     hearts -= 1
-                actions.append("TryCat")
+                actions.append("TryCandy")
             else:
                 actions.extend((single(cells, cell), single(cells, cell)))
     elif kind == "different":
@@ -191,14 +191,14 @@ def apply_session_action(level, session, action):
             write_cell(session["cells"], cell_key, previous)
         session["undoDiff"] = None
         session["events"].append("UndoApplied")
-    elif action_type == "TryCat":
+    elif action_type == "TryCandy":
         session["undoDiff"] = None
         cell = tuple(action["cell"])
         if is_given(level, cell) or state(session["cells"], cell) not in ("empty", "x"):
             session["events"].append("NoOp")
         elif level["solution"][cell[0]] == cell[1]:
-            write_cell(session["cells"], key(cell), "cat")
-            session["events"].append("CatPlaced")
+            write_cell(session["cells"], key(cell), "candy")
+            session["events"].append("CandyFound")
         else:
             write_cell(session["cells"], key(cell), "x_error")
             session["hearts"] -= 1
@@ -255,10 +255,10 @@ class InteractionContractTests(unittest.TestCase):
                 self.assertNotIn(case["id"], seen)
                 seen.add(case["id"])
                 for position, value in case["initial"].items():
-                    self.assertIn(value, ("empty", "x", "x_error", "cat"))
+                    self.assertIn(value, ("empty", "x", "x_error", "candy"))
                     row, col = map(int, position.split(","))
                     self.assertTrue(0 <= row < LEVEL["size"] and 0 <= col < LEVEL["size"])
-                    if value == "cat":
+                    if value == "candy":
                         self.assertEqual(LEVEL["solution"][row], col)
                     if value == "x_error":
                         self.assertNotEqual(LEVEL["solution"][row], col)

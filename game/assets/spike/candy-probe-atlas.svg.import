@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://4oidxc42nvoi"
-path="res://.godot/imported/cat-probe-atlas.png-614e0a8bc385065c8ce67edda938622e.ctex"
+uid="uid://cyc1ctl2314dw"
+path="res://.godot/imported/candy-probe-atlas.svg-2d2ae09a695beb32078bb7a1a0615e57.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spike/cat-probe-atlas.png"
-dest_files=["res://.godot/imported/cat-probe-atlas.png-614e0a8bc385065c8ce67edda938622e.ctex"]
+source_file="res://assets/spike/candy-probe-atlas.svg"
+dest_files=["res://.godot/imported/candy-probe-atlas.svg-2d2ae09a695beb32078bb7a1a0615e57.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

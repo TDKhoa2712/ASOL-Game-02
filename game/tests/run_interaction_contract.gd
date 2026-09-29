@@ -63,9 +63,9 @@ func _run() -> void:
 			"initial": {},
 			"cell": [0, 1],
 			"intervalMs": 280,
-			"expected": {"0,1": "cat"},
+			"expected": {"0,1": "candy"},
 			"hearts": 3,
-			"actions": ["TryCat"],
+			"actions": ["TryCandy"],
 		},
 	]
 	for case in boundary_cases:
@@ -117,7 +117,7 @@ func _run() -> void:
 
 	var failed_engine = GestureEngineScript.new(level, contract)
 	for wrong_cell in [[0, 0], [0, 2], [0, 3]]:
-		failed_engine.session.apply_action({"type": "TryCat", "cell": wrong_cell})
+		failed_engine.session.apply_action({"type": "TryCandy", "cell": wrong_cell})
 	var failed_accepts_input: bool = failed_engine.begin_pointer(0, [1, 0], _center([1, 0]), 100)
 	if (
 		failed_engine.session.hearts != 0
@@ -131,7 +131,7 @@ func _run() -> void:
 
 	var won_engine = GestureEngineScript.new(level, contract)
 	for row in range(int(level["size"])):
-		won_engine.session.apply_action({"type": "TryCat", "cell": [row, int(level["solution"][row])]})
+		won_engine.session.apply_action({"type": "TryCandy", "cell": [row, int(level["solution"][row])]})
 	var won_accepts_input: bool = won_engine.begin_pointer(0, [0, 0], _center([0, 0]), 100)
 	if won_accepts_input or won_engine.session.events[-1] != "LevelWon":
 		failures.append(

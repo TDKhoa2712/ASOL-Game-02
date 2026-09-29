@@ -1,30 +1,12 @@
-[gd_scene load_steps=18 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/home_screen.gd" id="1_home"]
 [ext_resource type="Script" path="res://scripts/pastel_backdrop.gd" id="2_backdrop"]
-[ext_resource type="Texture2D" path="res://assets/ui/home/avatar_default.png" id="3_avatar_tex"]
-[ext_resource type="Texture2D" path="res://assets/ui/home/icon_currency.png" id="4_currency_tex"]
 [ext_resource type="Texture2D" path="res://assets/ui/home/icon_settings.png" id="5_settings_tex"]
-[ext_resource type="Texture2D" path="res://assets/ui/home/logo.png" id="6_logo_tex"]
+[ext_resource type="Texture2D" path="res://assets/ui/board/candy.svg" id="6_logo_tex"]
 [ext_resource type="Texture2D" path="res://assets/ui/home/icon_help.png" id="7_help_tex"]
-[ext_resource type="Texture2D" path="res://assets/ui/home/icon_leaderboard.png" id="8_ldr_tex"]
-[ext_resource type="Texture2D" path="res://assets/ui/home/icon_timer.png" id="9_timer_tex"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleContentEmpty"]
-
-[sub_resource type="StyleBoxFlat" id="StyleCurrencyPill"]
-bg_color = Color(1, 1, 1, 0.96)
-corner_radius_top_left = 999
-corner_radius_top_right = 999
-corner_radius_bottom_right = 999
-corner_radius_bottom_left = 999
-shadow_color = Color(0.35, 0.22, 0.18, 0.1)
-shadow_size = 10
-shadow_offset = Vector2(0, 4)
-content_margin_left = 18.0
-content_margin_top = 8.0
-content_margin_right = 24.0
-content_margin_bottom = 8.0
 
 [sub_resource type="StyleBoxFlat" id="StyleTopSettings"]
 bg_color = Color(1, 1, 1, 0.96)
@@ -49,29 +31,6 @@ content_margin_left = 32.0
 content_margin_top = 18.0
 content_margin_right = 32.0
 content_margin_bottom = 18.0
-
-[sub_resource type="StyleBoxFlat" id="StyleDailyButton"]
-bg_color = Color(0.560784, 0.647059, 0.945098, 1)
-corner_radius_top_left = 999
-corner_radius_top_right = 999
-corner_radius_bottom_right = 999
-corner_radius_bottom_left = 999
-shadow_color = Color(0.560784, 0.647059, 0.945098, 0.35)
-shadow_size = 16
-shadow_offset = Vector2(0, 6)
-content_margin_left = 32.0
-content_margin_top = 18.0
-content_margin_right = 32.0
-content_margin_bottom = 18.0
-
-[sub_resource type="StyleBoxFlat" id="StyleDailyTimerTab"]
-bg_color = Color(0.556863, 0.623529, 0.909804, 1)
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
-content_margin_left = 16.0
-content_margin_top = 4.0
-content_margin_right = 16.0
-content_margin_bottom = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleHelpRound"]
 bg_color = Color(1, 1, 1, 0.95)
@@ -130,44 +89,9 @@ offset_bottom = 88.0
 grow_horizontal = 2
 alignment = 1
 
-[node name="AvatarButton" type="TextureButton" parent="SafeArea/TopBar"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(88, 88)
-layout_mode = 2
-texture_normal = ExtResource("3_avatar_tex")
-ignore_texture_size = true
-stretch_mode = 5
-
 [node name="SpacerLeft" type="Control" parent="SafeArea/TopBar"]
 layout_mode = 2
 size_flags_horizontal = 3
-
-[node name="CurrencyPill" type="PanelContainer" parent="SafeArea/TopBar"]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(160, 56)
-layout_mode = 2
-size_flags_vertical = 4
-theme_override_styles/panel = SubResource("StyleCurrencyPill")
-
-[node name="HBox" type="HBoxContainer" parent="SafeArea/TopBar/CurrencyPill"]
-layout_mode = 2
-theme_override_constants/separation = 10
-alignment = 1
-
-[node name="CurrencyIcon" type="TextureRect" parent="SafeArea/TopBar/CurrencyPill/HBox"]
-custom_minimum_size = Vector2(32, 32)
-layout_mode = 2
-texture = ExtResource("4_currency_tex")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="CurrencyValue" type="Label" parent="SafeArea/TopBar/CurrencyPill/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.658824, 0.352941, 0.0392157, 1)
-theme_override_font_sizes/font_size = 30
-text = "7"
-horizontal_alignment = 1
 
 [node name="SpacerRight" type="Control" parent="SafeArea/TopBar"]
 layout_mode = 2
@@ -239,7 +163,7 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.545098, 0.352941, 0.235294, 1)
 theme_override_font_sizes/font_size = 54
-text = "MÈO LOGIC"
+text = "CanDoKu"
 horizontal_alignment = 1
 
 [node name="HeroCard" type="PanelContainer" parent="SafeArea/Content/Stack"]
@@ -252,16 +176,12 @@ size_flags_horizontal = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85098, 0.443137, 0.270588, 1)
 theme_override_font_sizes/font_size = 20
-text = "BỐN MÙA · BỐN VÙNG · MỘT LỜI GIẢI"
+text = "TÌM KẸO BỊ ĐÁNH RƠI TRONG VƯỜN"
 horizontal_alignment = 1
 
 [node name="MidSpacerTop" type="Control" parent="SafeArea/Content/Stack"]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
-
-[node name="SideRailLeft" type="HBoxContainer" parent="SafeArea/Content/Stack"]
-layout_mode = 2
-alignment = 0
 
 [node name="HelpButton" type="Button" parent="SafeArea/Content/Stack"]
 unique_name_in_owner = true
@@ -316,41 +236,6 @@ theme_override_styles/hover = SubResource("StylePlayButton")
 theme_override_styles/pressed = SubResource("StylePlayButton")
 text = "Chơi / Tiếp tục"
 tooltip_text = "Mở level hiện tại hoặc tiếp tục lượt đang lưu"
-
-[node name="DailyButton" type="Button" parent="SafeArea/Content/Stack"]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(560, 96)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleDailyButton")
-theme_override_styles/hover = SubResource("StyleDailyButton")
-theme_override_styles/pressed = SubResource("StyleDailyButton")
-text = "Thử Thách Hằng Ngày"
-
-[node name="DailyTimerTab" type="PanelContainer" parent="SafeArea/Content/Stack/DailyButton"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -80.0
-offset_top = -6.0
-offset_right = 80.0
-offset_bottom = 34.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_styles/panel = SubResource("StyleDailyTimerTab")
-
-[node name="TimerLabel" type="Label" parent="SafeArea/Content/Stack/DailyButton/DailyTimerTab"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "⏱ 09:48:34"
-horizontal_alignment = 1
 
 [node name="BottomSpacer" type="Control" parent="SafeArea/Content/Stack"]
 custom_minimum_size = Vector2(0, 20)

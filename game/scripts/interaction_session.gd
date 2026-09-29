@@ -102,7 +102,7 @@ func apply_action(action: Dictionary) -> void:
 	last_action = action.duplicate(true)
 	var action_type := str(action["type"])
 	if (
-		action_type in ["MarkX", "ClearX", "MarkStroke", "TryCat"]
+		action_type in ["MarkX", "ClearX", "MarkStroke", "TryCandy"]
 		and attempt_state != "Playing"
 	):
 		events.append("NoOp")
@@ -115,8 +115,8 @@ func apply_action(action: Dictionary) -> void:
 			_apply_stroke(action)
 		"UndoX":
 			_apply_undo()
-		"TryCat":
-			_apply_try_cat(action["cell"])
+		"TryCandy":
+			_apply_try_candy(action["cell"])
 		"Hint":
 			_apply_hint(str(action["result"]))
 		"BackToHome":
@@ -192,13 +192,13 @@ func _apply_undo() -> void:
 	events.append("UndoApplied")
 
 
-func _apply_try_cat(raw_cell: Array) -> void:
+func _apply_try_candy(raw_cell: Array) -> void:
 	undo_diff = null
 	var cell := [int(raw_cell[0]), int(raw_cell[1])]
 	if cell == tutorial_safe_cell and int(level["solution"][cell[0]]) != cell[1]:
 		events.append("TutorialSafeMistake")
 		return
-	var result: Dictionary = PuzzleCore.try_cat(level, cells, hearts, mistake_count, cell)
+	var result: Dictionary = PuzzleCore.try_candy(level, cells, hearts, mistake_count, cell)
 	cells = result["cells"]
 	hearts = int(result["hearts"])
 	mistake_count = int(result["mistakeCount"])
@@ -210,7 +210,7 @@ func _apply_try_cat(raw_cell: Array) -> void:
 			detail["reason"] = result["reason"]
 		detailed_events.append(detail)
 	for event_name in result["events"]:
-		if event_name in ["NoOp", "CatPlaced", "Mistake", "LevelWon", "LevelFailed"]:
+		if event_name in ["NoOp", "CandyFound", "Mistake", "LevelWon", "LevelFailed"]:
 			events.append(event_name)
 
 

@@ -26,7 +26,7 @@
       "givens": [{"r": 0, "c": 2}],
       "solution": [2, 4, 0, 3, 1],
       "difficulty": "easy",
-      "tags": ["given-cat", "region-single", "row-column"],
+      "tags": ["given-candy", "region-single", "row-column"],
       "logicTrace": [
         {"rule": "S2", "focus": {"type": "region", "id": "B"}, "conclusion": {"type": "place", "r": 1, "c": 4}, "textKey": "hint.single.region"},
         {"rule": "S2", "focus": {"type": "region", "id": "C"}, "conclusion": {"type": "place", "r": 2, "c": 0}, "textKey": "hint.single.region"},
@@ -43,7 +43,7 @@
       "givens": [{"r": 0, "c": 5}],
       "solution": [5, 2, 4, 0, 3, 1],
       "difficulty": "easy",
-      "tags": ["given-cat", "region-single", "chain"],
+      "tags": ["given-candy", "region-single", "chain"],
       "logicTrace": [
         {"rule": "S2", "focus": {"type": "region", "id": "C"}, "conclusion": {"type": "place", "r": 2, "c": 4}, "textKey": "hint.single.region"},
         {"rule": "S2", "focus": {"type": "region", "id": "B"}, "conclusion": {"type": "place", "r": 1, "c": 2}, "textKey": "hint.single.region"},

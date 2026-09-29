@@ -1,31 +1,61 @@
-# 09 — Rà soát thiết kế 0.5.0
+# 09 — Rà soát và hướng triển khai CanDoKu
 
-Luật chuẩn ở [02](02-luat-choi-va-trang-thai.md). Bảng này ghi quyết định sau đánh giá lần 1 (lịch sử: `git show pre-reset-pipeline-2026-09-27:docs/archive/reviews/01-danh-gia-va-kien-nghi-thiet-ke-kien-truc.md`), đánh giá lần 2 (lịch sử: `git show pre-reset-pipeline-2026-09-27:docs/archive/reviews/02-danh-gia-ban-thiet-ke-v04.md`), MVP game-design review (lịch sử: `git show pre-reset-pipeline-2026-09-27:docs/reviews/01-mvp-game-design-review.md`) và phê duyệt ngày 2026-09-21. Nếu review gợi ý khác quyết định đã duyệt, bảng này và luật GR là phiên bản cần triển khai.
+Ngày 2026-09-28, thiết kế 0.6.0. Đây là kết quả rà GDD, không phải báo cáo kiểm thử client. Tiến độ, blocker và bước đang giao chỉ ở [STATUS](../docs/STATUS.md).
 
-| Mã review | Quyết định | Tài liệu/QA liên quan |
-| --- | --- | --- |
-| REV-UX-01 | Một chạm đổi X **tức thì trên hình**; sau cửa sổ 280 ms mới commit. Giữ chạm/kéo đánh hoặc xóa X theo ô đầu, mỗi ô một lần. Hai chạm nhanh cùng ô hoàn tác preview và gọi một `TryCat`. | GR-09..14/29/30, UX-09..11/22/23, TECH-03/14, QA-08/09/12/43..45 |
-| REV-GD-01 | MVP giữ **3 tim** và `x_error` khóa. Cho Undo đúng một action X gần nhất (một ô hoặc cả stroke), không qua `TryCat`, không Redo; Restart có xác nhận reset toàn lượt cùng level. | GR-13/16/17/19/31..33, QA-08/11/14/54/55 |
-| REV-GD-02 / REV-ECO-01 | Score chỉ là scorecard ở Result, không hứa quy đổi. MVP không có wallet, vàng, cứu lượt, quảng cáo, điểm danh hoặc interface meta; luật 3 tim phải tự tạo thử thách hợp lý. | GR-17..19, D-05/08/09, QA-14..16 |
-| REV-GD-03 | Generator offline theo seed/ràng buộc/trace sau MVP; biên tập duyệt level mới. Mốc 10/20 được làm thủ công trước release đầu vì ID/puzzle bất biến; generator hỗ trợ mốc mới như 30/40, không có luật thắng bí mật. | LV-07, [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-48/49 |
-| REV-TECH-01 | Chọn Godot 4.x/GDScript, tạo hoạt ảnh trong 3D rồi **render sprite sheet 2D cho runtime**. M0 đo atlas/FPS/RAM/VRAM. | TECH-18/19, ART-06..11, QA-30/34 |
-| REV-TECH-02 | Ngưỡng chuyển kéo 12 điểm logic; chỉ ngón chính bắt đầu trong bàn, bỏ qua ngón phụ/chạm lòng bàn tay, nội suy đường kéo nhanh. | UX-22/23, TECH-03, QA-43..45 |
-| REV-TECH-03 | Giữ trần schema N=12; release đầu N≤6. **Không zoom/pan**; N lớn chỉ mở sau thử kích thước thật trên máy mục tiêu. | LV-01, UX-18, TECH-19, QA-27/35 |
-| REV-TECH-04 | S3 giao thoa là ACTIVE-MVP trong schema v4 và bắt buộc cho từng level 19–24; level 1–18 chỉ S1/S2. S4/S5 tiếp tục parked/research. | GR-07, LV-03/08, [Suy luận 10](10-nghien-cuu-quy-tac-suy-luan.md), QA-37/40/41/57 |
-| REV-TECH-05 | Mọi ô `cat` và hoạt ảnh dùng mèo đang chọn; màu vùng ở bàn/hàng tiến độ, không tô lông mèo theo vùng. Dùng lại gói clip đang chọn trong phiên, nạp khi cần và giới hạn cache. Một render 3D bằng `UPDATE_ONCE` chỉ tạo ảnh tĩnh; bake animation là spike tương lai. | GR-01..08, TECH-18/20/21, ART-12/13, QA-50..52 |
-| REV-GD-04 | Sau MVP, tim về 0 mở màn chờ cứu lượt: đủ vàng thì trả vàng, thiếu vàng có thể xem quảng cáo thưởng khi sẵn có, luôn có Retry miễn phí. Cứu thành công hồi 1 tim, xóa X đỏ cuối, giữ board và điểm phạt. Bản đầu vẫn theo GR-19. | [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), QA-47/53 |
-| REV-META-01 | Vườn mèo chỉ là danh sách mèo đã mua bằng vàng để chọn mèo đang dùng. Không có Garden Lobby, petting, mèo tự về vườn sau level hoặc chọn theo mèo của ô đáp án. | [Kế hoạch 11](11-ke-hoach-meta-va-sinh-level.md), UX mở rộng, QA-52 |
-| REV-GD-05 | Level 1 là tutorial duy nhất. Mỗi level có vùng luật bốn icon + chữ luôn nhìn thấy. Mỗi lượt có một Hint miễn phí; `NoHint` không tiêu thụ, Retry/Restart cấp lượt mới. | GR-21..24, UX-03/04/14, QA-20/22/33/56 |
-| REV-GD-06 | Thắng khi đủ N mèo và còn ít nhất 1 tim. Mỗi level phải qua uniqueness/trace và một lượt giải mù hoàn thành với ≥1 tim; campaign còn có cổng 10 người/thiết bị/accessibility. | GR-25, LV-01..08, QA-01..07/27..29/57 |
+## 1. Nhận định về bản cũ
 
-## Trạng thái thực tế
+Bản 0.5 có nền tốt ở luật GR, cử chỉ, save, uniqueness và trace S2/S3. Tuy nhiên tầm nhìn bị gắn vào chủ đề thú cưng và bộ sưu tập, yêu cầu model/rig/clip nặng hơn nhu cầu puzzle, nghiên cứu meta/Endless dài dễ bị hiểu là phải làm ngay. Bản review còn ghi “chưa có game chạy được” theo thời điểm cũ dù STATUS đã có các kết quả runtime. Những điểm này làm người triển khai khó phân biệt thiết kế đích, lịch sử và phần chưa làm.
 
-- **Có:** GDD v0.5.0, schema level v4, fixture S2/S3 và N12 biên kỹ thuật, validator trace S2/S3, vector/test tham chiếu cử chỉ gồm Undo/Restart/Hint; đặc tả nghiên cứu S4/S5 và meta sau MVP.
-- **Chưa có:** game chạy được, 24 level phát hành, asset/model/sprite, script tutorial gắn level thật, số đo Android/iOS và playtest. Đây là công việc M0–M3.
-- **Rủi ro phải đo:** chạm đơn nhìn thấy X nhưng chạm đôi phải hoàn tác preview mượt; kéo qua đường nhanh phải phủ đủ ô, không nhận ngón phụ; N12 có schema nhưng có thể không đủ kích thước chạm ở màn nhỏ; atlas mèo và cache nhiều mèo có thể tốn RAM/VRAM. M0/M1 phải ghi số đo và video thao tác trên thiết bị thật.
+## 2. Tham khảo Meowdoku và lựa chọn CanDoKu
 
-## Ranh giới bản quyền và thay đổi
+Nguồn đối chiếu: mô tả nhà phát hành Oakever trên [Google Play](https://play.google.com/store/apps/details?id=com.oakever.meowdoku) và [App Store](https://apps.apple.com/us/app/meowdoku/id6761760135), truy cập 2026-09-28. Chưa kiểm trực tiếp hành vi toàn bộ app; không khẳng định timing hoặc thuật toán nội bộ của trò tham chiếu.
 
-Giữ họ luật chung đã tham khảo; tên, màn, level, model, âm và sticker phải là tác phẩm gốc. Nếu đổi điểm, cử chỉ, schema hoặc tiến trình, sửa GDD/fixture/validator/QA trong cùng thay đổi; puzzle đã phát hành cần ID mới nếu đổi dữ liệu.
+| Điều tham khảo | Cách thiết kế trong CanDoKu |
+| --- | --- |
+| Một mục tiêu mỗi hàng/cột/vùng, không chạm | Giữ họ luật suy luận; viên kẹo và luống vườn là cách trình bày riêng |
+| Chạm đôi và ba cơ hội sai trong mô tả chính thức | Giữ contract input/ba tim sẵn có của dự án; ngưỡng 280 ms và kéo 12 điểm là thông số CanDoKu cần playtest |
+| Nhịp giải đố offline | Campaign gốc 24 màn, tự lưu cục bộ |
+| Chủ đề và phần thưởng cảm xúc | Kẹo hé lộ, giỏ picnic, hoa và lời động viên gốc; không dùng nhân vật của game tham chiếu hoặc sao chép HUD |
 
-Bản 0.5.0 nâng schema lên v4 cho S3, chốt Undo/Restart/một Hint mỗi lượt và cô lập hoàn toàn meta khỏi MVP. Validator level không có trường mèo/vàng/quảng cáo/điểm danh; QA-46/47/52/53 chỉ là cổng nghiên cứu tương lai. Nếu sau MVP triển khai gói K, phải có quyết định phạm vi mới và thêm fixture/test cho session, progress và giao dịch cùng phiên bản save mới.
+Ba hướng đã cân nhắc: chỉ thay icon sẽ nhanh nhưng không thống nhất bối cảnh; xây game tìm đồ vật trong tranh sẽ đổi bản chất luật và level; **tìm kẹo bằng suy luận trên sơ đồ vườn** giữ nền kỹ thuật, đồng thời cho chủ đề có vai trò rõ. Bản GDD này chọn hướng thứ ba theo yêu cầu người dùng.
+
+## 3. Những điều đã làm rõ
+
+| Điểm dễ hiểu sai | Quy định thiết kế |
+| --- | --- |
+| “Tìm” hay “đặt” kẹo? | Kẹo có vị trí cố định trong nghiệm; thao tác xác nhận tìm thấy, kẹo ở lại ô |
+| Luống có phải một hàng? | Luống là vùng liên thông bất quy tắc, nhãn A–F; hàng/cột là hai ràng buộc riêng |
+| Trang trí có là manh mối? | Không; mọi ô chưa tìm có cùng mức thông tin, chỉ topology và givens là dữ kiện |
+| Có cần đổi schema? | Session nâng lên v3; API/fixture dùng candy/TryCandy/CandyFound. Level v4, progress v2 và puzzle hash giữ nguyên |
+| Có cần 3D hoặc bộ sưu tập? | Không; dùng hình 2D và hiệu ứng nhỏ theo GDD 06 |
+| Có đủ 24 màn chưa? | GDD quy định đích; fixture và bộ bốn màn R1 không tự được tính là campaign đạt |
+| Có mở giai đoạn mới? | Không; giữ R1 và ROADMAP hiện hành, không tự triển khai R2–R4 |
+| Sau màn cuối có replay? | Bản kiểm bốn màn theo RST-003; release 24 màn không replay L01 |
+
+Giữ nguyên GR, công thức điểm, Hint, phạt và điều kiện thắng; điều chỉnh ngôn ngữ/hình ảnh, làm rõ modal Settings và thời gian phản hồi lỗi. QA-CD bổ sung kiểm đổi chủ đề/save cũ. Các ID ART/TECH giữ để truy vết nhưng yêu cầu nhân vật 3D/bộ sưu tập được thay bằng asset kẹo 2D.
+
+## 4. Thứ tự thực hiện khi được giao chuyển client
+
+1. Đối chiếu runtime với GDD 02/03/05; kiểm baseline và save cũ, liệt kê chuỗi/asset cần đổi. Giữ app identifier và đường dẫn save.
+2. Đổi tên hiển thị, copy, kẹo/tim/luống/giỏ và accessibility labels đồng bộ trên toàn hành trình. Không chỉ đổi logo Home.
+3. Quan sát từ entry scene thật: fresh → tutorial → bốn level, Hint/Undo/Restart, Fail/Retry, Home/resume và replay kiểm thử. Chạy runner theo AGENTS sau cụm sửa.
+4. Theo ROADMAP khi R2/R3 được giao: playtest người mới, biên tập 24 màn, asset/audio cuối và hoàn thiện khả năng tiếp cận.
+5. Theo R4 khi được giao: tắt replay kiểm thử, kiểm full campaign và đo Android/iOS, lifecycle/save trên build chốt.
+
+Đây là thứ tự phụ thuộc cho thiết kế, không là bảng tiến độ song song và không cấp quyền mở chặng.
+
+## 5. Điểm cần bằng chứng trước sản xuất/phát hành
+
+- Luật kẹo không chạm là quy ước puzzle: kiểm người mới hiểu đúng và không tưởng là tìm vật thể trong tranh.
+- Ba tim và Hint một lần giữ nền hiện có nhưng phải đo mức đoán mò, bế tắc và hiểu Hint S3 bằng playtest.
+- Thiết bị Android/iPhone mục tiêu, ngân sách RAM/VRAM và người thử do chủ dự án phối hợp; thiếu thì ghi blocker tại STATUS.
+- Asset gốc và logo cuối cần kiểm ở ô N=6/chữ lớn trước khi làm hàng loạt.
+- Tài liệu này không chứng nhận quyền thương hiệu CanDoKu, hiệu năng, khả năng tiếp cận hệ điều hành hoặc client đã đổi tên.
+
+## 6. Tinh gọn và truy vết
+
+Theo yêu cầu người dùng, bỏ khỏi GDD ba tài liệu không còn nhiệm vụ trong phạm vi hiện hành: 08 (pipeline M0–M3 cũ), 11 (meta/vàng/bộ sưu tập chủ đề cũ), 12 (đề án generator/Endless chưa triển khai). Không chuyển các đề án thành tính năng CanDoKu. Giữ data/tools vì chúng kiểm hợp đồng và dữ liệu đang dùng.
+
+Theo yêu cầu bổ sung cùng ngày, mở rộng file 10 thành tài liệu nền suy luận và thêm [11 — Sinh level/độ khó](11-sinh-level-va-danh-gia-do-kho.md) với nhiệm vụ riêng, không khôi phục meta/Endless. Đây là tài liệu chuẩn bị công cụ nội dung tương lai; không phải generator đã được triển khai.
+
+Bản trước đợt này có tại revision `b335b1891d1b9927e3b55f2ec8945dda252c779f`. Có thể đọc/khôi phục từng file bằng Git, ví dụ `git show b335b1891d1b9927e3b55f2ec8945dda252c779f:GDD/11-ke-hoach-meta-va-sinh-level.md`. Không xóa code, asset, fixture hoặc test trong đợt tài liệu.

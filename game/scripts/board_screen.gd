@@ -17,9 +17,9 @@ const ICON_HELP_PATH := "res://assets/ui/board/icon_help.png"
 const ICON_UNDO_PATH := "res://assets/ui/board/icon_undo.png"
 const ICON_HINT_PATH := "res://assets/ui/board/icon_hint.png"
 const ICON_RESTART_PATH := "res://assets/ui/board/icon_restart.png"
-const CAT_PROGRESS_PATH := "res://assets/ui/board/cat_head_progress.png"
-const LIFE_FISH_PATH := "res://assets/ui/board/life_fish.png"
-const CAT_SMALL_PATH := "res://assets/ui/board/cat_face_small.png"
+const CANDY_PROGRESS_PATH := "res://assets/ui/board/candy.svg"
+const LIFE_HEART_PATH := "res://assets/ui/board/heart.svg"
+const CANDY_SMALL_PATH := "res://assets/ui/board/candy.svg"
 const PLAY_BADGE_PATH := "res://assets/ui/board/icon_play_badge.png"
 
 
@@ -54,9 +54,9 @@ var _icon_help_tex: Texture2D
 var _icon_undo_tex: Texture2D
 var _icon_hint_tex: Texture2D
 var _icon_restart_tex: Texture2D
-var _cat_progress_tex: Texture2D
-var _life_fish_tex: Texture2D
-var _cat_small_tex: Texture2D
+var _candy_progress_tex: Texture2D
+var _life_heart_tex: Texture2D
+var _candy_small_tex: Texture2D
 var _play_badge_tex: Texture2D
 
 var _rule_labels: Array[Label] = []
@@ -66,11 +66,11 @@ var _level_title_label: Label
 
 class RuleIcon3x3 extends Control:
 	var pattern: String = ""
-	var cat_tex: Texture2D = null
+	var candy_tex: Texture2D = null
 
-	func _init(pat: String, cat_texture: Texture2D = null) -> void:
+	func _init(pat: String, candy_texture: Texture2D = null) -> void:
 		pattern = pat.replace(" ", "").replace("/", "")
-		cat_tex = cat_texture
+		candy_tex = candy_texture
 		custom_minimum_size = Vector2(58, 58)
 
 	func _draw() -> void:
@@ -94,8 +94,8 @@ class RuleIcon3x3 extends Control:
 				elif ch == "C":
 					s.bg_color = UiTokens.BOARD_TILE
 					draw_style_box(s, cell_rect)
-					if cat_tex != null:
-						draw_texture_rect(cat_tex, cell_rect.grow(-1.5), false)
+					if candy_tex != null:
+						draw_texture_rect(candy_tex, cell_rect.grow(-1.5), false)
 					else:
 						draw_circle(cell_rect.get_center(), cell_w * 0.35, Color("#A56643"))
 				else:
@@ -147,12 +147,12 @@ func _load_textures() -> void:
 		_icon_hint_tex = load(ICON_HINT_PATH)
 	if ResourceLoader.exists(ICON_RESTART_PATH):
 		_icon_restart_tex = load(ICON_RESTART_PATH)
-	if ResourceLoader.exists(CAT_PROGRESS_PATH):
-		_cat_progress_tex = load(CAT_PROGRESS_PATH)
-	if ResourceLoader.exists(LIFE_FISH_PATH):
-		_life_fish_tex = load(LIFE_FISH_PATH)
-	if ResourceLoader.exists(CAT_SMALL_PATH):
-		_cat_small_tex = load(CAT_SMALL_PATH)
+	if ResourceLoader.exists(CANDY_PROGRESS_PATH):
+		_candy_progress_tex = load(CANDY_PROGRESS_PATH)
+	if ResourceLoader.exists(LIFE_HEART_PATH):
+		_life_heart_tex = load(LIFE_HEART_PATH)
+	if ResourceLoader.exists(CANDY_SMALL_PATH):
+		_candy_small_tex = load(CANDY_SMALL_PATH)
 	if ResourceLoader.exists(PLAY_BADGE_PATH):
 		_play_badge_tex = load(PLAY_BADGE_PATH)
 
@@ -299,26 +299,26 @@ func _build_interface() -> void:
 	var region_count := int(level.get("size", 4))
 	for index in range(region_count):
 		var region_id := char(65 + index)
-		var cat_icon := TextureRect.new()
-		cat_icon.name = "Region%s" % region_id
-		cat_icon.texture = _cat_progress_tex
-		cat_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		cat_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		cat_icon.custom_minimum_size = Vector2(46, 46)
+		var candy_icon := TextureRect.new()
+		candy_icon.name = "Region%s" % region_id
+		candy_icon.texture = _candy_progress_tex
+		candy_icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		candy_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		candy_icon.custom_minimum_size = Vector2(46, 46)
 		var color := UiTokens.REGION_PALETTE[index % UiTokens.REGION_PALETTE.size()]
-		cat_icon.modulate = color.lerp(Color.WHITE, 0.35)
-		cat_icon.modulate.a = 0.65
-		region_hbox.add_child(cat_icon)
-		region_icons.append(cat_icon)
+		candy_icon.modulate = color.lerp(Color.WHITE, 0.35)
+		candy_icon.modulate.a = 0.65
+		region_hbox.add_child(candy_icon)
+		region_icons.append(candy_icon)
 		# Invisible label child to preserve text query compatibility
 		var slot_lbl := Label.new()
 		slot_lbl.name = "RegionLabel%s" % region_id
 		slot_lbl.text = "○  %s" % region_id
 		slot_lbl.visible = false
-		cat_icon.add_child(slot_lbl)
+		candy_icon.add_child(slot_lbl)
 		region_labels[region_id] = slot_lbl
 
-	# Lives pill (Hearts / Fishes)
+	# Lives pill (Hearts / Hearts)
 	var lives_pill := PanelContainer.new()
 	lives_pill.name = "LivesPill"
 	lives_pill.add_theme_stylebox_override("panel", UiTokens.make_pill_style(Color.WHITE, UiTokens.SHADOW_SOFT, 8, Vector2(0, 3)))
@@ -331,14 +331,14 @@ func _build_interface() -> void:
 
 	life_icons.clear()
 	for i in range(3):
-		var fish := TextureRect.new()
-		fish.name = "Fish%d" % i
-		fish.texture = _life_fish_tex
-		fish.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		fish.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		fish.custom_minimum_size = Vector2(48, 42)
-		lives_hbox.add_child(fish)
-		life_icons.append(fish)
+		var heart := TextureRect.new()
+		heart.name = "Heart%d" % i
+		heart.texture = _life_heart_tex
+		heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		heart.custom_minimum_size = Vector2(48, 42)
+		lives_hbox.add_child(heart)
+		life_icons.append(heart)
 
 	# Label preserved for accessibility & tests
 	hearts_label = Label.new()
@@ -361,10 +361,10 @@ func _build_interface() -> void:
 	rule_card.add_child(rules)
 
 	var rule_defs: Array[Dictionary] = [
-		{"text": "1 mèo mỗi hàng", "pattern": ".../XCX/..."},
-		{"text": "1 mèo mỗi cột", "pattern": ".X./.C./.X."},
-		{"text": "1 mèo mỗi vùng", "pattern": "XXX/XC./X.."},
-		{"text": "Mèo không chạm góc", "pattern": "XXX/XCX/XXX"}
+		{"text": "1 kẹo mỗi hàng", "pattern": ".../XCX/..."},
+		{"text": "1 kẹo mỗi cột", "pattern": ".X./.C./.X."},
+		{"text": "1 kẹo mỗi vùng", "pattern": "XXX/XC./X.."},
+		{"text": "Kẹo không chạm góc", "pattern": "XXX/XCX/XXX"}
 	]
 
 	_rule_labels.clear()
@@ -385,7 +385,7 @@ func _build_interface() -> void:
 		hbox.add_theme_constant_override("separation", 10)
 		tile.add_child(hbox)
 
-		var icon3x3 := RuleIcon3x3.new(r_def["pattern"], _cat_small_tex)
+		var icon3x3 := RuleIcon3x3.new(r_def["pattern"], _candy_small_tex)
 		hbox.add_child(icon3x3)
 
 		var lbl := Label.new()
@@ -565,7 +565,7 @@ func _refresh() -> void:
 	var hearts_count: int = int(state["hearts"])
 	hearts_label.text = "Lượt sai còn lại: %d / 3" % hearts_count
 
-	# Update 3 fish life icons
+	# Update 3 heart life icons
 	for i in range(life_icons.size()):
 		if i < hearts_count:
 			life_icons[i].modulate = Color.WHITE
@@ -586,12 +586,12 @@ func _refresh() -> void:
 	if runtime_controller != null and level.get("id") == "L01":
 		var step: String = runtime_controller.tutorial_controller.current_step(runtime_controller.tutorial_state)
 		var x_cell_text := _tutorial_cell_text(runtime_controller.tutorial_state.get("tutorialHighlight", []))
-		var cat_cell_text := _tutorial_cell_text(runtime_controller.tutorial_state.get("tutorialCatCell", []))
+		var candy_cell_text := _tutorial_cell_text(runtime_controller.tutorial_state.get("tutorialCandyCell", []))
 		tutorial_label.text = {
 			"T1": "Hướng dẫn: chạm ô %s để đánh X." % x_cell_text,
 			"T2": "Chạm lại ô %s để xóa X." % x_cell_text,
 			"T3": "Kéo qua ít nhất hai ô để đánh dấu nhiều X.",
-			"T4": "Chạm đôi ô %s để xác nhận mèo." % cat_cell_text,
+			"T4": "Chạm đôi ô %s để xác nhận kẹo." % candy_cell_text,
 			"T5": "Mở Trợ giúp để xem bốn luật và ví dụ X đỏ.",
 			"T6": "Mở Gợi ý để xem cách suy luận.",
 		}.get(step, "")
@@ -620,7 +620,7 @@ func _refresh_region_progress() -> void:
 	for row in range(int(level["size"])):
 		for column in range(int(level["size"])):
 			var cell := [row, column]
-			if engine.session.is_given(cell) or engine.session.cell_state(cell) == "cat":
+			if engine.session.is_given(cell) or engine.session.cell_state(cell) == "candy":
 				found[str(level["regions"][row]).substr(column, 1)] = true
 
 	var region_count := int(level["size"])
@@ -646,7 +646,7 @@ func _status_text(event_name: String) -> String:
 		"MarkX": "Đã đánh dấu X",
 		"ClearX": "Đã xóa X",
 		"MarkStroke": "Đã cập nhật dải ô",
-		"CatPlaced": "Đúng rồi!",
+		"CandyFound": "Đúng rồi!",
 		"Mistake": "Ô này chưa đúng",
 		"UndoApplied": "Đã hoàn tác",
 		"UndoUnavailable": "Không có bước X để hoàn tác",

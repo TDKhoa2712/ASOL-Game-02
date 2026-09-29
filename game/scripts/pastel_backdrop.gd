@@ -77,12 +77,13 @@ func _draw() -> void:
 				draw_line(Vector2(cx - d, cy - d), Vector2(cx + d, cy + d), x_col, 10.0, true)
 				draw_line(Vector2(cx + d, cy - d), Vector2(cx - d, cy + d), x_col, 10.0, true)
 			elif (r == 1 and c == 5) or (r == 9 and c == 4):
-				# Decorative cat ears outline
-				var cx: float = x + tile_dim * 0.5
-				var cy: float = y + tile_dim * 0.5
-				var cat_col := Color(deco_color.r, deco_color.g, deco_color.b, 0.35 * alpha_mult)
-				draw_arc(Vector2(cx, cy + 4.0), tile_dim * 0.24, PI * 0.2, PI * 0.8, 16, cat_col, 6.0, true)
-				draw_line(Vector2(cx - 14.0, cy - 6.0), Vector2(cx - 24.0, cy - 22.0), cat_col, 6.0, true)
-				draw_line(Vector2(cx - 24.0, cy - 22.0), Vector2(cx - 6.0, cy - 14.0), cat_col, 6.0, true)
-				draw_line(Vector2(cx + 6.0, cy - 14.0), Vector2(cx + 24.0, cy - 22.0), cat_col, 6.0, true)
-				draw_line(Vector2(cx + 24.0, cy - 22.0), Vector2(cx + 14.0, cy - 6.0), cat_col, 6.0, true)
+				# Wrapped candy motif; decoration never communicates a clue.
+				var center := Vector2(x + tile_dim * 0.5, y + tile_dim * 0.5)
+				var tint := Color(deco_color.r, deco_color.g, deco_color.b, 0.35 * alpha_mult)
+				draw_circle(center, tile_dim * 0.15, tint)
+				for direction in [-1.0, 1.0]:
+					draw_colored_polygon(PackedVector2Array([
+						center + Vector2(direction * tile_dim * 0.12, 0),
+						center + Vector2(direction * tile_dim * 0.30, -tile_dim * 0.12),
+						center + Vector2(direction * tile_dim * 0.30, tile_dim * 0.12),
+					]), tint)

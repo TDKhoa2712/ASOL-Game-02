@@ -29,11 +29,11 @@ func _win_home_play() -> void:
 	_press(bootstrap, "Home/SafeArea/Content/Stack/PlayButton")
 	await process_frame
 	for row in range(4):
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, [1, 3, 0, 2][row]]})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
 	await process_frame
 	_check(bootstrap.flow.current_screen == "result_win", "winning L01 shows result")
 	var win_score = bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ScoreLabel")
-	_check(win_score != null and win_score.text.contains("400"), "win result shows score 400 for four cats")
+	_check(win_score != null and win_score.text.contains("400"), "win result shows score 400 for four candies")
 	_press(bootstrap, "ResultWin/SafeArea/Content/Stack/HomeButton")
 	await process_frame
 	_check(bootstrap.flow.current_screen == "home", "result Home returns home")
@@ -62,7 +62,7 @@ func _failed_resume() -> void:
 	_press(bootstrap, "Home/SafeArea/Content/Stack/PlayButton")
 	await process_frame
 	for wrong_cell in [[0, 2], [1, 0], [2, 1]]:
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": wrong_cell})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": wrong_cell})
 	await process_frame
 	_check(bootstrap.flow.current_screen == "result_fail", "three mistakes show Fail")
 	var fail_score = bootstrap.get_node_or_null("ScreenHost/ResultFail/SafeArea/Content/Stack/ScoreLabel")
@@ -102,8 +102,8 @@ func _complete_campaign() -> void:
 		var level: Dictionary = bootstrap.runtime.active_level
 		for row in range(int(level["size"])):
 			var cell := [row, int(level["solution"][row])]
-			if bootstrap.runtime.engine.session.cell_state(cell) != "cat":
-				bootstrap.runtime.apply_action({"type": "TryCat", "cell": cell})
+			if bootstrap.runtime.engine.session.cell_state(cell) != "candy":
+				bootstrap.runtime.apply_action({"type": "TryCandy", "cell": cell})
 		await process_frame
 		_check(bootstrap.flow.current_screen == "result_win", "win screen after " + level_id)
 		var continue_button = bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton")
@@ -122,7 +122,7 @@ func _complete_campaign() -> void:
 	_check(bootstrap.runtime.engine.session.attempt_state == "Playing", "MVP replay creates a fresh attempt")
 	var replay_level: Dictionary = bootstrap.runtime.active_level
 	for row in range(int(replay_level["size"])):
-		bootstrap.runtime.apply_action({"type": "TryCat", "cell": [row, int(replay_level["solution"][row])]})
+		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, int(replay_level["solution"][row])]})
 	await process_frame
 	var replay_continue = bootstrap.get_node_or_null("ScreenHost/ResultWin/SafeArea/Content/Stack/ContinueButton")
 	_check(replay_continue != null and replay_continue.text == "Tiếp tục", "replayed L01 returns to normal Continue")

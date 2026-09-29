@@ -10,9 +10,13 @@ config_version=5
 
 [application]
 
-config/name="ASOL Game 02"
+config/name="CanDoKu"
 run/main_scene="res://scenes/bootstrap.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="Godot/app_userdata/ASOL Game 02"
 config/features=PackedStringArray("4.7")
+config/icon="res://assets/ui/board/candy.svg"
+config/custom_user_dir_name.linux="godot/app_userdata/ASOL Game 02"
 
 [display]
 

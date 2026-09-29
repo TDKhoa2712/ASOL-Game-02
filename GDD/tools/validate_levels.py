@@ -1,4 +1,4 @@
-"""Validate original Vườn Mèo levels with the Python standard library.
+"""Validate original CanDoKu levels with the Python standard library.
 
 Usage:
     python GDD/tools/validate_levels.py GDD/data/levels.sample.json
@@ -116,11 +116,11 @@ def validate_regions(rows: list[str], n: int):
             raise ValueError(f"region {label} is disconnected")
 
 
-def exclusion_reason(rows: list[str], cats: dict[int, int], cell: tuple[int, int]):
-    """Return a reproducible S1 witness (source cat, relation), or None."""
+def exclusion_reason(rows: list[str], candies: dict[int, int], cell: tuple[int, int]):
+    """Return a reproducible S1 witness (source candy, relation), or None."""
     r, c = cell
     reasons = []
-    for rr, cc in sorted(cats.items()):
+    for rr, cc in sorted(candies.items()):
         if r == rr:
             reasons.append((0, (rr, cc), "row"))
         if c == cc:
@@ -132,17 +132,17 @@ def exclusion_reason(rows: list[str], cats: dict[int, int], cell: tuple[int, int
     if not reasons:
         return None
     _, source, relation = min(reasons)
-    return {"sourceCat": source, "reason": relation}
+    return {"sourceCandy": source, "reason": relation}
 
 
-def possible_cells(rows: list[str], cats: dict[int, int], eliminated=frozenset()):
+def possible_cells(rows: list[str], candies: dict[int, int], eliminated=frozenset()):
     n = len(rows)
     return {
         (r, c)
-        for r in range(n) if r not in cats
+        for r in range(n) if r not in candies
         for c in range(n)
         if (r, c) not in eliminated
-        and exclusion_reason(rows, cats, (r, c)) is None
+        and exclusion_reason(rows, candies, (r, c)) is None
     }
 
 
@@ -175,7 +175,7 @@ def parse_conclusion_cells(value, n: int):
     return set(cells)
 
 
-def validate_s3_step(rows: list[str], cats: dict[int, int], eliminated: set[tuple[int, int]], step: dict):
+def validate_s3_step(rows: list[str], candies: dict[int, int], eliminated: set[tuple[int, int]], step: dict):
     require_object(step, S3_STEP_KEYS, "S3 step")
     source, target = step["source"], step["target"]
     require_object(source, UNIT_KEYS, "S3 source")
@@ -184,9 +184,9 @@ def validate_s3_step(rows: list[str], cats: dict[int, int], eliminated: set[tupl
         raise ValueError("S3 source and target must have different unit types")
     source_unit = focus_cells(rows, source)
     target_unit = focus_cells(rows, target)
-    if any(cell in source_unit or cell in target_unit for cell in cats.items()):
-        raise ValueError("S3 units must not already contain a cat")
-    candidates = possible_cells(rows, cats, eliminated)
+    if any(cell in source_unit or cell in target_unit for cell in candies.items()):
+        raise ValueError("S3 units must not already contain a candy")
+    candidates = possible_cells(rows, candies, eliminated)
     source_candidates = candidates & source_unit
     if not source_candidates or not source_candidates <= target_unit:
         raise ValueError("S3 source candidates must be nonempty and contained in target")
@@ -203,7 +203,7 @@ def validate_s3_step(rows: list[str], cats: dict[int, int], eliminated: set[tupl
 
 def validate_trace(level: dict, given_by_row: dict[int, int]):
     rows, n = level["regions"], level["size"]
-    cats = dict(given_by_row)
+    candies = dict(given_by_row)
     eliminated: set[tuple[int, int]] = set()
     for index, step in enumerate(level["logicTrace"], 1):
         label = f"trace step {index}"
@@ -211,7 +211,7 @@ def validate_trace(level: dict, given_by_row: dict[int, int]):
             if not isinstance(step, dict):
                 raise ValueError("step must be an object")
             if step.get("rule") == "S3":
-                validate_s3_step(rows, cats, eliminated, step)
+                validate_s3_step(rows, candies, eliminated, step)
                 continue
             if step.get("rule") != "S2":
                 raise ValueError(f"unsupported rule {step.get('rule')!r}")
@@ -224,26 +224,26 @@ def validate_trace(level: dict, given_by_row: dict[int, int]):
             target = step["conclusion"]
             require_object(target, {"type", "r", "c"}, "conclusion")
             if target["type"] != "place":
-                raise ValueError("S2 conclusion must place a cat")
+                raise ValueError("S2 conclusion must place a candy")
             r, c = target["r"], target["c"]
             if not (is_int(r) and is_int(c) and 0 <= r < n and 0 <= c < n):
                 raise ValueError("target out of bounds")
-            if any(cell in unit for cell in cats.items()):
-                raise ValueError("focus already contains a cat")
-            candidates = unit & possible_cells(rows, cats, eliminated)
+            if any(cell in unit for cell in candies.items()):
+                raise ValueError("focus already contains a candy")
+            candidates = unit & possible_cells(rows, candies, eliminated)
             if candidates != {(r, c)}:
                 raise ValueError(f"focus candidates {sorted(candidates)}, expected only {(r, c)}")
             # Every removed cell must have S1 evidence or a prior S3 proof.
             for cell in unit - candidates:
-                if cell not in eliminated and exclusion_reason(rows, cats, cell) is None:
+                if cell not in eliminated and exclusion_reason(rows, candies, cell) is None:
                     raise ValueError(f"missing S1/S3 witness for {cell}")
             if level["solution"][r] != c:
                 raise ValueError("placement differs from solution")
-            cats[r] = c
+            candies[r] = c
         except (TypeError, KeyError, ValueError) as exc:
             raise ValueError(f"{label}: {exc}") from exc
-    if len(cats) != n:
-        raise ValueError(f"trace ends with {len(cats)}/{n} cats")
+    if len(candies) != n:
+        raise ValueError(f"trace ends with {len(candies)}/{n} candies")
 
 
 def canonical_regions(rows: list[str]):
@@ -321,28 +321,28 @@ def validate_level(level: dict):
 
 def s2_only_reaches_solution(level: dict):
     rows, n = level["regions"], level["size"]
-    cats = {given["r"]: given["c"] for given in level["givens"]}
+    candies = {given["r"]: given["c"] for given in level["givens"]}
     units = (
         [{"type": "row", "id": i} for i in range(n)]
         + [{"type": "column", "id": i} for i in range(n)]
         + [{"type": "region", "id": label} for label in "ABCDEFGHIJKL"[:n]]
     )
-    while len(cats) < n:
+    while len(candies) < n:
         placements = set()
-        candidates = possible_cells(rows, cats)
+        candidates = possible_cells(rows, candies)
         for unit_spec in units:
             unit = focus_cells(rows, unit_spec)
-            if any(cell in unit for cell in cats.items()):
+            if any(cell in unit for cell in candies.items()):
                 continue
             remaining = unit & candidates
             if len(remaining) == 1:
                 placements.update(remaining)
-        fresh = sorted((r, c) for r, c in placements if r not in cats)
+        fresh = sorted((r, c) for r, c in placements if r not in candies)
         if not fresh:
             return False
         for r, c in fresh:
-            if r not in cats:
-                cats[r] = c
+            if r not in candies:
+                candies[r] = c
     return True
 
 
@@ -380,7 +380,7 @@ def validate_document(data: dict, release: bool = False):
                 if level["size"] > 6 or level["difficulty"] == "hard":
                     raise ValueError("release supports size 4..6 and no hard level")
                 if level["size"] - len(level["givens"]) < 2:
-                    raise ValueError("release needs at least two playable cats")
+                    raise ValueError("release needs at least two playable candies")
                 validate_release_logic_band(level)
             shapes[level_id] = shape
         except (TypeError, ValueError, KeyError) as exc:

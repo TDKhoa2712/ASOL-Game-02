@@ -41,6 +41,8 @@ func _check_home() -> void:
 		var play: Button = stack.get_node("PlayButton")
 		var play_style: StyleBox = play.get_theme_stylebox("normal")
 		_check(play_style is StyleBoxFlat and play_style.corner_radius_top_left >= 28, "Home Play uses a rounded primary style")
+	home.apply_configuration()
+	_check(stack.get_node("Title").visible and stack.get_node("Title").text == "CanDoKu", "Home exposes CanDoKu name with artwork present")
 	home.free()
 
 func _check_result(path: String, screen_id: String, action_name: String, action_text: String) -> void:
