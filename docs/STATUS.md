@@ -1,6 +1,12 @@
 # Trạng thái dự án
 
-Cập nhật 2026-09-29. Đã dọn phần không còn sử dụng sau chuyển **CanDoKu** và tích hợp local về `dev`, theo RST-009. Commit sản phẩm `93bc627`, fast-forward từ `b335b1891d1b9927e3b55f2ec8945dda252c779f`. Mục tiêu sản phẩm tiếp theo vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+Cập nhật 2026-09-29. Đang viết lại README và chuẩn bị publish repository public `TDKhoa2712/CanDoKu` theo yêu cầu. Code CanDoKu đã tích hợp local về `dev` tại `93bc627` (RST-009); mốc tài liệu trước lượt này là `b99218d`. Mục tiêu sản phẩm tiếp theo vẫn là nghiệm thu R1; bản đầu 24 level, Endless để sau. Không mở R2–R4.
+
+## README và publish repository — 2026-09-29
+
+- Viết lại README: giới thiệu CanDoKu, luật/thao tác, phân biệt client bốn level với thiết kế 24 level, cách chạy/kiểm thử và hai tài liệu nền suy luận/sinh level. Không đổi code, asset hoặc luật.
+- Chủ dự án chọn tài khoản `TDKhoa2712`, tên game hiện tại và public. Đích dự kiến `https://github.com/TDKhoa2712/CanDoKu`; chưa publish. Repository local chưa có remote. Đang chuẩn bị GitHub CLI và xác thực để tạo repo/push `dev`.
+- Giữ bảy thay đổi import icon của người dùng ngoài commit. Lượt này chỉ sửa tài liệu, không chạy lại game/full suite; kết quả code tại `93bc627` ở mục bên dưới không phải chứng nhận R1 đã nghiệm thu.
 
 ## Dọn và tích hợp CanDoKu — 2026-09-29
 
@@ -93,7 +99,7 @@ Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đ�
 | Sandbox shell lỗi khởi tạo trong phiên này | Agent dùng cơ chế quyền hiện có; chủ dự án xử lý môi trường ứng dụng nếu cần | Lệnh ngoài sandbox đã chạy; không tiếp tục thăm dò cùng lỗi. Khi môi trường đổi mới kiểm lại sandbox. Lỗi GUI cũ chưa được kiểm lại trong đợt pipeline |
 | R1 chưa có đủ hành trình GUI/gesture trên build được chốt | Agent | Đã kiểm Settings, Back route và tap/xóa X từ entry scene desktop; tiếp tục fresh → bốn level, Fail/Retry, Home/resume và cuối campaign trên revision bàn giao |
 | Android QA chưa đủ; lần kiểm 2026-09-25 chưa có thiết bị ADB | Chủ dự án + agent | Chủ dự án kết nối/ủy quyền thiết bị hoặc nhận build để thử; agent chuẩn bị fresh/resume/Win/Fail/retry/cuối campaign, ghi model/OS/build/kết quả. Chỉ kiểm lại ADB khi thiết bị sẵn sàng |
-| Không thể push `dev`: repository chưa cấu hình Git remote và không có URL trong tài liệu | Chủ dự án | Cung cấp URL remote (và tên nếu không dùng `origin`); agent cấu hình rồi push `dev` và nhánh R1-E. Thử lại khi có endpoint |
+| Chưa publish repo public `TDKhoa2712/CanDoKu`: local chưa có remote, cần công cụ/xác thực GitHub | Agent + chủ dự án | Chuẩn bị CLI, xác thực đúng tài khoản, tạo repo và push `dev`. Chủ dự án hoàn tất đăng nhập nếu cần. Không tự push nhánh khác hoặc tạo release |
 | Nguồn lực iOS và người thử R2 | Chủ dự án | Xác nhận iPhone/Mac/signing trước R4 và người thử trước R2; không chặn công việc R1 độc lập |
 
 Bước tiếp theo: agent kiểm gesture thật và nghiệm thu hành trình R1 trên CanDoKu khi GUI/thiết bị sẵn sàng; chủ dự án phối hợp môi trường desktop/Android/iOS và remote. Chỉ thử lại Computer Use khi lỗi khởi tạo môi trường đã được xử lý. Không tuyên bố R1 hoàn thành hoặc đủ điều kiện phát hành từ headless và ảnh capture.
