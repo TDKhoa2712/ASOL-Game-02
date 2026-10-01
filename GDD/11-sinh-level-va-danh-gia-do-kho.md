@@ -4,7 +4,7 @@
 
 **Cập nhật triển khai 2026-09-29:** đã bổ sung generator offline giới hạn N=4–6, closure S2/S3, chứng cứ phụ thuộc, rating-0 và ba policy, lọc trùng, báo cáo và phiếu pilot. Xem [hướng dẫn công cụ](../docs/level-generation.md). Các mục mô tả “tương lai/chưa triển khai” bên dưới là đặc tả gốc; mục 17 là khảo sát tại 2026-09-28. Bản công cụ đầu chưa có mutation, checkpoint, tối ưu trace toàn cục, generator runtime hay hiệu chỉnh bằng người chơi. Profile CLI v1 là tập con riêng được mô tả trong hướng dẫn, không nhận nguyên mẫu request mở rộng ở mục 3.
 
-Phạm vi được bổ sung là **tài liệu nền**. Giữ bản đầu 24 level, N=4–6, order 1–18 dùng S1/S2, từng order 19–24 cần S3; không mở Endless, sinh runtime, kinh tế hoặc R2–R4. Công cụ sinh offline dưới đây là thiết kế để triển khai khi được giao.
+Phạm vi được bổ sung là **tài liệu nền**. Mục tiêu hiện hành là campaign playtest 30 level, N=4–6; order 1–18 dùng S1/S2, từng order 19–24 cần S3, còn profile 25–30 phải được duyệt riêng nhưng chỉ dùng S1–S3. Không mở Endless, sinh runtime, kinh tế hoặc tự mở R2–R4. Công cụ sinh offline hiện mới hỗ trợ pilot trong dải order 2–24; phải mở rộng có kiểm thử khi được giao làm sáu màn cuối.
 
 ## 1. Mục tiêu và tiêu chí một level tốt
 
@@ -229,7 +229,7 @@ Ba lớp chống lặp:
 2. **PuzzleKey:** chuẩn hóa đồng thời regions + givens (+ solution chỉ phục vụ kiểm đồng nhất nội dung); đổi nhãn/rotate/reflect toàn bộ cùng nhau. Cùng puzzle không thành level mới chỉ vì đổi ID/order/skin.
 3. **LogicPattern:** rule sequence, đồ thị dependency, số/nơi single đầu, chuỗi S3 và hình vùng; dùng cảnh báo các màn khác hình nhưng lặp cảm giác giải.
 
-GeometryKey của validator hiện có không xét givens. Trong cửa sổ 8 màn, đổi given vẫn không làm cùng hình vùng được phép. Ngoài cửa sổ, validator có thể không chặn nhưng biên tập vẫn tránh biến thể gần như trùng trong 24 màn. Không đòi mọi màn độc nhất theo logic fingerprint nếu chưa định nghĩa độ tương tự; ghi khoảng cách/đặc trưng và quyết định biên tập.
+GeometryKey của validator hiện có không xét givens. Trong cửa sổ 8 màn, đổi given vẫn không làm cùng hình vùng được phép. Ngoài cửa sổ, validator có thể không chặn nhưng biên tập vẫn tránh biến thể gần như trùng trong toàn bộ campaign playtest 30 màn. Không đòi mọi màn độc nhất theo logic fingerprint nếu chưa định nghĩa độ tương tự; ghi khoảng cách/đặc trưng và quyết định biên tập.
 
 Màu, tên kẹo, hoa nền và đảo nhãn không tạo độ đa dạng logic. Không lấy screenshot/level thương mại rồi xoay/lật để gọi là level gốc.
 
@@ -262,9 +262,9 @@ Tuân theo dải kích thước/kỹ năng của [GDD 01](01-tam-nhin-va-pham-vi
 - Mỗi 3–4 màn tăng tải có một màn nhẹ hơn.
 - Màn 19–24 vẫn cần S3 ở **từng màn**; màn nghỉ giảm tải/độ rối chứ không bỏ S3.
 - Màn 10/20 có motif hình ảnh riêng, không được bỏ cổng trace/uniqueness.
-- Màn 24 kết thúc hợp lý, không bất ngờ yêu cầu quy tắc chưa dạy.
+- Màn 24 khép baseline S3 hiện có; màn 30 kết thúc campaign playtest hợp lý và không bất ngờ yêu cầu quy tắc chưa dạy.
 
-Bốn màn R1 và các fixture không chứng minh campaign 24 màn đã đủ. Dùng order dự kiến khi kiểm band; đừng kiểm candidate ở order=1 rồi chuyển sang 19 mà không kiểm lại.
+Bốn màn R1 và các fixture không chứng minh campaign playtest 30 màn đã đủ. Dùng order dự kiến khi kiểm band; đừng kiểm candidate ở order=1 rồi chuyển sang 19 hoặc 25 mà không kiểm lại.
 
 ## 14. Vòng tìm kiếm có ngân sách
 
@@ -344,7 +344,7 @@ Nếu AI chỉ trả JSON/diễn giải mà không chạy được công cụ, g
 | Đếm nghiệm độc lập, dừng ở hai, giới hạn nút/thời gian | Báo cáo/sidecar và tái lập nhiều phiên bản |
 | Kiểm trace S2/S3 và S2-only closure cho logic band | Tự tìm trace tối ưu, evidence DAG và rating-0 |
 | Canonical vùng dưới xoay/lật/đổi nhãn | PuzzleKey/logic fingerprint toàn kho |
-| Cổng release 24 order, N≤6, không hard, ≥2 viên tự tìm | Hiệu chỉnh độ khó bằng dữ liệu người chơi |
+| Cổng legacy `--release` cho 24 order; gate playtest 30 order còn phải triển khai | Hiệu chỉnh độ khó bằng dữ liệu người chơi và duyệt profile 25–30 |
 | Fixture và test hợp đồng | Checker/Hint S4/S5/X/CASE |
 
 Lệnh hiện có, chạy từ gốc repo:
@@ -353,10 +353,10 @@ Lệnh hiện có, chạy từ gốc repo:
 rtk python -B GDD/tools/validate_levels.py GDD/data/levels.sample.json
 rtk python -B -m unittest discover GDD/tools -p "test_*.py"
 rtk python -B GDD/tools/validate_levels.py <candidate.json>
-rtk python -B GDD/tools/validate_levels.py <campaign-24.json> --release
+rtk python -B GDD/tools/validate_levels.py <campaign-24-legacy.json> --release
 ```
 
-Hai đường dẫn trong dấu <> là tham số người thực hiện phải thay, không phải file đã tồn tại. Validator thường không tự kiểm mọi ràng buộc request, chất lượng Hint, thời gian chơi hoặc proofDepth. Cờ --release cần đủ 24 màn, không dùng để tuyên bố một candidate riêng đã đạt toàn campaign. Khi chỉ sửa tài liệu, không cần chạy game; khi triển khai công cụ/runtime làm QA theo AGENTS.
+Hai đường dẫn trong dấu <> là tham số người thực hiện phải thay, không phải file đã tồn tại. Validator thường không tự kiểm mọi ràng buộc request, chất lượng Hint, thời gian chơi hoặc proofDepth. Lệnh `--release` trên chỉ minh họa cổng legacy cần đủ 24 màn; không chứng nhận campaign playtest 30 màn. Trước nghiệm thu mốc mới phải triển khai gate riêng, kiểm đúng order 1–30 và profile 25–30. Khi chỉ sửa tài liệu, không cần chạy game; khi triển khai công cụ/runtime làm QA theo AGENTS.
 
 ## 18. Tiêu chí nghiệm thu công cụ tương lai
 
@@ -371,7 +371,7 @@ Hai đường dẫn trong dấu <> là tham số người thực hiện phải t
 | Packaging | Fields sidecar không vào JSON v4; không ghi đè puzzle/ID đã phát hành |
 | Batch | Hết budget trả số đạt thật; không trùng trong accepted; lỗi một ứng viên không làm sai báo cáo các ứng viên khác |
 | Human validation | Nhãn tạm được thay bằng review có mẫu thật; báo bỏ cuộc/lỗi input, không chỉ người thắng |
-| Campaign | Đủ 24 màn theo band, nhịp và kiểm người/UI; không tự mở Endless |
+| Campaign | Đủ 30 màn playtest theo band/profile đã duyệt, nhịp và kiểm người/UI; không tự mở Endless hoặc coi là release chính thức |
 
 Thứ tự xây sau này: generator offline N=4–6 → trace S2/S3 + kiểm độc lập → sidecar/vector/policy → đo rating và lọc trùng → pilot người chơi → hiệu chỉnh → đóng gói. Chỉ sau khi nội dung offline ổn định mới xem xét sinh runtime/Endless bằng quyết định riêng.
 

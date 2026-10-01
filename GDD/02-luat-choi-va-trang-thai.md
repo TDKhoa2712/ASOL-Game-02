@@ -16,7 +16,7 @@ Lưới N×N có đúng N vùng, mỗi ô thuộc một vùng; vùng liên thôn
 | GR-04 | Kẹo không chạm nhau kể cả góc | Hàng kề có `abs(solution[r]-solution[r+1]) > 1` |
 | GR-05 | Đúng một nghiệm khi tính cả givens | Solver độc lập dừng ở nghiệm thứ hai; nghiệm duy nhất khớp JSON |
 | GR-06 | Kẹo cho sẵn là candy cố định thuộc nghiệm | Không đổi trạng thái và không cho điểm |
-| GR-07 | Level phát hành có trace hợp lệ đến đủ N kẹo: order 1–18 chỉ S2; mỗi order 19–24 có ít nhất một bước S3 cần thiết | Từng bước S2/S3 chứng minh từ trạng thái trước; S3 không được là no-op hoặc thay được bằng closure S2 |
+| GR-07 | Level campaign có trace hợp lệ đến đủ N kẹo: order 1–18 chỉ S2; mỗi order 19–24 có ít nhất một bước S3 cần thiết; order 25–30 theo profile được duyệt và chỉ dùng S1–S3 | Từng bước S2/S3 chứng minh từ trạng thái trước; S3 không được là no-op hoặc thay được bằng closure S2 |
 | GR-08 | X là ghi chú tự đặt; `x_error` là ghi chú đỏ tạo bởi lần thử kẹo sai | Cả hai không ràng buộc solver/hint hay điều kiện thắng |
 
 Mọi ô `candy`, kể cả given, dùng cùng hình viên kẹo bọc giấy mặc định. Giấy gói không mã hóa đáp án hoặc vùng. Hàng tiến độ có N vị trí theo nhãn A..(N), dùng nền/viền/nhãn/họa tiết vùng và dấu đã tìm; given tính vào tiến độ nhưng không tính điểm. Màu không ảnh hưởng nghiệm.
@@ -92,7 +92,7 @@ Home → Playing ──đủ kẹo──→ Won/Result ──Tiếp tục──�
 
 `Paused` chỉ là trạng thái giao diện; thời gian chơi không tăng ở nền, Help, Settings hoặc Result. Retry/Restart là lượt mới và cấp lại một Hint; Back To Home/app nền giữ lượt hiện tại nhưng xóa khe Undo. Lượt thua khôi phục lại màn kết quả thua, không cấp tim ngầm. Lượt thắng đã được commit vào progress; nếu app đóng ở Result, lần Play sau vào level kế. Khi hết level, Home hiện thông báo hoàn thành nội dung hiện có.
 
-Không có cứu lượt bằng tiền/quảng cáo trong CanDoKu bản đầu. Bản kiểm thử bốn level có ngoại lệ replay từ L01 theo RST-003 ở [DECISIONS](../docs/DECISIONS.md); bản phát hành 24 level tắt ngoại lệ này và giữ GR-28.
+Không có cứu lượt bằng tiền/quảng cáo trong CanDoKu. Bản kiểm thử bốn level có ngoại lệ replay từ L01 theo RST-003 ở [DECISIONS](../docs/DECISIONS.md); bản playtest 30 level phải tắt ngoại lệ này và giữ GR-28. Chính sách của bản phát hành chính thức được chốt sau playtest, không suy ra từ cờ MVP hiện tại.
 
 ## 7. Hoạt ảnh và tình huống mép
 

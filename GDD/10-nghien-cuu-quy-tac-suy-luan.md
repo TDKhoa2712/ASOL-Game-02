@@ -17,7 +17,7 @@
 | CASE | Xét hết trường hợp và chuỗi mệnh đề | Phương pháp nghiên cứu/chứng minh |
 | EXACT | Duyệt nghiệm đầy đủ có giới hạn tài nguyên | Kiểm tồn tại/duy nhất; không dùng thay lời giải cho người chơi |
 
-Campaign đầu: order 1–18 giải hoàn toàn bằng S1/S2, mỗi order 19–24 giải bằng S1/S2/S3 và closure chỉ S1/S2 không hoàn tất. Không gắn S4/S5/X vào step mang tên S3 để qua validator. Tên kỹ thuật candy/TryCandy trong hệ thống hiện có mang nghĩa kẹo/tìm kẹo.
+Baseline campaign: order 1–18 giải hoàn toàn bằng S1/S2, mỗi order 19–24 giải bằng S1/S2/S3 và closure chỉ S1/S2 không hoàn tất. Order 25–30 của playtest cần profile riêng nhưng vẫn chỉ dùng S1–S3. Không gắn S4/S5/X vào step mang tên S3 để qua validator. Tên kỹ thuật candy/TryCandy trong hệ thống hiện có mang nghĩa kẹo/tìm kẹo.
 
 ## 2. Mô hình toán chính xác
 

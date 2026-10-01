@@ -25,13 +25,17 @@ Nghiệm thu từ entry scene thật: lượt mới qua bốn level; thua/retry;
 
 Thử sớm với 3–5 người để tìm lỗi hiểu thao tác, sau đó nghiệm thu theo GDD: ít nhất 8/10 người mới hoàn thành hướng dẫn và hiểu X đỏ. Sửa input/tutorial/feedback theo bằng chứng; thay luật nếu cần phải có quyết định riêng.
 
-## R3 — Nội dung và hình thức bản đầu
+## R3 — Nội dung và hình thức cho playtest 30 level
 
-24 level gốc, order 1–18 S1/S2, 19–24 cần S3; nghiệm duy nhất, trace hợp lệ, lượt giải không xem đáp án. Tích hợp nội dung theo nhóm nhỏ vào campaign. Chốt asset đại diện và đo trước khi sản xuất hàng loạt; hoàn thiện Help/Settings, audio, reduced motion và accessibility theo GDD.
+Biên tập 30 level gốc liên tiếp, nghiệm duy nhất, trace hợp lệ và có lượt giải không xem đáp án. Order 1–18 giữ baseline S1/S2; từng order 19–24 cần S3. Trước khi sản xuất sáu màn 25–30 phải duyệt profile độ khó riêng từ dữ liệu người chơi, vẫn trong N=4–6 và S1–S3. Tích hợp nội dung theo nhóm nhỏ vào campaign; không lấy fixture hoặc ứng viên generator làm level đã duyệt. Chốt asset đại diện và đo trước khi sản xuất hàng loạt; hoàn thiện Help/Settings, audio, reduced motion và accessibility theo GDD.
 
-## R4 — Build đủ điều kiện phát hành
+## R4 — Build playtest trước phát hành
 
-QA trên Android/iOS với asset/workload đại diện: offline, tải, frame time, bộ nhớ, safe area, accessibility, vòng đời app và bảo toàn save. Không còn crash, mất tiến trình, sai luật hoặc chặn campaign. Chủ dự án quyết định phát hành. Thiếu iOS phải ghi bị chặn; Android-first cần quyết định phạm vi riêng.
+Tạo gate có tên và phạm vi rõ cho campaign 30 level; cờ `--release` 24-level hiện tại chỉ là legacy. QA trên Android/iOS với asset/workload đại diện: offline, tải, frame time, bộ nhớ, safe area, accessibility, vòng đời app và bảo toàn save. Không còn crash, mất tiến trình, sai luật hoặc chặn campaign. Phân phối playtest có kiểm soát và thu dữ liệu định tính/định lượng đã nêu trong [tổng quan game](GAME_OVERVIEW.md). Thiếu iOS phải ghi bị chặn; Android-only cần quyết định phạm vi riêng.
+
+## R5 — Quyết định và chuẩn bị phát hành chính thức
+
+Tổng hợp bằng chứng từ playtest để chủ dự án quyết định số level, nền tảng, nội dung cần sửa và tiêu chí phát hành. Sau khi có quyết định mới, cập nhật GDD/gate tương ứng rồi mới thực hiện release QA và phát hành. Mốc 30 level không tự động mở R5 hoặc chứng nhận sản phẩm release-ready.
 
 ## Nhịp làm việc
 

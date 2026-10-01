@@ -27,8 +27,8 @@ Kẹo cho sẵn là viên đã được tìm trước khi vào màn, hiển th�
 
 | Có trong thiết kế đích | Giới hạn |
 | --- | --- |
-| 24 màn gốc liên tiếp, N=4–6 | Không sao chép cấu trúc level thương mại; không bản đồ hoặc chọn màn |
-| S1 loại trừ, S2 ứng viên đơn, S3 giao thoa | 1–18 chỉ S1/S2; mỗi màn 19–24 cần S3 |
+| Bản playtest trước phát hành có 30 màn gốc liên tiếp, N=4–6 | Không sao chép cấu trúc level thương mại; không bản đồ hoặc chọn màn |
+| S1 loại trừ, S2 ứng viên đơn, S3 giao thoa | 1–18 chỉ S1/S2; mỗi màn 19–24 cần S3; profile 25–30 phải duyệt riêng và vẫn chỉ dùng S1–S3 |
 | Home, Puzzle, Help, Settings, Win, Fail | Settings giữ các tùy chọn âm/rung/giảm chuyển động/chữ lớn/tương phản |
 | Tutorial ở màn 1 | Giữ quyết định gọi tọa độ, không glow ô tutorial |
 | Một mẫu kẹo bọc giấy gốc | Không chọn loại kẹo, kho đồ, mua ngoại hình hoặc nhân vật nuôi |
@@ -36,7 +36,7 @@ Kẹo cho sẵn là viên đã được tìm trước khi vào màn, hiển th�
 | Save cục bộ, Retry, Undo X, Restart | Không tài khoản, cloud save hoặc mạng bắt buộc |
 | Android và iOS | Phải kiểm thiết bị thật trước khi tuyên bố phát hành |
 
-Endless, daily challenge, leaderboard, generator runtime, quảng cáo/IAP, điểm danh, vàng/cứu lượt và xây vườn không thuộc bản đầu. R1 tiếp tục là bản chơi liền mạch bốn level; hoàn thiện 24 level thuộc R3 đã có, không tự mở R2–R4.
+Endless, daily challenge, leaderboard, generator runtime, quảng cáo/IAP, điểm danh, vàng/cứu lượt và xây vườn không thuộc bản playtest. R1 tiếp tục là bản chơi liền mạch bốn level; hoàn thiện campaign playtest 30 level thuộc R3, không tự mở R2–R4. Số level và phạm vi bản phát hành chính thức chỉ được quyết định sau playtest theo RST-011.
 
 ## 4. Nhịp vườn và đường cong học
 
@@ -49,8 +49,9 @@ Các dải dưới là định hướng biên tập, không thêm chương hoặ
 | 5–12 | 4×4–5×5 | S1/S2 qua nhiều hàng/cột/luống | Góc hoa; 2–4 phút/màn |
 | 13–18 | 5×5–6×6 | Chuỗi S2 dài hơn, ít hỗ trợ hơn | Vườn rợp lá; 3–6 phút/màn |
 | 19–24 | 5×5–6×6 | S3 giao thoa rồi S2 | Góc giỏ picnic; 3–6 phút/màn |
+| 25–30 | 4×4–6×6 | Chờ profile được duyệt; chỉ S1–S3 | Sáu màn kiểm chứng nhịp cuối playtest; không tự nâng luật |
 
-Màn 10 có motif hoa nở, màn 20 có motif giỏ picnic trong ảnh kết quả; không mở vật phẩm hoặc nhận tiền. Màn 24 khép lại chuyến tìm kẹo bằng giỏ đầy và thông báo hoàn tất. Không hứa nội dung “sắp ra mắt” khi chưa có kế hoạch.
+Màn 10 có motif hoa nở, màn 20 có motif giỏ picnic trong ảnh kết quả; không mở vật phẩm hoặc nhận tiền. Màn 30 khép lại campaign playtest bằng giỏ đầy và thông báo cảm ơn người chơi thử; câu chữ không được ngụ ý đây là bản phát hành chính thức. Không hứa nội dung “sắp ra mắt” khi chưa có kế hoạch.
 
 ## 5. Chất lượng và ranh giới
 

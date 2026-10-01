@@ -30,14 +30,14 @@ Gốc file là `{ "levels": [...] }`. Mỗi level có đúng các trường sau;
 | --- | --- |
 | `schemaVersion` | Integer `4` |
 | `id` | String duy nhất, ổn định, `[A-Z0-9_-]+` |
-| `order` | Integer ≥1; release đúng 1..24, mỗi slot một level; fixture dùng thứ tự riêng, không đóng gói release |
+| `order` | Integer ≥1; campaign playtest đúng 1..30, mỗi slot một level; fixture dùng thứ tự riêng, không đóng gói playtest |
 | `size` | Integer 4..12; release 4..6 |
 | `regions` | N chuỗi dài N, chỉ dùng đúng N nhãn `A..` liên tiếp, tối đa `L`, mỗi vùng liên thông 4 hướng |
 | `givens` | Mảng `{r:int,c:int}`, không trùng hàng, thuộc nghiệm |
 | `solution` | N cột, hoán vị `0..N-1`, thỏa bốn luật và nghiệm duy nhất |
 | `difficulty` | `tutorial`, `easy`, `medium`, `hard`; release chưa dùng `hard` |
 | `tags` | Mảng string không rỗng, không trùng; chỉ là metadata |
-| `logicTrace` | Các bước S2/S3 tuần tự từ givens tới đủ N kẹo; release order 1–18 chỉ S2, order 19–24 có S3 cần thiết |
+| `logicTrace` | Các bước S2/S3 tuần tự từ givens tới đủ N kẹo; campaign order 1–18 chỉ S2, order 19–24 có S3 cần thiết, order 25–30 theo profile được duyệt |
 
 Step S2 vẫn có đúng `rule`, `focus`, `conclusion`, `textKey`, ví dụ:
 
@@ -131,7 +131,7 @@ Các ngưỡng là tiêu chí đích, không phải số đo đã đạt. Thiế
 | UI/copy | Tên ứng dụng, Home, Help, tutorial, Result, nhãn accessibility → CanDoKu/kẹo/luống | Điều hướng, chạm và tiến trình |
 | Presenter/assets | Hình kẹo/cá → kẹo/tim; vườn, giỏ, âm và hiệu ứng theo GDD 06 | Board topology, bốn trạng thái, nhãn vùng |
 | Save/API | Dùng candy/TryCandy/CandyFound; session v3, progress v2 | Save cũ khôi phục đúng; không đổi hash do hình ảnh |
-| Nội dung | Biên tập 24 level gốc theo dải GDD 01/04 | Không lấy fixture hoặc level đã đổi ID làm chứng minh đã duyệt |
+| Nội dung | Biên tập 30 level gốc cho playtest theo dải GDD 01/04; duyệt profile 25–30 trước khi sản xuất | Không lấy fixture hoặc level đã đổi ID làm chứng minh đã duyệt |
 | Đóng gói | Tên hiển thị CanDoKu và icon mới | Không đổi app identifier/save path/signing trong task rebrand nếu chưa có quyết định migration |
 
 Build kiểm thử bốn level giữ ngoại lệ replay RST-003; build phát hành tắt nó. Dữ liệu minh họa trong tài liệu không phải campaign hoặc save người dùng. Chưa triển khai các thay đổi client trong lần sửa GDD này.

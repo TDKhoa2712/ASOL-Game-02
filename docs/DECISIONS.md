@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-011 — Bản playtest 30 level trước phát hành
+
+Ngày 2026-10-01. Chủ dự án xác nhận client hiện tại vẫn là campaign bốn level của R1; mốc nội dung tiếp theo là **bản playtest trước phát hành gồm 30 level gốc liên tiếp**, không phải bản phát hành chính thức.
+
+- Quyết định này thay mục tiêu kế hoạch “bản đầu 24 level” trong RST-002 và các tài liệu đang hoạt động. Các bằng chứng và ghi chép lịch sử tại revision cũ vẫn giữ nguyên ý nghĩa.
+- Baseline đã duyệt tiếp tục áp dụng cho order 1–24: order 1–18 dùng S1/S2; từng order 19–24 cần S3. Sáu order 25–30 phải có profile nội dung được duyệt riêng sau dữ liệu playtest, nhưng vẫn giới hạn N=4–6 và S1–S3; không tự mở S4/S5, Endless hoặc sinh level runtime.
+- Campaign 30 level phải qua validator/gate playtest có tên và phạm vi rõ, lượt giải mù, kiểm UI và thiết bị. Cờ `--release` 24-level hiện tại là gate legacy, không chứng nhận mốc mới.
+- Sau playtest, chủ dự án mới quyết định số level, phạm vi nền tảng và tiêu chí của bản phát hành chính thức. Không dùng con số 30 để tuyên bố release-ready.
+- Quyết định này không đổi schema level/save, luật chơi, kinh tế, dịch vụ mạng hoặc tự mở R2–R4.
+
 ## RST-010 — Cho phép pilot generator offline
 
 Ngày 2026-09-29. Cho phép triển khai bộ generator/rating offline giới hạn N=4–6 để tạo ứng viên pilot và kiểm chứng thiết kế GDD 10/11.

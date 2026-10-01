@@ -1,6 +1,6 @@
 # R1 — Kế hoạch bản chơi liền mạch
 
-Trạng thái: chủ dự án duyệt triển khai ngày 2026-09-25 theo RST-002. Khảo sát tại `1600898`; kiểm lại revision khi bắt đầu. Một agent chính thực hiện, không tự mở thêm worktree/agent. Phạm vi bản đầu 24 level; Endless để sau.
+Trạng thái: chủ dự án duyệt triển khai ngày 2026-09-25 theo RST-002. Khảo sát tại `1600898`; kiểm lại revision khi bắt đầu. Một agent chính thực hiện, không tự mở thêm worktree/agent. Đây là kế hoạch lịch sử của R1; mục tiêu nội dung 24 level tại thời điểm lập kế hoạch đã được RST-011 thay bằng bản playtest 30 level, còn phạm vi R1 bốn level không đổi. Endless để sau.
 
 **Mục tiêu:** một build chơi xuyên bốn level, chuyển màn hình, tutorial và save/resume nhất quán.
 

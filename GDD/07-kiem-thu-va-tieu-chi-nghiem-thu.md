@@ -6,7 +6,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 
 | ID | Ca | Kết quả |
 | --- | --- | --- |
-| QA-01 | `--release` trên campaign | Đúng 24 ID, `order=1..24`, N=4–6, mỗi level còn ít nhất hai kẹo để tìm; không chương |
+| QA-01 | Gate campaign playtest 30 level (cần triển khai; không dùng `--release` legacy) | Đúng 30 ID, `order=1..30`, N=4–6, mỗi level còn ít nhất hai kẹo để tìm; không chương |
 | QA-02 | 0 hoặc ≥2 nghiệm | Chặn, báo ID/lý do; timeout solver không được xem là độc nhất |
 | QA-03 | `solution` khai khác nghiệm độc lập | Chặn |
 | QA-04 | Vùng tách rời | Chặn, nêu nhãn vùng |
@@ -16,7 +16,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-49 | Level `order=10,20` bản đầu | Motif/sticker và nhịp suy luận được duyệt người, qua cùng uniqueness/trace/usability; không thêm luật GR; ID/puzzle khóa trước release |
 | QA-32 | Schema cũ, thừa/thiếu trường, bool giả int, ID/order trùng, textKey sai | Báo rõ, không chấp nhận âm thầm |
 | QA-35 | N=12 và N=13; `--release` với N=12 | N12 được đọc/kiểm kỹ thuật; N13 và release N12 bị từ chối; chưa xem N12 là gameplay đã duyệt |
-| QA-57 | Release logic band | Order 1–18 chứa S3 bị chặn; mỗi order 19–24 thiếu S3 hoặc vẫn hoàn tất bằng closure chỉ S2 bị chặn; S4/S5 bị chặn trong MVP |
+| QA-57 | Playtest logic band | Order 1–18 chứa S3 bị chặn; mỗi order 19–24 thiếu S3 hoặc vẫn hoàn tất bằng closure chỉ S2 bị chặn; order 25–30 phải khớp profile được duyệt; S4/S5 bị chặn trong playtest |
 
 ## 2. Board, cử chỉ, điểm
 
@@ -71,7 +71,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 
 Ít nhất 10 người chưa đọc GDD chơi trên thiết bị thật. Ghi tỷ lệ hiểu chạm/kéo/chạm đôi, số nhầm chạm đôi/kéo, thời gian mỗi level, lỗi, Hint, chỗ họ chỉ nhìn màu không nhận ra vùng và mức thích hoạt ảnh. Từng level phải có một lượt giải thủ công không xem nghiệm, hoàn thành với ít nhất 1 tim và ghi thời gian/lỗi/Hint/điểm kẹt. Nếu tỷ lệ nhầm cử chỉ cao hoặc TryCandy vô ý từ 3% trở lên, điều chỉnh cửa sổ/ngưỡng/feedback qua playtest rồi kiểm lại QA-08..12/43..45.
 
-Release đầu chỉ đạt khi 24 level liên tiếp qua QA-01..07/32/49/57, mọi hành vi QA-08..31/33..36/43..45/50/54..56 chạy và lỗi chặn được sửa, asset có quyền rõ, Android+iOS đã đo trên thiết bị mục tiêu. N=12 là hạng mục sau bản đầu: cần 12 cặp màu/họa tiết, kích thước/chạm chính xác **không zoom/pan**, hàng tiến độ cuộn, solver/trace/Hint và đo sprite trên bàn lớn; chỉ khi toàn bộ các ca đó qua mới tăng giới hạn **phát hành**.
+Bản playtest trước phát hành chỉ đạt khi 30 level liên tiếp qua QA-01..07/32/49/57, mọi hành vi QA-08..31/33..36/43..45/50/54..56 chạy và lỗi chặn được sửa, asset có quyền rõ, Android+iOS đã đo trên thiết bị mục tiêu hoặc có quyết định phạm vi nền tảng riêng. Đây chưa phải chứng nhận phát hành chính thức; release gate sẽ được chốt sau dữ liệu playtest. N=12 là hạng mục sau playtest: cần 12 cặp màu/họa tiết, kích thước/chạm chính xác **không zoom/pan**, hàng tiến độ cuộn, solver/trace/Hint và đo sprite trên bàn lớn; chỉ khi toàn bộ các ca đó qua mới tăng giới hạn sản phẩm.
 
 ## 6. S3 hiện hành và nghiên cứu để sau
 
@@ -94,7 +94,7 @@ QA-46/47/48/51/52/53 của đề án kinh tế, bộ sưu tập và generator c�
 | QA-CD-02 | Ô trống/X/X đỏ/kẹo/given trên sáu vùng; thang xám và chữ lớn | Không lộ nghiệm qua trang trí; một hình kẹo chung; vùng và dấu lỗi nhận diện không chỉ bằng màu; viền vùng không đứt bởi kẹo |
 | QA-CD-03 | Save trước đổi chủ đề có X, X đỏ, candy, Hint đã dùng, đang thua hoặc hoàn tất | Load giữ nguyên board/tim/điểm/Hint/order; token candy hiển thị kẹo; không reset save/hash/ID do đổi hình ảnh |
 | QA-CD-04 | Tìm đúng liên tiếp, sai, lần tìm cuối, app nền trong hiệu ứng | Hiệu ứng không đổi luật hoặc làm mất kẹo khỏi ô; giảm chuyển động vẫn đủ thông tin; action chỉ commit một lần |
-| QA-CD-05 | Bản phát hành 24 màn và bản kiểm R1 bốn màn | Release không replay L01; R1 replay đúng RST-003; không lẫn fixture với campaign hoặc tuyên bố đủ 24 khi chỉ có bốn màn |
+| QA-CD-05 | Bản playtest 30 màn và bản kiểm R1 bốn màn | Playtest không replay L01; R1 replay đúng RST-003; không lẫn fixture với campaign hoặc tuyên bố đủ 30 khi chỉ có bốn màn |
 | QA-CD-06 | Asset và thông điệp ngoài bàn | Logo/kẹo/giỏ/cây/SFX có nguồn; không có Shop, vàng, daily hoặc Endless như tính năng đã bật |
 
 Các ca mới bổ sung cho QA hiện có; không thay thế đo thiết bị, cổng 10 người hoặc validator. Chuyển chủ đề trong tài liệu chưa phải PASS cho bất kỳ ca runtime mới nào.

@@ -1,6 +1,13 @@
 # Trạng thái dự án
 
-Cập nhật 2026-10-01. Đã gom nhánh local về `dev` và tích hợp pilot generator offline theo RST-010 tại `79e61a8`. Repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02) có nhánh mặc định `dev`; local đang đi trước remote 5 commit và chưa push. Mục tiêu sản phẩm vẫn là nghiệm thu R1; pilot không mở R2–R4, không thay campaign bốn level hiện có và không phải nội dung phát hành.
+Cập nhật 2026-10-01. Đã gom nhánh local về `dev`, tích hợp pilot generator offline theo RST-010 và dọn artefact cũ đến `888867c`. Repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02) có nhánh mặc định `dev`; trước commit tài liệu hiện tại, local đi trước remote 7 commit và chưa push. Mục tiêu sản phẩm trước mắt vẫn là nghiệm thu R1 trên campaign bốn level; RST-011 đặt mốc nội dung tiếp theo là playtest 30 level trước phát hành, không tự mở R2–R4 và không tuyên bố release-ready.
+
+## Tài liệu game, stack và architecture — 2026-10-01
+
+- Thêm [tổng quan game](GAME_OVERVIEW.md) cho nội bộ/người ngoài, nêu trải nghiệm, luật, client bốn level hiện tại, phạm vi playtest 30 level và dữ liệu cần thu trước quyết định phát hành.
+- Thêm [technical stack](TECH_STACK.md) và [architecture](ARCHITECTURE.md), đối chiếu trực tiếp project Godot, script runtime, schema/save, Python tooling, build preset, test runner và các khoảng trống kỹ thuật hiện có.
+- Ghi RST-011 và đồng bộ AGENTS, README, ROADMAP cùng GDD đang hoạt động: order 1–24 giữ baseline đã duyệt; profile 25–30 phải được duyệt riêng trong N=4–6/S1–S3; cờ `--release` 24-level được ghi rõ là gate legacy. Các quyết định/evidence cũ vẫn là lịch sử tại revision tương ứng.
+- Kiểm chứng trên nền `888867c` + working diff: `rtk git diff --check` PASS; quét 132 liên kết Markdown cục bộ, không có đích thiếu; rà lại tham chiếu source/config và các phát biểu 24/30 level. Không chạy game hoặc full suite vì chỉ thay tài liệu; trạng thái GUI/thiết bị và R1 không thay đổi.
 
 ## Pilot generator offline và hợp nhất local — 2026-10-01
 
@@ -43,7 +50,7 @@ Cập nhật 2026-10-01. Đã gom nhánh local về `dev` và tích hợp pilot 
 - Render Vulkan Mobile/GPU từ bootstrap thật với profile runtime cô lập: Home → Settings → Back → Puzzle → Settings → Back → Win → màn tiếp → Fail. Đã xem [Home](../scratch/candoku-ui/home.png), [Puzzle](../scratch/candoku-ui/puzzle.png), Settings và Result. Đây là capture harness phát signal/action, **không phải kiểm gesture bằng thao tác cửa sổ thật**. Computer Use lỗi `helper_unknown_error: setup refresh had errors`, reset/thử lại vẫn lỗi; không retry khi môi trường chưa đổi. Android/iOS NOT RUN.
 - Tài liệu: 11 file GDD, 37 link cục bộ không thiếu đích, bảy khối JSON parse thành công; quét nguồn hiện hành không còn thuật ngữ cũ ngoài compatibility. `git diff --check` PASS. Các hash/số liệu bên dưới là lịch sử theo ngày, không dùng để chứng nhận build mới.
 
-Chưa nghiệm thu R1 hoàn chỉnh hoặc phát hành: cần kiểm gesture thật và trọn hành trình bốn level. Campaign 24 màn, generator, rating engine và hiệu chỉnh độ khó vẫn chưa triển khai.
+Chưa nghiệm thu R1 hoàn chỉnh hoặc phát hành: cần kiểm gesture thật và trọn hành trình bốn level. Campaign playtest 30 màn, gate tương ứng, rating hiệu chỉnh bằng người chơi và profile order 25–30 vẫn chưa triển khai; generator mới ở mức pilot offline cho order 2–24.
 
 ## Lịch sử: tài liệu nền suy luận và sinh level — 2026-09-28
 

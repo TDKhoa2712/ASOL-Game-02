@@ -42,7 +42,7 @@ Các motif theo dải màn chỉ thay viền trang trí/backdrop, không thay ma
 | ART-10 | Thua | Giỏ bên luống và lời động viên; màn riêng, nút Thử lại rõ; không biểu cảm trừng phạt |
 | ART-11 | Giảm chuyển động | Hình tĩnh + thông báo chữ; tắt scale/particle/loop, giữ đầy đủ thông tin |
 
-Kẹo đã tìm luôn ở lại ô. Mốc “Giỏi lắm!” chỉ phát một lần khi đạt ít nhất nửa số kẹo cần tự tìm; kẹo cuối ưu tiên thắng. Có thể dùng giỏ đầy ở màn 24 nhưng không thêm màn phải chờ. Hiệu ứng không tự cộng điểm, mất tim, lưu game hoặc xác định thắng.
+Kẹo đã tìm luôn ở lại ô. Mốc “Giỏi lắm!” chỉ phát một lần khi đạt ít nhất nửa số kẹo cần tự tìm; kẹo cuối ưu tiên thắng. Có thể dùng giỏ đầy ở màn 30 của campaign playtest nhưng không thêm màn phải chờ. Hiệu ứng không tự cộng điểm, mất tim, lưu game hoặc xác định thắng.
 
 Âm X là tick nhẹ, clear là tick mềm hơn, đúng là tiếng giấy gói/chime ngắn, sai là tiếng trầm nhẹ, thắng là motif dưới hai giây. Không dùng âm thanh động vật. Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. Nhạc nền chưa thuộc asset bắt buộc bản đầu. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
 

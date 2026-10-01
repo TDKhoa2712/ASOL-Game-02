@@ -1,6 +1,6 @@
 # CanDoKu — Game Design Document
 
-**Phiên bản 0.6.0 · 2026-09-28 · Thiết kế đích để triển khai.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề tìm kẹo trong vườn; không chứng nhận client đã chuyển đổi hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
+**Phiên bản 0.7.0 · 2026-10-01 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề, campaign playtest 30 level và ranh giới phát hành chính thức sau playtest; không chứng nhận client hiện tại đã đủ nội dung hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
 
 ## Điểm bắt đầu
 
@@ -11,7 +11,7 @@ Người chơi dùng hàng, cột và các luống vườn để suy ra vị tr�
 | [01 — Tầm nhìn](01-tam-nhin-va-pham-vi.md) | Bối cảnh, người chơi, vòng lặp và phạm vi |
 | [02 — Luật chuẩn](02-luat-choi-va-trang-thai.md) | GR, trạng thái, input, tim, điểm, Hint và save |
 | [03 — UX](03-luong-man-hinh-va-ux.md) | Màn hình, bố cục, tutorial và câu chữ |
-| [04 — Level](04-thiet-ke-level.md) | 24 màn gốc, đường cong học, trace và biên tập |
+| [04 — Level](04-thiet-ke-level.md) | Campaign playtest 30 màn, đường cong học, trace và biên tập |
 | [05 — Kỹ thuật](05-kien-truc-va-du-lieu.md) | Module, schema/API hiện có, tương thích save và chuyển chủ đề |
 | [06 — Mỹ thuật/âm thanh](06-my-thuat-va-am-thanh.md) | Kẹo, vườn, asset, chuyển động và âm |
 | [07 — Nghiệm thu](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | QA gameplay, chủ đề, nội dung và thiết bị |
@@ -25,8 +25,8 @@ Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài li
 
 | ID | Thiết kế |
 | --- | --- |
-| D-01 | 24 level liên tiếp, N=4–6, không chọn màn/chương; schema giữ N=4–12 |
-| D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; không yêu cầu đoán |
+| D-01 | Playtest trước phát hành có 30 level liên tiếp, N=4–6, không chọn màn/chương; schema giữ N=4–12 |
+| D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; profile 25–30 phải duyệt riêng nhưng chỉ dùng S1–S3; không yêu cầu đoán |
 | D-03 | Bốn trạng thái kỹ thuật `empty/x/x_error/candy`; `candy` nay trình bày là kẹo đã tìm thấy |
 | D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X; Restart có xác nhận |
 | D-05 | Một Hint/lượt, ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
@@ -46,6 +46,8 @@ CanDoKu tự thiết kế bối cảnh, level, layout, câu chữ, logo và asse
 
 ## Kiểm chứng
 
-[data/levels.sample.json](data/levels.sample.json) là fixture kỹ thuật, không phải 24 level phát hành. [Vector tương tác](data/interactions.sample.json) dùng hoàn toàn token CanDoKu; test migration riêng kiểm save cũ. [Validator](tools/validate_levels.py) kiểm schema/nghiệm/trace; `--release` kiểm campaign 24 level.
+[data/levels.sample.json](data/levels.sample.json) là fixture kỹ thuật, không phải campaign playtest 30 level. [Vector tương tác](data/interactions.sample.json) dùng hoàn toàn token CanDoKu; test migration riêng kiểm save cũ. [Validator](tools/validate_levels.py) kiểm schema/nghiệm/trace; `--release` hiện vẫn là gate legacy 24 level và phải được thay bằng gate playtest 30 level có tên/phạm vi rõ trước nghiệm thu nội dung mới.
+
+Tài liệu dành cho cả nội bộ và người ngoài gồm [tổng quan game](../docs/GAME_OVERVIEW.md), [technical stack](../docs/TECH_STACK.md) và [architecture](../docs/ARCHITECTURE.md). RST-011 trong [DECISIONS](../docs/DECISIONS.md) là quyết định mới nhất về mốc 30 level và phát hành chính thức sau playtest.
 
 Sửa tài liệu: kiểm diff, link và tính nhất quán. Triển khai code: theo runner và GUI/device của [AGENTS](../AGENTS.md). Không lấy GDD hoàn chỉnh hoặc test headless làm bằng chứng game đã hoàn tất.

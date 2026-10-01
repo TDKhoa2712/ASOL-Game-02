@@ -110,7 +110,7 @@ Không có lối vào bộ sưu tập, cửa hàng hoặc cứu lượt trong b�
 | Hint S2 | Luống {region} chỉ còn ô hàng {r}, cột {c} có thể có kẹo. |
 | Win / `result.win` | Đã tìm đủ kẹo! |
 | Fail / `result.fail` | Hết tim rồi. Thử lại để tìm đủ kẹo nhé! |
-| Hoàn tất / `campaign.complete` | Bạn đã tìm đủ kẹo trong 24 màn. Cảm ơn bạn đã ghé vườn! |
+| Hoàn tất / `campaign.complete` | Bạn đã tìm đủ kẹo trong 30 màn chơi thử. Cảm ơn bạn đã ghé vườn! |
 | Save lỗi / `save.error` | Chưa lưu được. Hãy thử lại. |
 
 Nhãn thao tác ngữ nghĩa là “Tìm kẹo”, không “tìm kẹo”: người chơi khám phá vị trí đã có, không di chuyển kẹo. “Luống A” luôn chỉ toàn bộ vùng A dù hình dạng bất quy tắc. Kẹo cho sẵn có nhãn đọc “kẹo đã tìm sẵn”. Chữ trên UI ưu tiên “Màn”; ID level/API không đổi.

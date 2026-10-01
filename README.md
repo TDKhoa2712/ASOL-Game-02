@@ -8,7 +8,7 @@ CanDoKu là game puzzle 2D: mỗi hàng, cột và luống vườn đều giấu
 
 Client Godot hiện có **bốn level kiểm thử R1**, tutorial, ghi chú X, Hint, Undo, kết quả thắng/thua và lưu tiến trình offline. Chủ đề và API hiện hành đã chuyển sang CanDoKu.
 
-Thiết kế bản đầu hướng tới **24 level gốc, bàn 4×4 đến 6×6, tiếng Việt, Android và iOS**. Campaign 24 level chưa hoàn tất; đã có [generator pilot offline](docs/level-generation.md), nhưng ứng viên chưa qua playtest/UI để nhập campaign. Endless và hiệu chỉnh độ khó vẫn để sau. Không có tài khoản, quảng cáo hoặc IAP trong phạm vi bản đầu.
+Mốc nội dung tiếp theo là **bản playtest trước phát hành gồm 30 level gốc, bàn 4×4 đến 6×6, tiếng Việt, Android và iOS**. Campaign 30 level chưa hoàn tất; đã có [generator pilot offline](docs/level-generation.md), nhưng ứng viên chưa qua playtest/UI để nhập campaign. Sau playtest, phạm vi bản phát hành chính thức mới được quyết định. Endless và hiệu chỉnh độ khó bằng dữ liệu người chơi vẫn để sau. Không có tài khoản, quảng cáo hoặc IAP trong phạm vi playtest.
 
 Đây là bản đang phát triển, **chưa phải bản phát hành đã nghiệm thu**. Test headless đã đạt ở mốc code tích hợp; hành trình gesture đầy đủ và QA thiết bị còn cần thực hiện. Xem kết quả theo revision tại [STATUS](docs/STATUS.md).
 
@@ -30,12 +30,15 @@ Tìm đủ kẹo để hoàn thành màn. Điểm chỉ xuất hiện ở màn k
 - [Nguyên tắc suy luận](GDD/10-nghien-cuu-quy-tac-suy-luan.md): mô hình, chứng minh, phản ví dụ, trace và nền tảng Hint; phân biệt kỹ thuật hiện hành với mở rộng.
 - [Sinh level và đánh giá độ khó](GDD/11-sinh-level-va-danh-gia-do-kho.md): yêu cầu tạo level, profile/seed, nghiệm duy nhất, trace, chống trùng, rating thử nghiệm và playtest.
 
-Level phát hành phải có nghiệm duy nhất và lời giải suy luận hợp lệ, không yêu cầu đoán. Thang độ khó trong tài liệu chưa được hiệu chỉnh bằng người chơi. Fixture trong `GDD/data/` và campaign bốn level hiện tại không phải bộ 24 level phát hành.
+Level dùng cho playtest phải có nghiệm duy nhất và lời giải suy luận hợp lệ, không yêu cầu đoán. Thang độ khó trong tài liệu chưa được hiệu chỉnh bằng người chơi. Fixture trong `GDD/data/` và campaign bốn level hiện tại không phải campaign playtest 30 level.
 
 ## Cấu trúc và tài liệu dự án
 
 - [game](game/project.godot): client, scene, script và test.
 - [AGENTS](AGENTS.md): cách làm; [CONTRIBUTING](CONTRIBUTING.md): đóng góp.
+- [Tổng quan game](docs/GAME_OVERVIEW.md): trải nghiệm, luật, hiện trạng và mục tiêu playtest.
+- [Technical stack](docs/TECH_STACK.md): engine, công cụ, dữ liệu, build và kiểm thử.
+- [Architecture](docs/ARCHITECTURE.md): ranh giới module, luồng runtime, persistence và hướng tiến hóa.
 - [ROADMAP](docs/ROADMAP.md): thứ tự; [STATUS](docs/STATUS.md): hiện trạng; [DECISIONS](docs/DECISIONS.md): quyết định.
 - [Tra lịch sử pipeline cũ](docs/HISTORY.md).
 

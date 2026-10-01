@@ -2,7 +2,7 @@
 
 ## 1. Nguồn hướng dẫn và phạm vi
 
-Đọc [STATUS](docs/STATUS.md) và phần mục tiêu đang giao trong [ROADMAP](docs/ROADMAP.md). Chỉ đọc thêm GDD/code liên quan; không đọc lại toàn bộ hồ sơ mỗi lượt. GDD 02 giữ luật chuẩn; [DECISIONS](docs/DECISIONS.md) ghi quyết định mới có hiệu lực. R1 đã được mở, bản đầu 24 level, Endless để sau. Không tự mở R2–R4.
+Đọc [STATUS](docs/STATUS.md) và phần mục tiêu đang giao trong [ROADMAP](docs/ROADMAP.md). Chỉ đọc thêm GDD/code liên quan; không đọc lại toàn bộ hồ sơ mỗi lượt. GDD 02 giữ luật chuẩn; [DECISIONS](docs/DECISIONS.md) ghi quyết định mới có hiệu lực. R1 đã được mở; client hiện có campaign bốn level. Mốc nội dung tiếp theo là bản playtest trước phát hành gồm 30 level theo RST-011; phạm vi phát hành chính thức chỉ chốt sau playtest, Endless để sau. Không tự mở R2–R4.
 
 ## 2. Nhận và thực hiện mục tiêu
 
