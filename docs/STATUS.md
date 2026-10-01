@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-Cập nhật 2026-10-01. Đang gom nhánh local về `dev` và tích hợp pilot generator offline theo RST-010. Repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02) có nhánh mặc định `dev`; local đang đi trước remote. Mục tiêu sản phẩm vẫn là nghiệm thu R1; pilot không mở R2–R4, không thay campaign bốn level hiện có và không phải nội dung phát hành.
+Cập nhật 2026-10-01. Đã gom nhánh local về `dev` và tích hợp pilot generator offline theo RST-010 tại `79e61a8`. Repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02) có nhánh mặc định `dev`; local đang đi trước remote 5 commit và chưa push. Mục tiêu sản phẩm vẫn là nghiệm thu R1; pilot không mở R2–R4, không thay campaign bốn level hiện có và không phải nội dung phát hành.
 
 ## Pilot generator offline và hợp nhất local — 2026-10-01
 
@@ -8,7 +8,7 @@ Cập nhật 2026-10-01. Đang gom nhánh local về `dev` và tích hợp pilot
 - Batch `GDD/data/pilot-20260929/` có 8/8 ứng viên `MACHINE_VALIDATED` cho order 2–22. Đây không phải campaign: player evidence 0 mẫu và UI review `NOT_RUN`; nhãn easy/medium là tạm tính.
 - Test riêng generator ngày 2026-10-01: `python -B GDD/tools/test_generate_levels.py`, 12/12 PASS. Full runner trước tích hợp PASS toàn bộ Python, hai validator và 17 suite Godot, 11,61 giây; [log](../scratch/verification/20261001T035603.720705Z.txt), revision nền `63c1a99` + working diff, source SHA256 `da00700c2c69c9700af94a232682ac039d5dde062c09c6487a9148595f7878f0`. Không dùng headless để tuyên bố R1/R3 hoặc UI/playtest hoàn tất.
 - Hồ sơ `STATUS`, `ROADMAP`, `DECISIONS`, `HISTORY`, plan/evidence tracked đã được giữ. Các lần xóa toàn bộ `docs/` chưa commit được coi là artefact dọn nhầm vì mâu thuẫn nguồn trạng thái và liên kết dự án.
-- Bước kế tiếp của lượt này: commit đúng phạm vi trên `dev`, chạy full verification, sau đó xóa nhánh `codex/level-generation-pilot` nếu revision tích hợp PASS. Không push/phát hành nếu chưa được giao.
+- Sau fast-forward trên `dev` tại `79e61a8`: full runner PASS toàn bộ, 10,52 giây; [log tích hợp](../scratch/verification/20261001T035730.391669Z.txt), source SHA256 `8f320a8afc5dfe150f851b72f1fbf32f30b01fe6d36561b40d76dc12c12365fa`. Nhánh `codex/level-generation-pilot` đã xóa sau khi kiểm; còn đúng một worktree, hai nhánh local `dev`/`main`, working tree sạch trước cập nhật STATUS này. Hai full run trong lượt hợp nhất; không có regression mở lại. Không chạy GUI/thiết bị vì không đổi UI/input/điều hướng và pilot chưa được nhập vào game. Không push/phát hành.
 
 ## README và publish repository — 2026-09-29
 
