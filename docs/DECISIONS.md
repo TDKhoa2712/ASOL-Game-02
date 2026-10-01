@@ -1,5 +1,13 @@
 # Quyết định điều hành hiện hành
 
+## RST-010 — Cho phép pilot generator offline
+
+Ngày 2026-09-29. Cho phép triển khai bộ generator/rating offline giới hạn N=4–6 để tạo ứng viên pilot và kiểm chứng thiết kế GDD 10/11.
+
+- Công cụ chỉ ghi thư mục đầu ra mới, không sửa campaign hoặc chạy trong client; không mở Endless, runtime generation hay R2–R4.
+- `MACHINE_VALIDATED` không đồng nghĩa production-ready. Difficulty chỉ là nhãn tạm đến khi có playtest mù, duyệt UI và hiệu chỉnh bằng người chơi mục tiêu.
+- Profile đầu tạo tám ứng viên trải order 2–22, gồm tier B và I; dữ liệu pilot được giữ để tái lập và phục vụ vòng duyệt người, không tự nhập vào 24 level phát hành.
+
 ## RST-009 — Dọn tài nguyên thừa và tích hợp CanDoKu
 
 Ngày 2026-09-29. Chủ dự án yêu cầu xóa phần không còn sử dụng và merge về `dev`.

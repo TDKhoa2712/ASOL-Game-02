@@ -1,0 +1,1990 @@
+{
+  "generatorVersion": "candoku-offline-1",
+  "profile": {
+    "profileVersion": 1,
+    "seed": "candoku-pilot-20260929",
+    "slots": [
+      {
+        "order": 2,
+        "size": 4,
+        "minRating": 5,
+        "maxRating": 10
+      },
+      {
+        "order": 4,
+        "size": 4,
+        "minRating": 6,
+        "maxRating": 13
+      },
+      {
+        "order": 7,
+        "size": 5,
+        "minRating": 9,
+        "maxRating": 16
+      },
+      {
+        "order": 10,
+        "size": 5,
+        "minRating": 7,
+        "maxRating": 12
+      },
+      {
+        "order": 14,
+        "size": 6,
+        "minRating": 12,
+        "maxRating": 16
+      },
+      {
+        "order": 18,
+        "size": 6,
+        "minRating": 17,
+        "maxRating": 24
+      },
+      {
+        "order": 19,
+        "size": 5,
+        "minRating": 16,
+        "maxRating": 25
+      },
+      {
+        "order": 22,
+        "size": 6,
+        "minRating": 20,
+        "maxRating": 32
+      }
+    ],
+    "maxGivens": 2,
+    "minPlayableCandies": 2,
+    "maxAttempts": 5000,
+    "maxWallSeconds": 120,
+    "exactMaxNodes": 2000000,
+    "exactMaxSeconds": 5
+  },
+  "prng": "Python random.Random/MT19937",
+  "pythonVersion": "3.12.10",
+  "ruleCatalogVersion": "candoku-reasoning-1",
+  "policyVersion": "evidence-first-v1",
+  "status": "COMPLETE",
+  "acceptedCount": 8,
+  "attempts": 372,
+  "rejections": {
+    "LOGIC_STUCK": 30,
+    "MULTIPLE": 304,
+    "RATING_RANGE": 29,
+    "S3_NOT_REQUIRED": 1
+  },
+  "unmetSlots": [],
+  "elapsedSeconds": 0.359,
+  "excludedGeometryCount": 9,
+  "levels": [
+    {
+      "id": "P8A4308F75901",
+      "attemptIndex": 1,
+      "targetProfile": {
+        "order": 2,
+        "size": 4,
+        "minRating": 5,
+        "maxRating": 10
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 6,
+      "vector": {
+        "playableCount": 2,
+        "placedCount": 2,
+        "ruleCounts": {
+          "S2": 2,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 1,
+        "maxPremiseUnits": 1,
+        "maxVisibleCells": 1,
+        "availableActions": [
+          2,
+          1
+        ],
+        "bottleneckCount": 1,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 6,
+          "median": 6,
+          "max": 6
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              2,
+              3
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 6,
+        "coordinate-first-v1": 6,
+        "reverse-coordinate-v1": 6
+      },
+      "geometryKey": "AAAABAACBBBBBBDB",
+      "puzzleKey": "8a4308f75901b6a53847fea1de81974d21b947271e7e9834fdadde65ba007056",
+      "puzzleHash": "b2206559a8fa17c25e7b037dc82c83edfeb50707a9352a3b0f889d5658841d1c",
+      "contentHash": "09068e78774f9661ecb32cc4aa0cc37b25fbdd1678a76635ddef863117a17c54",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 8,
+          "B": 1,
+          "C": 6,
+          "D": 1
+        },
+        "boundaryEdges": 10
+      },
+      "measuredDifficulty": "easy",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P0C5829821A43",
+      "attemptIndex": 3,
+      "targetProfile": {
+        "order": 4,
+        "size": 4,
+        "minRating": 6,
+        "maxRating": 13
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 7,
+      "vector": {
+        "playableCount": 2,
+        "placedCount": 2,
+        "ruleCounts": {
+          "S2": 2,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 2,
+        "maxPremiseUnits": 2,
+        "maxVisibleCells": 6,
+        "availableActions": [
+          2,
+          1
+        ],
+        "bottleneckCount": 1,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 6,
+          "median": 7,
+          "max": 7
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "row",
+              "id": 2
+            },
+            {
+              "type": "column",
+              "id": 3
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              0
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "A"
+            },
+            {
+              "type": "column",
+              "id": 0
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 7,
+        "coordinate-first-v1": 6,
+        "reverse-coordinate-v1": 7
+      },
+      "geometryKey": "AAABABBBCCCBCCDD",
+      "puzzleKey": "0c5829821a43934051c68ac48846196eb38d33bfb7cf17e8129cdf72d675c250",
+      "puzzleHash": "5c394f8813d179c1f203567a23250c5b150a8f4226fb6ac0d9a07ecb0a7be6a1",
+      "contentHash": "9282ff4398c4d9636e3f8b457c00110c28e51592c89d402c5c965ecc19da11b5",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 2,
+          "B": 5,
+          "C": 5,
+          "D": 4
+        },
+        "boundaryEdges": 11
+      },
+      "measuredDifficulty": "easy",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P31F1D5747E5F",
+      "attemptIndex": 9,
+      "targetProfile": {
+        "order": 7,
+        "size": 5,
+        "minRating": 9,
+        "maxRating": 16
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 10,
+      "vector": {
+        "playableCount": 3,
+        "placedCount": 3,
+        "ruleCounts": {
+          "S2": 3,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 3,
+        "maxPremiseUnits": 4,
+        "maxVisibleCells": 8,
+        "availableActions": [
+          2,
+          2,
+          1
+        ],
+        "bottleneckCount": 1,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 9,
+          "median": 9,
+          "max": 10
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "row",
+              "id": 0
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            },
+            {
+              "type": "row",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [
+            2
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "column",
+              "id": 0
+            },
+            {
+              "type": "row",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "column",
+              "id": 4
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 10,
+        "coordinate-first-v1": 9,
+        "reverse-coordinate-v1": 9
+      },
+      "geometryKey": "AAAABACABBCCDBBCCDDDECDDD",
+      "puzzleKey": "31f1d5747e5fa2fadb5585e10a6d25fa4adf6f5889a1f45e72f42f4001e9ffc0",
+      "puzzleHash": "ee387f7bc4bc656f69f17f1dd48f0147f06fd80f862d4a2778f6245025e7ca66",
+      "contentHash": "020d74d02ed83fd01ba280dcd3a5dc27a0fc1b461a039c454f2e31d3868f9ec2",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 1,
+          "B": 6,
+          "C": 7,
+          "D": 5,
+          "E": 6
+        },
+        "boundaryEdges": 16
+      },
+      "measuredDifficulty": "easy",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P3F8E5A1C7489",
+      "attemptIndex": 14,
+      "targetProfile": {
+        "order": 10,
+        "size": 5,
+        "minRating": 7,
+        "maxRating": 12
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 8,
+      "vector": {
+        "playableCount": 3,
+        "placedCount": 3,
+        "ruleCounts": {
+          "S2": 3,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 1,
+        "maxPremiseUnits": 3,
+        "maxVisibleCells": 7,
+        "availableActions": [
+          3,
+          2,
+          1
+        ],
+        "bottleneckCount": 1,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 8,
+          "median": 8,
+          "max": 8
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "A"
+            },
+            {
+              "type": "row",
+              "id": 0
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "E"
+            },
+            {
+              "type": "column",
+              "id": 3
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "row",
+              "id": 0
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 8,
+        "coordinate-first-v1": 8,
+        "reverse-coordinate-v1": 8
+      },
+      "geometryKey": "AAABBAACCCCCCCCDCCCEDDCCE",
+      "puzzleKey": "3f8e5a1c7489827fece56d2609f9d325243066ab647454f8d5d0c24a41a0853d",
+      "puzzleHash": "1c6031f5f5fd74c0bafc374e43ff1fecf238325b43a0bcef794a4c724eaac7e8",
+      "contentHash": "72651dcd59d841e47cb4e27836e6998b15cbd78604c4ee752157a0cfa90ee71f",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 2,
+          "B": 13,
+          "C": 2,
+          "D": 5,
+          "E": 3
+        },
+        "boundaryEdges": 14
+      },
+      "measuredDifficulty": "easy",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P00679AB27553",
+      "attemptIndex": 19,
+      "targetProfile": {
+        "order": 14,
+        "size": 6,
+        "minRating": 12,
+        "maxRating": 16
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 13,
+      "vector": {
+        "playableCount": 4,
+        "placedCount": 4,
+        "ruleCounts": {
+          "S2": 4,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 3,
+        "maxPremiseUnits": 4,
+        "maxVisibleCells": 10,
+        "availableActions": [
+          2,
+          1,
+          2,
+          1
+        ],
+        "bottleneckCount": 2,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 11,
+          "median": 12,
+          "max": 13
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              1,
+              5
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "C"
+            },
+            {
+              "type": "row",
+              "id": 0
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              5
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 3
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [
+            2
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              0,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              4
+            ],
+            [
+              5,
+              1
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              3
+            ],
+            [
+              5,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "column",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "dependsOn": [
+            3
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              4,
+              0
+            ],
+            [
+              5,
+              0
+            ],
+            [
+              5,
+              3
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "F"
+            },
+            {
+              "type": "row",
+              "id": 5
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 13,
+        "coordinate-first-v1": 12,
+        "reverse-coordinate-v1": 11
+      },
+      "geometryKey": "AAAABBCCDAABCDDAAACCCAAACAAAAEFFAAAE",
+      "puzzleKey": "00679ab2755360342dd8ef0dbcf626f717f1fbb0fea92e129fc8b15ae4610075",
+      "puzzleHash": "75bc4ccc1cb8d5f4e739feb15f8a3c1ee2675768972cf602bd47708938e74e30",
+      "contentHash": "0437e660efe485e99119c5a9e171e2de0431ab0f8012c6862973eaee8a31524b",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 2,
+          "B": 19,
+          "C": 3,
+          "D": 7,
+          "E": 3,
+          "F": 2
+        },
+        "boundaryEdges": 24
+      },
+      "measuredDifficulty": "easy",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P66FC3F6EFB0A",
+      "attemptIndex": 359,
+      "targetProfile": {
+        "order": 18,
+        "size": 6,
+        "minRating": 17,
+        "maxRating": 24
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "SOLVED",
+      "lowestProvenTier": "B",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 17,
+      "vector": {
+        "playableCount": 5,
+        "placedCount": 5,
+        "ruleCounts": {
+          "S2": 5,
+          "S3": 0
+        },
+        "eliminatedCount": 0,
+        "maxRuleTier": "B",
+        "maxEliminationRun": 0,
+        "proofDepth": 4,
+        "maxPremiseUnits": 4,
+        "maxVisibleCells": 9,
+        "availableActions": [
+          1,
+          2,
+          1,
+          2,
+          1
+        ],
+        "bottleneckCount": 3,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 15,
+          "median": 16,
+          "max": 17
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              2,
+              1
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "C"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            },
+            {
+              "type": "row",
+              "id": 0
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 3
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              5
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 3
+            },
+            {
+              "type": "row",
+              "id": 3
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "dependsOn": [
+            3
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              3,
+              4
+            ],
+            [
+              5,
+              4
+            ],
+            [
+              5,
+              5
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "F"
+            },
+            {
+              "type": "column",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "dependsOn": [
+            1,
+            4
+          ],
+          "depth": 4,
+          "visibleCells": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              2,
+              2
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              5,
+              2
+            ],
+            [
+              5,
+              5
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            },
+            {
+              "type": "row",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 5
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 17,
+        "coordinate-first-v1": 16,
+        "reverse-coordinate-v1": 15
+      },
+      "geometryKey": "AAAABBAAAACCDDAACEDFEEEEDDDEEEDDDEEE",
+      "puzzleKey": "66fc3f6efb0a6d3f6799a16aee4cf2bd4e1d56233c4629092b15634d86d93d3e",
+      "puzzleHash": "0c85461487dfac7cdd1061b07b51fc39244d02ef3362ec23c17576b2510806cd",
+      "contentHash": "3a83198db907e4b538b13f6e9c54edfa2880267724217bf70e77d273c37be962",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 9,
+          "B": 11,
+          "C": 1,
+          "D": 10,
+          "E": 3,
+          "F": 2
+        },
+        "boundaryEdges": 20
+      },
+      "measuredDifficulty": "medium",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P7845A479D6D9",
+      "attemptIndex": 360,
+      "targetProfile": {
+        "order": 19,
+        "size": 5,
+        "minRating": 16,
+        "maxRating": 25
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "STUCK",
+      "lowestProvenTier": "I",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 18,
+      "vector": {
+        "playableCount": 4,
+        "placedCount": 4,
+        "ruleCounts": {
+          "S2": 4,
+          "S3": 1
+        },
+        "eliminatedCount": 2,
+        "maxRuleTier": "I",
+        "maxEliminationRun": 1,
+        "proofDepth": 5,
+        "maxPremiseUnits": 3,
+        "maxVisibleCells": 6,
+        "availableActions": [
+          2,
+          1,
+          2,
+          2,
+          1
+        ],
+        "bottleneckCount": 2,
+        "firstPlacementStep": 2,
+        "policySpread": {
+          "min": 17,
+          "median": 18,
+          "max": 18
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            },
+            {
+              "type": "row",
+              "id": 3
+            },
+            {
+              "type": "column",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              3,
+              1
+            ],
+            [
+              4,
+              0
+            ],
+            [
+              4,
+              1
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              4,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "E"
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [
+            1,
+            2
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              4,
+              3
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "B"
+            },
+            {
+              "type": "column",
+              "id": 3
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "dependsOn": [
+            3
+          ],
+          "depth": 4,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              3,
+              1
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "A"
+            },
+            {
+              "type": "row",
+              "id": 0
+            },
+            {
+              "type": "column",
+              "id": 1
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "dependsOn": [
+            4
+          ],
+          "depth": 5,
+          "visibleCells": [
+            [
+              1,
+              0
+            ],
+            [
+              1,
+              4
+            ],
+            [
+              2,
+              4
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            },
+            {
+              "type": "row",
+              "id": 1
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 18,
+        "coordinate-first-v1": 18,
+        "reverse-coordinate-v1": 17
+      },
+      "geometryKey": "AAABBAABBBABBBCDBBECDDEEE",
+      "puzzleKey": "7845a479d6d939f1f9a407085f73424d32dda02671c5d2771432ca58577c71b4",
+      "puzzleHash": "df9a5620639995e61397aee829108560d0794124d3b1ee023c02c3c88e419676",
+      "contentHash": "e17957918c5d83d5b2d9ca04e61375b79bca33ca404940cf74fb7b96b44c7924",
+      "reviewFlags": [],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 3,
+          "B": 4,
+          "C": 10,
+          "D": 2,
+          "E": 6
+        },
+        "boundaryEdges": 16
+      },
+      "measuredDifficulty": "medium",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    },
+    {
+      "id": "P76EFA508F924",
+      "attemptIndex": 371,
+      "targetProfile": {
+        "order": 22,
+        "size": 6,
+        "minRating": 20,
+        "maxRating": 32
+      },
+      "status": "MACHINE_VALIDATED",
+      "exactStatus": "UNIQUE",
+      "proofStatus": "SOLVED",
+      "s2OnlyStatus": "STUCK",
+      "lowestProvenTier": "I",
+      "ratingVersion": "candoku-rating-0",
+      "evidencePolicy": "per-cell-lowest-depth-v1",
+      "D_raw": 20,
+      "vector": {
+        "playableCount": 5,
+        "placedCount": 5,
+        "ruleCounts": {
+          "S2": 5,
+          "S3": 1
+        },
+        "eliminatedCount": 2,
+        "maxRuleTier": "I",
+        "maxEliminationRun": 1,
+        "proofDepth": 5,
+        "maxPremiseUnits": 4,
+        "maxVisibleCells": 9,
+        "availableActions": [
+          1,
+          4,
+          2,
+          2,
+          2,
+          1
+        ],
+        "bottleneckCount": 2,
+        "firstPlacementStep": 1,
+        "policySpread": {
+          "min": 20,
+          "median": 20,
+          "max": 28
+        }
+      },
+      "evidence": [
+        {
+          "step": 1,
+          "dependsOn": [],
+          "depth": 1,
+          "visibleCells": [
+            [
+              2,
+              1
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "D"
+            }
+          ]
+        },
+        {
+          "step": 2,
+          "dependsOn": [
+            1
+          ],
+          "depth": 2,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              4,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "C"
+            },
+            {
+              "type": "row",
+              "id": 0
+            },
+            {
+              "type": "column",
+              "id": 1
+            },
+            {
+              "type": "column",
+              "id": 2
+            }
+          ]
+        },
+        {
+          "step": 3,
+          "dependsOn": [
+            2
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              3
+            ],
+            [
+              2,
+              3
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              4,
+              3
+            ],
+            [
+              5,
+              3
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "E"
+            },
+            {
+              "type": "column",
+              "id": 3
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 4,
+          "dependsOn": [
+            3
+          ],
+          "depth": 4,
+          "visibleCells": [
+            [
+              0,
+              4
+            ],
+            [
+              0,
+              5
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "C"
+            }
+          ]
+        },
+        {
+          "step": 5,
+          "dependsOn": [
+            1,
+            2
+          ],
+          "depth": 3,
+          "visibleCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              2,
+              0
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              4,
+              0
+            ],
+            [
+              4,
+              2
+            ],
+            [
+              5,
+              0
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "column",
+              "id": 0
+            },
+            {
+              "type": "row",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 4
+            }
+          ]
+        },
+        {
+          "step": 6,
+          "dependsOn": [
+            1,
+            4
+          ],
+          "depth": 5,
+          "visibleCells": [
+            [
+              0,
+              5
+            ],
+            [
+              2,
+              1
+            ],
+            [
+              3,
+              0
+            ],
+            [
+              3,
+              1
+            ],
+            [
+              3,
+              2
+            ],
+            [
+              3,
+              3
+            ],
+            [
+              3,
+              4
+            ],
+            [
+              3,
+              5
+            ],
+            [
+              4,
+              2
+            ]
+          ],
+          "premiseUnits": [
+            {
+              "type": "region",
+              "id": "E"
+            },
+            {
+              "type": "column",
+              "id": 2
+            },
+            {
+              "type": "row",
+              "id": 3
+            },
+            {
+              "type": "column",
+              "id": 5
+            }
+          ]
+        }
+      ],
+      "policyScores": {
+        "evidence-first-v1": 20,
+        "coordinate-first-v1": 20,
+        "reverse-coordinate-v1": 28
+      },
+      "geometryKey": "AAAAAAAAABCCDDDCCCDDDDCCEEEECFEEEECF",
+      "puzzleKey": "76efa508f924ff5c1fc909e4c2a6c131f33bb5c25b82284405a2dfd3ea8d35e2",
+      "puzzleHash": "4bc4b6f7bd9cce21f4f6aa3a8178e4b569ba57fdcffb2bb16b568338bd4e98d2",
+      "contentHash": "5260e1cc3447903f765367494e749de1f18ef566d5755d5da43ea0d7585f3438",
+      "reviewFlags": [
+        "policySpread"
+      ],
+      "visualMetrics": {
+        "regionAreas": {
+          "A": 9,
+          "B": 9,
+          "C": 2,
+          "D": 1,
+          "E": 7,
+          "F": 8
+        },
+        "boundaryEdges": 21
+      },
+      "measuredDifficulty": "medium",
+      "reviewedDifficulty": null,
+      "playerEvidence": {
+        "status": "NOT_RUN",
+        "sampleCount": 0
+      },
+      "uiReview": "NOT_RUN"
+    }
+  ],
+  "source": {
+    "revision": "63c1a9945e77b7d3187cd78486c84dfcac3167c7",
+    "workingStatus": "M GDD/04-thiet-ke-level.md\n M GDD/11-sinh-level-va-danh-gia-do-kho.md\n M docs/DECISIONS.md\n M game/assets/spike/candy-probe-atlas.svg.import\n M game/assets/ui/board/candy.svg.import\n M game/assets/ui/board/heart.svg.import\n M game/assets/ui/board/icon_back.png.import\n M game/assets/ui/board/icon_help.png.import\n M game/assets/ui/board/icon_hint.png.import\n M game/assets/ui/board/icon_play_badge.png.import\n M game/assets/ui/board/icon_restart.png.import\n M game/assets/ui/board/icon_settings.png.import\n M game/assets/ui/board/icon_undo.png.import\n M game/project.godot\n?? GDD/tools/generate_levels.py\n?? GDD/tools/level_reasoning.py\n?? GDD/tools/pilot_report.py\n?? GDD/tools/run_generation_experiment.py\n?? GDD/tools/test_generate_levels.py\n?? docs/level-generation.md\n?? game/scripts/ui/settings_screen.gd.uid",
+    "workingDiffSha256": "283543832b27561a922ad9799dfc1f9468bfd87cc7f795fd2a8ac08bf0c394c5",
+    "toolHashes": {
+      "GDD/tools/generate_levels.py": "9acb2a7d0b1f7f17fe27527d31c39052d4651ca7cc4150388b6f5cad9251c340",
+      "GDD/tools/level_reasoning.py": "419b0b6538bf49eed887a29eb815b5b02dcccab2c6cd40b9a01421c40607a3bb",
+      "GDD/tools/pilot_report.py": "5d921751ab30b143148604735f43145b24ae8548d600b96e4f86e84daad27ed0",
+      "GDD/tools/run_generation_experiment.py": "12145165ac9cddaf190fdeb90a98191dd6aa6464013ac08d5b67ece9b6748431",
+      "GDD/tools/test_generate_levels.py": "6a36e7c0d5c1459c9020b91a0530636c89963da7cc99f4325b2275736eb8060c",
+      "GDD/tools/test_interaction_contract.py": "db2ab551526c8a20f81757f81ef48d1630a5fa4fb6643a59059810dc0639a3e8",
+      "GDD/tools/test_validate_levels.py": "f9d87c0bcb10365c3a886c741ae44a753e32a09a87efea1ac770011200d6ad51",
+      "GDD/tools/validate_levels.py": "9ba42111d6d7632b101c13568c86c146dc26d2df6543b47ce8b4f9853f0ff8b6"
+    }
+  },
+  "execution": {
+    "command": [
+      "D:\\Program Files\\Python312\\python.exe",
+      "-B",
+      "GDD/tools/generate_levels.py",
+      "--out",
+      "GDD/data/pilot-20260929",
+      "--exclude",
+      "GDD/data/levels.sample.json",
+      "--exclude",
+      "game/data/campaign_m1.json"
+    ],
+    "utc": "2026-09-29T08:03:49.297198+00:00",
+    "excludedFiles": [
+      "GDD\\data\\levels.sample.json",
+      "game\\data\\campaign_m1.json"
+    ],
+    "exitCode": 0
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "profileVersion": 1,
+  "seed": "candoku-pilot-20260929",
+  "slots": [
+    {
+      "order": 2,
+      "size": 4,
+      "minRating": 5,
+      "maxRating": 10
+    },
+    {
+      "order": 4,
+      "size": 4,
+      "minRating": 6,
+      "maxRating": 13
+    },
+    {
+      "order": 7,
+      "size": 5,
+      "minRating": 9,
+      "maxRating": 16
+    },
+    {
+      "order": 10,
+      "size": 5,
+      "minRating": 7,
+      "maxRating": 12
+    },
+    {
+      "order": 14,
+      "size": 6,
+      "minRating": 12,
+      "maxRating": 16
+    },
+    {
+      "order": 18,
+      "size": 6,
+      "minRating": 17,
+      "maxRating": 24
+    },
+    {
+      "order": 19,
+      "size": 5,
+      "minRating": 16,
+      "maxRating": 25
+    },
+    {
+      "order": 22,
+      "size": 6,
+      "minRating": 20,
+      "maxRating": 32
+    }
+  ],
+  "maxGivens": 2,
+  "minPlayableCandies": 2,
+  "maxAttempts": 5000,
+  "maxWallSeconds": 120,
+  "exactMaxNodes": 2000000,
+  "exactMaxSeconds": 5
+}

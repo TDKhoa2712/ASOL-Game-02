@@ -8,7 +8,7 @@ CanDoKu là game puzzle 2D: mỗi hàng, cột và luống vườn đều giấu
 
 Client Godot hiện có **bốn level kiểm thử R1**, tutorial, ghi chú X, Hint, Undo, kết quả thắng/thua và lưu tiến trình offline. Chủ đề và API hiện hành đã chuyển sang CanDoKu.
 
-Thiết kế bản đầu hướng tới **24 level gốc, bàn 4×4 đến 6×6, tiếng Việt, Android và iOS**. Campaign 24 level chưa hoàn tất; generator, Endless và hiệu chỉnh độ khó chưa triển khai. Không có tài khoản, quảng cáo hoặc IAP trong phạm vi bản đầu.
+Thiết kế bản đầu hướng tới **24 level gốc, bàn 4×4 đến 6×6, tiếng Việt, Android và iOS**. Campaign 24 level chưa hoàn tất; đã có [generator pilot offline](docs/level-generation.md), nhưng ứng viên chưa qua playtest/UI để nhập campaign. Endless và hiệu chỉnh độ khó vẫn để sau. Không có tài khoản, quảng cáo hoặc IAP trong phạm vi bản đầu.
 
 Đây là bản đang phát triển, **chưa phải bản phát hành đã nghiệm thu**. Test headless đã đạt ở mốc code tích hợp; hành trình gesture đầy đủ và QA thiết bị còn cần thực hiện. Xem kết quả theo revision tại [STATUS](docs/STATUS.md).
 

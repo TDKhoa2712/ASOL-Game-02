@@ -2,6 +2,8 @@
 
 **Phiên bản tài liệu 1.0 · 2026-09-28.** Đặc tả để sau này xây công cụ sinh level hoặc giao AI/người biên tập tạo ứng viên. Đi cùng [bộ nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md). Không phải báo cáo đã có generator hoặc bộ chấm độ khó hoàn chỉnh.
 
+**Cập nhật triển khai 2026-09-29:** đã bổ sung generator offline giới hạn N=4–6, closure S2/S3, chứng cứ phụ thuộc, rating-0 và ba policy, lọc trùng, báo cáo và phiếu pilot. Xem [hướng dẫn công cụ](../docs/level-generation.md). Các mục mô tả “tương lai/chưa triển khai” bên dưới là đặc tả gốc; mục 17 là khảo sát tại 2026-09-28. Bản công cụ đầu chưa có mutation, checkpoint, tối ưu trace toàn cục, generator runtime hay hiệu chỉnh bằng người chơi. Profile CLI v1 là tập con riêng được mô tả trong hướng dẫn, không nhận nguyên mẫu request mở rộng ở mục 3.
+
 Phạm vi được bổ sung là **tài liệu nền**. Giữ bản đầu 24 level, N=4–6, order 1–18 dùng S1/S2, từng order 19–24 cần S3; không mở Endless, sinh runtime, kinh tế hoặc R2–R4. Công cụ sinh offline dưới đây là thiết kế để triển khai khi được giao.
 
 ## 1. Mục tiêu và tiêu chí một level tốt

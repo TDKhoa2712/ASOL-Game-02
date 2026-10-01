@@ -19,7 +19,7 @@ Người chơi dùng hàng, cột và các luống vườn để suy ra vị tr�
 | [10 — Nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md) | Mô hình toán, S1–S5/X1–X4, chứng minh, phản ví dụ, trace và Hint; phân biệt hiện hành/mở rộng |
 | [11 — Sinh level và độ khó](11-sinh-level-va-danh-gia-do-kho.md) | Profile/seed, sinh nghiệm/vùng/givens, kiểm nghiệm, thang độ khó thử nghiệm, playtest và mẫu giao việc |
 
-Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài liệu 08/11/12 cũ đã được tinh gọn khỏi GDD theo yêu cầu; cách khôi phục từ Git ở [09](09-ra-soat-thiet-ke.md#6-tinh-gọn-và-truy-vết). File 11 mới chuyên về sinh level/độ khó theo yêu cầu bổ sung, không khôi phục đề án kinh tế/bộ sưu tập cũ. Hai tài liệu 10/11 là nền thiết kế công cụ, chưa triển khai generator hoặc mở Endless.
+Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài liệu 08/11/12 cũ đã được tinh gọn khỏi GDD theo yêu cầu; cách khôi phục từ Git ở [09](09-ra-soat-thiet-ke.md#6-tinh-gọn-và-truy-vết). File 11 mới chuyên về sinh level/độ khó theo yêu cầu bổ sung, không khôi phục đề án kinh tế/bộ sưu tập cũ. Hai tài liệu 10/11 là nền của [generator pilot offline](../docs/level-generation.md); công cụ chưa tạo campaign phát hành hoặc mở Endless.
 
 ## Quyết định hiện hành
 

@@ -49,7 +49,7 @@ Uniqueness không chứng minh người chơi giải được bằng S1/S2. Nế
 6. **Duyệt bằng người:** giải không xem nghiệm, ghi thời gian, hint, bước bất ngờ, khả năng đọc ở thang xám và vấn đề tutorial. Một lượt duyệt là tối thiểu; playtest 10 người ở cổng QA vẫn cần.
 7. **Đóng gói:** chạy validator `--release`, kiểm asset và script tutorial gắn với ID thực tế. Không thêm level lỗi vào build.
 
-Gói phát hành là 24 level gốc. Nếu một level không qua cổng, thay nó; không giảm tiêu chuẩn để đạt chỉ tiêu số lượng. Nếu sau này mở generator, ứng viên offline vẫn phải qua các bước 3–7 và duyệt người; hiện chưa triển khai generator. “Quy luật ẩn” chỉ là motif biên tập như đối xứng, mật độ vùng hoặc nhịp suy luận; không bổ sung luật thắng bí mật đối với người chơi.
+Gói phát hành là 24 level gốc. Nếu một level không qua cổng, thay nó; không giảm tiêu chuẩn để đạt chỉ tiêu số lượng. Generator offline đã được mở cho pilot theo RST-010; xem [hướng dẫn công cụ](../docs/level-generation.md). Ứng viên vẫn phải qua các bước 3–7 và duyệt người. “Quy luật ẩn” chỉ là motif biên tập như đối xứng, mật độ vùng hoặc nhịp suy luận; không bổ sung luật thắng bí mật đối với người chơi.
 
 ## 5. Fixture kỹ thuật
 
