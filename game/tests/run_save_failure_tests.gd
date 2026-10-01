@@ -16,7 +16,7 @@ func _run() -> void:
 	var errors: Array[String] = []
 	runtime.save_failed.connect(func(reason: String) -> void: errors.append(reason))
 	_check(runtime.initialize(), "runtime initializes in isolated profile")
-	var blocker := profile.path_join("progress.json.tmp")
+	var blocker := profile.path_join("progress.tmp")
 	_check(DirAccess.make_dir_absolute(blocker) == OK, "create controlled progress write failure")
 	for row in range(4):
 		runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
@@ -58,7 +58,7 @@ func _ui_retry() -> void:
 	await process_frame
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
-	var blocker := profile.path_join("progress.json.tmp")
+	var blocker := profile.path_join("progress.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	for row in range(4):
 		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
@@ -83,7 +83,7 @@ func _reload_pending_win() -> void:
 	await process_frame
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
-	var blocker := profile.path_join("progress.json.tmp")
+	var blocker := profile.path_join("progress.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	for row in range(4):
 		bootstrap.runtime.apply_action({"type": "TryCandy", "cell": [row, [1, 3, 0, 2][row]]})
@@ -109,7 +109,9 @@ func _corrupt_progress() -> void:
 	_check(repository.corrupt_for_test("progress"), "corrupt primary progress")
 	var runtime = Runtime.new(profile)
 	_check(not runtime.initialize(), "invalid progress blocks startup instead of creating L01")
-	_check(FileAccess.get_file_as_string(profile.path_join("progress.json")) == "[]", "invalid progress is not overwritten")
+	var active_slot: String = repository._active_slot("progress")
+	var slot_path: String = repository._slot_path("progress", active_slot)
+	_check(FileAccess.file_exists(slot_path) and FileAccess.get_file_as_string(slot_path) == "[]", "invalid progress is not overwritten")
 	var bootstrap = BootstrapScene.instantiate()
 	bootstrap.runtime = Runtime.new(profile)
 	root.add_child(bootstrap)
@@ -127,7 +129,7 @@ func _session_write_failure() -> void:
 	await process_frame
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
-	var blocker := profile.path_join("session.json.tmp")
+	var blocker := profile.path_join("session.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [0, 0]})
 	_check(bootstrap.get_node_or_null("SaveErrorDialog") != null, "session write error is reported")
@@ -157,7 +159,7 @@ func _tutorial_progress_write_failure() -> void:
 	await process_frame
 	bootstrap.get_node("ScreenHost/Home/SafeArea/Content/Stack/PlayButton").pressed.emit()
 	await process_frame
-	var blocker := profile.path_join("progress.json.tmp")
+	var blocker := profile.path_join("progress.tmp")
 	DirAccess.make_dir_absolute(blocker)
 	bootstrap.runtime.apply_action({"type": "MarkX", "cell": [1, 1]})
 	var dialog = bootstrap.get_node_or_null("SaveErrorDialog")

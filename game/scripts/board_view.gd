@@ -18,6 +18,8 @@ var level: Dictionary = {}
 var _touch_in_progress := false
 var _candy_texture: Texture2D = null
 var _cell_styles: Dictionary = {}
+var _region_grid: Array = []  # precomputed NxN grid of region labels
+var _region_color_map: Dictionary = {}  # region label → Color (LAB-distance assigned)
 
 
 func _ready() -> void:
@@ -32,6 +34,8 @@ func _ready() -> void:
 func configure(gesture_engine, level_data: Dictionary) -> void:
 	engine = gesture_engine
 	level = level_data.duplicate(true)
+	_precompute_region_grid()
+	_assign_region_colors()
 	if not engine.changed.is_connected(_on_engine_changed):
 		engine.changed.connect(_on_engine_changed)
 	queue_redraw()
@@ -126,18 +130,104 @@ func _board_rect() -> Rect2:
 
 
 func _region_at(row: int, column: int) -> String:
-	return str(level["regions"][row]).substr(column, 1)
+	if _region_grid.is_empty():
+		return str(level["regions"][row]).substr(column, 1)
+	return _region_grid[row][column]
 
 
 func _get_region_color(region: String) -> Color:
-	var idx := 0
-	if region.length() > 0:
-		var code := region.unicode_at(0)
-		if code >= 65 and code <= 90:
-			idx = code - 65
-		elif code >= 48 and code <= 57:
-			idx = code - 48
-	return UiTokens.REGION_PALETTE[idx % UiTokens.REGION_PALETTE.size()]
+	if _region_color_map.has(region):
+		return _region_color_map[region]
+	return UiTokens.REGION_PALETTE[0]
+
+
+func _precompute_region_grid() -> void:
+	_region_grid = []
+	var size := int(level.get("size", 0))
+	for row in range(size):
+		var row_labels: Array = []
+		var region_str: String = str(level["regions"][row])
+		for col in range(size):
+			row_labels.append(region_str.substr(col, 1))
+		_region_grid.append(row_labels)
+
+
+func _assign_region_colors() -> void:
+	_region_color_map = {}
+	var size := int(level.get("size", 0))
+	if size == 0:
+		return
+	# Build adjacency: two regions are adjacent if they share a cell neighbor
+	var region_cells: Dictionary = {}
+	for row in range(size):
+		for col in range(size):
+			var label: String = str(_region_grid[row][col])
+			if not region_cells.has(label):
+				region_cells[label] = []
+			region_cells[label].append([row, col])
+	var adjacency: Dictionary = {}
+	for label in region_cells:
+		adjacency[label] = {}
+	for row in range(size):
+		for col in range(size):
+			var label: String = str(_region_grid[row][col])
+			for neighbor in [[row - 1, col], [row + 1, col], [row, col - 1], [row, col + 1]]:
+				if neighbor[0] >= 0 and neighbor[0] < size and neighbor[1] >= 0 and neighbor[1] < size:
+					var nlabel: String = str(_region_grid[neighbor[0]][neighbor[1]])
+					if nlabel != label:
+						adjacency[label][nlabel] = true
+						adjacency[nlabel][label] = true
+	# Greedy graph coloring: assign palette colors maximizing LAB distance from neighbors
+	var palette: Array = UiTokens.REGION_PALETTE
+	var labels := region_cells.keys()
+	labels.sort()
+	for label in labels:
+		var best_idx := 0
+		var best_min_dist := -1.0
+		for idx in range(palette.size()):
+			var candidate: Color = palette[idx]
+			var min_dist := INF
+			for adj_label in adjacency[label]:
+				if _region_color_map.has(adj_label):
+					var dist := _cie_lab_distance(candidate, _region_color_map[adj_label])
+					min_dist = minf(min_dist, dist)
+			if min_dist > best_min_dist:
+				best_min_dist = min_dist
+				best_idx = idx
+		_region_color_map[label] = palette[best_idx]
+
+
+static func _cie_lab_distance(a: Color, b: Color) -> float:
+	var la := _to_lab(a)
+	var lb := _to_lab(b)
+	var dl: float = float(la[0]) - float(lb[0])
+	var da: float = float(la[1]) - float(lb[1])
+	var db: float = float(la[2]) - float(lb[2])
+	return sqrt(dl * dl + da * da + db * db)
+
+
+static func _to_lab(c: Color) -> Array:
+	# sRGB → linear → XYZ → LAB (D65)
+	var rl := _srgb_to_linear(c.r)
+	var gl := _srgb_to_linear(c.g)
+	var bl := _srgb_to_linear(c.b)
+	var x := 0.4124564 * rl + 0.3575761 * gl + 0.1804375 * bl
+	var y := 0.2126729 * rl + 0.7151522 * gl + 0.0721750 * bl
+	var z := 0.0193339 * rl + 0.1191920 * gl + 0.9503041 * bl
+	x /= 0.95047
+	z /= 1.08883
+	x = _lab_f(x)
+	y = _lab_f(y)
+	z = _lab_f(z)
+	return [116.0 * y - 16.0, 500.0 * (x - y), 200.0 * (y - z)]
+
+
+static func _srgb_to_linear(v: float) -> float:
+	return pow((v + 0.055) / 1.055, 2.4) if v > 0.04045 else v / 12.92
+
+
+static func _lab_f(t: float) -> float:
+	return pow(t, 1.0 / 3.0) if t > 0.008856 else 7.787 * t + 16.0 / 116.0
 
 
 func _get_cell_style(color: Color, radius: int) -> StyleBoxFlat:

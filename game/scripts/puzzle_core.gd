@@ -2,6 +2,69 @@ extends RefCounted
 
 # Data-only puzzle rules. The gesture layer decides when an action is committed.
 
+enum Violation { NONE, ROW, COLUMN, REGION, DIAGONAL }
+
+const VIOLATION_PRIORITY := [Violation.ROW, Violation.COLUMN, Violation.REGION, Violation.DIAGONAL]
+
+
+static func find_conflicts(level: Dictionary, cells: Dictionary) -> Array:
+	var candy_positions: Array = []
+	var size := int(level["size"])
+	for row in range(size):
+		for col in range(size):
+			var key := cell_key([row, col])
+			if is_given(level, [row, col]) or cells.get(key, "empty") == "candy":
+				candy_positions.append([row, col])
+	var conflicts := {}
+	for i in range(candy_positions.size()):
+		for j in range(i + 1, candy_positions.size()):
+			var v := classify_violation(level, candy_positions[i], candy_positions[j])
+			if v != Violation.NONE:
+				conflicts[cell_key(candy_positions[i])] = true
+				conflicts[cell_key(candy_positions[j])] = true
+	return conflicts.keys()
+
+
+static func classify_violation(level: Dictionary, cell_a: Array, cell_b: Array) -> int:
+	var ra := int(cell_a[0])
+	var ca := int(cell_a[1])
+	var rb := int(cell_b[0])
+	var cb := int(cell_b[1])
+	if ra == rb:
+		return Violation.ROW
+	if ca == cb:
+		return Violation.COLUMN
+	var reg_a: String = str(level["regions"][ra]).substr(ca, 1)
+	var reg_b: String = str(level["regions"][rb]).substr(cb, 1)
+	if reg_a == reg_b:
+		return Violation.REGION
+	if abs(ra - rb) == 1 and abs(ca - cb) == 1:
+		return Violation.DIAGONAL
+	return Violation.NONE
+
+
+static func find_priority_conflict(level: Dictionary, cells: Dictionary, cell: Array) -> Dictionary:
+	var best_violation: int = Violation.NONE
+	var best_cell: Array = []
+	var size := int(level["size"])
+	for row in range(size):
+		for col in range(size):
+			if row == int(cell[0]) and col == int(cell[1]):
+				continue
+			var other := [row, col]
+			var key := cell_key(other)
+			if not (is_given(level, other) or cells.get(key, "empty") == "candy"):
+				continue
+			var v := classify_violation(level, cell, other)
+			if v == Violation.NONE:
+				continue
+			if best_violation == Violation.NONE or VIOLATION_PRIORITY.find(v) < VIOLATION_PRIORITY.find(best_violation):
+				best_violation = v
+				best_cell = other
+	if best_violation == Violation.NONE:
+		return {"violation": Violation.NONE}
+	return {"violation": best_violation, "cell": best_cell}
+
 
 static func score(correct_placed_count: int, mistake_count: int) -> int:
 	return maxi(0, 100 * correct_placed_count - 25 * mistake_count)
@@ -42,21 +105,16 @@ static func correct_placed_count(level: Dictionary, cells: Dictionary) -> int:
 
 
 static func mistake_reason(level: Dictionary, cells: Dictionary, cell: Array) -> String:
-	var row := int(cell[0])
-	var col := int(cell[1])
-	var region := str(level["regions"][row][col])
-	for other_row in range(int(level["size"])):
-		var other_col := int(level["solution"][other_row])
-		if cell_state(level, cells, [other_row, other_col]) != "candy":
-			continue
-		if other_row == row:
-			return "row"
-		if other_col == col:
-			return "column"
-		if str(level["regions"][other_row][other_col]) == region:
-			return "region"
-		if abs(other_row - row) == 1 and abs(other_col - col) == 1:
-			return "diagonal"
+	var result := find_priority_conflict(level, cells, cell)
+	var v: int = result["violation"]
+	if v == Violation.ROW:
+		return "row"
+	if v == Violation.COLUMN:
+		return "column"
+	if v == Violation.REGION:
+		return "region"
+	if v == Violation.DIAGONAL:
+		return "diagonal"
 	return "neutral"
 
 

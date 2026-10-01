@@ -16,6 +16,11 @@ meowdoku-clone.xml
 *.repomix.xml
 .codegraph/
 .codex-remote-attachments/
+.claude/
+.serena/
+
+# Private clean-room reference material — never commit or publish
+extracted_reusable/
 
 # Temporary and local logs
 *.tmp

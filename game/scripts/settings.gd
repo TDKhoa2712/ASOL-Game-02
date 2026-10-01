@@ -12,11 +12,12 @@ const DEFAULTS := {
 	"largeText": false,
 }
 
+const _MUTABLE_KEYS: Array[String] = ["audioEnabled", "hapticsEnabled", "reducedMotion", "highContrast", "largeText"]
+
 var _current: Dictionary = DEFAULTS.duplicate(true)
-var _listeners: Array[Callable] = []
 var _root_dir: String = ""
 
-signal changed
+signal changed(key: String, value: Variant)
 
 
 func _init(save_dir: String = "") -> void:
@@ -25,7 +26,11 @@ func _init(save_dir: String = "") -> void:
 
 
 func get_value(key: String) -> Variant:
-	return _current.get(key, DEFAULTS[key])
+	if _current.has(key):
+		return _current[key]
+	if DEFAULTS.has(key):
+		return DEFAULTS[key]
+	return null
 
 
 func get_all() -> Dictionary:
@@ -33,27 +38,32 @@ func get_all() -> Dictionary:
 
 
 func set_value(key: String, value: Variant) -> bool:
-	if key in ["audioEnabled", "hapticsEnabled", "reducedMotion", "highContrast", "largeText"]:
-		if _current[key] != value:
-			_current[key] = value
-			_save()
-			changed.emit()
-			return true
+	if key not in _MUTABLE_KEYS:
+		return false
+	if _current[key] != value:
+		_current[key] = value
+		_save()
+		changed.emit(key, value)
+		return true
 	return false
 
 
 func set_all(data: Dictionary) -> void:
-	for key in DEFAULTS:
+	var any_changed := false
+	for key in _MUTABLE_KEYS:
 		if key in data and typeof(data[key]) == typeof(DEFAULTS[key]):
-			_current[key] = data[key]
-	_save()
-	changed.emit()
+			if _current[key] != data[key]:
+				_current[key] = data[key]
+				any_changed = true
+	if any_changed:
+		_save()
+		changed.emit("", null)
 
 
 func reset_to_defaults() -> void:
 	_current = DEFAULTS.duplicate(true)
 	_save()
-	changed.emit()
+	changed.emit("", null)
 
 
 func is_large_text() -> bool:
@@ -76,28 +86,30 @@ func is_haptics_enabled() -> bool:
 	return _current["hapticsEnabled"]
 
 
-func add_listener(callable: Callable) -> void:
-	if not _listeners.has(callable):
-		_listeners.append(callable)
-
-
-func remove_listener(callable: Callable) -> void:
-	_listeners.erase(callable)
-
-
 func _load() -> void:
 	var path := _settings_path()
-	if FileAccess.file_exists(path):
-		var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
-		if typeof(parsed) == TYPE_DICTIONARY and parsed.get("settingsVersion", -1) == SETTINGS_VERSION:
-			for key in DEFAULTS:
-				if key in parsed and typeof(parsed[key]) == typeof(DEFAULTS[key]):
-					_current[key] = parsed[key]
-		else:
-			reset_to_defaults()
-	else:
+	if not FileAccess.file_exists(path):
 		_current = DEFAULTS.duplicate(true)
 		_save()
+		return
+	var parsed = JSON.parse_string(FileAccess.get_file_as_string(path))
+	if typeof(parsed) != TYPE_DICTIONARY:
+		reset_to_defaults()
+		return
+	var version: int = parsed.get("settingsVersion", -1)
+	if version == SETTINGS_VERSION:
+		for key in DEFAULTS:
+			if key in parsed and typeof(parsed[key]) == typeof(DEFAULTS[key]):
+				_current[key] = parsed[key]
+	elif version > 0 and version < SETTINGS_VERSION:
+		# Forward migration: keep compatible keys, add new defaults
+		for key in DEFAULTS:
+			if key in parsed and typeof(parsed[key]) == typeof(DEFAULTS[key]):
+				_current[key] = parsed[key]
+		_current["settingsVersion"] = SETTINGS_VERSION
+		_save()
+	else:
+		reset_to_defaults()
 
 
 func _save() -> void:

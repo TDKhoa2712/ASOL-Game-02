@@ -4,6 +4,10 @@ const LEVEL_KEYS := ["schemaVersion", "id", "order", "size", "regions", "givens"
 const STEP_KEYS := ["rule", "focus", "conclusion", "textKey"]
 const S3_KEYS := ["rule", "source", "target", "conclusion", "textKey"]
 const UNIT_KEYS := ["type", "id"]
+const RELEASE_MAX_ORDER := 30
+const RELEASE_MAX_SIZE := 6
+
+static var _id_regex: RegEx = null
 
 
 static func load_document(path: String, release: bool = false) -> Dictionary:
@@ -41,7 +45,7 @@ static func validate_document(data: Dictionary, release: bool = false) -> Dictio
 		orders[order] = true
 		valid_levels.append(level)
 	if release:
-		for order in range(1, 25):
+		for order in range(1, RELEASE_MAX_ORDER + 1):
 			if not orders.has(order):
 				return _failure("", "release missing order %d" % order)
 	return {"ok": true, "levels": valid_levels, "warnings": []}
@@ -52,7 +56,7 @@ static func validate_level(level: Dictionary, release: bool = false) -> Dictiona
 	if not keys_error.is_empty():
 		return _failure(str(level.get("id", "")), keys_error)
 	var level_id = level["id"]
-	if typeof(level_id) != TYPE_STRING or not _matches(level_id, "^[A-Z0-9_-]+$"):
+	if typeof(level_id) != TYPE_STRING or not _matches_id(level_id):
 		return _failure(str(level_id), "invalid id")
 	if not _is_int(level["schemaVersion"]) or level["schemaVersion"] != 4:
 		return _failure(str(level_id), "schemaVersion must be 4")
@@ -116,9 +120,9 @@ static func validate_level(level: Dictionary, release: bool = false) -> Dictiona
 	if not trace_result.is_empty():
 		return _failure(str(level_id), trace_result)
 	if release:
-		if level["order"] < 1 or level["order"] > 24:
-			return _failure(str(level_id), "release order must be 1..24")
-		if n > 6 or level["difficulty"] == "hard":
+		if level["order"] < 1 or level["order"] > RELEASE_MAX_ORDER:
+			return _failure(str(level_id), "release order must be 1..%d" % RELEASE_MAX_ORDER)
+		if n > RELEASE_MAX_SIZE or level["difficulty"] == "hard":
 			return _failure(str(level_id), "release supports size 4..6 and no hard level")
 		if n - givens.size() < 2:
 			return _failure(str(level_id), "release needs at least two playable candies")
@@ -468,10 +472,11 @@ static func _require_keys(value: Dictionary, expected: Array, label: String) -> 
 	return ""
 
 
-static func _matches(value: String, pattern: String) -> bool:
-	var regex := RegEx.new()
-	regex.compile(pattern)
-	return regex.search(value) != null
+static func _matches_id(value: String) -> bool:
+	if _id_regex == null:
+		_id_regex = RegEx.new()
+		_id_regex.compile("^[A-Z0-9_-]+$")
+	return _id_regex.search(value) != null
 
 
 static func _failure(level_id: String, reason: String) -> Dictionary:

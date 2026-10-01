@@ -1,5 +1,17 @@
 # Quyết định điều hành hiện hành
 
+## RST-012 — Rebuild hoàn chỉnh từ thiết kế tham khảo
+
+Ngày 2026-10-02. Chủ dự án phê duyệt rebuild hoàn chỉnh game CanDoKu dựa trên phân tích và tối ưu hóa từ bộ tham khảo `extracted_reusable/` (~224 files, ~35,700 dòng).
+
+- **Phạm vi:** Viết lại toàn bộ code game thành 10 modules mới, clean-room. Tham khảo hành vi, KHÔNG sao chép code/tên/enum từ reference.
+- **Kiến trúc mới:** Bank + Pace + Playlist cho level system; CellKind 6-state (thêm GIVEN, LOCKED); Auto-mark system; Progressive hints; Command pattern grouped undo; SFX rate limiting; Transform x8.
+- **Plan:** [Master plan](superpowers/plans/2026-10-02-rebuild-master.md) với 10 module plans chi tiết, interface contracts, parallel execution map (6 waves, tối đa 5 agents đồng thời).
+- **AGENTS.md** viết lại tối ưu cho multi-agent parallel execution.
+- Không đổi mục tiêu sản phẩm (vẫn playtest 30 level theo RST-011), schema level v4, phạm vi N=4-6/S1-S3.
+- Thay thế R1/R2/R3/R4 roadmap cũ bằng rebuild → playtest → quyết định phát hành.
+- Code cũ (`puzzle_core.gd`, `interaction_session.gd`, `bootstrap.gd`, v.v.) được giữ tạm trong quá trình build, xóa sau khi module mới pass test (Module 9 Phase 4).
+
 ## RST-011 — Bản playtest 30 level trước phát hành
 
 Ngày 2026-10-01. Chủ dự án xác nhận client hiện tại vẫn là campaign bốn level của R1; mốc nội dung tiếp theo là **bản playtest trước phát hành gồm 30 level gốc liên tiếp**, không phải bản phát hành chính thức.

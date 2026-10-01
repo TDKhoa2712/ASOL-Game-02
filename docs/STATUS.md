@@ -1,129 +1,46 @@
 # Trạng thái dự án
 
-Cập nhật 2026-10-01. Đã gom nhánh local về `dev`, tích hợp pilot generator offline theo RST-010 và dọn artefact cũ đến `888867c`. Repository public [ASOL-Game-02](https://github.com/TDKhoa2712/ASOL-Game-02) có nhánh mặc định `dev`; trước commit tài liệu hiện tại, local đi trước remote 7 commit và chưa push. Mục tiêu sản phẩm trước mắt vẫn là nghiệm thu R1 trên campaign bốn level; RST-011 đặt mốc nội dung tiếp theo là playtest 30 level trước phát hành, không tự mở R2–R4 và không tuyên bố release-ready.
+> Cập nhật: 2026-10-02
 
-## Tài liệu game, stack và architecture — 2026-10-01
+## Mục tiêu hiện tại: Rebuild cho playtest 30 level
 
-- Thêm [tổng quan game](GAME_OVERVIEW.md) cho nội bộ/người ngoài, nêu trải nghiệm, luật, client bốn level hiện tại, phạm vi playtest 30 level và dữ liệu cần thu trước quyết định phát hành.
-- Thêm [technical stack](TECH_STACK.md) và [architecture](ARCHITECTURE.md), đối chiếu trực tiếp project Godot, script runtime, schema/save, Python tooling, build preset, test runner và các khoảng trống kỹ thuật hiện có.
-- Ghi RST-011 và đồng bộ AGENTS, README, ROADMAP cùng GDD đang hoạt động: order 1–24 giữ baseline đã duyệt; profile 25–30 phải được duyệt riêng trong N=4–6/S1–S3; cờ `--release` 24-level được ghi rõ là gate legacy. Các quyết định/evidence cũ vẫn là lịch sử tại revision tương ứng.
-- Kiểm chứng trên nền `888867c` + working diff: `rtk git diff --check` PASS; quét 132 liên kết Markdown cục bộ, không có đích thiếu; rà lại tham chiếu source/config và các phát biểu 24/30 level. Không chạy game hoặc full suite vì chỉ thay tài liệu; trạng thái GUI/thiết bị và R1 không thay đổi.
+**Plan:** [Master plan](superpowers/plans/2026-10-02-rebuild-master.md)
+**Quyết định:** RST-012 (rebuild), RST-011 (30-level playtest)
 
-## Pilot generator offline và hợp nhất local — 2026-10-01
+### Tiến độ thiết kế
 
-- Bộ công cụ giới hạn N=4–6 gồm generator tất định, solver/trace S2–S3, uniqueness độc lập, rating-0 theo ba policy, lọc trùng hình học, báo cáo biên tập và phiếu playtest mù. Hướng dẫn: [level-generation](level-generation.md).
-- Batch `GDD/data/pilot-20260929/` có 8/8 ứng viên `MACHINE_VALIDATED` cho order 2–22. Đây không phải campaign: player evidence 0 mẫu và UI review `NOT_RUN`; nhãn easy/medium là tạm tính.
-- Test riêng generator ngày 2026-10-01: `python -B GDD/tools/test_generate_levels.py`, 12/12 PASS. Full runner trước tích hợp PASS toàn bộ Python, hai validator và 17 suite Godot, 11,61 giây; [log](../scratch/verification/20261001T035603.720705Z.txt), revision nền `63c1a99` + working diff, source SHA256 `da00700c2c69c9700af94a232682ac039d5dde062c09c6487a9148595f7878f0`. Không dùng headless để tuyên bố R1/R3 hoặc UI/playtest hoàn tất.
-- Hồ sơ `STATUS`, `ROADMAP`, `DECISIONS`, `HISTORY`, plan/evidence tracked đã được giữ. Các lần xóa toàn bộ `docs/` chưa commit được coi là artefact dọn nhầm vì mâu thuẫn nguồn trạng thái và liên kết dự án.
-- Sau fast-forward trên `dev` tại `79e61a8`: full runner PASS toàn bộ, 10,52 giây; [log tích hợp](../scratch/verification/20261001T035730.391669Z.txt), source SHA256 `8f320a8afc5dfe150f851b72f1fbf32f30b01fe6d36561b40d76dc12c12365fa`. Nhánh `codex/level-generation-pilot` đã xóa sau khi kiểm; còn đúng một worktree, hai nhánh local `dev`/`main`, working tree sạch trước cập nhật STATUS này. Hai full run trong lượt hợp nhất; không có regression mở lại. Không chạy GUI/thiết bị vì không đổi UI/input/điều hướng và pilot chưa được nhập vào game. Không push/phát hành.
+| Module | Plan | Status |
+|--------|------|--------|
+| M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Thiết kế xong |
+| M02 State | [02-state.md](superpowers/plans/rebuild/02-state.md) | Thiết kế xong |
+| M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Thiết kế xong |
+| M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Thiết kế xong |
+| M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Thiết kế xong |
+| M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Thiết kế xong |
+| M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Thiết kế xong |
+| M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Thiết kế xong |
+| M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Thiết kế xong |
+| M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Thiết kế xong |
 
-## Dọn artefact cũ — 2026-10-01
+### Tiến độ implement
 
-- Xóa `settings_ui_spec.md` đã hoàn tất triển khai và báo cáo Word “Vườn Mèo” sai chủ đề hiện hành; cả hai không còn tham chiếu và khôi phục được từ revision `e2c5384`.
-- Xóa script capture/generate dùng một lần, ảnh vòng thử không được tham chiếu, pilot nháp, gói cài GitHub CLI cũ và log verification trung gian. Giữ ba bộ ảnh được STATUS trỏ tới, chín log evidence liên quan, `latest.txt`, `.codegraph` và cấu hình local `.claude`.
-- `git credential.helper` hiện lấy `manager` từ Git hệ thống, không còn trỏ vào `scratch/github-cli-msi`; vì vậy thư mục giải nén và hai gói tải trùng đã được bỏ. Chưa kiểm push hoặc thay đổi remote.
-- Lượt này chỉ xóa tài liệu/artefact không dùng, không đổi runtime, input hoặc điều hướng; kiểm diff, liên kết và trạng thái Git thay cho chạy game.
+Chưa bắt đầu. 10 module plans thiết kế xong, sẵn sàng implement theo parallel waves.
 
-## README và publish repository — 2026-09-29
+```
+Wave 1: M01 + M05           (song song)
+Wave 2: M02 + M03 + M04     (song song, cần Wave 1)
+Wave 3: M06 + M07           (song song, cần Wave 2)
+Wave 4: M08                 (cần Wave 1-3)
+Wave 5: M09                 (integration)
+Wave 6: M10                 (content generation)
+```
 
-- Viết lại README: giới thiệu CanDoKu, luật/thao tác, phân biệt client bốn level với thiết kế 24 level, cách chạy/kiểm thử và hai tài liệu nền suy luận/sinh level. Không đổi code, asset hoặc luật.
-- Chủ dự án chọn tài khoản `TDKhoa2712`, public và xác nhận tên repo giống project: `ASOL-Game-02`, không phải tên game CanDoKu. Device login thành công đúng tài khoản; đã tạo repo public và cấu hình `origin` tới `https://github.com/TDKhoa2712/ASOL-Game-02.git`. Đã push riêng `dev` và thiết lập upstream `origin/dev`; không push nhánh lịch sử/task/tag hoặc tạo release. Lịch sử ancestor của dev đi cùng push, không rewrite lịch sử.
-- Kiểm publish: `gh repo view ... --json nameWithOwner,visibility,url,defaultBranchRef` trả đúng `TDKhoa2712/ASOL-Game-02`, `PUBLIC`, nhánh mặc định `dev`. `git ls-remote origin refs/heads/dev` và `git rev-parse HEAD` cùng `f072e80c8c5ed9e6cb899a11e8256717fd5a88f8` trước cập nhật STATUS cuối. Cập nhật cuối chỉ là tài liệu và được commit/push riêng; không đổi runtime.
-- Chuẩn bị CLI tại thời điểm publish: Winget chờ tải đã dừng; MSI ký hợp lệ bởi GitHub tải được nhưng cài hệ thống lỗi 1603, nên từng giải nén vào `scratch/github-cli-msi/`. Đến 2026-10-01, Git dùng credential helper `manager` từ cài đặt hệ thống và không còn tham chiếu thư mục này; bản giải nén cùng gói tải cũ đã được dọn. Không ghi token vào tài liệu.
-- Kiểm trên nền `b99218d`, diff README/STATUS: `rtk git diff --check` PASS; PowerShell kiểm 14 liên kết README, không thiếu đích. README Git blob `2708f64b14298ab9f0d909418a03bc0bee173dfa`, được bảo toàn trong `745026e`. Quét lịch sử `dev` bằng `git log -G` không thấy mẫu GitHub token/private key; quét tên file `.env`, credentials, keystore/JKS/PEM không có kết quả. Đây là kiểm có giới hạn, không chứng nhận toàn bộ lịch sử không có thông tin nhạy cảm.
-- Giữ các import có sẵn ngoài commit (bảy PNG ban đầu; ba SVG import xuất hiện thêm trong lúc làm được giữ nguyên). Lượt này chỉ sửa tài liệu, không chạy lại game/full suite (0 lượt); không có regression code mở lại hoặc hành trình GUI được kiểm thêm. Kết quả code tại `93bc627` ở mục bên dưới không phải chứng nhận R1 đã nghiệm thu. Thời gian chờ tập trung ở sandbox và chuẩn bị CLI/xác thực.
+## Baseline
 
-## Dọn và tích hợp CanDoKu — 2026-09-29
+- Client R1: campaign 4 level trên dev branch
+- Reference: `extracted_reusable/` (~224 files)
+- Tag bảo toàn: `pre-reset-pipeline-2026-09-27`
 
-- Đã xóa 10 ảnh cũ và 10 import tương ứng sau kiểm không còn tham chiếu: atlas bitmap, bốn ảnh mèo/cá trên Board, avatar/logo Home và ba icon tiền/leaderboard/timer. Bản tracked khôi phục được từ revision nền. Xóa hai spec UI cũ theo trạng thái checkout người dùng; sửa chú thích trỏ tới spec đã bỏ. Bỏ các khối Home tiền/daily, avatar không có hành động, cấu hình leaderboard và theme JSON không có consumer. Giữ icon nút hiện hành, SVG, fixture, validator, migration và test.
-- Trước tích hợp: **17/17 Godot suite, 8/8 Python game, 23/23 Python GDD, 7/7 runner, hai validator PASS**; [log](../scratch/verification/20260929T032029.887573Z.txt), exit 0, 8,80 giây, source SHA256 `a0b082fd8d53f4776a4d6cccd012d58b6cc2ff855339a68aef1182405014dffd`. Log ghi nền và diff thực tế; tài liệu trạng thái cập nhật sau kiểm, runtime không đổi.
-- Capture GPU từ bootstrap với profile runtime riêng đã chạy lại Home/Settings/Puzzle/Win/Fail; đã xem Home sau dọn, không mất tên hoặc các nút hiện hành. Ảnh ở `scratch/candoku-ui/`. Gesture cửa sổ thật/Android/iOS chưa kiểm; giới hạn Computer Use như mục dưới. Không báo nghiệm thu R1.
-- Bảy thay đổi import icon đang dùng của người dùng được giữ ngoài commit và mang theo checkout `dev`. Không push/phát hành.
-- Sau merge trên `dev` tại `93bc627`: full runner **PASS**, exit 0, 8,05 giây; [log tích hợp](../scratch/verification/20260929T032353.149784Z.txt) ghi revision và working diff bảy import được giữ. 17 suite Godot, ba nhóm Python và hai validator đều PASS. Hai full run cho lượt dọn/tích hợp; không có regression mở lại. Thời gian chờ chủ yếu do shell sandbox lỗi khởi tạo và cấp quyền; không giảm QA. Cập nhật STATUS sau log chỉ là văn bản.
+## Blockers
 
-## CanDoKu — chuyển đồng bộ GDD và client (trước lượt dọn)
-
-- RST-008: hợp đồng hiện hành dùng `candy`, `TryCandy`, `try_candy`, `CandyFound`, `sourceCandy`, `tutorialCandyCell`; đồng bộ solver, Hint, tutorial, vector và validator. Token cũ chỉ còn ở converter save v2/test compatibility, không có alias API cũ. Session v3 giữ tim, lỗi, Hint, thời gian, level/hash; đường dẫn profile Windows giữ nguyên. Level v4/progress v2 không đổi.
-- App/export/Home dùng CanDoKu, hình kẹo/tim SVG gốc thay tài nguyên chủ đề cũ trong runtime/probe. Ảnh nguồn cũ và 11 sửa `.png.import` có sẵn được bảo toàn. Hai spec UI được tinh gọn theo GDD; công cụ báo cáo đọc GDD trực tiếp, kiểm cú pháp PASS, chưa tạo Word. Bỏ generator bitmap probe vì SVG là nguồn chỉnh trực tiếp; có thể khôi phục generator từ revision nền.
-- **17/17 suite Godot, 8/8 Python game, 23/23 Python GDD, 7/7 Python runner, hai validator PASS.** Lệnh `rtk python -B tools/verify.py --godot <Godot 4.7.2>`; [log cuối](../scratch/verification/20260929T022900.292660Z.txt), exit 0, 7,78 giây. Revision nền như trên, source SHA256 `cd8db33aa16fd5cecade855d453eccc26854f8ef39b77dfeb0a198fce0fd6fb6`; log ghi working diff thực tế. Tài liệu bàn giao cập nhật sau log, runtime không đổi.
-- Regression API/migration và tên Home đã thấy RED rồi GREEN. Ba full run: lượt đầu timeout do SVG probe chưa import; lượt hai lỗi so sánh Dictionary int/float trong test; lượt cuối PASS sau kiểm file bằng so sánh chuỗi byte chính xác. Probe riêng PASS sau import. Không bỏ test.
-- Render Vulkan Mobile/GPU từ bootstrap thật với profile runtime cô lập: Home → Settings → Back → Puzzle → Settings → Back → Win → màn tiếp → Fail. Đã xem [Home](../scratch/candoku-ui/home.png), [Puzzle](../scratch/candoku-ui/puzzle.png), Settings và Result. Đây là capture harness phát signal/action, **không phải kiểm gesture bằng thao tác cửa sổ thật**. Computer Use lỗi `helper_unknown_error: setup refresh had errors`, reset/thử lại vẫn lỗi; không retry khi môi trường chưa đổi. Android/iOS NOT RUN.
-- Tài liệu: 11 file GDD, 37 link cục bộ không thiếu đích, bảy khối JSON parse thành công; quét nguồn hiện hành không còn thuật ngữ cũ ngoài compatibility. `git diff --check` PASS. Các hash/số liệu bên dưới là lịch sử theo ngày, không dùng để chứng nhận build mới.
-
-Chưa nghiệm thu R1 hoàn chỉnh hoặc phát hành: cần kiểm gesture thật và trọn hành trình bốn level. Campaign playtest 30 màn, gate tương ứng, rating hiệu chỉnh bằng người chơi và profile order 25–30 vẫn chưa triển khai; generator mới ở mức pilot offline cho order 2–24.
-
-## Lịch sử: tài liệu nền suy luận và sinh level — 2026-09-28
-
-- Đã mở rộng [GDD 10](../GDD/10-nghien-cuu-quy-tac-suy-luan.md) thành mô hình/rules/chứng minh/Hint đầy đủ hơn, gồm kỹ thuật nâng cao có ranh giới hỗ trợ rõ; thêm [GDD 11 mới](../GDD/11-sinh-level-va-danh-gia-do-kho.md) về profile/seed, tạo vùng/givens, uniqueness, trace, difficulty vector, rating thử nghiệm, chống trùng, playtest và mẫu giao AI tạo ứng viên. Xem RST-007.
-- Kiểm tài liệu: `rtk git diff --check` exit 0; đọc lại và quét 36 liên kết cục bộ trong sáu tài liệu liên quan, không đích thiếu; parse ba khối JSON mẫu thành công. Kiểm độc lập bằng JavaScript duyệt hoán vị S301: đúng một nghiệm [1,3,0,2], không single ban đầu, một bước S3 và bốn S2 đều đúng, giải đủ bốn viên. Hai ví dụ rating cho kết quả 23 và 10 như văn bản.
-- Fingerprint nội dung qua `rtk git hash-object GDD/10-nghien-cuu-quy-tac-suy-luan.md GDD/11-sinh-level-va-danh-gia-do-kho.md`: GDD 10 = `06172790896bc574785dcf25182efcfb9617080d`; GDD 11 = `4889f0ca4fb7fdeec96ff5a8e997fd0da78e0bd5`. File 11 mới chưa tracked; chưa commit/merge/push. Fingerprint ở mục GDD 0.6.0 bên dưới là bằng chứng vòng sửa trước, không dùng thay fingerprint mới.
-- Giới hạn: chưa triển khai generator/rating engine/luật mở rộng, chưa sinh campaign hoặc hiệu chỉnh difficulty với người thật. Không sửa code/data/assets; giữ thay đổi có sẵn. Full suite 0 lượt, GUI/device NOT_RUN vì chỉ sửa tài liệu.
-
-## Lịch sử: đợt tài liệu GDD CanDoKu 0.6.0
-
-- Đã viết lại tầm nhìn, hướng hình ảnh kẹo/giỏ/vườn, thống nhất luật/UX/level/kỹ thuật/suy luận và bổ sung QA chuyển chủ đề, tương thích save. Xem [GDD](../GDD/README.md), [rà soát](../GDD/09-ra-soat-thiet-ke.md) và RST-006 trong [DECISIONS](DECISIONS.md).
-- Đã bỏ GDD 08/11/12 không còn nhiệm vụ trong phạm vi hiện hành; giữ fixture/tools/test. Bản cũ bảo toàn trong revision nền, không xóa game assets.
-- Chưa triển khai CanDoKu trong client; tên/asset mèo hiện có không là thiết kế đích. Không đổi token/schema/save hoặc dữ liệu campaign. Các mục lịch sử bên dưới giữ bằng chứng của revision cũ, không chứng nhận CanDoKu đã đạt runtime/GUI.
-- Kiểm chứng tài liệu: `rtk git diff --check` exit 0; quét 39 liên kết cục bộ trong 12 tài liệu GDD/README/DECISIONS, không đích bị thiếu; rà tham chiếu cũ và phạm vi. Fingerprint diff GDD qua `rtk proxy git diff -- GDD | rtk git hash-object --stdin` là `1dcaade7321574e509214a39dfb8eb19224230c5` trên nền nêu trên. Thay đổi `.png.import` có sẵn ngoài phạm vi được giữ nguyên. Không chạy full suite (0 lượt) hoặc game vì chỉ sửa văn bản; GUI/thiết bị CanDoKu chưa kiểm. Shell có lỗi khởi tạo với một số lệnh; lệnh fingerprint chỉ đọc đã chạy qua quyền được cấp. Không commit/merge/push trong đợt này.
-
-## Nền client trước CanDoKu — kết quả lịch sử
-
-- Nhánh `codex/board-ui-restyle` đã tái cấu trúc `game/scripts/board_screen.gd`, `game/scripts/board_view.gd`, bổ sung `game/scripts/ui_tokens.gd`, sinh bộ placeholder assets tại `game/assets/ui/board/` và đồng bộ `game/tests/run_board_scene_smoke.gd`.
-- Kiểm chứng trên nhánh `codex/board-ui-restyle`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 7,97s; log tại `scratch/verification/20260928T144437.830205Z.txt`.
-- Đã xuất ảnh chụp màn hình kiểm chứng tại `scratch/board_restyle_verify/` bao gồm:
-  - `puzzle.png`: Bố cục ban đầu màn 1 (4x4).
-  - `gameplay_active.png`: Trạng thái đang chơi (đặt mèo, đánh dấu X, nút hoàn tác kích hoạt, đầu mèo tiến độ sáng).
-  - `board_6x6_l03.png`: Bố cục màn 3 (6x6) hiển thị 6 đầu mèo tiến độ và lưới 6x6.
-  - `result_win.png` & `result_fail.png`: Các màn hình kết thúc.
-- `dev` giữ mốc `2a9cc5a` đã tích hợp Home UI. `main` giữ mốc hiện có, không mặc định là bản phát hành.
-
-## Làm sạch Git/project
-
-Nhánh `codex/git-project-cleanup` có mốc code và ignore sạch tại `607d872` (`3047ef9` bảo toàn màu vùng F, `607d872` ignore thư mục đính kèm Codex). Đã xóa năm nhánh local cũ đã nằm trọn trong `dev`; giữ `dev`, `main` và nhánh cleanup hiện hành. `git fsck --no-dangling` không báo lỗi; repository không có remote nên không push.
-
-Đã gỡ build Android/toolchain cũ, cache Godot/Python, thư mục đính kèm, hai config sai tên, bản nháp AGENTS lỗi mã hóa, ảnh nháp trùng, script dùng một lần và log verification cũ không còn cần; giải phóng khoảng 242 MB. Giữ `.codegraph/`, `.claude/settings.local.json`, ảnh UI cuối và các log đang được STATUS tham chiếu. Working tree không còn file tracked/untracked tồn đọng.
-
-Kiểm chứng trên `607d872`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 7,53 giây; [log](../scratch/verification/20260928T084349.521716Z.txt) ghi source SHA256 `0362557a397af1b26fe5ffac56e9157a9a0708f60f857a4b772cb231c2b8916f` và working tree sạch. Có hai full run (baseline và sau cleanup), không có regression mở lại, không có thời gian chờ; khoảng 10 phút từ khảo sát đến nghiệm thu. Không chạy GUI vì đợt này không đổi UI/input/điều hướng.
-
-## Kết quả pipeline
-
-Đã rút gọn AGENTS/README/CONTRIBUTING và thống nhất hướng dẫn trong AGENTS. Đã thay bộ quản trị cũ bằng `tools/verify.py`; gỡ hồ sơ tracked đã được tag bảo toàn, sửa link lịch sử. Không sửa gameplay hoặc cấu hình Codex toàn máy.
-
-Kiểm chứng cải tổ ngày 2026-09-27, Godot `4.7.2.stable.official.ed1daf0bf`: **15/15 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối 8,16 giây. [Bằng chứng pipeline](evidence/pipeline/2026-09-27-verification.txt) ghi revision `8f2876d` + diff cải tổ và sửa sẵn được nêu trong log. GUI/device: NOT RUN trong đợt pipeline.
-
-Tự review phát hiện và sửa hai tình huống runner báo đạt sai (lỗi đọc metadata sau test, discovery có 0 test); regression đã thấy FAIL rồi PASS. Không giảm/bỏ suite. Tổng hai lượt full run; lượt thứ hai cần thiết sau sửa runner. Chưa có baseline thời gian làm/chờ pipeline cũ để tính mức tăng tốc. Ba mục tiêu tiếp theo đo thêm thời gian làm/chờ và regression mở lại theo AGENTS.
-
-## R1 — đối chiếu việc kỹ thuật còn giá trị
-
-Khảo sát cũ ở `1600898` được giữ trong tag; các dòng sau phân biệt bản sửa đã có với phần chưa nghiệm thu. [Nhật ký R1](plans/R1-progress.md) là bằng chứng lịch sử, không phải trạng thái hiện hành.
-
-R1-E hiện tại, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run sau tích hợp trên `dev` 7,59 giây; [log](../scratch/verification/20260928T052302.150584Z.txt) ghi revision `a1e8a9f`, working diff và fingerprint nguồn. Regression `run_settings_tests.gd` đã tái hiện FAIL rồi PASS: store cô lập, signal toggle thật, persistence, Back route, chữ lớn và tương phản trên board. GUI desktop từ entry scene đã kiểm Home → Settings → Back, Home → Puzzle → Settings → Back, bật/tắt Large Text, chạm/đánh X và chạm lại/xóa X; chưa chạy trọn bốn level hoặc Android.
-
-UI tham chiếu đầu tại `c1ebc9d`, Godot `4.7.2.stable.official.ed1daf0bf`: **16/16 suite Godot, 8/8 Python game, 23/23 GDD, 7/7 runner PASS; hai validator PASS**. Full run cuối sau fast-forward trên `dev` 7,80 giây; [log](../scratch/verification/20260928T082752.922347Z.txt) ghi revision `c1ebc9d`, source SHA256 `1d0c2c0fd5fb0a2e1f4f4cb9a6260eb671e9f040a9df9c5be620e36743864e7f` và working diff ngoài phạm vi được giữ nguyên. Regression UI đã thấy FAIL rồi PASS cho backdrop/thẻ Home, modal Settings, card layout Board và supporting copy trong HeroCard.
-
-GUI desktop đã render bằng GPU từ entry scene thật ở viewport logic 1080×1920: Home → Settings → Back, Home → Puzzle → Settings → Back, sau đó Win/Fail trong capture harness. Đã quan sát Home có khoảng trắng, card nổi và nút bo tròn; Board giữ đủ luật/bảng/toolbar không cắt; Settings là modal kem có dimmer, năm toggle và Back hoạt động. Ảnh kiểm tại `scratch/ui-reference-style-final/`; chưa kiểm thiết bị Android, safe area có tai thỏ/thanh điều hướng thật hoặc toàn bộ bốn level.
-
-Mục tiêu sau cải tổ #2: khoảng 20 phút từ regression RED đầu đến full run tích hợp; bốn full run do một regression HeroCard mở lại sau commit trung gian; không có thời gian chờ nội bộ. Nhánh task được fast-forward, không có merge commit; không push/phát hành.
-
-Mục tiêu sau cải tổ #1: khoảng 5 phút từ patch regression đầu đến full run đầu; bốn full run tổng cộng (hai vòng implementation/self-review, một trước và một sau tích hợp); một regression được mở lại; không có thời gian chờ nội bộ, Android vẫn chờ thiết bị.
-
-| Vấn đề cũ | Trạng thái và bước tiếp |
-| --- | --- |
-| Flow/runtime cùng giữ tiến trình; Win → Home → Play lệch level | R1 đã đưa tiến trình về runtime, integration PASS; còn kiểm hành trình bằng GUI/Android |
-| Save lỗi IO nhưng vẫn thắng/xóa session | Có save-failure/recovery regression PASS; kiểm đóng/mở/background trên thiết bị |
-| Resume trạng thái thua/cuối campaign | Có playable-flow PASS; replay từ L01 theo RST-003, không tự đổi luật hoàn thành |
-| Tutorial chưa nối thao tác/target/miễn phạt | Integration PASS; thử gesture thật; RST-004 bỏ glow và gọi tọa độ |
-| Help/Settings placeholder | Help đã có đường đi trong integration; Settings **(R1-E)** có store cô lập, năm toggle, persistence và Back route; Large Text/High Contrast áp dụng trên board, test và GUI desktop PASS. Audio/haptic/reduced motion và accessibility hoàn chỉnh thuộc R3 theo ROADMAP |
-| Toolbar/Result bị cắt hoặc khó đọc | Board/UI smoke PASS; GUI desktop 433×798 với Large Text đã quan sát không chặn thao tác trong hành trình Settings/Puzzle. Chưa thay thế nghiệm thu trọn campaign hoặc thiết bị |
-| Test dùng profile người chơi / lifecycle giả | Bootstrap-profile PASS; tiếp tục giữ profile cô lập |
-
-## Blocker và phối hợp
-
-| Việc / tác động | Người xử lý | Hành động tiếp và điều kiện thử lại |
-| --- | --- | --- |
-| Sandbox shell lỗi khởi tạo trong phiên này | Agent dùng cơ chế quyền hiện có; chủ dự án xử lý môi trường ứng dụng nếu cần | Lệnh ngoài sandbox đã chạy; không tiếp tục thăm dò cùng lỗi. Khi môi trường đổi mới kiểm lại sandbox. Lỗi GUI cũ chưa được kiểm lại trong đợt pipeline |
-| R1 chưa có đủ hành trình GUI/gesture trên build được chốt | Agent | Đã kiểm Settings, Back route và tap/xóa X từ entry scene desktop; tiếp tục fresh → bốn level, Fail/Retry, Home/resume và cuối campaign trên revision bàn giao |
-| Android QA chưa đủ; lần kiểm 2026-09-25 chưa có thiết bị ADB | Chủ dự án + agent | Chủ dự án kết nối/ủy quyền thiết bị hoặc nhận build để thử; agent chuẩn bị fresh/resume/Win/Fail/retry/cuối campaign, ghi model/OS/build/kết quả. Chỉ kiểm lại ADB khi thiết bị sẵn sàng |
-| Nguồn lực iOS và người thử R2 | Chủ dự án | Xác nhận iPhone/Mac/signing trước R4 và người thử trước R2; không chặn công việc R1 độc lập |
-
-Bước tiếp theo: agent kiểm gesture thật và nghiệm thu hành trình R1 trên CanDoKu khi GUI/thiết bị sẵn sàng; chủ dự án phối hợp môi trường desktop/Android/iOS và remote. Chỉ thử lại Computer Use khi lỗi khởi tạo môi trường đã được xử lý. Không tuyên bố R1 hoàn thành hoặc đủ điều kiện phát hành từ headless và ảnh capture.
+Không có blocker. Sẵn sàng implement.
