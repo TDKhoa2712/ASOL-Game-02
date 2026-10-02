@@ -146,7 +146,7 @@ const MAX_UNDO_DEPTH := 100
 
 ## Checklist thực hiện
 
-- [ ] Tạo thư mục `game/scripts/theme/`
-- [ ] Viết `palette.gd` — including GIVEN/LOCKED state colors
-- [ ] Viết `layout_tokens.gd` — including auto-mark animation timing
-- [ ] Commit: `feat(theme): add visual design tokens and palette with GIVEN/LOCKED states`
+- [x] Tạo thư mục `game/scripts/theme/`
+- [x] Viết `palette.gd` — including GIVEN/LOCKED state colors
+- [x] Viết `layout_tokens.gd` — including auto-mark animation timing
+- [x] Commit: `feat(theme): add visual design tokens and palette with GIVEN/LOCKED states`

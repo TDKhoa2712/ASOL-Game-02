@@ -517,12 +517,12 @@ func _assert(condition: bool, label: String) -> void:
 
 ## Checklist thực hiện
 
-- [ ] Tạo thư mục `game/scripts/core/`
-- [ ] Viết `cell_model.gd` — CellKind enum (6 states) + helpers
-- [ ] Viết test `test_candy_rules.gd` (fail trước)
-- [ ] Viết `candy_rules.gd` — solution-based TryCandy, detect_clash (giải thích), auto_marks, can_place, verify_level. Board = 2D Array.
-- [ ] Chạy test → pass
-- [ ] Viết test `test_board_solver.gd` (fail trước)
-- [ ] Viết `board_solver.gd` — solve loop (S1→S2→S3→repeat), next_hint, progressive_hint, compute_cell_ranks (NxN Array), S3 4 sub-modes
-- [ ] Chạy test → pass
-- [ ] Commit: `feat(m01): add puzzle rules with auto-mark and progressive hint solver`
+- [x] Tạo thư mục `game/scripts/core/`
+- [x] Viết `cell_model.gd` — CellKind enum (6 states) + helpers
+- [x] Viết test `test_candy_rules.gd` (fail trước)
+- [x] Viết `candy_rules.gd` — solution-based TryCandy, detect_clash (giải thích), auto_marks, can_place, verify_level. Board = 2D Array.
+- [x] Chạy test → pass
+- [x] Viết test `test_board_solver.gd` (fail trước)
+- [x] Viết `board_solver.gd` — solve loop (S1→S2→S3→repeat), next_hint, progressive_hint, compute_cell_ranks (NxN Array), S3 4 sub-modes
+- [x] Chạy test → pass
+- [x] Commit: `feat(m01): add puzzle rules with auto-mark and progressive hint solver`

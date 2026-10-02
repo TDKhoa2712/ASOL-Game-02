@@ -339,7 +339,7 @@ func _clear_active(clear_preview: bool = true) -> void:
 
 
 func _double_tap_window_ms() -> int:
-	return int(contract.get("doubleTapWindowMs", 280))
+	return int(contract.get("doubleTapWindowMs", 350))
 
 
 func _touch_slop() -> float:

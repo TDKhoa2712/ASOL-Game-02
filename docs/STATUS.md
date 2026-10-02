@@ -11,11 +11,11 @@
 
 | Module | Plan | Status |
 |--------|------|--------|
-| M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Thiết kế xong |
+| M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Hoàn tất (PR #1 merged) |
 | M02 State | [02-state.md](superpowers/plans/rebuild/02-state.md) | Thiết kế xong |
 | M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Thiết kế xong |
 | M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Thiết kế xong |
-| M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Thiết kế xong |
+| M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (PR #2 đang mở) |
 | M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Thiết kế xong |
 | M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Thiết kế xong |
 | M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Thiết kế xong |
@@ -24,12 +24,15 @@
 
 ### Tiến độ implement
 
-Chưa bắt đầu. 10 module plans thiết kế xong, sẵn sàng implement theo parallel waves.
+**Wave 1 (M01 Core + M05 Theme):** M01 đã merge; M05 đã qua gate, PR #2 đang mở và chờ merge vào `dev`.
+- **M01 Core:** Hoàn tất trên nhánh `feat/m01-core`, đã merge vào `dev` qua PR #1 (commit `6204da9`). Triển khai `cell_model.gd`, `candy_rules.gd`, `board_solver.gd`, test suite `test_candy_rules.gd` và `test_board_solver.gd`. Pass toàn bộ gate checks và clean-room checks.
+- **M05 Theme:** Triển khai `palette.gd` và `layout_tokens.gd` trên `feat/m05-theme` với đầy đủ trạng thái `GIVEN`/`LOCKED` và animation tokens. Godot `--check-only` cho cả hai file exit 0; clean-room và kiểm tra import `extracted_reusable` không có match. Full gate `rtk python -B tools/verify.py --godot <executable>` PASS tại revision `b17896b` (log `scratch/verification/20261002T082451.027046Z.txt`). Sau khi M01 merge, commit `b17896b` đã đồng bộ fixture cử chỉ 350 ms và test discovery để khôi phục full gate. M05 không có test riêng; tích hợp giao diện thuộc M08.
+- **Sẵn sàng cho Wave 2:** Sau khi merge `feat/m05-theme`, Wave 2 (M02 State, M03 Content, M04 Input) có thể chạy song song.
 
 ```
-Wave 1: M01 + M05           (song song)
-Wave 2: M02 + M03 + M04     (song song, cần Wave 1)
-Wave 3: M06 + M07           (song song, cần Wave 2)
+Wave 1: M01 + M05           (M01 đã merge; M05 ở PR #2)
+Wave 2: M02 + M03 + M04     (chờ M05 merge)
+Wave 3: M06 + M07           (cần Wave 2)
 Wave 4: M08                 (cần Wave 1-3)
 Wave 5: M09                 (integration)
 Wave 6: M10                 (content generation)
@@ -43,4 +46,4 @@ Wave 6: M10                 (content generation)
 
 ## Blockers
 
-Không có blocker. Sẵn sàng implement.
+Không có blocker kỹ thuật. Wave 2 chờ PR M05 được review và merge vào `dev`.
