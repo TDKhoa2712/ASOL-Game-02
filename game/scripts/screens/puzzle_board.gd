@@ -9,14 +9,13 @@ const TouchDecoder = preload("res://scripts/input/touch_decoder.gd")
 
 signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
+signal cell_swiped(cells: Array)
 
 var _session: Variant = null
 var _zone_grid: Array = []
 var _zone_colors: Dictionary = {}
 var _decoder: TouchDecoder = null
 var _candy_tex: Texture2D = null
-var _lock_anim_cells: Array = []
-var _lock_anim_progress: float = 1.0
 var _highlight_cells: Array = []
 var _highlight_unit: String = ""
 
@@ -31,10 +30,9 @@ func configure(session: Variant) -> void:
 	_decoder = TouchDecoder.new()
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
+	_decoder.cell_swiped.connect(func(cells: Array): cell_swiped.emit(cells))
 	_highlight_cells = []
 	_highlight_unit = ""
-	_lock_anim_cells = []
-	_lock_anim_progress = 1.0
 	queue_redraw()
 
 func redraw() -> void:
@@ -60,26 +58,16 @@ func clear_highlight() -> void:
 	_highlight_unit = ""
 	queue_redraw()
 
-func animate_locks(cells: Array) -> void:
-	_lock_anim_cells = cells.duplicate()
-	_lock_anim_progress = 0.0
-	queue_redraw()
-
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	custom_minimum_size = Vector2(280, 280)
+	custom_minimum_size = Vector2(760, 760)
 	var candy_path := "res://assets/ui/board/candy.svg"
 	if ResourceLoader.exists(candy_path):
 		_candy_tex = load(candy_path) as Texture2D
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if _decoder != null:
 		_decoder.tick(Time.get_ticks_msec())
-	if _lock_anim_progress < 1.0:
-		_lock_anim_progress = minf(_lock_anim_progress + delta / (float(LayoutTokens.LOCK_FADE_MS) / 1000.0), 1.0)
-		queue_redraw()
-		if _lock_anim_progress >= 1.0:
-			_lock_anim_cells = []
 
 func _gui_input(event: InputEvent) -> void:
 	if _session == null or _decoder == null or _session.phase != 0:
@@ -190,19 +178,13 @@ func _draw() -> void:
 
 			match kind:
 				CellModel.CellKind.MARK:
-					_draw_cell_x(cell_rect, false, false)
+					_draw_cell_x(cell_rect, false)
 				CellModel.CellKind.CANDY:
 					_draw_cell_candy(cell_rect, false)
-				CellModel.CellKind.WRONG:
-					_draw_cell_x(cell_rect, true, false)
+				CellModel.CellKind.ERROR:
+					_draw_cell_x(cell_rect, true)
 				CellModel.CellKind.GIVEN:
 					_draw_cell_candy(cell_rect, true)
-				CellModel.CellKind.LOCKED:
-					var a := 1.0
-					if _lock_anim_cells.has([r, c]):
-						a = _lock_anim_progress
-					_draw_lock_overlay(cell_rect, a)
-					_draw_cell_x(cell_rect, false, true, a)
 
 			if _highlight_cells.has([r, c]):
 				var hl_sb := StyleBoxFlat.new()
@@ -230,14 +212,8 @@ func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
 			var hl_center := center - Vector2(rad * 0.3, rad * 0.3)
 			draw_circle(hl_center, rad * 0.22, Palette.CANDY_LIGHT)
 
-func _draw_cell_x(rect: Rect2, is_wrong: bool, is_locked: bool, alpha: float = 1.0) -> void:
-	var stroke_col: Color
-	if is_wrong:
-		stroke_col = Palette.ERROR_RED
-	elif is_locked:
-		stroke_col = Color(Palette.LOCKED_X_COLOR.r, Palette.LOCKED_X_COLOR.g, Palette.LOCKED_X_COLOR.b, Palette.LOCKED_X_ALPHA * alpha)
-	else:
-		stroke_col = Palette.MARK_WHITE
+func _draw_cell_x(rect: Rect2, is_error: bool) -> void:
+	var stroke_col: Color = Palette.ERROR_RED if is_error else Palette.MARK_WHITE
 	var pad := rect.size.x * 0.28
 	var w := maxf(2.5, rect.size.x * 0.08)
 	var p1 := rect.position + Vector2(pad, pad)
@@ -246,10 +222,3 @@ func _draw_cell_x(rect: Rect2, is_wrong: bool, is_locked: bool, alpha: float = 1
 	var p4 := Vector2(rect.position.x + pad, rect.end.y - pad)
 	draw_line(p1, p2, stroke_col, w)
 	draw_line(p3, p4, stroke_col, w)
-
-func _draw_lock_overlay(rect: Rect2, alpha: float) -> void:
-	var ov_col := Color(Palette.LOCKED_OVERLAY.r, Palette.LOCKED_OVERLAY.g, Palette.LOCKED_OVERLAY.b, Palette.LOCKED_OVERLAY.a * alpha)
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = ov_col
-	sb.set_corner_radius_all(int(rect.size.x * LayoutTokens.CELL_CORNER_RATIO))
-	draw_style_box(sb, rect)

@@ -3,11 +3,14 @@ extends Control
 
 signal go_home()
 signal level_done(won: bool)
+signal options_pressed()
 
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const BoardSolver = preload("res://scripts/core/board_solver.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
+const CellModel = preload("res://scripts/core/cell_model.gd")
+const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 
 var runtime: Variant = null
 var sfx: Variant = null
@@ -17,26 +20,29 @@ var _hint_click_count: int = 0
 var board: PuzzleBoard
 var hearts_display: Control
 var hint_btn: Button
-var undo_btn: Button
 var restart_btn: Button
 var home_btn: Button
 var timer_label: Label
+var level_label: Label
+var help_btn: Button
+var settings_btn: Button
+var region_display: HBoxContainer
+var rules_card: PanelContainer
 
 func _ensure_nodes() -> void:
-	if board == null:
-		board = get_node_or_null("Board") as PuzzleBoard
-	if hearts_display == null:
-		hearts_display = get_node_or_null("Toolbar/Hearts") as Control
-	if hint_btn == null:
-		hint_btn = get_node_or_null("Toolbar/HintBtn") as Button
-	if undo_btn == null:
-		undo_btn = get_node_or_null("Toolbar/UndoBtn") as Button
-	if restart_btn == null:
-		restart_btn = get_node_or_null("Toolbar/RestartBtn") as Button
-	if home_btn == null:
-		home_btn = get_node_or_null("Toolbar/HomeBtn") as Button
-	if timer_label == null:
-		timer_label = get_node_or_null("Toolbar/Timer") as Label
+	if board != null:
+		return
+	var nodes: Dictionary = PuzzleLayout.build(self)
+	board = nodes["board"]
+	hearts_display = nodes["lives"]
+	region_display = nodes["regions"]
+	hint_btn = nodes["hint"]
+	restart_btn = nodes["restart"]
+	home_btn = nodes["back"]
+	help_btn = nodes["help"]
+	settings_btn = nodes["settings"]
+	level_label = nodes["level"]
+	rules_card = nodes["rules"]
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -46,17 +52,21 @@ func _connect_ui() -> void:
 	_ensure_nodes()
 	if hint_btn != null and not hint_btn.pressed.is_connected(_on_hint):
 		hint_btn.pressed.connect(_on_hint)
-	if undo_btn != null and not undo_btn.pressed.is_connected(_on_undo):
-		undo_btn.pressed.connect(_on_undo)
 	if restart_btn != null and not restart_btn.pressed.is_connected(_on_restart):
 		restart_btn.pressed.connect(_on_restart)
 	if home_btn != null and not home_btn.pressed.is_connected(_on_home):
 		home_btn.pressed.connect(_on_home)
+	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
+		help_btn.pressed.connect(_on_help)
+	if settings_btn != null and not settings_btn.pressed.is_connected(_on_settings):
+		settings_btn.pressed.connect(_on_settings)
 	if board != null:
 		if not board.cell_tapped.is_connected(_on_board_tap):
 			board.cell_tapped.connect(_on_board_tap)
 		if not board.cell_double_tapped.is_connected(_on_board_double_tap):
 			board.cell_double_tapped.connect(_on_board_double_tap)
+		if not board.cell_swiped.is_connected(_on_board_swipe):
+			board.cell_swiped.connect(_on_board_swipe)
 
 func setup(rt: Variant, sfx_player: Variant) -> void:
 	runtime = rt
@@ -75,6 +85,8 @@ func setup(rt: Variant, sfx_player: Variant) -> void:
 	_connect_session()
 	_connect_ui()
 	_update_hearts()
+	if level_label != null and session != null:
+		level_label.text = str(session.level.get("id", runtime.current_level_label()))
 	_update_timer(0.0)
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.BOARD_OPEN)
@@ -86,8 +98,6 @@ func _connect_session() -> void:
 		session.candy_found.connect(_on_candy_found)
 	if not session.mistake_made.is_connected(_on_mistake):
 		session.mistake_made.connect(_on_mistake)
-	if not session.auto_marked.is_connected(_on_auto_marked):
-		session.auto_marked.connect(_on_auto_marked)
 	if not session.level_won.is_connected(_on_level_won):
 		session.level_won.connect(_on_level_won)
 	if not session.level_failed.is_connected(_on_level_failed):
@@ -115,14 +125,7 @@ func _update_timer(_delta: float) -> void:
 func _update_hearts() -> void:
 	if hearts_display == null or session == null:
 		return
-	if hearts_display is Label:
-		hearts_display.text = "♥ %d" % [session.hearts]
-	else:
-		var count: int = hearts_display.get_child_count()
-		for i in range(count):
-			var child := hearts_display.get_child(i)
-			if child is CanvasItem:
-				child.modulate = Color.WHITE if i < session.hearts else Color(1.0, 1.0, 1.0, 0.25)
+	PuzzleLayout.refresh_status(session, region_display, hearts_display)
 
 func _on_board_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0:
@@ -142,6 +145,32 @@ func _on_board_double_tap(row: int, col: int) -> void:
 	if board != null:
 		board.clear_highlight()
 		board.redraw()
+
+func _on_board_swipe(cells: Array) -> void:
+	if session == null or session.phase != 0 or cells.is_empty():
+		return
+	var first: Array = cells[0]
+	if first.size() < 2:
+		return
+	var first_kind: int = session.cell_at(int(first[0]), int(first[1]))
+	if not CellModel.is_available(first_kind):
+		return
+	var paint_mark: bool = first_kind == CellModel.CellKind.BLANK
+	var changed: bool = false
+	for cell in cells:
+		if not cell is Array or cell.size() < 2:
+			continue
+		var row: int = int(cell[0])
+		var col: int = int(cell[1])
+		var kind: int = session.cell_at(row, col)
+		if (paint_mark and kind == CellModel.CellKind.BLANK) or (not paint_mark and kind == CellModel.CellKind.MARK):
+			session.mark_x(row, col)
+			changed = true
+	if changed:
+		if sfx != null:
+			sfx.play(SfxCatalog.Effect.MARK)
+		if board != null:
+			board.redraw()
 
 func _on_hint() -> void:
 	if session == null or runtime == null:
@@ -166,17 +195,6 @@ func _on_hint() -> void:
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
-func _on_undo() -> void:
-	if session == null or session.phase != 0:
-		return
-	if session.undo():
-		if sfx != null:
-			sfx.play(SfxCatalog.Effect.UNDO)
-		Vibration.pulse(Vibration.Strength.SOFT)
-		if board != null:
-			board.clear_highlight()
-			board.redraw()
-
 func _on_restart() -> void:
 	_hint_click_count = 0
 	if runtime != null:
@@ -193,20 +211,22 @@ func _on_home() -> void:
 		runtime.sessions.save_session(session.to_save_data())
 	go_home.emit()
 
+func _on_help() -> void:
+	if rules_card != null:
+		rules_card.visible = not rules_card.visible
+
+func _on_settings() -> void:
+	options_pressed.emit()
+
 func _on_candy_found(_row: int, _col: int, _region: String) -> void:
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_YES)
 	Vibration.pulse(Vibration.Strength.NORMAL)
 	_hint_click_count = 0
+	_update_hearts()
 	if board != null:
 		board.clear_highlight()
 		board.redraw()
-
-func _on_auto_marked(cells: Array) -> void:
-	if board != null:
-		board.animate_locks(cells)
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.LOCK_CELL)
 
 func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	if sfx != null:

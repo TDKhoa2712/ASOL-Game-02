@@ -2,7 +2,7 @@ extends RefCounted
 
 const DualSlotStore = preload("res://scripts/state/dual_slot_store.gd")
 const SCHEMA_VER := 3
-const CELL_VALUES := ["empty", "x", "candy", "wrong", "locked"]
+const CELL_VALUES := ["empty", "x", "candy", "error", "wrong", "locked"]
 
 var _store: DualSlotStore
 

@@ -7,15 +7,13 @@ var _fails: Array[String] = []
 
 func _init() -> void:
 	_test_cell_model()
-	_test_cell_model_given_locked()
+	_test_cell_model_immutable()
 	_test_detect_clash()
 	_test_can_place()
 	_test_attempt_candy_correct()
 	_test_attempt_candy_wrong()
 	_test_attempt_candy_win()
 	_test_attempt_candy_last_heart()
-	_test_auto_marks()
-	_test_auto_marks_skip_locked()
 	_test_tally()
 	_test_verify_level()
 	if _fails.is_empty():
@@ -32,16 +30,15 @@ func _test_cell_model() -> void:
 	_assert(not CellModel.is_empty(CellModel.CellKind.MARK), "mark not empty")
 	_assert(CellModel.is_placed(CellModel.CellKind.CANDY), "candy is placed")
 	_assert(CellModel.is_placed(CellModel.CellKind.GIVEN), "given is placed")
-	_assert(CellModel.label(CellModel.CellKind.WRONG) == "wrong", "wrong label")
+	_assert(CellModel.label(CellModel.CellKind.ERROR) == "error", "error label")
 
-func _test_cell_model_given_locked() -> void:
+func _test_cell_model_immutable() -> void:
 	_assert(CellModel.is_locked(CellModel.CellKind.GIVEN), "given is locked")
-	_assert(CellModel.is_locked(CellModel.CellKind.LOCKED), "locked is locked")
 	_assert(not CellModel.is_available(CellModel.CellKind.GIVEN), "given not available")
-	_assert(not CellModel.is_available(CellModel.CellKind.LOCKED), "locked not available")
+	_assert(not CellModel.is_available(CellModel.CellKind.ERROR), "error not available")
 	_assert(CellModel.is_available(CellModel.CellKind.BLANK), "blank is available")
 	_assert(CellModel.is_available(CellModel.CellKind.MARK), "mark is available")
-	_assert(CellModel.is_cross(CellModel.CellKind.LOCKED), "locked is cross")
+	_assert(CellModel.is_cross(CellModel.CellKind.ERROR), "error is cross")
 	_assert(CellModel.is_candy(CellModel.CellKind.GIVEN), "given is candy")
 
 func _test_detect_clash() -> void:
@@ -72,7 +69,9 @@ func _test_attempt_candy_correct() -> void:
 	var result := CandyRules.attempt_candy(board, level["regions"], level["solution"], 3, 0, 0, 1)
 	_assert("CandyFound" in str(result["events"]), "correct placement event")
 	_assert(result["phase"] == "active", "still active")
-	_assert(result["auto_marks"].size() > 0, "auto marks generated")
+	_assert(result.keys().size() == 6, "placement has only gameplay fields")
+	_assert(board[0][0] == CellModel.CellKind.BLANK, "same row remains blank")
+	_assert(board[1][1] == CellModel.CellKind.BLANK, "same column remains blank")
 
 func _test_attempt_candy_wrong() -> void:
 	var level := _make_level_4x4()
@@ -82,6 +81,7 @@ func _test_attempt_candy_wrong() -> void:
 	_assert("Mistake" in str(result["events"]), "wrong placement event")
 	_assert(result["hearts"] == 2, "lost a heart")
 	_assert(result["reason"] != "", "has reason")
+	_assert(board[0][0] == CellModel.CellKind.ERROR, "mistake is permanent error")
 
 func _test_attempt_candy_win() -> void:
 	var level := _make_level_4x4()
@@ -97,24 +97,6 @@ func _test_attempt_candy_last_heart() -> void:
 	# solution[0] == 1, placing at (0, 0) is wrong with 1 heart left
 	var result := CandyRules.attempt_candy(board, level["regions"], level["solution"], 1, 2, 0, 0)
 	_assert(result["phase"] == "failed", "game over on last heart")
-
-func _test_auto_marks() -> void:
-	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
-	var board := _empty_board(4)
-	board[0][1] = CellModel.CellKind.CANDY
-	var marks := CandyRules.compute_auto_marks(board, regions, 0, 1)
-	_assert(marks.size() > 0, "auto marks not empty")
-	_assert([0, 0] in marks, "row 0 col 0 marked")
-	_assert([0, 2] in marks, "row 0 col 2 marked")
-	_assert([1, 1] in marks, "same col marked")
-
-func _test_auto_marks_skip_locked() -> void:
-	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
-	var board := _empty_board(4)
-	board[0][0] = CellModel.CellKind.LOCKED
-	board[0][1] = CellModel.CellKind.CANDY
-	var marks := CandyRules.compute_auto_marks(board, regions, 0, 1)
-	_assert([0, 0] not in marks, "already locked cell skipped")
 
 func _test_tally() -> void:
 	_assert(CandyRules.tally(4, 0) == 400, "perfect score")

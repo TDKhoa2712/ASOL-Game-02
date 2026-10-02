@@ -14,6 +14,9 @@ func _init() -> void:
 	var mismatch := store.load_session("L01", "hash2")
 	check(not mismatch.get("ok") and mismatch.get("recreate"), "hash mismatch recreates")
 	check(not store.load_session("L02", "hash1").get("ok"), "wrong level rejected")
+	data["cells"][0] = "error"
+	check(store.save_session(data), "error cell can be persisted")
+	check(store.load_session("L01", "hash1").get("data", {}).get("cells", [])[0] == "error", "error cell restored")
 	data["cells"][0] = "given"
 	check(not store.save_session(data), "given cannot be persisted")
 	store.clear()

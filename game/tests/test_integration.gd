@@ -110,7 +110,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	var win_screen = shell.screen_host.get_child(0)
 	_assert(win_screen != null and win_screen.name == "WinScreen", "screen host holds WinScreen")
 	_assert(shell._last_won_level == "L01", "recorded won level is L01")
-	_assert(win_screen.message_label != null and win_screen.message_label.text.contains("Thành công"), "win screen message shown")
+	_assert(win_screen.message_label != null and win_screen.message_label.text.contains("Hoàn hồi"), "win screen message shown")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next button visible")
 
 	# 3. Press Next on WinScreen to advance to L02

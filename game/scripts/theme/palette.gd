@@ -18,7 +18,16 @@ const ZONE_COLORS: Array[Color] = [
 
 # UI colors.
 const BG_CREAM := Color("#FFFDF5")
+const BOARD_BG := Color("#F8F1EC")
 const BG_PAPER := Color("#F5F0E8")
+const SHADOW_SOFT := Color(0.545, 0.353, 0.290, 0.12)
+const TEXT_STAT := Color("#9B5A52")
+const TEXT_RULE := Color("#A0655C")
+const PILL_BG := Color.WHITE
+const PILL_RADIUS := 28
+const CARD_CORNER := 24
+const BOARD_CARD_CORNER := 32
+const CARD_SHADOW := Color(0.545, 0.353, 0.290, 0.15)
 const INK := Color("#344054")
 const INK_LIGHT := Color("#667085")
 const ACCENT_ORANGE := Color("#E8723C")
@@ -36,7 +45,7 @@ const MARK_STROKE := Color("#344054")
 const CANDY_BROWN := Color("#A56643")
 const CANDY_LIGHT := Color("#F7CFA8")
 
-# WRONG (3): incorrect candy attempt.
+# ERROR (3): incorrect candy attempt.
 const ERROR_RED := Color("#E53935")
 const ERROR_BG := Color("#FFEBEE")
 
@@ -45,11 +54,6 @@ const GIVEN_CANDY := Color("#7D4E2A")
 const GIVEN_HALO := Color("#FFF7D6")
 const GIVEN_BG_TINT := Color(1.0, 0.97, 0.88, 0.3)
 
-# LOCKED (5): auto-marked cells, visually subdued and non-interactive.
-const LOCKED_OVERLAY := Color(0.0, 0.0, 0.0, 0.08)
-const LOCKED_X_COLOR := Color("#B0B0B0")
-const LOCKED_X_ALPHA := 0.45
-
 # Button colors.
 const BTN_PRIMARY := Color("#E8723C")
 const BTN_PRIMARY_HOVER := Color("#D4652F")
@@ -57,11 +61,9 @@ const BTN_DISABLED := Color("#D0D5DD")
 
 static func cell_state_overlay(kind: int) -> Color:
 	match kind:
-		3: # WRONG
+		3: # ERROR
 			return ERROR_BG
 		4: # GIVEN
 			return GIVEN_BG_TINT
-		5: # LOCKED
-			return LOCKED_OVERLAY
 		_:
 			return Color.TRANSPARENT

@@ -60,58 +60,11 @@ static func detect_clash(regions: Array, _board: Array, a: Array, b: Array) -> i
 		return Clash.TOUCHING
 	return Clash.NONE
 
-static func compute_auto_marks(board: Array, regions: Array, candy_row: int, candy_col: int) -> Array:
-	var size: int = regions.size()
-	var marks: Array = []
-	var target_zone: String = zone_of(regions, candy_row, candy_col)
-
-	for c in range(size):
-		if c != candy_col and board[candy_row][c] == CellModel.CellKind.BLANK:
-			marks.append([candy_row, c])
-
-	for r in range(size):
-		if r != candy_row and board[r][candy_col] == CellModel.CellKind.BLANK:
-			if not [r, candy_col] in marks:
-				marks.append([r, candy_col])
-
-	for r in range(size):
-		for c in range(size):
-			if (r != candy_row or c != candy_col) and zone_of(regions, r, c) == target_zone:
-				if board[r][c] == CellModel.CellKind.BLANK and not [r, c] in marks:
-					marks.append([r, c])
-
-	for dr in [-1, 0, 1]:
-		for dc in [-1, 0, 1]:
-			if dr == 0 and dc == 0:
-				continue
-			var nr: int = candy_row + dr
-			var nc: int = candy_col + dc
-			if nr >= 0 and nr < size and nc >= 0 and nc < size:
-				if board[nr][nc] == CellModel.CellKind.BLANK and not [nr, nc] in marks:
-					marks.append([nr, nc])
-
-	return marks
-
-static func compute_all_auto_marks(board: Array, regions: Array) -> Array:
-	var size: int = regions.size()
-	var all_marks: Array = []
-	for r in range(size):
-		for c in range(size):
-			if CellModel.is_placed(board[r][c]):
-				var marks: Array = compute_auto_marks(board, regions, r, c)
-				for m in marks:
-					if not m in all_marks:
-						all_marks.append(m)
-	return all_marks
-
 static func attempt_candy(board: Array, regions: Array, solution: Array,
 		hearts: int, mistake_count: int, row: int, col: int) -> Dictionary:
 	var size: int = regions.size()
 	if solution[row] == col:
 		board[row][col] = CellModel.CellKind.CANDY
-		var marks: Array = compute_auto_marks(board, regions, row, col)
-		for m in marks:
-			board[m[0]][m[1]] = CellModel.CellKind.LOCKED
 		var won: bool = correct_count(board) == size
 		return {
 			"board": board,
@@ -120,10 +73,9 @@ static func attempt_candy(board: Array, regions: Array, solution: Array,
 			"phase": "won" if won else "active",
 			"events": ["CandyFound"],
 			"reason": "",
-			"auto_marks": marks
 		}
 
-	board[row][col] = CellModel.CellKind.WRONG
+	board[row][col] = CellModel.CellKind.ERROR
 	var new_hearts: int = hearts - 1
 	var new_mistakes: int = mistake_count + 1
 	var reason: String = ""
@@ -159,7 +111,6 @@ static func attempt_candy(board: Array, regions: Array, solution: Array,
 		"phase": "failed" if failed else "active",
 		"events": ["Mistake"],
 		"reason": reason,
-		"auto_marks": []
 	}
 
 static func tally(cur_correct: int, mistakes: int) -> int:

@@ -22,7 +22,7 @@ static func next_hint(board: Array, size: int, regions: Array, _solution: Array)
 	var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
 	if s3.get("found", false):
 		for cell in (s3["eliminated"] as Array):
-			work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
+			work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
 		var s2_after: Dictionary = _try_single_candidate(work_board, size, regions)
 		if s2_after.get("found", false):
 			return {
@@ -83,7 +83,7 @@ static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[
 			var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
 			if s3.get("found", false):
 				for cell in (s3["eliminated"] as Array):
-					work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
+					work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
 				current_max = maxi(current_max, 2)
 				continue
 			break
@@ -126,7 +126,7 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 		var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
 		if s3.get("found", false):
 			for cell in (s3["eliminated"] as Array):
-				work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
+				work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
 			current_max = maxi(current_max, 2)
 			continue
 		break
@@ -138,9 +138,13 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 	return ranks
 
 static func _apply_elimination(board: Array, _size: int, regions: Array) -> Array:
-	var marks: Array = CandyRules.compute_all_auto_marks(board, regions)
+	var marks: Array = []
+	for r in range(board.size()):
+		for c in range(board[r].size()):
+			if board[r][c] == CellModel.CellKind.BLANK and not CandyRules.can_place(board, regions, r, c):
+				marks.append([r, c])
 	for m in marks:
-		board[m[0]][m[1]] = CellModel.CellKind.LOCKED
+		board[m[0]][m[1]] = CellModel.CellKind.MARK
 	return marks
 
 static func _try_single_candidate(board: Array, size: int, regions: Array) -> Dictionary:
