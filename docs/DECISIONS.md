@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-014 — Hoàn tất Module 10 (Content Generation) và phát hành 30 level playtest
+
+Ngày 2026-10-02. Hoàn tất Module 10 (Content Generation) theo kế hoạch rebuild CanDoKu:
+- **Dữ liệu level:** Sinh 30 levels 4×4 độc lập hình học, nghiệm duy nhất được chứng minh bằng logic giải S2/S3; phân bổ thành 12 level Rank 1 (tutorial/easy), 10 level Rank 2 (medium), và 8 level Rank 3 (medium khó hơn).
+- **Format Bank v1:** Đóng gói thành `game/data/banks/bank_4x4.json` với schema v1 đầy đủ `seed`, `regions`, `solution`, `givens`, `steps`, `profile`, `rating`, `pidHash`, `logicTrace`.
+- **Pace Sidecar:** Tự động sinh `game/data/banks/bank_4x4.pace.json` tính toán `rSeq` và `hintCosts` từ logic trace, khớp 100% với bank.
+- **Campaign Playlist:** Hoàn thiện `game/data/campaigns/demo_30.json` với 30 levels L01–L30 theo đúng thứ tự thăng tiến.
+- **Công cụ & Kiểm định:** Phát triển `convert_to_bank.py`, `generate_pace.py`, `build_playtest_bank.py`, validator độc lập `validate_content.py` kèm bộ unit test `test_validate_content.py`, tích hợp trực tiếp vào `tools/verify.py`.
+- **Kiểm chứng:** Toàn bộ test suite Godot và Python đạt 100% PASS, vượt qua toàn bộ gate clean-room và không tạo asset trái phép.
+
 ## RST-013 — Hoàn tất Module 9 (Integration) và lưu trữ mã nguồn cũ
 
 Ngày 2026-10-02. Hoàn tất Module 9 (Integration & Verification) kết nối toàn bộ hệ thống rebuild từ M01 đến M08:

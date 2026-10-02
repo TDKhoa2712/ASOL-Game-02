@@ -20,7 +20,7 @@
 | M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Hoàn tất (PR #7 merged) |
 | M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Hoàn tất (PR #8 merged) |
 | M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Hoàn tất |
-| M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Sẵn sàng thực hiện |
+| M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Hoàn tất |
 
 ### Tiến độ implement
 
@@ -43,13 +43,16 @@
 **Wave 5 (M09 Integration):**
 - **M09 Integration:** Hoàn tất trên nhánh `feat/m09-integration`. Kết nối end-to-end toàn bộ modules M01-M08, thêm `test_integration.gd` kiểm thử toàn bộ luồng giao diện, lưu trữ, điều hướng và cài đặt. Cập nhật `project.godot` chuyển `run/main_scene` sang `main.tscn`. Lưu trữ an toàn 20 script cũ, các scene cũ và 16 test cũ `run_*.gd` vào `archive/legacy_pre_rebuild/`. Cập nhật `test_runtime_smoke.py` chạy qua `test_integration.gd`. Pass 100% full headless verification suite.
 
+**Wave 6 (M10 Content Gen):**
+- **M10 Content Gen:** Hoàn tất trên nhánh `feat/m10-content-gen`. Sinh 30 level 4x4 machine-validated với logic S2/S3 (12 rank 1, 10 rank 2, 8 rank 3), đóng gói `bank_4x4.json`, sinh pace sidecar `bank_4x4.pace.json`, và hoàn thiện playlist chiến dịch `demo_30.json` (L01-L30). Bổ sung công cụ `convert_to_bank.py`, `generate_pace.py`, `build_playtest_bank.py`, validator nội dung `validate_content.py` và test suite `test_validate_content.py`. Tích hợp kiểm thử nội dung vào `verify.py`. Đạt 100% full headless verification suite.
+
 ```
 Wave 1: M01 + M05           (đã merge)
 Wave 2: M02 + M03 + M04     (đã merge)
 Wave 3: M06 + M07           (đã merge)
 Wave 4: M08                 (đã merge)
-Wave 5: M09                 (hoàn tất)
-Wave 6: M10                 (content generation)
+Wave 5: M09                 (đã merge)
+Wave 6: M10                 (hoàn tất)
 ```
 
 ## Baseline
