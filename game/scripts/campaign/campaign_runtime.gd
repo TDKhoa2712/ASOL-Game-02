@@ -9,6 +9,7 @@ const PlaySession = preload("res://scripts/input/play_session.gd")
 const ShapeFingerprint = preload("res://scripts/content/shape_fingerprint.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
+const PaceAdjuster = preload("res://scripts/campaign/pace_adjuster.gd")
 
 const PLAYLIST_PATH := "res://data/campaigns/demo_30.json"
 const CAMPAIGN_VERSION := 1
@@ -27,6 +28,7 @@ var current_session: PlaySession = null
 var _playlist: Array = []
 var _pending_win: Dictionary = {}
 var _current_snapshot: Dictionary = {}
+var pace_adjuster: PaceAdjuster = PaceAdjuster.new()
 
 func _init(bank_reader: BankReader, pace_reader: PaceReader, progress_manager: ProgressManager, session_store: SessionStore) -> void:
 	bank = bank_reader
@@ -63,6 +65,7 @@ func boot() -> Dictionary:
 		if not progress.save():
 			save_failed.emit("initial_progress")
 			return _boot_error("cannot save progress")
+	if progress.current.get("dda") is Dictionary: pace_adjuster.from_dict(progress.current.dda)
 	if not playlist_order().has(progress.current.currentLevelId):
 		return _boot_error("progress level outside playlist")
 	if sessions.has_pending():
@@ -72,6 +75,7 @@ func boot() -> Dictionary:
 func start_level(label: String) -> PlaySession:
 	if label != current_level_label() or is_campaign_done():
 		return null
+	pace_adjuster.on_level_start()
 	var level := current_level_data()
 	if level.is_empty():
 		return null
@@ -127,6 +131,8 @@ func on_level_won(label: String, score_data: Dictionary) -> void:
 		return
 	if _current_snapshot.has("shape_hash"):
 		progress.record_shape(_current_snapshot.shape_hash)
+	pace_adjuster.apply_result(true, score_data, progress.current)
+	progress.save()
 	_pending_win.clear()
 	current_session = null
 	_current_snapshot = {}
@@ -147,6 +153,8 @@ func on_level_lost(label: String) -> void:
 		save_failed.emit("session_failed")
 		return
 	level_lost.emit(label)
+	pace_adjuster.apply_result(false, {}, progress.current)
+	progress.save()
 
 func retry_save() -> bool:
 	if _pending_win.is_empty():
@@ -171,9 +179,6 @@ func replay_campaign() -> void:
 
 func current_level_label() -> String:
 	return str(progress.current.get("currentLevelId", ""))
-
-func current_level() -> Dictionary:
-	return current_level_data()
 
 func current_level_data() -> Dictionary:
 	var entry := _resolve_playlist_entry(current_level_label())

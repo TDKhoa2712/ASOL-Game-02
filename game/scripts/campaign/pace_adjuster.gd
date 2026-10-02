@@ -22,6 +22,10 @@ func record_result(won: bool, hints_used: int, mistakes: int, was_retry: bool) -
 	else:
 		_retry_streak = 0
 
+func apply_result(won: bool, score: Dictionary, store: Dictionary) -> void:
+	record_result(won, int(score.get("hints_used", 0)), int(score.get("mistakes", 0)), false)
+	store["dda"] = to_dict()
+
 func rank_offset(level_order: int, base_rank: int) -> int:
 	var max_rank: int = 2 if level_order <= 15 else (3 if level_order <= 30 else 4)
 	if _clean_streak >= 2:

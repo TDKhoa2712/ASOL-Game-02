@@ -23,6 +23,7 @@ func _init() -> void:
 	_test_tutorial()
 	_test_snapshot_creation()
 	_test_restart_reuses_snapshot()
+	_test_dda_integration()
 	for failure in failures:
 		printerr(failure)
 	if failures.is_empty():
@@ -221,3 +222,14 @@ func _finish_level(runtime: CampaignRuntime) -> void:
 func _check(condition: bool, label: String) -> void:
 	if not condition:
 		failures.append("FAIL: " + label)
+
+func _test_dda_integration() -> void:
+	var runtime := _runtime("dda")
+	_check(runtime.boot().ok, "dda boot")
+	_check(runtime.pace_adjuster != null, "pace_adjuster initialized")
+	_check(runtime.pace_adjuster.rank_offset(1, 1) == 0, "initial offset 0")
+	var label: String = runtime.current_level_label()
+	runtime.start_level(label)
+	runtime.on_level_lost(label)
+	_check(int(runtime.progress.current.get("dda", {}).get("fail_streak", 0)) == 1, "loss persisted to dda")
+	_cleanup(runtime)
