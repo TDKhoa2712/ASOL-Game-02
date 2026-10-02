@@ -12,8 +12,8 @@
 | Module | Plan | Status |
 |--------|------|--------|
 | M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Hoàn tất (PR #1 merged) |
-| M02 State | [02-state.md](superpowers/plans/rebuild/02-state.md) | Thiết kế xong |
-| M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Hoàn tất (PR #3 đang mở) |
+| M02 State | [02-state.md](superpowers/plans/rebuild/02-state.md) | Hoàn tất (PR #4 đang mở) |
+| M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Hoàn tất (PR #3 merged) |
 | M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Thiết kế xong |
 | M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (PR #2 merged) |
 | M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Thiết kế xong |
@@ -29,11 +29,12 @@
 - **M05 Theme:** Đã merge vào `dev` qua PR #2 (commit `0df7bae`). Triển khai `palette.gd` và `layout_tokens.gd` với đầy đủ trạng thái `GIVEN`/`LOCKED` và animation tokens.
 
 **Wave 2 (M02 State + M03 Content + M04 Input):**
-- **M03 Content:** Hoàn tất trên nhánh `feat/m03-content` (commit `19df517`). Triển khai `level_validator.gd`, `board_transform.gd`, `bank_reader.gd`, `pace_reader.gd`, `region_painter.gd`, test suite `test_bank_reader.gd` và dữ liệu mẫu `bank_4x4.json`, `bank_4x4.pace.json`, `demo_30.json`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `19df517` (log `scratch/verification/20261002T084522.409699Z.txt`). PR #3 đang mở vào `dev`.
+- **M02 State:** Hoàn tất trên nhánh `feat/m02-state` (commit `c3c2a82`). Triển khai lưu JSON A/B, tiến độ campaign, session và cấu hình; thêm bốn test `test_dual_slot_store.gd`, `test_progress_manager.gd`, `test_session_store.gd`, `test_config_store.gd`. Clean-room và kiểm tra import `extracted_reusable` không có match. Full headless verification PASS tại revision `c3c2a82` (log `scratch/verification/20261002T085549.012717Z.txt`). PR #4 đang mở vào `dev`.
+- **M03 Content:** Hoàn tất trên nhánh `feat/m03-content` (commit `19df517`). Triển khai `level_validator.gd`, `board_transform.gd`, `bank_reader.gd`, `pace_reader.gd`, `region_painter.gd`, test suite `test_bank_reader.gd` và dữ liệu mẫu `bank_4x4.json`, `bank_4x4.pace.json`, `demo_30.json`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `19df517` (log `scratch/verification/20261002T084522.409699Z.txt`). PR #3 đã merge vào `dev`.
 
 ```
-Wave 1: M01 + M05           (M01 và M05 đã merge)
-Wave 2: M02 + M03 + M04     (M03 ở PR #3, M02/M04 đang tiến hành)
+Wave 1: M01 + M05           (đã merge)
+Wave 2: M02 + M03 + M04     (M03 đã merge; M02 ở PR #4)
 Wave 3: M06 + M07           (cần Wave 2)
 Wave 4: M08                 (cần Wave 1-3)
 Wave 5: M09                 (integration)
@@ -48,4 +49,4 @@ Wave 6: M10                 (content generation)
 
 ## Blockers
 
-Không có blocker kỹ thuật. Wave 2 đang chạy song song, PR #3 chờ review.
+Không có blocker kỹ thuật. M02 chờ review PR #4 vào `dev`.
