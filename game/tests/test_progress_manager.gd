@@ -22,6 +22,21 @@ func _init() -> void:
 	check(manager.puzzle_fingerprint({"size": 4, "regions": ["A"], "solution": [0], "givens": []}) == manager.puzzle_fingerprint({"givens": [], "solution": [0], "regions": ["A"], "size": 4}), "fingerprint deterministic")
 	manager._store.remove_all()
 	DirAccess.remove_absolute(dir)
+	# --- Shape queue tests ---
+	var shape_dir := OS.get_user_data_dir().path_join("m02_shapes_%s" % Time.get_ticks_usec())
+	var shape_pm := Progress.new(shape_dir)
+	shape_pm.current = shape_pm.new_progress("L01")
+	check(not shape_pm.has_recent_shape("4x4_abc123"), "shape not found initially")
+	shape_pm.record_shape("4x4_abc123")
+	check(shape_pm.has_recent_shape("4x4_abc123"), "shape found after record")
+	check(not shape_pm.has_recent_shape("4x4_xyz789"), "different shape not found")
+	for i in range(55):
+		shape_pm.record_shape("shape_%d" % i)
+	check(not shape_pm.has_recent_shape("4x4_abc123"), "original shape evicted after 55 inserts (cap 50)")
+	check(shape_pm.has_recent_shape("shape_54"), "newest shape present")
+	check(shape_pm.current.get("recentShapes", []).size() <= 50, "queue capped at 50")
+	shape_pm._store.remove_all()
+	DirAccess.remove_absolute(shape_dir)
 	if failures.is_empty():
 		print("STATE_PROGRESS_PASS")
 		quit(0)
