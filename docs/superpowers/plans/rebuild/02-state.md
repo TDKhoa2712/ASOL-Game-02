@@ -154,6 +154,7 @@ func save_session(data: Dictionary) -> bool
 func load_session(level_id: String, expected_hash: String) -> Dictionary
     # Returns {ok, data, reason, recreate} — recreate=true khi hash mismatch
 func clear() -> void
+func has_pending() -> bool
 func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary
     # {sessionVersion, levelId, puzzleHash, boardSize, cells (flat Array of N² strings, row-major), hearts, mistake_count, hints_used, elapsedMs, status}
 

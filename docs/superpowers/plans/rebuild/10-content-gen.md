@@ -71,8 +71,9 @@ def convert_to_bank(raw_files: list[tuple[int, str]], size: int, output: str):
     }
     for rank, path in raw_files:
         with open(path) as f:
-            raw_levels = json.load(f)
-        bank["ranks"][str(rank)] = [convert_level(lv, rank) for lv in raw_levels]
+            data = json.load(f)
+            levels = data["levels"] if isinstance(data, dict) and "levels" in data else data
+        bank["ranks"][str(rank)] = [convert_level(lv, rank) for lv in levels]
     
     with open(output, "w") as f:
         json.dump(bank, f, indent=2)
@@ -139,8 +140,8 @@ def generate_pace(bank_path: str, output_path: str):
     "campaignVersion": 1,
     "id": "demo-30",
     "playlist": [
-        {"label": "L01", "size": 4, "rank": 1, "index": 0, "difficulty": "easy"},
-        {"label": "L02", "size": 4, "rank": 1, "index": 1, "difficulty": "easy"},
+        {"label": "L01", "size": 4, "rank": 1, "index": 0, "difficulty": "tutorial"},
+        {"label": "L02", "size": 4, "rank": 1, "index": 1, "difficulty": "tutorial"},
         {"label": "L03", "size": 4, "rank": 1, "index": 2, "difficulty": "easy"},
         {"label": "L04", "size": 4, "rank": 1, "index": 3, "difficulty": "easy"},
         {"label": "L05", "size": 4, "rank": 1, "index": 4, "difficulty": "easy"},
@@ -177,17 +178,19 @@ def generate_pace(bank_path: str, output_path: str):
 
 ---
 
-## Bước 6: Validate toàn bộ
+### Validator M10 (to be implemented in `tools/validate_content.py`)
+
+> Các lệnh dưới đây là target CLI cho validator riêng của M10, không phải `GDD/tools/validate_levels.py` hiện có.
 
 ```bash
 # Validate bank schema
-python -B GDD/tools/validate_levels.py game/data/banks/bank_4x4.json
+python -B tools/validate_content.py game/data/banks/bank_4x4.json
 
 # Validate pace vs bank consistency
-python -B GDD/tools/validate_levels.py game/data/banks/bank_4x4.json --pace game/data/banks/bank_4x4.pace.json
+python -B tools/validate_content.py game/data/banks/bank_4x4.json --pace game/data/banks/bank_4x4.pace.json
 
 # Validate playlist references exist in bank
-python -B GDD/tools/validate_levels.py game/data/campaigns/demo_30.json --bank game/data/banks/bank_4x4.json
+python -B tools/validate_content.py game/data/campaigns/demo_30.json --bank game/data/banks/bank_4x4.json
 ```
 
 ---

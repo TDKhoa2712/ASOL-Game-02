@@ -147,8 +147,10 @@ func _on_hint() -> void:
     var pace_data := runtime.current_pace()
     var costs := pace_data.get("hintCosts", [1])
     var max_clicks := costs.size()
+    # _hint_click_count tracks depth within current hint sequence (resets on candy found).
+    # session.hints_used tracks total budget across the round (checked by session itself if needed).
     if _hint_click_count >= max_clicks:
-        return  # budget exhausted
+        return  # budget exhausted for this sequence
     # Progressive hint: contract returns {stage, highlight, text} or {found:false}.
     var level := session.level
     var hint := BoardSolver.progressive_hint(
@@ -159,12 +161,12 @@ func _on_hint() -> void:
         return  # no hint available (board already solved or no solvable step)
     _hint_click_count += 1
     session.use_hint()
-    # hint.highlight = {type: "unit"/"cell", unit_type?, unit_id?, row?, col?}
-    var hl := hint["highlight"]
-    if hl["type"] == "unit":
-        board.highlight_unit(hl["unit_type"], hl["unit_id"])
+    var stage := hint["stage"]  # "unit", "cell", or "place"
+    var hl := hint["highlight"]  # Array: unit info or cell coords
+    if stage == "unit":
+        board.highlight_unit(hl[0], hl[1])  # unit_type, unit_id
     else:
-        board.highlight_cell(hl["row"], hl["col"])
+        board.highlight_cell(hl[0], hl[1])  # row, col
     sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
 func _on_undo() -> void:
@@ -178,7 +180,7 @@ func _on_restart() -> void:
 func _on_home() -> void:
     # If session dirty: save before leaving
 
-func _on_candy_found(row: int, col: int) -> void:
+func _on_candy_found(row: int, col: int, region: String) -> void:
     sfx.play(SfxCatalog.Effect.CANDY_YES)
     Vibration.pulse(Vibration.Strength.NORMAL)
     _hint_click_count = 0  # reset hint for next step

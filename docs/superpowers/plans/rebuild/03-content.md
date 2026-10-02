@@ -26,7 +26,7 @@ game/data/
 
 ### Schema: Bank file (`bank_{N}x{N}.json`)
 
-> **Lưu ý:** Bank levels là superset của GDD level v4. Bank-only fields (`seed`, `steps`, `profile`, `rating`, `pidHash`) là pipeline metadata. `bank_reader.get_level()` trả level v4 fields cho gameplay consumers; bank-only fields chỉ dùng trong pipeline.
+> **Lưu ý:** Bank levels là dữ liệu puzzle thuần (regions, solution, givens, logicTrace). Không chứa metadata gameplay (id, order, difficulty) — playlist cung cấp chúng. Bank-only fields (`seed`, `steps`, `profile`, `rating`, `pidHash`) là pipeline metadata, không dùng trong gameplay. `bank_reader.get_level(size, rank, index)` trả puzzle data; campaign ghép với playlist entry để tạo level đầy đủ.
 
 ```json
 {
@@ -44,8 +44,9 @@ game/data/
         "rating": 4,
         "pidHash": "6c95fe9a",
         "logicTrace": [
-          {"rule": "S2", "focus": {"type": "region", "id": "A"}, "conclusion": {"type": "place", "r": 0, "c": 2}, "textKey": "hint.single.region"}
+          {"rule": "S2", "focus": {"type": "region", "id": "A"}, "conclusion": {"type": "place", "r": 0, "c": 1}, "textKey": "hint.single.region"}
         ]
+        // Abbreviated: full trace would have 4 S2 steps for this rank-1 puzzle (one per placement)
       }
     ],
     "2": [...],

@@ -255,7 +255,7 @@ func _recompute_all_locks() -> void
 - Board = 2D Array thay Dictionary (random access O(1) thay O(log n))
 - Auto-mark tích hợp (reference: R1 Mark riêng trong hint_engine)
 - Grouped undo thay individual action recording
-- `from_save_data` restores full board + recorder state
+- `from_save_data` restores board state (Undo stack NOT persisted — runtime only)
 
 ---
 

@@ -108,7 +108,7 @@ Danh sách hành trình cần test thủ công (hoặc qua bootstrap scene):
 | 10 | Settings → toggle audio | SFX tắt/bật |
 | 11 | Kill app giữa game → reopen → resume | Session phục hồi |
 | 12 | Corrupt save → boot → error dialog | Thông báo lỗi save |
-| 13 | Thắng level cuối → replay campaign | Quay về L01 |
+| 13 | Thắng level cuối → completion screen | Hiện hoàn thành nội dung hiện có (replay ẩn cho playtest) |
 
 ---
 

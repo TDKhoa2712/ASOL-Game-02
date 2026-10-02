@@ -203,8 +203,7 @@ func pop_group() -> Array
 func can_undo() -> bool
 func depth() -> int
 func clear() -> void
-func to_save_data() -> Array
-static func from_save_data(data: Array) -> ActionRecorder
+# Undo stack is runtime-only (GDD TECH-08) — NOT persisted in session save.
 
 # play_session.gd
 signal state_changed()
