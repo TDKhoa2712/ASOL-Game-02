@@ -14,6 +14,9 @@ func _init() -> void:
 	_test_compute_cell_ranks()
 	_test_lock_intersection()
 	_test_internal_exclusions_are_not_candidates()
+	_test_gen_subsets()
+	_test_locked_subset_returns_dict()
+	_test_locked_subset_no_crash_empty_board()
 	if _fails.is_empty():
 		print("CORE_BOARD_SOLVER_PASS")
 		quit(0)
@@ -85,6 +88,39 @@ func _test_internal_exclusions_are_not_candidates() -> void:
 	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
 	board[0][0] = CellModel.CellKind.MARK
 	_assert(not BoardSolver._is_candidate(board, 4, regions, 0, 0), "internal exclusion is not a candidate")
+
+func _test_gen_subsets() -> void:
+	var items := ["A", "B", "C", "D"]
+	var pairs := BoardSolver._gen_subsets(items, 2)
+	_assert(pairs.size() == 6, "C(4,2) = 6 subsets, got %d" % pairs.size())
+	var triples := BoardSolver._gen_subsets(items, 3)
+	_assert(triples.size() == 4, "C(4,3) = 4 subsets, got %d" % triples.size())
+	var singles := BoardSolver._gen_subsets(items, 1)
+	_assert(singles.size() == 4, "C(4,1) = 4 subsets")
+	var empty := BoardSolver._gen_subsets(items, 0)
+	_assert(empty.size() == 0, "C(4,0) = 0 subsets")
+	var over := BoardSolver._gen_subsets(items, 5)
+	_assert(over.size() == 0, "C(4,5) = 0 subsets")
+
+func _test_locked_subset_returns_dict() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "AABB", "CCDD", "CCDD"]
+	board[0][0] = CellModel.CellKind.CANDY
+	board[1][3] = CellModel.CellKind.CANDY
+	BoardSolver._apply_elimination(board, 4, regions)
+	var result := BoardSolver._try_locked_subsets(board, 4, regions, 2)
+	_assert(result.has("found"), "subset returns found key")
+	_assert(result.has("eliminated"), "subset returns eliminated key")
+	if result.get("found", false):
+		for cell in result.get("eliminated", []):
+			_assert(cell is Array and cell.size() == 2, "eliminated cell is [r, c]")
+
+func _test_locked_subset_no_crash_empty_board() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
+	BoardSolver._apply_elimination(board, 4, regions)
+	var result := BoardSolver._try_locked_subsets(board, 4, regions, 3)
+	_assert(result.has("found"), "subset on empty board returns found key")
 
 func _empty_board(size: int) -> Array:
 	var board: Array = []

@@ -4,7 +4,7 @@ extends RefCounted
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 
-enum Technique { ELIMINATION = 1, SINGLE_CANDIDATE = 2, LOCK_INTERSECTION = 3 }
+enum Technique { ELIMINATION = 1, SINGLE_CANDIDATE = 2, LOCK_INTERSECTION = 3, SUBSET_PAIR = 4, SUBSET_TRIPLE = 5, SUBSET_QUAD = 6, CONTRA_CHAIN = 7 }
 
 static func next_hint(board: Array, size: int, regions: Array, _solution: Array) -> Dictionary:
 	var work_board: Array = _build_work_board(board, size, regions)
@@ -40,6 +40,29 @@ static func next_hint(board: Array, size: int, regions: Array, _solution: Array)
 			"unit_type": s3.get("target_type", "zone"),
 			"unit_id": s3.get("target_id", 0),
 			"explanation": "Lock intersection eliminates candidates"
+		}
+
+	var s4: Dictionary = _try_locked_subsets(work_board, size, regions, 6)
+	if s4.get("found", false):
+		for cell in (s4["eliminated"] as Array):
+			work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+		var s2_after_s4: Dictionary = _try_single_candidate(work_board, size, regions)
+		if s2_after_s4.get("found", false):
+			return {
+				"found": true,
+				"technique": s4.get("technique", Technique.SUBSET_PAIR),
+				"cell": s2_after_s4["cell"],
+				"unit_type": s2_after_s4["unit_type"],
+				"unit_id": s2_after_s4["unit_id"],
+				"explanation": "Locked subset revealed cell in " + str(s2_after_s4["unit_type"])
+			}
+		return {
+			"found": true,
+			"technique": s4.get("technique", Technique.SUBSET_PAIR),
+			"cell": (s4["eliminated"] as Array)[0],
+			"unit_type": "zone",
+			"unit_id": s4.get("subset_zones", [""])[0],
+			"explanation": "Locked subset eliminates candidates"
 		}
 
 	return {"found": false}
@@ -283,6 +306,72 @@ static func _unit_cells(size: int, regions: Array, utype: String, uid: Variant) 
 			if (utype == "row" and r == int(uid)) or (utype == "col" and c == int(uid)) or (utype == "zone" and CandyRules.zone_of(regions, r, c) == str(uid)):
 				cells.append([r, c])
 	return cells
+
+static func _gen_subsets(items: Array, k: int) -> Array:
+	var result: Array = []
+	if k <= 0 or k > items.size():
+		return result
+	var indices: Array[int] = []
+	for i in range(k):
+		indices.append(i)
+	while true:
+		var subset: Array = []
+		for idx in indices:
+			subset.append(items[idx])
+		result.append(subset)
+		var i := k - 1
+		while i >= 0 and indices[i] == i + items.size() - k:
+			i -= 1
+		if i < 0:
+			break
+		indices[i] += 1
+		for j in range(i + 1, k):
+			indices[j] = indices[j - 1] + 1
+	return result
+
+static func _try_locked_subsets(board: Array, size: int, regions: Array, max_k: int = 6) -> Dictionary:
+	var all_zones := _zones(regions, size)
+	var unplaced_zones: Array = []
+	for z in all_zones:
+		if not _has_candy(board, size, regions, "zone", z):
+			unplaced_zones.append(z)
+	if unplaced_zones.size() < 2:
+		return {"found": false, "eliminated": []}
+	var limit := mini(unplaced_zones.size() - 1, max_k)
+	for k in range(2, limit + 1):
+		var subsets := _gen_subsets(unplaced_zones, k)
+		for subset in subsets:
+			var candidate_rows: Dictionary = {}
+			var zone_cands: Dictionary = {}
+			for z in subset:
+				zone_cands[z] = _candidates_in_zone(board, size, regions, z)
+				for cell in zone_cands[z]:
+					candidate_rows[cell[0]] = true
+			if candidate_rows.size() == k:
+				var elim: Array = []
+				for row_idx in candidate_rows:
+					for c in range(size):
+						var z := CandyRules.zone_of(regions, row_idx, c)
+						if not subset.has(z) and _is_candidate(board, size, regions, row_idx, c):
+							elim.append([row_idx, c])
+				if not elim.is_empty():
+					var tech: int = Technique.SUBSET_PAIR if k == 2 else (Technique.SUBSET_TRIPLE if k == 3 else Technique.SUBSET_QUAD)
+					return {"found": true, "eliminated": elim, "technique": tech, "subset_zones": subset}
+			var candidate_cols: Dictionary = {}
+			for z in subset:
+				for cell in zone_cands[z]:
+					candidate_cols[cell[1]] = true
+			if candidate_cols.size() == k:
+				var elim: Array = []
+				for col_idx in candidate_cols:
+					for r in range(size):
+						var z := CandyRules.zone_of(regions, r, col_idx)
+						if not subset.has(z) and _is_candidate(board, size, regions, r, col_idx):
+							elim.append([r, col_idx])
+				if not elim.is_empty():
+					var tech: int = Technique.SUBSET_PAIR if k == 2 else (Technique.SUBSET_TRIPLE if k == 3 else Technique.SUBSET_QUAD)
+					return {"found": true, "eliminated": elim, "technique": tech, "subset_zones": subset}
+	return {"found": false, "eliminated": []}
 
 static func _empty_board(size: int) -> Array:
 	var b: Array = []
