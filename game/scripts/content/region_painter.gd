@@ -1,6 +1,11 @@
 # region_painter.gd
 extends RefCounted
 
+enum OverlayIcon { NONE, STAR, DIAMOND, HEART, TRIANGLE, CROSS, DOT }
+
+static func luminance(c: Color) -> float:
+	return 0.299 * c.r + 0.587 * c.g + 0.114 * c.b
+
 static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dictionary:
 	if palette.is_empty():
 		return {}
@@ -54,6 +59,86 @@ static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dic
 			assigned[z] = best_col
 
 	return assigned
+
+static func assign_with_overlays(size: int, zones: Array, palette: Array[Color]) -> Dictionary:
+	if palette.is_empty():
+		return {"colors": {}, "overlays": {}}
+	var grid := precompute_grid(size, zones)
+	var adj := _build_adjacency(size, grid)
+	var all_zones: Array = []
+	for r in range(size):
+		for c in range(size):
+			var z: String = grid[r][c]
+			if not all_zones.has(z):
+				all_zones.append(z)
+	var sorted_palette := palette.duplicate()
+	sorted_palette.sort_custom(func(a: Color, b: Color) -> bool: return luminance(a) < luminance(b))
+	var n_pattern := ceili(size / 2.0)
+	var dark_pool: Array[Color] = []
+	var light_pool: Array[Color] = []
+	for i in range(sorted_palette.size()):
+		if i < n_pattern:
+			dark_pool.append(sorted_palette[i])
+		else:
+			light_pool.append(sorted_palette[i])
+	if light_pool.is_empty():
+		light_pool = dark_pool.duplicate()
+	all_zones.sort_custom(func(a: String, b: String) -> bool:
+		return adj.get(a, []).size() > adj.get(b, []).size()
+	)
+	var colors: Dictionary = {}
+	var overlays: Dictionary = {}
+	var dark_assigned: int = 0
+	var overlay_icons := [OverlayIcon.STAR, OverlayIcon.DIAMOND, OverlayIcon.HEART, OverlayIcon.TRIANGLE, OverlayIcon.CROSS, OverlayIcon.DOT]
+	for z in all_zones:
+		var neighbor_colors: Array[Color] = []
+		for nbr in adj.get(z, []):
+			if colors.has(nbr):
+				neighbor_colors.append(colors[nbr])
+		var pool: Array[Color] = dark_pool if dark_assigned < n_pattern else light_pool
+		var candidates: Array[Color] = []
+		for col in pool:
+			if not neighbor_colors.has(col):
+				candidates.append(col)
+		if candidates.is_empty():
+			candidates = pool.duplicate()
+		var best_col: Color = candidates[0]
+		if not neighbor_colors.is_empty():
+			var max_min_dist: float = -1.0
+			for col in candidates:
+				var min_d: float = INF
+				for n_col in neighbor_colors:
+					min_d = minf(min_d, lab_distance(col, n_col))
+				if min_d > max_min_dist:
+					max_min_dist = min_d
+					best_col = col
+		colors[z] = best_col
+		if dark_assigned < n_pattern:
+			var neighbor_overlays: Array = []
+			for nbr in adj.get(z, []):
+				if overlays.has(nbr) and overlays[nbr] != OverlayIcon.NONE:
+					neighbor_overlays.append(overlays[nbr])
+			var chosen_icon: int = OverlayIcon.NONE
+			for icon in overlay_icons:
+				if not neighbor_overlays.has(icon):
+					chosen_icon = icon
+					break
+			if chosen_icon == OverlayIcon.NONE:
+				chosen_icon = overlay_icons[dark_assigned % overlay_icons.size()]
+			overlays[z] = chosen_icon
+			dark_assigned += 1
+		else:
+			overlays[z] = OverlayIcon.NONE
+	return {"colors": colors, "overlays": overlays}
+
+static func overlay_tint(base_color: Color, is_dark: bool) -> Color:
+	if is_dark:
+		var h := base_color.h
+		var s := minf(base_color.s + 0.15, 1.0)
+		var v := maxf(base_color.v - 0.1, 0.0)
+		return Color.from_hsv(h, s, v, base_color.a)
+	else:
+		return base_color.lightened(0.3)
 
 static func precompute_grid(size: int, zones: Array) -> Array:
 	var grid: Array = []
