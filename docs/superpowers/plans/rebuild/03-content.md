@@ -36,7 +36,7 @@ game/data/
     "1": [
       {
         "seed": 7,
-        "regions": ["DDAC", "BCDD", "DDCD", "DDDC"],
+        "regions": ["AABB", "ABBB", "CCBB", "CCDB"],
         "solution": [1, 3, 0, 2],
         "givens": [],
         "steps": 4,
@@ -258,7 +258,7 @@ static func check_id(level_id: String) -> bool
 static func _check_schema(level: Dictionary) -> Array[String]
     # Required: regions, solution, givens
     # Bank fields: seed, steps, profile, rating, pidHash
-    # Optional: logicTrace
+    # logicTrace **required** for check_bank_level() — bank levels need machine-verifiable proof. Optional for check() (dev/testing)
 
 static func _check_geometry(level: Dictionary) -> Array[String]
     # size 4-12, regions NxN strings, solution N entries, each 0..N-1

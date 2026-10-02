@@ -37,21 +37,25 @@ var _last_tap_time: int = 0
 var _swipe_trail: Array = []
 var _pointer_active := false
 var _last_swipe_cell: Array = []  # for interpolation
+var _pending_double_tap := false
 
 # --- Public API ---
 
 func begin(row: int, col: int, time_ms: int) -> void
     # Start touch. Check double-tap window against last tap.
-    # If same cell within window: emit cell_double_tapped, clear pending
+    # If same cell within window: flag _pending_double_tap = true (do NOT emit yet)
     # Else: record as start of potential tap/swipe
 
 func move(row: int, col: int) -> void
     # Track swipe across cells. Interpolate between _last_swipe_cell and (row, col)
     # to avoid skipping cells on fast diagonal swipes.
     # Add each intermediate cell to trail if not already present.
+    # If _pending_double_tap and distance > drag threshold → cancel double-tap,
+    # commit first tap as cell_tapped, begin drag.
 
 func finish(time_ms: int) -> void
-    # End touch. If swipe trail > 1: emit cell_swiped
+    # End touch. If _pending_double_tap and no drag occurred → emit cell_double_tapped, clear flag.
+    # Else if swipe trail > 1: emit cell_swiped.
     # Else: set pending tap (wait for double-tap window)
 
 func cancel() -> void
@@ -122,17 +126,14 @@ func clear() -> void
 
 func depth() -> int
 
-func to_save_data() -> Array
-    # Serialize stack for session save
-
-static func from_save_data(data: Array) -> RefCounted  # ActionRecorder
+# Undo stack is runtime-only (GDD TECH-08); not persisted in session
 ```
 
 **Cải tiến từ reference:**
 - **Action grouping** — Đặt candy + tất cả auto-marks = 1 undo group. Undo 1 lần = undo candy + undo all auto-marks.
 - **Source tag** — USER vs SYSTEM. System actions (auto-marks) go into the group but are identified.
 - **before/after** — Mỗi action lưu state trước và sau, undo = swap.
-- **Serializable** — `to_save_data()`/`from_save_data()` cho session persistence.
+- **Runtime-only** — Undo stack is not persisted (GDD TECH-08); session save excludes it.
 
 **Khác biệt với reference:**
 - Grouping thay flat stack (reference records individual actions with `record: false`)
@@ -159,7 +160,8 @@ const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const ActionRecorder = preload("res://scripts/input/action_recorder.gd")
 
 signal state_changed()
-signal candy_found(row: int, col: int)
+signal candy_found(row: int, col: int, region: String)
+signal heart_lost(remaining: int)
 signal mistake_made(row: int, col: int, reason: String)
 signal auto_marked(cells: Array)  # NEW — emitted after auto-mark applied
 signal level_won()
@@ -194,9 +196,9 @@ func try_candy(row: int, col: int) -> void
     # Attempt to place candy. Only on is_available() cells.
     # Delegates to CandyRules.attempt_candy.
     # On correct: set CANDY, compute auto_marks, apply LOCKED, record as group.
-    # Emit candy_found + auto_marked.
-    # On wrong: set WRONG, lose heart. Record as group.
-    # Emit mistake_made. Update phase.
+    # Emit candy_found(row, col, region) + auto_marked.
+    # On wrong: set WRONG, lose heart, **clear undo stack** (GDD GR-33 — wrong try is undo boundary).
+    # Record as group. Emit mistake_made + heart_lost. Update phase.
 
 func undo() -> bool
     # Pop last action group from recorder.
@@ -221,8 +223,8 @@ func remaining_candies() -> int
 # --- Serialization ---
 
 func to_save_data() -> Dictionary
-    # Export: board (flat), hearts, mistake_count, hints_used, elapsed_ms, phase, recorder stack
-    # NOTE: GIVEN cells serialize as 'empty' in session; on restore, re-placed from level.givens.
+    # Export session v3 format: cells as flat Array (GIVEN→'empty', LOCKED→'locked'),
+    # hearts, mistake_count, hints_used, elapsedMs, status. Undo stack NOT persisted.
 
 static func from_save_data(data: Dictionary, level_data: Dictionary) -> RefCounted
     # Restore from saved session. Rebuild board array from flat data.
@@ -298,7 +300,7 @@ func _test_mark_toggle() -> void:
 func _test_try_candy_correct() -> void:
     var session := PlaySession.new(_make_level(), 3)
     var found: Array = []
-    session.candy_found.connect(func(r, c): found.append([r, c]))
+    session.candy_found.connect(func(r, c, region): found.append([r, c, region]))
     session.try_candy(0, 1)  # solution[0]=1
     _assert(found.size() == 1, "candy found emitted")
     _assert(session.cell_at(0, 1) == CellModel.CellKind.CANDY, "candy placed")

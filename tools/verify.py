@@ -15,8 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def build_checks(root, godot):
     suites = sorted((root / "game/tests").glob("run_*.gd"))
+    suites += sorted((root / "game/tests").glob("test_*.gd"))
     if not suites:
-        raise ValueError("No Godot run_*.gd suites found")
+        raise ValueError("No Godot run_*.gd or test_*.gd suites found")
     checks = [("python:" + folder, [sys.executable, "-B", "-m", "unittest",
                "discover", folder, "-p", "test_*.py"])
               for folder in ("game/tests", "GDD/tools", "tools/tests")]

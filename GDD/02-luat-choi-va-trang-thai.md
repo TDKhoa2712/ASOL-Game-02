@@ -43,7 +43,7 @@ X đổi **trên hình ngay khi chạm xuống**. Nếu nhấc ngón mà không 
 
 Kéo chỉ được nhận khi ngón đầu di chuyển quá ngưỡng 12 điểm logic. Tại thời điểm đó, cử chỉ chuyển sang một nét X: chế độ đánh/xóa lấy từ **trạng thái ô đầu trước preview**, giữ nguyên đến khi nhấc ngón. Mỗi ô chỉ xử lý một lần trong một nét, kể cả đi ngược; đường đi nhanh phải nội suy qua các ô trung gian, không bỏ lỗ. Không nhận chạm đôi từ một nét kéo. Nét được commit thành một action khi nhấc ngón; preview từng ô vẫn hiện tức thì. Nếu chuyển màn/app vào nền **sau khi đã nhấc của chạm đơn đang chờ**, commit chạm đó rồi lưu; nếu vẫn đang giữ ngón hoặc kéo chưa nhấc, hủy preview chưa hoàn tất. Sau `Won`/`Failed` khóa input board. Trình đọc màn hình dùng action ngữ nghĩa “Đánh X/Xóa X” và “Tìm kẹo”, không phụ thuộc tốc độ chạm vật lý.
 
-Undo hoàn nguyên đúng diff thực tế của action gần nhất: các ô bị bỏ qua trong stroke không nằm trong diff. Nhấn Undo khi khe rỗng không đổi state. Với grouped undo, candy đúng + tất cả auto-marks phát sinh được pop cùng lúc. `TryCandy` sai xóa khe và là ranh giới không thể Undo xuyên qua.
+Undo hoàn nguyên đúng diff thực tế của nhóm gần nhất trong Undo stack: các ô bị bỏ qua trong stroke không nằm trong diff. Nhấn Undo khi stack rỗng không đổi state. Với grouped undo, candy đúng + tất cả auto-marks phát sinh được pop cùng lúc. `TryCandy` sai xóa toàn bộ Undo stack và là ranh giới không thể Undo xuyên qua.
 
 ### Auto-mark và locked
 
@@ -75,7 +75,7 @@ Riêng tutorial Level 1, thao tác sai **trên ô tutorial được gọi rõ b�
 | GR-21 | Mỗi lượt bắt đầu với budget hint từ pace data (`hintCosts`). Hint dùng given và candy đúng đã đặt; bỏ qua X và `x_error` khi tính ứng viên. |
 | GR-22 | Hint hợp lệ tìm S2 trực tiếp hoặc chuỗi S3→S2 còn hiệu lực, tô sáng focus/source/target/ô bị loại và kẹo nguồn; không tự đặt X hoặc kẹo. |
 | GR-23 | Nếu ô đích đang là X, nhắc chạm đôi trực tiếp để thử kẹo. Ô `x_error` không thể là đích đúng nếu dữ liệu level hợp lệ; không đề nghị xóa X đỏ. |
-| GR-24 | Tính lại Hint từ trạng thái hiện tại, không dùng con trỏ trace; bỏ qua bước đã hoàn thành. Chỉ evidence hợp lệ mới đặt `hintCount=1`; `NoHint` không tiêu thụ. |
+| GR-24 | Tính lại Hint từ trạng thái hiện tại, không dùng con trỏ trace; bỏ qua bước đã hoàn thành. Chỉ evidence hợp lệ mới tiêu budget; `NoHint` không tiêu thụ. |
 | GR-37 | Hint dùng progressive reveal: click đầu tiên tô sáng đơn vị (hàng/cột/vùng) chứa ứng viên; click tiếp thu hẹp đến ô cụ thể. Chi phí mỗi bước theo hintCosts từ pace data. |
 
 Hint budget đến từ pace data (`hintCosts`); mỗi click progressive reveal tiêu 1 unit từ budget. Khi budget hết, nút Hint ở trạng thái đã dùng và không phát evidence thêm. Reload cùng session không cấp lại budget. Retry hoặc Restart tạo lượt mới với budget đầy; Back To Home rồi tiếp tục giữ nguyên budget đã dùng. Hint không đổi scorecard, tim hoặc board và có thể đóng để tiếp tục chơi. Nguồn Hint bổ sung từ điểm danh/quảng cáo nằm ngoài MVP.
@@ -104,7 +104,7 @@ Home → Playing ──đủ kẹo──→ Won/Result ──Tiếp tục──�
 
 Khi board init, givens cũng kích hoạt auto-mark (GR-35) trước khi vào Playing.
 
-`Paused` chỉ là trạng thái giao diện; thời gian chơi không tăng ở nền, Help, Settings hoặc Result. Retry/Restart là lượt mới và cấp lại một Hint; Back To Home/app nền giữ lượt hiện tại nhưng xóa khe Undo. Lượt thua khôi phục lại màn kết quả thua, không cấp tim ngầm. Lượt thắng đã được commit vào progress; nếu app đóng ở Result, lần Play sau vào level kế. Khi hết level, Home hiện thông báo hoàn thành nội dung hiện có.
+`Paused` chỉ là trạng thái giao diện; thời gian chơi không tăng ở nền, Help, Settings hoặc Result. Retry/Restart là lượt mới và cấp lại budget hint đầy; Back To Home/app nền giữ lượt hiện tại nhưng xóa Undo stack. Lượt thua khôi phục lại màn kết quả thua, không cấp tim ngầm. Lượt thắng đã được commit vào progress; nếu app đóng ở Result, lần Play sau vào level kế. Khi hết level, Home hiện thông báo hoàn thành nội dung hiện có.
 
 Không có cứu lượt bằng tiền/quảng cáo trong CanDoKu. Bản kiểm thử bốn level có ngoại lệ replay từ L01 theo RST-003 ở [DECISIONS](../docs/DECISIONS.md); bản playtest 30 level phải tắt ngoại lệ này và giữ GR-28. Chính sách của bản phát hành chính thức được chốt sau playtest, không suy ra từ cờ MVP hiện tại.
 

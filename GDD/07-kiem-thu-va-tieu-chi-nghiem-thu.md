@@ -28,7 +28,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-11 | Chạm đơn/đôi/kéo qua X đỏ, rồi Retry hoặc Restart | X đỏ không đổi và không mất tim thêm trong lượt; Retry/Restart reset ô trên cùng level |
 | QA-12 | Hai chạm khác ô, chậm hơn cửa sổ, ba chạm nhanh, chạm thứ hai thành kéo, app nền khi đã/chưa nhấc | Không gộp sai cử chỉ/nhân đôi lỗi; chạm đã nhấc được commit, chạm/nét chưa nhấc bị hủy |
 | QA-13 | Chạm candy đúng/given sau khi tìm | Không xóa, không thêm điểm/tim |
-| QA-14 | Hết 3 tim rồi Retry | Màn thua riêng, cùng level, board/scorecard/tim/Hint/thời gian reset; cấp lại một Hint |
+| QA-14 | Hết 3 tim rồi Retry | Màn thua riêng, cùng level, board/scorecard/tim/Hint/thời gian reset; cấp lại budget hint đầy |
 | QA-15 | Đủ N candy khi còn X/X đỏ nơi khác | Thắng ngay, ghi một result, current level tăng đúng 1 |
 | QA-16 | Score với given, lỗi trước/sau kẹo, Hint và sàn 0 | Giá trị nội bộ bằng `max(0,100×correctPlaced−25×mistakes)` ở mọi thời điểm; chỉ hiển thị tại Result |
 | QA-17 | Input board ở Won/Failed/result | Bị chặn; không ghi kết quả hai lần |
@@ -36,7 +36,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-44 | Kéo từ X qua X/empty/X đỏ/candy, đi nhanh và vòng ngược | Chỉ ô X trên đường thành empty một lần; trạng thái khác giữ nguyên; một batch lưu |
 | QA-45 | Ngưỡng 12 điểm logic, hai ngón/lòng bàn tay, bắt đầu ngoài bàn, nhấc ngoài bàn, app nền | Không nhầm tap/drag/double, không nhận ngón phụ; chạm đã nhấc được lưu, nét chưa nhấc bị hủy, nét hợp lệ commit một lần |
 | QA-54 | Restart giữa lượt: hủy và xác nhận | Hủy giữ nguyên state; xác nhận tạo lượt mới cùng level, reset board/3 tim/lỗi/scorecard/Hint/thời gian và xóa Undo |
-| QA-55 | Undo sau MarkX/ClearX/stroke, sau TryCandy và sau lifecycle | Hoàn nguyên đúng một diff X đơn hoặc toàn stroke; không đổi candy/X đỏ/tim/lỗi/scorecard/Hint; không Redo/không nhảy qua TryCandy; Back/Home/app đóng xóa khe |
+| QA-55 | Undo sau MarkX/ClearX/stroke, sau TryCandy và sau lifecycle | Hoàn nguyên đúng một diff X đơn hoặc toàn stroke (grouped undo nếu có auto-mark); không đổi candy/X đỏ/tim/lỗi/scorecard/Hint; không Redo/không nhảy qua TryCandy; TryCandy sai xóa toàn bộ Undo stack; Back/Home/app đóng xóa stack |
 | QA-58 | Auto-mark: đặt candy đúng trên bàn có ô trống cùng hàng/cột/luống/chéo | Các ô BLANK cùng hàng/cột/luống/chéo với candy chuyển thành LOCKED; locked cells hiện X mờ, player không xóa được; tập locked khớp với tập expected từ quy tắc loại trừ |
 | QA-59 | Grouped undo: Undo ngay sau khi đặt candy có auto-marks | Candy bị hoàn nguyên về BLANK và tất cả locked cells trong cùng nhóm cũng trở về trạng thái trước; một lần nhấn Undo cho cả nhóm |
 | QA-60 | Progressive hint: click Hint nhiều lần trên cùng lượt | Click đầu tiên highlight unit (zone/row/col); click tiếp thu hẹp về ô cụ thể; mỗi click tiêu đúng 1 unit từ budget; không tiêu thêm khi đã reveal đến ô |
@@ -53,7 +53,7 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-22 | Thử sai trên ô hướng dẫn được gọi bằng tọa độ và ô khác ở Level 1; thử sai từ Level 2 | Chỉ ô tutorial được chỉ định tại Level 1 miễn tim/X đỏ; không tô sáng ô; ô khác và mọi level sau theo luật thường |
 | QA-33 | Script tutorial trên Level 1 phát hành | T1–T6 theo X→clear→drag→double-tap→bốn luật→Hint, target có chứng cứ thật; Level 2 không hiện tutorial; bản mở lại không đổi campaign |
 | QA-36 | Kẹo đúng đầu/nửa bàn, thắng, hết tim, giảm chuyển động | “Tìm thấy rồi!/Giỏi lắm!”/sticker đúng mốc; màn thắng/thua khác nhau; nút Next/Retry luôn dùng được; giảm chuyển động giữ thông tin |
-| QA-56 | Hint đã dùng rồi reload/Back, hoặc Retry/Restart; `NoHint` | Reload/Back giữ trạng thái đã dùng; Retry/Restart cấp lại đúng một Hint; `NoHint` không tiêu thụ hoặc cấp thêm |
+| QA-56 | Hint đã dùng rồi reload/Back, hoặc Retry/Restart; `NoHint` | Reload/Back giữ trạng thái đã dùng; Retry/Restart cấp lại budget hint đầy; `NoHint` không tiêu thụ hoặc cấp thêm |
 
 ## 4. Save, UX, thiết bị và phát hành
 

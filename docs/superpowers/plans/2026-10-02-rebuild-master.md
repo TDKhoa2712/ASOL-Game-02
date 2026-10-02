@@ -90,67 +90,66 @@ static func is_cross(k: int) -> bool      # MARK, WRONG hoặc LOCKED — hiện
 static func label(k: int) -> String       # "blank", "mark", ... (lowercase)
 
 # candy_rules.gd
-static func attempt_candy(level: Dictionary, board: Array, row: int, col: int) -> Dictionary
-    # Đúng/sai dựa vào solution[row] == col (GDD 02 GR-15)
-    # Returns: {valid: bool, reason: String, auto_marks: Array[[row,col]]}
-static func compute_auto_marks(level: Dictionary, board: Array, row: int, col: int) -> Array
-    # Lock same row/col/zone/diagonal BLANK cells
-    # Returns: Array of [row, col] to set LOCKED
-static func compute_all_auto_marks(level: Dictionary, board: Array) -> Array
-    # Recompute all locks from all placed candy — for session restore/undo
-static func check_win(level: Dictionary, board: Array) -> bool
-    # N candy (CANDY + GIVEN) đúng vị trí và còn hearts > 0
-static func detect_clash(level: Dictionary, a: Array, b: Array) -> int
-    # Returns Clash enum — chỉ dùng cho giải thích lý do sai
+static func attempt_candy(board: Array, regions: Array, solution: Array,
+        hearts: int, mistake_count: int, row: int, col: int) -> Dictionary
+    # Validation: solution[row] == col (GDD 02 GR-15)
+    # Returns: {board, hearts, mistake_count, phase, events, reason, auto_marks}
+    # phase: "active" | "won" | "failed"
+static func can_place(board: Array, regions: Array, row: int, col: int) -> bool
+    # Core constraint: cell available, no candy in row/col/zone, no adjacent candy
+static func detect_clash(regions: Array, board: Array, a: Array, b: Array) -> int
+    # Returns Clash enum — for mistake explanation only
+static func compute_auto_marks(board: Array, regions: Array, candy_row: int, candy_col: int) -> Array
+    # Returns [row, col] pairs of BLANK cells to set LOCKED
+static func compute_all_auto_marks(board: Array, regions: Array) -> Array
+    # Recompute all locks from all placed candy — for restore/undo
 static func verify_level(level: Dictionary) -> bool
     # Structural validation: size, regions, solution, adjacency, zone uniqueness
+static func tally(correct_count: int, mistake_count: int) -> int
+static func correct_count(board: Array) -> int
 
 # board_solver.gd — Solve loop: S1(mark) → S2(single) → S3(lock intersection)
 enum Technique { ELIMINATION, SINGLE_CANDIDATE, LOCK_INTERSECTION }
-static func next_hint(board: Array, size: int, zones: Array, solution: Array) -> Dictionary
-    # Suy luận từ board state (không dùng solution để chọn target)
-    # solution chỉ dùng cho safety assert
-    # Returns: {found, technique, cell, unit_type, unit_id, reason} hoặc {found: false}
-static func progressive_hint(board: Array, size: int, zones: Array, solution: Array, click: int, max_clicks: int) -> Dictionary
-    # Progressive reveal: click 1 → unit, click 2+ → cell
+static func next_hint(board: Array, size: int, regions: Array, solution: Array) -> Dictionary
+    # Returns: {found, technique, cell, unit_type, unit_id, explanation} or {found: false}
+static func progressive_hint(board: Array, size: int, regions: Array,
+        solution: Array, max_clicks: int) -> Dictionary
     # Returns: {stage: "unit"|"cell"|"place", highlight: Array, text: String}
-static func solve_sequence(size: int, zones: Array, solution: Array) -> Array[int]
-    # Full solve from empty board; returns technique level per cell placement
-static func compute_cell_ranks(board: Array, size: int, zones: Array, solution: Array) -> Array
-    # NxN Array; rank = highest technique needed before cell placement
-    # 0 = already placed, 1 = S1/S2 only, 2 = needs S2, 3 = needs S3, 4 = beyond S3
-static func can_place(board: Array, size: int, zones: Array, row: int, col: int) -> bool
-    # Core constraint check: cell empty, no candy in row/col/zone, no adjacent candy
+static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[int]
+static func compute_cell_ranks(size: int, regions: Array, solution: Array,
+        givens: Array) -> Array
+    # NxN Array; rank = highest technique needed
 ```
 
 ### Module 2: State (`scripts/state/`)
 
 ```gdscript
 # dual_slot_store.gd
-func _init(dir: String, name: String)
-func load() -> Variant           # Returns parsed data hoặc null
-func save(data: Variant) -> bool # Returns success
+func _init(directory: String, file_name: String)
+func write_json(data: Dictionary) -> bool
+func read_json() -> Dictionary  # {ok, data, recovered, reason}
 func remove_all() -> void
 
 # progress_manager.gd
-func _init(store: DualSlotStore)
-func current_level() -> String       # "L01", "L02", ...
-func advance(label: String, score: Dictionary) -> void
-func completed_count() -> int
-func is_done() -> bool
-func to_dict() -> Dictionary
-signal progress_changed()
+func _init(profile_dir: String)
+func load() -> Dictionary      # {ok, data, recovered, reason}
+func save() -> bool
+func new_progress(first_level_id: String) -> Dictionary
+func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary
+func puzzle_fingerprint(level: Dictionary) -> String
+signal save_failed(reason: String)
 
 # session_store.gd
-func _init(store: DualSlotStore)
+func _init(profile_dir: String)
 func save_session(data: Dictionary) -> bool
 func load_session(level_id: String, expected_hash: String) -> Dictionary
-    # Returns: {ok: bool, data: Dictionary, reason: String, recreate: bool}
-func clear_session() -> void
+    # Returns: {ok, data, reason, recreate}
+func clear() -> void
 func has_pending() -> bool
+func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary
 
 # config_store.gd
-func _init(store: DualSlotStore)
+func _init(profile_dir: String)
 func get_option(key: String) -> Variant
 func set_option(key: String, value: Variant) -> void
 signal option_changed(key: String, value: Variant)
@@ -161,32 +160,27 @@ signal option_changed(key: String, value: Variant)
 
 ```gdscript
 # bank_reader.gd
-func load_bank(size: int) -> bool
+func load_bank(size: int) -> Dictionary   # {ok: bool, errors: Array[String]}
 func get_level(size: int, rank: int, index: int) -> Dictionary
-    # Returns: {size, regions, solution, givens, steps, profile, rating, pidHash, logicTrace, seed}
 func get_levels(size: int, rank: int) -> Array
 func level_count(size: int, rank: int) -> int
 func total_count(size: int) -> int
 
 # pace_reader.gd
-func load_pace(size: int) -> bool
+func load_pace(size: int) -> Dictionary   # {ok: bool, errors: Array[String]}
 func get_pace(size: int, rank: int, index: int) -> Dictionary
-    # Returns: {rSeq: Array[int], hintCosts: Array[int]}
-func validate_against_bank(bank: BankReader) -> bool
+func validate_against_bank(bank: BankReader, size: int) -> Array[String]
 
 # level_validator.gd
-static func check(level: Dictionary) -> Dictionary  # {ok: bool, errors: Array[String]}
-static func check_bank_level(level: Dictionary) -> Dictionary  # bank-specific validation
+static func check(level: Dictionary) -> Dictionary  # {ok, errors}
+static func check_bank_level(level: Dictionary) -> Dictionary
 
 # board_transform.gd
 const TRANSFORM_COUNT := 8
-enum Transform { R0, R90, R180, R270, M0, M90, M180, M270 }
 static func apply(level: Dictionary, t: int) -> Dictionary
-    # Returns: level với regions/solution/givens đã transform
 
 # region_painter.gd
-static func assign_colors(zone_grid: Array, zone_count: int) -> Dictionary
-    # Returns: {zone_id: color_index}
+static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dictionary
 ```
 
 ### Module 4: Input (`scripts/input/`)
@@ -293,6 +287,31 @@ static func pulse(strength: int) -> void
 static func set_on(enabled: bool) -> void
 static func is_on() -> bool
 static func has_hardware() -> bool
+```
+
+### Module 7: Campaign (`scripts/campaign/`)
+
+```gdscript
+# campaign_runtime.gd
+func _init(bank: BankReader, pace: PaceReader, progress: ProgressManager, session_store: SessionStore)
+func boot() -> Dictionary  # {ok, level, pace_entry, error}
+func current_level() -> Dictionary
+func current_pace() -> Dictionary
+func advance(score_data: Dictionary) -> Dictionary  # {ok, next_level, campaign_complete}
+func replay_campaign() -> void  # only after campaign_complete
+signal campaign_complete()
+
+# nav_controller.gd
+enum Screen { TITLE, PUZZLE, WIN, FAIL, OPTIONS }
+signal screen_changed(from: String, to: String)
+func go_to(screen: int) -> void
+func current() -> int
+
+# tutorial_guide.gd
+func _init(progress: ProgressManager)
+func is_tutorial(level_id: String) -> bool
+func tutorial_steps(level_id: String) -> Array
+func mark_seen(tutorial_id: String) -> void
 ```
 
 ---
