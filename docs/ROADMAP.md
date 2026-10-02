@@ -1,25 +1,28 @@
 # Kế hoạch thực hiện
 
-> Cập nhật: 2026-10-02. Quyền thực hiện theo [AGENTS](../AGENTS.md).
+> Cập nhật: 2026-10-03. Quyền thực hiện theo [AGENTS](../AGENTS.md).
 
-## Giai đoạn hiện tại: Rebuild
+## Giai đoạn hiện tại: Chỉnh lại Gameplay & UI
 
-Rebuild hoàn chỉnh CanDoKu từ thiết kế tham khảo `extracted_reusable/`. Code viết mới, clean-room. Plan: [Master plan](superpowers/plans/2026-10-02-rebuild-master.md).
+Căn chỉnh gameplay và giao diện theo nguồn tham khảo `extracted_reusable/` và layout cũ `archive/legacy_pre_rebuild/`. Plan: [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md).
 
-### 10 modules, 6 waves
+### Thay đổi chính
 
-| Wave | Modules | Mục tiêu |
-|------|---------|----------|
-| 1 | M01 Core + M05 Theme | Domain logic 6-state, auto-mark, palette |
-| 2 | M02 State + M03 Content + M04 Input | Persistence, bank/pace/transform, touch/undo |
-| 3 | M06 Feedback + M07 Campaign | SFX rate limiting, campaign runtime + cursor |
-| 4 | M08 Screens | UI screens with GIVEN/LOCKED rendering |
-| 5 | M09 Integration | End-to-end wiring, clean-room check, full test |
-| 6 | M10 Content Generation | 30 levels data, pace sidecars, campaign playlist |
+| Thay đổi | Chi tiết |
+|----------|----------|
+| Bỏ auto-lock | Không lock cells khi đặt candy |
+| CellKind 5-state | BLANK, MARK, CANDY, ERROR, GIVEN (bỏ LOCKED, WRONG→ERROR) |
+| Undo X | Code hiện giữ Undo cho thao tác X gần nhất; cần chốt chênh lệch với RST-015 |
+| Bật swipe | Paint/clear X trên nhiều ô |
+| UI layout legacy | Programmatic build: TopBar, StatusRow, RuleCard, BoardCard, BottomDock |
 
-**Kết quả:** Game chơi được 30 levels (auto-mark, undo, progressive hints, save/load).
+**Đầu ra cần nghiệm thu:** Luồng 30 level 4×4, Hint, save/load, cử chỉ và giao diện trên thiết bị. Code nhánh realignment đã triển khai nhiều hạng mục; kết quả headless và QA xem [STATUS](STATUS.md).
 
-## Sau Rebuild: Playtest
+## Giai đoạn trước: Rebuild (hoàn tất)
+
+Rebuild hoàn chỉnh 10 modules với code viết mới, tham khảo hành vi từ `extracted_reusable/`. Tất cả module đã merge vào `dev` (PR #1–#10). Bank playtest hiện có 30 level 4×4; 5×5/6×6 chưa có nội dung tương ứng.
+
+## Sau Chỉnh sửa: Playtest
 
 - Phân phối build hạn chế
 - Thu dữ liệu: thời gian giải, Hint, lỗi, bỏ cuộc, UX

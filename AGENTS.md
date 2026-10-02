@@ -1,66 +1,61 @@
-# Hướng dẫn làm việc cho agent — CanDoKu Rebuild
+# Hướng dẫn làm việc cho agent — CanDoKu
 
 ## 1. Bối cảnh dự án
 
-CanDoKu là puzzle game trên Godot 4.x/GDScript. Đang trong giai đoạn **rebuild hoàn chỉnh** theo plan tại `docs/superpowers/plans/2026-10-02-rebuild-master.md`. Mục tiêu: bản playtest 30 levels (RST-011).
+CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã merge vào `dev` (PR #1–#10). Bank và playlist playtest hiện có **30 level 4×4**; N=4–6 là phạm vi thiết kế, chưa phải nội dung đã có cho mọi kích thước. Đây chưa phải bản phát hành hay nghiệm thu thiết bị. Nhánh `feat/gameplay-ui-realign` đang chỉnh gameplay và UI sau rebuild.
 
 **Đọc trước khi làm:**
-1. Master plan (`docs/superpowers/plans/2026-10-02-rebuild-master.md`) — kiến trúc, interface contracts, parallel map
-2. Module plan được giao (`docs/superpowers/plans/rebuild/NN-name.md`) — chi tiết implement
-3. File này — quy tắc làm việc
+1. [STATUS](docs/STATUS.md) — tiến độ thực tế và vấn đề còn mở
+2. [DECISIONS](docs/DECISIONS.md) và [GDD 02](GDD/02-luat-choi-va-trang-thai.md) — quyết định và luật chuẩn
+3. [Plan realignment](docs/superpowers/plans/2026-10-02-gameplay-ui-realign.md) — yêu cầu ban đầu; đối chiếu với code trước khi triển khai
 
-**Tham khảo thêm khi cần:** [STATUS](docs/STATUS.md), [ROADMAP](docs/ROADMAP.md), [DECISIONS](docs/DECISIONS.md), GDD 02 (luật chuẩn).
+**Chênh lệch đang cần chốt:** RST-015/plan yêu cầu bỏ Undo, nhưng nhánh hiện vẫn có Undo giới hạn cho thao tác X. Không mô tả yêu cầu ban đầu như trạng thái đã triển khai.
 
 ## 2. Nhận module và bắt đầu
 
 ### Preflight
 
 ```bash
-rtk git branch --show-current                         # phải là dev, trừ khi được chỉ định nền khác
-rtk git checkout -b <type>/<scope>-<mo-ta-ngan>       # tạo nhánh theo quy ước bên dưới
-rtk git status                                        # ghi nhận existing changes — KHÔNG động vào
+rtk git branch --show-current
+rtk git status --short
+# Chỉ khi bắt đầu việc mới trên dev và working tree đã được bảo toàn:
+rtk git checkout -b <type>/<scope>-<mo-ta-ngan>
 ```
 
-Tên nhánh dùng chữ thường, số và dấu gạch nối (`kebab-case`), không dùng khoảng trắng hoặc ký tự có dấu. Chọn `type` theo bản chất thay đổi: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `perf`, `build`, `ci` hoặc `hotfix`. Với module rebuild, ưu tiên scope là mã module, ví dụ `feat/m01-core`, `refactor/m04-touch-input`; với thay đổi tài liệu có thể dùng `docs/history-guide`.
+Tên nhánh dùng chữ thường, số và dấu gạch nối (`kebab-case`). Nếu đang ở nhánh của cùng việc, tiếp tục trên nhánh đó; không checkout khi có thay đổi chưa được bảo toàn.
 
 ### Quy tắc thực hiện
 
-- **Một agent, một module, một branch.** Không tự mở module khác.
-- **Đọc interface contracts trong master plan** cho dependencies. Không cần đọc code module khác — contracts là API chính thức.
-- **TDD:** Viết test trước (từ module plan), chạy fail, implement, chạy pass.
-- **Chỉ commit files thuộc module:** `game/scripts/<folder>/` + `game/tests/test_<name>.gd`.
+- **Một agent, một task, một branch.** Không tự mở task khác.
+- **Đọc code, test và STATUS hiện tại** trước khi sửa; plan ghi ý định ban đầu, không thay trạng thái code.
+- **TDD cho feature/bugfix:** viết test trước, chạy fail, implement, chạy pass. Với sửa tài liệu, kiểm liên kết, lệnh và tính nhất quán.
+- **Chỉ stage/commit file thuộc phạm vi được giao.** Giữ nguyên sửa đổi có sẵn của người khác.
 - **Hỏi khi:** thiếu quyết định ảnh hưởng luật, schema, tính năng, phạm vi, hoặc quyền. Ghi quyết định sản phẩm vào DECISIONS.
-- **Không thêm spec/brief/vòng phê duyệt.** Module plan đã đủ — implement trực tiếp.
+- **Không thêm spec/brief/vòng phê duyệt** cho việc đã có quyết định.
 
-### Parallel execution
-
-Modules chạy song song theo wave (xem master plan). Nếu dependency chưa merge:
-- Viết tests + implement dùng interface contracts làm stub
-- Tests dùng mock data matching contract signatures
-- Khi dependency merge vào dev, rebase và chạy lại tests
+Rebuild theo wave đã kết thúc. Không dùng master plan đã dọn khỏi working tree như kế hoạch thực hiện hiện hành.
 
 ## 3. Kiểm chứng (Gate)
 
-Mỗi module phải pass gate trước khi merge:
+Chạy suite liên quan trước, rồi full gate trước khi bàn giao thay đổi code hoặc merge:
 
 ```bash
 # 1. Tests pass
-godot --headless --script game/tests/test_<module>.gd
-# Expected: <MODULE>_PASS
+rtk godot --headless --path game --script res://tests/test_<ten>.gd
 
 # 2. Clean-room — KHÔNG tên từ reference
-grep -rE "(EventBus|EventName|GameState|SaveStore|SoundManager|BgmPauseReason|VibrateManager|BoardGestureRecognizer|CellAction|CellState|BoardInputScheme|BankData|BankSorter|LevelBankIO|BankPage|QueenDoku|queendoku|meowdoku)" game/scripts/
+rtk proxy rg -n "(EventBus|EventName|GameState|SaveStore|SoundManager|BgmPauseReason|VibrateManager|BoardGestureRecognizer|CellAction|CellState|BoardInputScheme|BankData|BankSorter|LevelBankIO|BankPage|QueenDoku|queendoku|meowdoku)" game/scripts/
 # Expected: no matches
 
 # 3. Không import từ extracted_reusable
-grep -r "extracted_reusable" game/scripts/ game/tests/
+rtk proxy rg -n "extracted_reusable" game/scripts/ game/tests/
 # Expected: no matches
 
 # 4. Full verify (trước merge/bàn giao)
 rtk python -B tools/verify.py --godot <executable>
 ```
 
-**Không qua gate = không merge.** Sửa cho đến khi pass.
+**Không qua gate = không merge.** Headless pass không thay QA giao diện, gesture và thiết bị.
 
 ## 4. Code constraints
 
@@ -69,7 +64,7 @@ rtk python -B tools/verify.py --godot <executable>
 - **Signals thay EventBus.** Dùng Godot signals native, không global bus.
 - **Không autoloads.** Composition root pattern — dependencies injected từ app_shell.
 - **Static cho pure logic.** cell_model, candy_rules, board_solver, board_transform — stateless, testable.
-- **Dùng asset có sẵn.** Không tạo .ogg/.png/.svg mới ngoài danh sách đã liệt kê trong master plan.
+- **Asset nguyên gốc.** Kiểm tra tài sản hiện có trước khi thêm; không sao chép giao diện hoặc tài sản thương mại.
 - **Phạm vi:** R1, 30 levels, N=4-6, S1-S3. Không tự mở R2-R4, Endless, IAP, ads, analytics.
 
 ## 5. Nhánh và tích hợp
@@ -79,7 +74,7 @@ rtk python -B tools/verify.py --godot <executable>
 - Tên nhánh phải ngắn, dễ tìm kiếm, dùng lowercase/kebab-case và không lặp thông tin hiển nhiên. Ví dụ: `feat/m03-bank-reader`, `fix/m04-drag-selection`, `docs/history-guide`.
 - `main` giữ mốc hiện có — không push vào main.
 - Commit chọn đúng file thuộc module và tuân theo Conventional Commits: `<type>(<scope>): <mô tả>`, ví dụ `feat(m01): add board solver`, `fix(m04): reject invalid drag path`, `docs(workflow): clarify history lookup`. Dùng `!` và footer `BREAKING CHANGE:` khi có thay đổi phá vỡ contract.
-- Merge vào dev theo thứ tự wave (Wave 1 trước, Wave 2 sau, ...).
+- Rebuild theo wave đã merge; việc hiện tại tích hợp vào `dev` sau khi qua gate và được giao quyền.
 - **Giữ nguyên thay đổi sẵn có.** Không add/reset/dọn files ngoài module. Không xóa tài sản hoặc phát hành ngoài phạm vi được giao.
 - Chỉ merge/push/phát hành trong quyền được giao.
 
@@ -91,20 +86,14 @@ rtk python -B tools/verify.py --godot <executable>
 - Không báo hoàn tất module còn bị chặn.
 - Evidence phải ghi revision, lệnh, kết quả, giới hạn. Log tại `scratch/verification/`.
 
-## 7. Quick reference — Module map
+## 7. Quick reference — Module map đã rebuild
 
-| Module | Folder | Test file | Wave |
-|--------|--------|-----------|------|
-| M01 Core | `scripts/core/` | `test_candy_rules.gd`, `test_board_solver.gd` | 1 |
-| M02 State | `scripts/state/` | `test_dual_slot_store.gd`, `test_progress_manager.gd` | 2 |
-| M03 Content | `scripts/content/` | `test_bank_reader.gd` | 2 |
-| M04 Input | `scripts/input/` | `test_play_session.gd`, `test_touch_decoder.gd` | 2 |
-| M05 Theme | `scripts/theme/` | (no test — const only) | 1 |
-| M06 Feedback | `scripts/feedback/` | `test_feedback.gd` | 3 |
-| M07 Campaign | `scripts/campaign/` | `test_campaign_runtime.gd` | 3 |
-| M08 Screens | `scripts/screens/` | (manual + integration) | 4 |
-| M09 Integration | (all) | (full suite) | 5 |
-| M10 Content Gen | `data/banks/`, `data/campaigns/` | (validation scripts) | 6 |
+| Khu vực | Vị trí | Kiểm chứng chính |
+|---------|--------|-----------------|
+| Core và input | `game/scripts/core/`, `game/scripts/input/` | `test_candy_rules.gd`, `test_board_solver.gd`, `test_play_session.gd`, `test_touch_decoder.gd` |
+| State, content, campaign | `game/scripts/state/`, `content/`, `campaign/` | các suite tương ứng trong `game/tests/` |
+| Feedback và UI | `game/scripts/feedback/`, `screens/`, `theme/` | `test_feedback.gd`, `test_screens.gd`, `test_integration.gd` |
+| Nội dung 30 level | `game/data/banks/`, `game/data/campaigns/` | `tools/validate_content.py`, `tools/verify.py` |
 
 ## 8. Lịch sử
 

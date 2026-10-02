@@ -1,6 +1,6 @@
 # CanDoKu — Technical Stack
 
-> Cập nhật: 2026-10-02. Mô tả công nghệ rebuild.
+> Cập nhật: 2026-10-03. Mô tả công nghệ sau rebuild và trên nhánh realignment.
 
 ## 1. Runtime
 
@@ -18,12 +18,12 @@
 |---------|---------------|
 | Composition root | `app_shell.gd` — no autoloads |
 | Signals | Godot native signals — no EventBus |
-| State model | CellKind 6-state enum (BLANK→LOCKED) |
+| State model | CellKind 5 trạng thái: BLANK, MARK, CANDY, ERROR, GIVEN |
 | Content | Bank + Pace + Playlist architecture |
 | Transform | x8 (4 rotations x 2 mirrors) per level |
-| Undo | Command pattern with grouped actions |
+| Undo | Một thao tác X gần nhất trong PlaySession (còn chênh RST-015) |
 | Hints | Progressive reveal using pace hintCosts |
-| Auto-mark | System auto-locks excluded cells |
+| Mark | Người chơi tự đánh/xóa X; không auto-lock |
 | Save | DualSlotStore A/B atomic JSON |
 
 ## 3. Data schemas
@@ -34,7 +34,7 @@
 | Pace sidecar | v1 | `{bankVersion, size, pacing: {"rank": [{rSeq, hintCosts}]}}` |
 | Campaign playlist | v1 | `{campaignVersion, id, playlist: [{label, size, rank, index}]}` |
 | Progress | v2 | Campaign completion tracking |
-| Session | v3 | In-game state (board, hearts, recorder) |
+| Session | v3 | Board, hearts, hints và thời gian; Undo không được lưu |
 | Settings | v1 | Audio, haptic, accessibility toggles |
 
 ## 4. Content pipeline (offline)
@@ -54,21 +54,20 @@ game/scripts/
 ├── core/       3 files — cell_model, candy_rules, board_solver
 ├── state/      4 files — dual_slot_store, progress, session, config
 ├── content/    5 files — bank_reader, pace_reader, transform, validator, painter
-├── input/      3 files — touch_decoder, action_recorder, play_session
+├── input/      touch_decoder, play_session (action_recorder còn trong tree nhưng không dùng)
 ├── theme/      2 files — palette, layout_tokens
 ├── feedback/   4 files — sfx_catalog, sfx_player, bgm_player, vibration
 ├── campaign/   4 files — campaign_runtime, bank_cursor, nav_controller, tutorial
-└── screens/    7 files — app_shell, title, puzzle_screen/board, result, options, pill
-Total: 32 files, each ≤ 300 lines
+└── screens/    app_shell, title, puzzle_screen/board/layout, rule_icon, result, options, pill
 ```
 
 ## 6. Testing
 
 | Layer | Tool | Files |
 |-------|------|-------|
-| Unit (headless) | `godot --headless --script` | 8 test files |
+| Unit (headless) | `godot --headless --path game --script res://tests/<suite>.gd` | `game/tests/test_*.gd` |
 | Validation | Python validators | GDD/tools/*.py |
-| Integration | Manual + verify.py | 13 journeys |
+| Integration | `test_integration.gd`, `test_screens.gd`, manual UI | Luồng gameplay và màn hình |
 | Clean-room | grep | No reference names in code |
 | Device | Manual QA | Android (iOS pending) |
 

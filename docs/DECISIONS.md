@@ -1,5 +1,21 @@
 # Quyết định điều hành hiện hành
 
+## RST-015 — Chỉnh lại gameplay và giao diện theo nguồn tham khảo
+
+Ngày 2026-10-02. Chủ dự án yêu cầu căn chỉnh lại cơ chế gameplay và giao diện sau khi rebuild đã hoàn tất:
+
+- **Bỏ cơ chế auto-lock cells:** Đặt candy đúng không còn tự động lock ô cùng row/col/zone/diagonal. Ô vẫn tương tác được sau khi đặt candy — đúng hành vi nguồn tham khảo `extracted_reusable/`. Xóa `LOCKED` khỏi `CellKind` enum, xóa `compute_auto_marks`, `compute_all_auto_marks`, `_recompute_all_locks`.
+- **Đổi WRONG → ERROR (vĩnh viễn):** Đặt sai → cell thành ERROR (X đỏ vĩnh viễn, không xóa được) thay vì WRONG. Đúng hành vi tham khảo: sai là vĩnh viễn.
+- **Bỏ undo stack:** Tham khảo không có undo. X marks toggle trực tiếp bằng tap lại. Xóa `ActionRecorder` khỏi play session.
+- **Bật swipe gesture:** Single tap = toggle X, double tap = place candy, swipe = paint/clear X trên nhiều ô — đúng 3 gesture của tham khảo.
+- **Giao diện puzzle screen theo layout cũ:** Rebuild theo `archive/legacy_pre_rebuild/scripts/board_screen.gd`: TopBar (circular buttons) → StatusRow (region progress pill + hearts pill) → RuleCard (3x3 mini-grid icons) → BoardCard (shadow, rounded) → BottomDock (hint button). Programmatic build, cream background, warm aesthetic.
+- **Giao diện title/result screens theo layout cũ:** Orange pill play button, candy logo, colored result backgrounds.
+- **CellKind mới 5-state:** BLANK(0), MARK(1), CANDY(2), ERROR(3), GIVEN(4).
+- Không đổi: luật puzzle (row/col/zone/no-touch), hint system, bank/pace/campaign, save schema version (v3), phạm vi 30 level playtest.
+- Plan: [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md)
+
+**Ghi nhận triển khai 2026-10-03:** Nhánh `feat/gameplay-ui-realign` hiện giữ Undo giới hạn cho X và có nút Undo trong layout, khác yêu cầu “bỏ undo stack” ở trên. Đây là chênh lệch giữa quyết định và code, chưa phải quyết định thay thế; theo dõi tại [STATUS](STATUS.md).
+
 ## RST-014 — Hoàn tất Module 10 (Content Generation) và phát hành 30 level playtest
 
 Ngày 2026-10-02. Hoàn tất Module 10 (Content Generation) theo kế hoạch rebuild CanDoKu:
@@ -26,7 +42,7 @@ Ngày 2026-10-02. Chủ dự án phê duyệt rebuild hoàn chỉnh game CanDoKu
 
 - **Phạm vi:** Viết lại toàn bộ code game thành 10 modules mới, clean-room. Tham khảo hành vi, KHÔNG sao chép code/tên/enum từ reference.
 - **Kiến trúc mới:** Bank + Pace + Playlist cho level system; CellKind 6-state (thêm GIVEN, LOCKED); Auto-mark system; Progressive hints; Command pattern grouped undo; SFX rate limiting; Transform x8.
-- **Plan:** [Master plan](superpowers/plans/2026-10-02-rebuild-master.md) với 10 module plans chi tiết, interface contracts, parallel execution map (6 waves, tối đa 5 agents đồng thời).
+- **Plan lịch sử:** master plan rebuild và 10 module plans đã được dọn khỏi working tree sau khi merge; xem [HISTORY](HISTORY.md) và Git history để tra cứu. Kế hoạch này từng mô tả interface contracts và 6 waves.
 - **AGENTS.md** viết lại tối ưu cho multi-agent parallel execution.
 - Không đổi mục tiêu sản phẩm (vẫn playtest 30 level theo RST-011), schema level v4, phạm vi N=4-6/S1-S3.
 - Thay thế R1/R2/R3/R4 roadmap cũ bằng rebuild → playtest → quyết định phát hành.
