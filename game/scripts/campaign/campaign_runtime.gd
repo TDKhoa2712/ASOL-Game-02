@@ -89,14 +89,21 @@ func resume_level() -> PlaySession:
 			sessions.clear()
 		return null
 	current_session = PlaySession.from_save_data(saved.data, level)
+	if saved.data.get("status") == "won" and saved.data.get("pendingScoreData") is Dictionary:
+		_pending_win = {"label": current_level_label(), "score": saved.data.pendingScoreData.duplicate(true)}
 	return current_session
 
 func on_level_won(label: String, score_data: Dictionary) -> void:
-	if label != current_level_label() or is_campaign_done():
+	if label != current_level_label() or is_campaign_done() or current_session == null or current_session.phase != PlaySession.Phase.WON:
+		return
+	_pending_win = {"label": label, "score": score_data.duplicate(true)}
+	var win_snapshot := current_session.to_save_data()
+	win_snapshot["pendingScoreData"] = score_data.duplicate(true)
+	if not sessions.save_session(win_snapshot):
+		save_failed.emit("session_win")
 		return
 	var advanced := progress.advance_level(label, score_data, playlist_order())
 	if not advanced.ok:
-		_pending_win = {"label": label, "score": score_data.duplicate(true)}
 		save_failed.emit(str(advanced.reason))
 		return
 	_pending_win.clear()

@@ -1,17 +1,19 @@
 # M07 Campaign và hướng mở rộng nội dung
 
-> Ghi nhận ngày 2026-10-02 tại commit `44e5e76` trên nhánh `feat/m07-campaign`.
+> Ghi nhận ngày 2026-10-02 cho M07 khởi tạo tại commit `44e5e76` trên nhánh `feat/m07-campaign`.
 > Đây là ghi chú bàn giao và phương án thiết kế cho giai đoạn sau, không phải quyết định mở phạm vi Endless. [STATUS](STATUS.md) là nguồn tiến độ hiện hành; [DECISIONS](DECISIONS.md) là nguồn quyết định sản phẩm.
 
 ## Đã thực hiện trong M07
 
 - `game/scripts/campaign/bank_cursor.gd`: lưu `(size, rank, index, transform)`, duyệt bank và vòng qua 8 transform, hỗ trợ chuyển đổi từ/đến Dictionary. Khi bank rỗng, cursor giữ nguyên vị trí.
-- `game/scripts/campaign/campaign_runtime.gd`: nhận BankReader, PaceReader, ProgressManager và SessionStore qua constructor; nạp playlist, bank và pace; khởi tạo hoặc khôi phục session; lưu tiến độ khi thắng, giữ session và cho thử lưu lại nếu ghi tiến độ thất bại; xử lý thua, chơi lại level và replay campaign sau khi hoàn tất.
+- `game/scripts/campaign/campaign_runtime.gd`: nhận BankReader, PaceReader, ProgressManager và SessionStore qua constructor; nạp playlist, bank và pace; khởi tạo hoặc khôi phục session; chỉ ghi tiến độ khi session đã thắng; giữ kết quả trong session để thử lưu lại sau lỗi ghi tiến độ, kể cả sau khi mở lại ứng dụng; xử lý thua, chơi lại level và replay campaign sau khi hoàn tất.
 - `game/scripts/campaign/nav_controller.gd`: kiểm tra đường chuyển màn và phát signal khi chuyển hợp lệ.
 - `game/scripts/campaign/tutorial_guide.gd`: theo dõi T1–T6 qua `tutorialSeenIds`, lưu milestone vào tiến độ và phát signal hướng dẫn.
-- `game/tests/test_campaign_runtime.gd`: kiểm tra boot, lưu/khôi phục session, thắng/thua, lỗi lưu và retry, hoàn tất và replay, transform, cursor, điều hướng và tutorial.
+- `game/tests/test_campaign_runtime.gd`: kiểm tra boot, lưu/khôi phục session, từ chối thắng khi chưa giải, thắng/thua, lỗi lưu và retry sau restart, hoàn tất và replay, transform, cursor, điều hướng và tutorial.
 
-Godot 4.7.2 chạy `CAMPAIGN_RUNTIME_PASS`; full `tools/verify.py` đạt PASS. Clean-room check không thấy tên cấm hoặc import từ `extracted_reusable` trong code kiểm tra. Log: `scratch/verification/m07-campaign-44e5e76.txt` và `scratch/verification/20261002T100319.348851Z.txt` (thư mục scratch không được commit). M07 đã commit trên nhánh riêng, chưa merge vào `dev`.
+Kết quả thắng chờ ghi tiến độ được lưu trong snapshot session qua trường tùy chọn `pendingScoreData`. Các trường bắt buộc của session v3 giữ nguyên; dữ liệu chờ này được xóa cùng session sau khi ghi tiến độ thành công.
+
+Godot 4.7.2 chạy `CAMPAIGN_RUNTIME_PASS`; full `tools/verify.py` đạt PASS sau sửa lỗi khôi phục thắng. Clean-room check không thấy tên cấm hoặc import từ `extracted_reusable` trong code kiểm tra. Log mới nhất: `scratch/verification/20261002T103420.821413Z.txt` (thư mục scratch không được commit). M07 đã commit trên nhánh riêng, chưa merge vào `dev`.
 
 ## Giới hạn và việc cần bổ sung trong phạm vi playtest
 

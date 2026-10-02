@@ -13,6 +13,7 @@ var failures: Array[String] = []
 
 func _init() -> void:
 	_test_boot_and_resume()
+	_test_unsolved_win_refused()
 	_test_win_and_save_retry()
 	_test_completion_and_replay()
 	_test_transform_resolution()
@@ -55,7 +56,7 @@ func _test_win_and_save_retry() -> void:
 	var runtime := _runtime("win")
 	_check(runtime.boot().ok, "win boot")
 	_two_entries(runtime)
-	runtime.start_level("L01")
+	_finish_level(runtime)
 	var wins: Array = []
 	runtime.level_won.connect(func(label, next_label): wins.append([label, next_label]))
 	runtime.on_level_won("L01", {"score": 400})
@@ -67,7 +68,7 @@ func _test_win_and_save_retry() -> void:
 	var retry := _runtime("retry")
 	_check(retry.boot().ok, "retry boot")
 	_two_entries(retry)
-	retry.start_level("L01")
+	_finish_level(retry)
 	var blocker := retry.progress._store._slot_file("b") + ".tmp"
 	DirAccess.make_dir_absolute(blocker)
 	var errors: Array = []
@@ -77,9 +78,24 @@ func _test_win_and_save_retry() -> void:
 	_check(retry.current_level_label() == "L01", "failed save keeps progress")
 	_check(retry.has_pending_session(), "failed save keeps session")
 	DirAccess.remove_absolute(blocker)
-	_check(retry.retry_save(), "save retries")
-	_check(retry.current_level_label() == "L02", "retry advances")
+	var rebooted := CampaignRuntime.new(BankReader.new(), PaceReader.new(), ProgressManager.new(retry.progress._store._dir), SessionStore.new(retry.progress._store._dir))
+	_check(rebooted.boot().ok, "reboot after failed win")
+	_two_entries(rebooted)
+	_check(rebooted.retry_save(), "save retries after reboot")
+	_check(rebooted.current_level_label() == "L02", "reboot retry advances")
+	_check(rebooted.progress.current.get("results", {}).get("L01", {}).get("score") == 400, "retry keeps score data")
 	_cleanup(retry)
+	_cleanup(rebooted)
+
+func _test_unsolved_win_refused() -> void:
+	var runtime := _runtime("unsolved")
+	_check(runtime.boot().ok, "unsolved boot")
+	runtime.on_level_won("L01", {"score": 900})
+	_check(not runtime.is_campaign_done(), "cannot win directly after boot")
+	runtime.start_level("L01")
+	runtime.on_level_won("L01", {"score": 900})
+	_check(not runtime.is_campaign_done(), "cannot win active unsolved session")
+	_cleanup(runtime)
 
 func _test_loss_and_restart() -> void:
 	var runtime := _runtime("loss")
@@ -98,7 +114,7 @@ func _test_completion_and_replay() -> void:
 	_check(not runtime.is_campaign_done(), "early replay refused")
 	var completions: Array = []
 	runtime.campaign_complete.connect(func(): completions.append(true))
-	runtime.start_level("L01")
+	_finish_level(runtime)
 	runtime.on_level_won("L01", {"score": 800})
 	_check(runtime.is_campaign_done(), "last level completes campaign")
 	_check(runtime.completed_count() == 1 and completions.size() == 1, "completion recorded and signaled")
@@ -157,6 +173,15 @@ func _test_tutorial() -> void:
 func _cleanup(runtime: CampaignRuntime) -> void:
 	runtime.progress._store.remove_all()
 	runtime.sessions.clear()
+
+func _finish_level(runtime: CampaignRuntime) -> void:
+	var session := runtime.start_level("L01")
+	if session == null:
+		failures.append("FAIL: could not start level to finish")
+		return
+	for row in session.level.size:
+		session.try_candy(row, int(session.level.solution[row]))
+	_check(session.phase == session.Phase.WON, "sample level solved")
 
 func _check(condition: bool, label: String) -> void:
 	if not condition:
