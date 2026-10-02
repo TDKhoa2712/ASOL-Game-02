@@ -13,7 +13,7 @@
 
 Kết quả thắng chờ ghi tiến độ được lưu trong snapshot session qua trường tùy chọn `pendingScoreData`. Các trường bắt buộc của session v3 giữ nguyên; dữ liệu chờ này được xóa cùng session sau khi ghi tiến độ thành công.
 
-Godot 4.7.2 chạy `CAMPAIGN_RUNTIME_PASS`; full `tools/verify.py` đạt PASS sau sửa lỗi khôi phục thắng. Clean-room check không thấy tên cấm hoặc import từ `extracted_reusable` trong code kiểm tra. Log mới nhất: `scratch/verification/20261002T103420.821413Z.txt` (thư mục scratch không được commit). M07 đã commit trên nhánh riêng, chưa merge vào `dev`.
+Godot 4.7.2 chạy `CAMPAIGN_RUNTIME_PASS`; full `tools/verify.py` đạt PASS sau sửa lỗi khôi phục thắng. Clean-room check không thấy tên cấm hoặc import từ `extracted_reusable` trong code kiểm tra. Log mới nhất: `scratch/verification/20261002T103420.821413Z.txt` (thư mục scratch không được commit). M07 đã commit trên nhánh riêng; [PR #7](https://github.com/TDKhoa2712/ASOL-Game-02/pull/7) đang mở vào `dev`.
 
 ## Giới hạn và việc cần bổ sung trong phạm vi playtest
 

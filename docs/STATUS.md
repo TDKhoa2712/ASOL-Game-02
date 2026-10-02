@@ -35,7 +35,7 @@
 
 **Wave 3 (M06 Feedback + M07 Campaign):**
 - **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). PR #6 đang mở vào `dev`.
-- **M07 Campaign:** Đã triển khai trên nhánh `feat/m07-campaign` (khởi tạo tại commit `44e5e76`), chưa merge vào `dev`. Bốn script campaign và `test_campaign_runtime.gd` đạt module test, clean-room checks và full headless verification sau sửa lỗi khôi phục thắng (log `scratch/verification/20261002T103420.821413Z.txt`). Dữ liệu mẫu hiện chỉ có L01; ghi chú phạm vi còn lại và hướng Endless tại [CAMPAIGN_FOLLOWUP](CAMPAIGN_FOLLOWUP.md).
+- **M07 Campaign:** Đã triển khai trên nhánh `feat/m07-campaign` (khởi tạo tại commit `44e5e76`), [PR #7](https://github.com/TDKhoa2712/ASOL-Game-02/pull/7) đang mở vào `dev`. Bốn script campaign và `test_campaign_runtime.gd` đạt module test, clean-room checks và full headless verification sau sửa lỗi khôi phục thắng (log `scratch/verification/20261002T103420.821413Z.txt`). Dữ liệu mẫu hiện chỉ có L01; ghi chú phạm vi còn lại và hướng Endless tại [CAMPAIGN_FOLLOWUP](CAMPAIGN_FOLLOWUP.md).
 
 ```
 Wave 1: M01 + M05           (đã merge)
