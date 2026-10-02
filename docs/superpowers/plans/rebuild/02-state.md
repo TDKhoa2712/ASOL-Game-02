@@ -155,7 +155,7 @@ func load_session(level_id: String, expected_hash: String) -> Dictionary
     # Returns {ok, data, reason, recreate} — recreate=true khi hash mismatch
 func clear() -> void
 func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary
-    # {sessionVersion, levelId, puzzleHash, boardSize, cells, hearts, mistakeCount, hintCount, elapsedMs}
+    # {sessionVersion, levelId, puzzleHash, boardSize, cells, hearts, mistake_count, hints_used, elapsedMs}
 
 # --- Internal ---
 
@@ -171,8 +171,8 @@ func _validate(data: Dictionary, level_id: String, expected_hash: String) -> Dic
   "boardSize": 4,
   "cells": {},
   "hearts": 3,
-  "mistakeCount": 0,
-  "hintCount": 0,
+  "mistake_count": 0,
+  "hints_used": 0,
   "elapsedMs": 0
 }
 ```

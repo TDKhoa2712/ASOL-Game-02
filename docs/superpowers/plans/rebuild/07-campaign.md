@@ -12,13 +12,14 @@ Reference có level_selector system (60+ files, 5 cursor classes, AB test strate
 ### Hai chế độ chơi
 
 1. **Campaign mode** (demo-30): Playlist cố định 30 level tham chiếu vào banks. Player chơi tuần tự L01→L30.
-2. **Infinite mode** (future): Bank cursor duyệt tất cả levels theo rank progression, transform ×8 cho replay. (Chỉ thiết kế API, chưa cần UI)
+2. **Infinite mode** (future — không implement trong R1): Bank cursor duyệt tất cả levels theo rank progression, transform ×8 cho replay. (Chỉ thiết kế API, chưa cần UI)
 
 ---
 
 ## File 1: `game/scripts/campaign/bank_cursor.gd`
 
 **Trách nhiệm:** Track position in level bank, handle transforms for replay.
+BankCursor phục vụ transform x8 content multiplication cho campaign hiện tại; infinite loop mode là future.
 
 **Tham khảo hành vi từ:** `gameplay/selector/cursor/main_bank_cursor.gd` (position + transform counter)
 
@@ -84,7 +85,7 @@ static func from_dict(d: Dictionary, bank_count: int) -> RefCounted  # returns B
 
 ## File 2: `game/scripts/campaign/campaign_runtime.gd`
 
-**Trách nhiệm:** Campaign lifecycle — load, play, advance, replay. Supports both playlist mode and infinite mode.
+**Trách nhiệm:** Campaign lifecycle — load, play, advance, replay. Supports both playlist mode and infinite mode (future — không implement trong R1).
 
 **Tham khảo hành vi từ:** `gameplay/selector/level_selector.gd` + `mvp_runtime.gd` hiện tại
 
@@ -150,6 +151,9 @@ func restart_level() -> PlaySession
 
 func replay_campaign() -> void
     # Reset to first playlist entry (RST-003)
+    # Chỉ available sau `campaign_complete`. UI 'Replay from L01' chỉ hiện
+    # trên result screen của level cuối cùng. RST-003 không áp dụng cho
+    # playtest 30 level.
 
 # --- Queries ---
 
@@ -189,7 +193,7 @@ func _load_playlist(path: String) -> Dictionary
 
 **Khác biệt với reference:**
 - Playlist-based thay cursor-based progression (cho campaign mode)
-- Bank cursor available nhưng chưa dùng cho UI (future infinite mode)
+- Bank cursor available nhưng chưa dùng cho UI (future — không implement trong R1)
 - `_fetch_level()` integrates transform system
 - `current_pace()` returns hint economy data for hint system
 - Không DDA difficulty adjustment

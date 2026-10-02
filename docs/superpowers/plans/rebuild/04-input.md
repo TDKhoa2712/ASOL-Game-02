@@ -160,17 +160,17 @@ const ActionRecorder = preload("res://scripts/input/action_recorder.gd")
 
 signal state_changed()
 signal candy_found(row: int, col: int)
-signal mistake_made(row: int, col: int, clash_label: String)
+signal mistake_made(row: int, col: int, reason: String)
 signal auto_marked(cells: Array)  # NEW — emitted after auto-mark applied
 signal level_won()
 signal level_failed()
 
-enum Phase { ACTIVE, WON, LOST }
+enum Phase { ACTIVE, WON, FAILED }
 
 var level: Dictionary
 var board: Array = []           # NxN Array of CellKind values
 var hearts: int = 3
-var errors: int = 0
+var mistake_count: int = 0
 var hints_used: int = 0
 var elapsed_ms: int = 0
 var phase: int = Phase.ACTIVE
@@ -221,7 +221,8 @@ func remaining_candies() -> int
 # --- Serialization ---
 
 func to_save_data() -> Dictionary
-    # Export: board (flat), hearts, errors, hints_used, elapsed_ms, phase, recorder stack
+    # Export: board (flat), hearts, mistake_count, hints_used, elapsed_ms, phase, recorder stack
+    # NOTE: GIVEN cells serialize as 'empty' in session; on restore, re-placed from level.givens.
 
 static func from_save_data(data: Dictionary, level_data: Dictionary) -> RefCounted
     # Restore from saved session. Rebuild board array from flat data.

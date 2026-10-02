@@ -26,6 +26,8 @@ game/data/
 
 ### Schema: Bank file (`bank_{N}x{N}.json`)
 
+> **Lưu ý:** Bank levels là superset của GDD level v4. Bank-only fields (`seed`, `steps`, `profile`, `rating`, `pidHash`) là pipeline metadata. `bank_reader.get_level()` trả level v4 fields cho gameplay consumers; bank-only fields chỉ dùng trong pipeline.
+
 ```json
 {
   "bankVersion": 1,
@@ -225,6 +227,8 @@ func _pace_path(size: int) -> String
 ---
 
 ## File 3: `game/scripts/content/level_validator.gd`
+
+> **Phân công validation:** M01 `candy_rules.verify_level()` kiểm tra structural (size, regions, solution, adjacency, zone uniqueness). M03 `level_validator.check()` kiểm tra full schema v4 (bao gồm trace, givens validation, id format). `check_bank_level()` thêm bank-specific fields.
 
 **Trách nhiệm:** Schema validation cho individual level entries.
 

@@ -21,10 +21,10 @@
 ```bash
 # 1. Kiểm tra branch — phải bắt đầu từ dev
 git status
-git branch --show-current   # phải là dev hoặc codex/<module>
+git branch --show-current   # phải là dev hoặc <type>/<scope>-<mô-tả>
 
 # 2. Tạo nhánh module (nếu chưa có)
-git checkout -b codex/rebuild-module-NN
+git checkout -b <type>/<scope>-<mô-tả>   # ví dụ: feat/m01-core, feat/m03-content
 
 # 3. Giữ nguyên thay đổi sẵn có — KHÔNG stash/reset code người khác
 git status  # ghi nhận modified files, chỉ commit files thuộc module mình
@@ -144,7 +144,8 @@ signal progress_changed()
 # session_store.gd
 func _init(store: DualSlotStore)
 func save_session(data: Dictionary) -> bool
-func load_session() -> Variant       # Dictionary hoặc null
+func load_session(level_id: String, expected_hash: String) -> Dictionary
+    # Returns: {ok: bool, data: Dictionary, reason: String, recreate: bool}
 func clear_session() -> void
 func has_pending() -> bool
 
@@ -172,6 +173,10 @@ func load_pace(size: int) -> bool
 func get_pace(size: int, rank: int, index: int) -> Dictionary
     # Returns: {rSeq: Array[int], hintCosts: Array[int]}
 func validate_against_bank(bank: BankReader) -> bool
+
+# level_validator.gd
+static func check(level: Dictionary) -> Dictionary  # {ok: bool, errors: Array[String]}
+static func check_bank_level(level: Dictionary) -> Dictionary  # bank-specific validation
 
 # board_transform.gd
 const TRANSFORM_COUNT := 8
@@ -215,6 +220,8 @@ signal heart_lost(remaining: int)
 signal auto_marked(cells: Array)
 signal level_won()
 signal level_failed()
+# Given serialization: GIVEN cells lưu "empty" trong session JSON.
+# Khi init/restore, play_session đọc level.givens để đặt CellKind.GIVEN trên board.
 enum Phase { ACTIVE, WON, FAILED }
 func _init(level_data: Dictionary, initial_hearts: int = 3)
 func mark_x(row: int, col: int) -> void
@@ -409,7 +416,7 @@ game/
 **Tối ưu song song:** Wave 1+2 có thể chạy 5 agents đồng thời → giảm wall-clock từ ~17h xuống ~8h.
 
 **Quy tắc phân nhánh song song:**
-- Mỗi agent tạo branch `codex/rebuild-module-NN` từ dev
+- Mỗi agent tạo branch `<type>/<scope>-<mô-tả>` từ dev (ví dụ: `feat/m01-core`, `fix/m04-drag-selection`)
 - Chỉ commit files thuộc module mình: `game/scripts/<folder>/` + `game/tests/test_<name>.gd`
 - Không sửa files ngoài module (trừ khi module plan chỉ định rõ)
 - Merge vào dev theo thứ tự wave: Wave 1 merge trước, rồi Wave 2, v.v.

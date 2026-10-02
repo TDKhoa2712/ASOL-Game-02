@@ -7,6 +7,8 @@
 
 Module 9 modules trước tạo code hoàn chỉnh nhưng game cần DATA để chạy: level banks, pace sidecars, và campaign playlist. Module này dùng tools có sẵn (`GDD/tools/generate_levels.py`, `GDD/tools/validate_levels.py`) để sinh và validate level data theo bank schema mới.
 
+> **Lưu ý CLI:** Script mới `generate_bank.py` với CLI `--size/--rank/--count/--output` thay thế legacy `GDD/tools/generate_levels.py` (dùng `--profile/--out/--exclude`). Output là raw levels; `convert_to_bank.py` đóng gói thành bank format v1.
+
 ---
 
 ## Bước 1: Sinh levels cho bank 4×4
