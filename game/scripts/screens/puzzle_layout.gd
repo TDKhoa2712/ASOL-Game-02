@@ -76,28 +76,22 @@ static func build(root: Control) -> Dictionary:
 
 	var rules := _panel("RuleCard", Palette.CARD_CORNER, Palette.SHADOW_SOFT)
 	stack.add_child(rules)
-	var grid := GridContainer.new()
-	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 24)
-	grid.add_theme_constant_override("v_separation", 14)
-	rules.add_child(grid)
+	var rule_row := HBoxContainer.new()
+	rule_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	rule_row.add_theme_constant_override("separation", 20)
+	rules.add_child(rule_row)
 	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
 	var rule_data := [
-		["X.X/.C./.X.", "1 kẹo mỗi hàng"],
-		[".X./..C/..X", "1 kẹo mỗi cột"],
-		["X../XC./...", "1 kẹo mỗi vùng"],
-		["X.X/.C./X.X", "Kẹo không chạm chéo"],
+		[".X./XCX/.X.", "1 kẹo mỗi hàng và cột"],
+		["XXX/XC./X..", "1 kẹo mỗi vùng"],
+		["XXX/XCX/XXX", "Kẹo không chạm góc"],
 	]
 	for rule in rule_data:
 		var tile := HBoxContainer.new()
-		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		tile.add_theme_constant_override("separation", 8)
-		grid.add_child(tile)
+		tile.add_theme_constant_override("separation", 6)
+		rule_row.add_child(tile)
 		tile.add_child(RuleIcon.new(rule[0], candy_texture))
-		var caption := _label(rule[1], 20, Palette.TEXT_RULE)
-		caption.custom_minimum_size.x = 200
-		caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		var caption := _label(rule[1], 18, Palette.TEXT_RULE)
 		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		tile.add_child(caption)
 
@@ -155,7 +149,7 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 		icon.custom_minimum_size = Vector2(34, 34)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		var zone_id: String = char(65 + index)
-		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Color(1, 1, 1, 0.25)
+		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Palette.ICON_MUTED
 		regions_row.add_child(icon)
 	var heart_texture := load("res://assets/ui/board/heart.svg") as Texture2D
 	for index in range(3):
@@ -163,7 +157,7 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 		icon.texture = heart_texture
 		icon.custom_minimum_size = Vector2(36, 30)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.modulate = Color.WHITE if index < session.hearts else Color(1, 1, 1, 0.25)
+		icon.modulate = Palette.TEXT_ON_ACCENT if index < session.hearts else Palette.ICON_MUTED
 		lives_row.add_child(icon)
 
 static func _panel(node_name: String, radius: int, shadow: Color) -> PanelContainer:
@@ -186,7 +180,7 @@ static func _circle(node_name: String, icon_path: String, diameter: float) -> Bu
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color("#F4EEE9") if state == "pressed" else Color("#F0EBE6") if state == "disabled" else Color("#FFFDFB") if state == "hover" else Color.WHITE
+		style.bg_color = Palette.SURFACE_PRESSED if state == "pressed" else Palette.SURFACE_DISABLED if state == "disabled" else Palette.SURFACE_HOVER if state == "hover" else Palette.PILL_BG
 		style.set_corner_radius_all(999)
 		style.shadow_color = Palette.SHADOW_SOFT
 		style.shadow_size = 4 if state == "pressed" else 8

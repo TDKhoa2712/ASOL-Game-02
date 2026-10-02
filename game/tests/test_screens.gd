@@ -129,7 +129,12 @@ func _test_title_screen() -> void:
 	_assert(title.find_child("CandyLogo", true, false) != null, "title logo present")
 	_assert(title.find_child("SafeArea", true, false) != null, "title safe area present")
 	_assert(title.help_btn != null and title.help_dialog != null, "home help restored")
-	_assert(title.level_label != null and title.level_label.text.contains("1-2"), "title level label updated")
+	_assert(title.play_btn.text == "Level 1-2", "play button shows only current level")
+	_assert(title.find_child("LevelLabel", true, false) == null, "progress count is absent from home")
+	_assert(title.title_label.get_parent().name == "HeroBlock" and title.play_btn.get_parent().name == "ActionBlock", "home separates top branding from bottom action")
+	mock_rt.pending = true
+	title._update_ui()
+	_assert(title.play_btn.text == "Level 1-2", "resume action keeps the same level label")
 
 	var play_box := [false]
 	title.play_pressed.connect(func(): play_box[0] = true)
@@ -196,7 +201,7 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == ConfigStore.EDITABLE_KEYS.size(), "options rows generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 2 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and contrast row generated")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
 	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 

@@ -265,7 +265,7 @@ func _test_session_autosave_and_reboot_recovery() -> void:
 
 	_assert(shell2.runtime.has_pending_session(), "pending session detected on reboot")
 	var title2 = shell2.screen_host.get_child(0)
-	_assert(title2.play_btn.text == "Tiếp tục", "title button displays 'Tiếp tục'")
+	_assert(title2.play_btn.text == "Level %s" % shell2.runtime.current_level_label().trim_prefix("L"), "title button displays only the resumed level")
 
 	title2._on_play()
 	var puzzle2 = shell2.screen_host.get_child(0)

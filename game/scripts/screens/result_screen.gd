@@ -80,15 +80,15 @@ func _ensure_nodes() -> void:
 	stack.add_child(retry_btn)
 	replay_btn = _make_button("ReplayBtn", "Chơi lại")
 	stack.add_child(replay_btn)
-	home_btn = _make_button("HomeBtn", "Trang chủ")
+	home_btn = _make_button("HomeBtn", "Trang chủ", true)
 	stack.add_child(home_btn)
 
-func _make_button(node_name: String, caption: String) -> Button:
+func _make_button(node_name: String, caption: String, is_home: bool = false) -> Button:
 	var button := Button.new()
 	button.name = node_name
 	button.text = caption
-	button.custom_minimum_size = Vector2(460, 88)
-	button.add_theme_font_size_override("font_size", 32)
+	button.custom_minimum_size = Vector2(240, 52) if is_home else Vector2(240, 64)
+	button.add_theme_font_size_override("font_size", 28)
 	return button
 
 func _ready() -> void:
@@ -113,7 +113,7 @@ func setup(won: bool, score: int, level_id: String, is_last: bool) -> void:
 
 func _update_ui() -> void:
 	if _background != null:
-		_background.color = Color("#E2F1E8") if _is_win else Color("#FCECE2")
+		_background.color = Palette.RESULT_WIN_BG if _is_win else Palette.RESULT_FAIL_BG
 	if message_label != null:
 		if _is_win:
 			message_label.text = "Hoàn thành chiến dịch!" if _is_last_level else "Hoan hô!"
@@ -137,15 +137,15 @@ func _update_ui() -> void:
 		if button == null:
 			continue
 		var style := StyleBoxFlat.new()
-		style.bg_color = Color("#55A683") if _is_win else Color("#F49359")
+		style.bg_color = Palette.RESULT_WIN_BUTTON if _is_win else Palette.RESULT_FAIL_BUTTON
 		if button == home_btn:
-			style.bg_color = Color.WHITE
-		style.set_corner_radius_all(999)
+			style.bg_color = Palette.PILL_BG
+		style.set_corner_radius_all(16)
 		style.set_content_margin_all(14)
 		button.add_theme_stylebox_override("normal", style)
 		button.add_theme_stylebox_override("hover", style)
 		button.add_theme_stylebox_override("pressed", style)
-		button.add_theme_color_override("font_color", Palette.INK if button == home_btn else Color.WHITE)
+		button.add_theme_color_override("font_color", Palette.INK if button == home_btn else Palette.TEXT_ON_ACCENT)
 
 func _on_next() -> void:
 	next_pressed.emit()

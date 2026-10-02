@@ -133,7 +133,7 @@ func _board_rect() -> Rect2:
 	return Rect2((size - Vector2.ONE * side) * 0.5, Vector2.ONE * side)
 
 func _cell_gap(board_w: float) -> float:
-	return maxf(2.0, board_w * LayoutTokens.CELL_GAP_RATIO)
+	return maxf(3.0, board_w * LayoutTokens.CELL_GAP_RATIO)
 
 func _cell_at(pos: Vector2) -> Array:
 	if _session == null:
@@ -174,7 +174,7 @@ func _draw() -> void:
 		return
 	var br := _board_rect()
 	var card_sb := StyleBoxFlat.new()
-	card_sb.bg_color = Palette.BG_PAPER
+	card_sb.bg_color = Palette.PILL_BG
 	card_sb.set_corner_radius_all(int(br.size.x * LayoutTokens.CARD_CORNER_RATIO))
 	var expanded_rect := br.grow(LayoutTokens.CARD_GROW)
 	draw_style_box(card_sb, expanded_rect)
@@ -229,30 +229,41 @@ func _draw() -> void:
 				draw_style_box(hl_sb, cell_rect)
 
 func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
-	var pad := rect.size.x * 0.16
-	var candy_rect := rect.grow(-pad)
 	if is_given:
-		var halo_center := rect.position + rect.size * 0.5
-		var halo_rad := rect.size.x * 0.42
-		draw_arc(halo_center, halo_rad, 0.0, TAU, 32, Palette.GIVEN_HALO, 3.0)
-	var tint := Palette.GIVEN_CANDY if is_given else Palette.CANDY_BROWN
+		draw_circle(rect.get_center(), rect.size.x * 0.38, Palette.GIVEN_HALO)
 	if _candy_tex != null:
-		draw_texture_rect(_candy_tex, candy_rect, false, tint)
+		var candy_size := rect.size * 0.74
+		var candy_rect := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
+		draw_texture_rect(_candy_tex, candy_rect, false)
 	else:
-		var center := rect.position + rect.size * 0.5
-		var rad := candy_rect.size.x * 0.45
-		draw_circle(center, rad, tint)
-		if not is_given:
-			var hl_center := center - Vector2(rad * 0.3, rad * 0.3)
-			draw_circle(hl_center, rad * 0.22, Palette.CANDY_LIGHT)
+		_draw_candy_procedural(rect)
+
+func _draw_candy_procedural(rect: Rect2) -> void:
+	var center := rect.get_center()
+	var radius := rect.size.x * 0.25
+	var outline := Palette.CANDY_OUTLINE
+	for direction in [-1.0, 1.0]:
+		var wrapper := PackedVector2Array([
+			center + Vector2(direction * radius * 0.65, 0),
+			center + Vector2(direction * radius * 1.6, -radius * 0.65),
+			center + Vector2(direction * radius * 1.6, radius * 0.65),
+		])
+		draw_colored_polygon(wrapper, Palette.CANDY_LIGHT)
+		draw_polyline(wrapper, outline, 2.0, true)
+	draw_circle(center, radius, Palette.CANDY_BROWN)
+	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
 
 func _draw_cell_x(rect: Rect2, is_error: bool) -> void:
 	var stroke_col: Color = Palette.ERROR_RED if is_error else Palette.MARK_WHITE
 	var pad := rect.size.x * 0.28
-	var w := maxf(2.5, rect.size.x * 0.08)
+	var w := maxf(4.0, rect.size.x * 0.09)
 	var p1 := rect.position + Vector2(pad, pad)
 	var p2 := rect.end - Vector2(pad, pad)
 	var p3 := Vector2(rect.end.x - pad, rect.position.y + pad)
 	var p4 := Vector2(rect.position.x + pad, rect.end.y - pad)
-	draw_line(p1, p2, stroke_col, w)
-	draw_line(p3, p4, stroke_col, w)
+	draw_line(p1, p2, stroke_col, w, true)
+	draw_line(p3, p4, stroke_col, w, true)
+	if is_error:
+		var badge_center := rect.position + rect.size * Vector2(0.78, 0.22)
+		draw_circle(badge_center, rect.size.x * 0.09, Palette.TEXT_ON_ACCENT)
+		draw_circle(badge_center, rect.size.x * 0.07, Palette.ERROR_RED)

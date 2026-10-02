@@ -1,5 +1,7 @@
 extends Control
 
+const Palette = preload("res://scripts/theme/palette.gd")
+
 var pattern: String = ""
 var candy_texture: Texture2D
 
@@ -18,15 +20,15 @@ func _draw() -> void:
 			var mark: String = pattern[index] if index < pattern.length() else "."
 			var rect := Rect2(Vector2(col, row) * (cell_side + gap), Vector2.ONE * cell_side)
 			var background := StyleBoxFlat.new()
-			background.bg_color = Color("#6D4A45") if mark == "X" else Color("#FAF3EE")
+			background.bg_color = Palette.TEXT_STAT if mark == "X" else Palette.RULE_EMPTY
 			background.set_corner_radius_all(4)
 			draw_style_box(background, rect)
 			if mark == "X":
 				var inset: float = cell_side * 0.24
-				draw_line(rect.position + Vector2.ONE * inset, rect.end - Vector2.ONE * inset, Color.WHITE, 2.5)
-				draw_line(rect.position + Vector2(cell_side - inset, inset), rect.position + Vector2(inset, cell_side - inset), Color.WHITE, 2.5)
+				draw_line(rect.position + Vector2.ONE * inset, rect.end - Vector2.ONE * inset, Palette.TEXT_ON_ACCENT, 2.5)
+				draw_line(rect.position + Vector2(cell_side - inset, inset), rect.position + Vector2(inset, cell_side - inset), Palette.TEXT_ON_ACCENT, 2.5)
 			elif mark == "C":
 				if candy_texture != null:
 					draw_texture_rect(candy_texture, rect.grow(-1.5), false)
 				else:
-					draw_circle(rect.get_center(), cell_side * 0.3, Color("#A56643"))
+					draw_circle(rect.get_center(), cell_side * 0.3, Palette.CANDY_BROWN)
