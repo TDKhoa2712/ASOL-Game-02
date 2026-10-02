@@ -143,30 +143,29 @@ func _on_board_double_tap(row: int, col: int) -> void:
     # Play SFX + haptic based on result
 
 func _on_hint() -> void:
-    # Progressive hint using pace data:
-    # Click 1: get hint from BoardSolver.progressive_hint(click=1)
-    #          -> highlight entire unit (row/col/zone)
-    # Click 2+: BoardSolver.progressive_hint(click=N)
-    #          -> narrow to cell
-    # Use current_pace().hintCosts to determine max clicks
+    # Budget check: pace defines max hint clicks via hintCosts array.
     var pace_data := runtime.current_pace()
     var costs := pace_data.get("hintCosts", [1])
-    var max_clicks := costs[min(_hint_click_count, costs.size() - 1)] if not costs.is_empty() else 1
+    var max_clicks := costs.size()
+    if _hint_click_count >= max_clicks:
+        return  # budget exhausted
+    # Progressive hint: contract returns {stage, highlight, text} or {found:false}.
     var level := session.level
     var hint := BoardSolver.progressive_hint(
         session.board, level["size"], level["regions"],
         level["solution"], _hint_click_count + 1
     )
-    if hint.is_empty():
-        return
+    if not hint.get("found", true):
+        return  # no hint available (board already solved or no solvable step)
     _hint_click_count += 1
-    _hint_target = [hint["row"], hint["col"]]
-    if hint.has("unit_type"):
-        board.highlight_unit(hint["unit_type"], hint["unit_id"])
-    else:
-        board.highlight_cell(hint["row"], hint["col"])
-    sfx.play(SfxCatalog.Effect.HINT_SHOW)
     session.use_hint()
+    # hint.highlight = {type: "unit"/"cell", unit_type?, unit_id?, row?, col?}
+    var hl := hint["highlight"]
+    if hl["type"] == "unit":
+        board.highlight_unit(hl["unit_type"], hl["unit_id"])
+    else:
+        board.highlight_cell(hl["row"], hl["col"])
+    sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
 func _on_undo() -> void:
     # session.undo(), play SFX

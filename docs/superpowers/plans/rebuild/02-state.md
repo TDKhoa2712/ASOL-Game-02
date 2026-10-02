@@ -169,7 +169,7 @@ func _validate(data: Dictionary, level_id: String, expected_hash: String) -> Dic
   "levelId": "L01",
   "puzzleHash": "abc123",
   "boardSize": 4,
-  "cells": ["empty", "candy", "locked", "empty", "empty", "mark", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty"],
+  "cells": ["empty", "candy", "locked", "empty", "empty", "x", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty"],
   "hearts": 3,
   "mistake_count": 0,
   "hints_used": 0,

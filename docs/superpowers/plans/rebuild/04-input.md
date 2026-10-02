@@ -198,7 +198,8 @@ func try_candy(row: int, col: int) -> void
     # On correct: set CANDY, compute auto_marks, apply LOCKED, record as group.
     # Emit candy_found(row, col, region) + auto_marked.
     # On wrong: set WRONG, lose heart, **clear undo stack** (GDD GR-33 — wrong try is undo boundary).
-    # Record as group. Emit mistake_made + heart_lost. Update phase.
+    # Do NOT record wrong try into undo (stack was just cleared).
+    # Emit mistake_made + heart_lost. Update phase.
 
 func undo() -> bool
     # Pop last action group from recorder.
