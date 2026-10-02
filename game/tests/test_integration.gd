@@ -80,10 +80,10 @@ func _test_screen_flow_win_and_progression() -> void:
 	root.add_child(shell)
 	await process_frame
 
-	# Add a second playlist entry so L01 advances to L02
+	# Use a 2-entry playlist so completing L02 finishes the campaign
 	var second: Dictionary = shell.runtime._playlist[0].duplicate(true)
 	second.label = "L02"
-	shell.runtime._playlist.append(second)
+	shell.runtime._playlist = [shell.runtime._playlist[0], second]
 
 	# 1. From Title, trigger play
 	var title_screen = shell.screen_host.get_child(0)

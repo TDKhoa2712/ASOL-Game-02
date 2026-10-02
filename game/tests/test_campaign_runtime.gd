@@ -42,7 +42,7 @@ func _test_boot_and_resume() -> void:
 	var result := runtime.boot()
 	_check(result.ok, "boot loads current content: " + str(result))
 	_check(runtime.current_level_label() == "L01", "starts at L01")
-	_check(runtime.playlist_order() == ["L01"], "reads current playlist")
+	_check(runtime.playlist_order().size() == 30 and runtime.playlist_order()[0] == "L01", "reads current playlist")
 	_check(not runtime.current_level_data().is_empty(), "resolves level")
 	_check(runtime.current_pace().has("hintCosts"), "resolves pace")
 	var session := runtime.start_level("L01")
@@ -114,6 +114,7 @@ func _test_completion_and_replay() -> void:
 	_check(not runtime.is_campaign_done(), "early replay refused")
 	var completions: Array = []
 	runtime.campaign_complete.connect(func(): completions.append(true))
+	runtime._playlist = [runtime._playlist[0]]
 	_finish_level(runtime)
 	runtime.on_level_won("L01", {"score": 800})
 	_check(runtime.is_campaign_done(), "last level completes campaign")
