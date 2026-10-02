@@ -24,7 +24,9 @@
 
 ### Tiến độ implement
 
-Chưa bắt đầu. 10 module plans thiết kế xong, sẵn sàng implement theo parallel waves.
+Wave 1 đã bắt đầu. M05 Theme hoàn tất trên nhánh `feat/m05-theme` tại revision `79287da`; chờ review và merge vào `dev`. Các module còn lại tiếp tục theo thứ tự wave bên dưới.
+
+Gate M05: Godot `--check-only` cho `palette.gd` và `layout_tokens.gd` đều exit 0; clean-room và kiểm tra import `extracted_reusable` không có match. `rtk python -B tools/verify.py --godot <executable>` PASS tại revision `79287da` (log `scratch/verification/20261002T081518.053656Z.txt`). M05 không có test riêng theo module map; tích hợp giao diện thuộc M08.
 
 ```
 Wave 1: M01 + M05           (song song)
