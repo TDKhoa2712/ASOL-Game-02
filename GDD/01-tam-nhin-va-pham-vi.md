@@ -14,7 +14,7 @@ Ba trụ cột: **suy luận rõ ràng**, **thao tác có chủ ý**, **khu vư�
 
 Home → tiếp tục màn hiện tại → đọc hàng/cột/luống → ghi X ở ô loại trừ → hai chạm tìm kẹo → xem phản hồi → tìm đủ → kết quả → màn kế.
 
-- Kẹo đúng ở lại ô để làm chứng cứ; chỉ báo vùng đổi sang đã tìm.
+- Kẹo đúng ở lại ô để làm chứng cứ; chỉ báo vùng đổi sang đã tìm. Hệ thống tự đánh dấu X mờ (locked) trên các ô cùng hàng/cột/luống/chéo.
 - X thường là ghi chú của người chơi, có thể xóa hoặc Undo một action.
 - X đỏ là lần tìm sai đã được hệ thống xác nhận; khóa trong lượt và mất một tim.
 - Ba tim hết thì thua; thử lại miễn phí cùng màn. Không thời gian đếm ngược.

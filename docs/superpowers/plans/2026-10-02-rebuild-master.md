@@ -81,27 +81,46 @@ Wave 6:              M10-Content-Generation
 ```gdscript
 # cell_model.gd
 enum CellKind { BLANK = 0, MARK = 1, CANDY = 2, WRONG = 3, GIVEN = 4, LOCKED = 5 }
-static func is_empty(k: int) -> bool      # BLANK hoặc MARK
+static func is_empty(k: int) -> bool      # chỉ BLANK
 static func is_placed(k: int) -> bool     # CANDY hoặc GIVEN
-static func is_candy(k: int) -> bool      # CANDY
+static func is_candy(k: int) -> bool      # CANDY hoặc GIVEN (solver treats cả hai là candy)
 static func is_available(k: int) -> bool  # BLANK hoặc MARK — player có thể tương tác
-static func is_locked(k: int) -> bool     # LOCKED
-static func label(k: int) -> String       # "BLANK", "MARK", ...
+static func is_locked(k: int) -> bool     # GIVEN hoặc LOCKED — immutable
+static func is_cross(k: int) -> bool      # MARK, WRONG hoặc LOCKED — hiện dấu X
+static func label(k: int) -> String       # "blank", "mark", ... (lowercase)
 
 # candy_rules.gd
-static func attempt_candy(level: Dictionary, cells: Array, row: int, col: int) -> Dictionary
-    # Returns: {valid: bool, clash_label: String, auto_marks: Array[[row,col]]}
-static func compute_auto_marks(level: Dictionary, cells: Array, row: int, col: int) -> Array
-    # Returns: Array of [row, col] to lock
-static func compute_all_auto_marks(level: Dictionary, cells: Array) -> Array
-static func check_win(level: Dictionary, cells: Array) -> bool
+static func attempt_candy(level: Dictionary, board: Array, row: int, col: int) -> Dictionary
+    # Đúng/sai dựa vào solution[row] == col (GDD 02 GR-15)
+    # Returns: {valid: bool, reason: String, auto_marks: Array[[row,col]]}
+static func compute_auto_marks(level: Dictionary, board: Array, row: int, col: int) -> Array
+    # Lock same row/col/zone/diagonal BLANK cells
+    # Returns: Array of [row, col] to set LOCKED
+static func compute_all_auto_marks(level: Dictionary, board: Array) -> Array
+    # Recompute all locks from all placed candy — for session restore/undo
+static func check_win(level: Dictionary, board: Array) -> bool
+    # N candy (CANDY + GIVEN) đúng vị trí và còn hearts > 0
+static func detect_clash(level: Dictionary, a: Array, b: Array) -> int
+    # Returns Clash enum — chỉ dùng cho giải thích lý do sai
+static func verify_level(level: Dictionary) -> bool
+    # Structural validation: size, regions, solution, adjacency, zone uniqueness
 
-# board_solver.gd
+# board_solver.gd — Solve loop: S1(mark) → S2(single) → S3(lock intersection)
+enum Technique { ELIMINATION, SINGLE_CANDIDATE, LOCK_INTERSECTION }
 static func next_hint(board: Array, size: int, zones: Array, solution: Array) -> Dictionary
-    # Returns: {row, col, reason} hoặc {}
-static func progressive_hint(board: Array, size: int, zones: Array, solution: Array, click: int, max_clicks: Array) -> Dictionary
-    # Returns: {row, col, unit_type?, unit_id?} hoặc {}
-static func compute_cell_ranks(size: int, zones: Array) -> Array
+    # Suy luận từ board state (không dùng solution để chọn target)
+    # solution chỉ dùng cho safety assert
+    # Returns: {found, technique, cell, unit_type, unit_id, reason} hoặc {found: false}
+static func progressive_hint(board: Array, size: int, zones: Array, solution: Array, click: int, max_clicks: int) -> Dictionary
+    # Progressive reveal: click 1 → unit, click 2+ → cell
+    # Returns: {stage: "unit"|"cell"|"place", highlight: Array, text: String}
+static func solve_sequence(size: int, zones: Array, solution: Array) -> Array[int]
+    # Full solve from empty board; returns technique level per cell placement
+static func compute_cell_ranks(board: Array, size: int, zones: Array, solution: Array) -> Array
+    # NxN Array; rank = highest technique needed before cell placement
+    # 0 = already placed, 1 = S1/S2 only, 2 = needs S2, 3 = needs S3, 4 = beyond S3
+static func can_place(board: Array, size: int, zones: Array, row: int, col: int) -> bool
+    # Core constraint check: cell empty, no candy in row/col/zone, no adjacent candy
 ```
 
 ### Module 2: State (`scripts/state/`)
@@ -190,12 +209,13 @@ static func from_save_data(data: Array) -> ActionRecorder
 
 # play_session.gd
 signal state_changed()
-signal candy_found(row: int, col: int)
-signal mistake_made(row: int, col: int, clash_label: String)
+signal candy_found(row: int, col: int, region: String)
+signal mistake_made(row: int, col: int, reason: String)
+signal heart_lost(remaining: int)
 signal auto_marked(cells: Array)
 signal level_won()
 signal level_failed()
-enum Phase { ACTIVE, WON, LOST }
+enum Phase { ACTIVE, WON, FAILED }
 func _init(level_data: Dictionary, initial_hearts: int = 3)
 func mark_x(row: int, col: int) -> void
 func try_candy(row: int, col: int) -> void
@@ -208,7 +228,7 @@ func remaining_candies() -> int
 var level: Dictionary
 var board: Array          # NxN CellKind
 var hearts: int
-var errors: int
+var mistake_count: int
 var hints_used: int
 var elapsed_ms: int
 var phase: int
@@ -278,6 +298,7 @@ static func has_hardware() -> bool
 4. **Offline-first** — Không phụ thuộc backend, mạng, hay account.
 5. **Testable** — Logic tách khỏi UI, static functions cho pure logic, test GDScript headless.
 6. **Dùng asset có sẵn** — Không tạo asset mới; liệt kê asset cần bổ sung riêng.
+7. **Composition root, không autoloads** — `app_shell.gd` khởi tạo tất cả module và inject dependencies. Không dùng autoloads.
 
 ---
 
@@ -450,7 +471,7 @@ game/
 2. **Level architecture: Bank + Pace + Playlist** — Bank chứa levels theo rank, Pace chứa hint economy, Playlist (campaign) tham chiếu vào bank. Transform ×8 cho replay.
 3. **Schema giữ nguyên** — Level v4 (string regions, logicTrace proof), progress v2, session v3
 4. **Không tạo asset mới** — Chỉ dùng asset hiện có; liệt kê thiếu ở bảng trên
-5. **Giữ contract hiện hành** — candy/TryCandy/CandyFound theo RST-008
+5. **Giữ contract hiện hành** — candy/TryCandy/CandyFound theo RST-008. TryCandy đúng/sai dựa vào `solution[row] == col` (GDD 02 GR-15); `detect_clash()` chỉ dùng để giải thích lý do sai.
 6. **Phạm vi playtest** — 30 level (playlist), N=4-6, S1-S3, không Endless/IAP/ads
 7. **Test headless** — Mỗi module có test chạy được bằng `godot --headless`
 8. **Scale design** — Bank format cho phép thêm hàng trăm level mà không đổi code; transform ×8 nhân nội dung

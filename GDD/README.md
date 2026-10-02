@@ -1,6 +1,6 @@
 # CanDoKu — Game Design Document
 
-**Phiên bản 0.7.0 · 2026-10-01 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề, campaign playtest 30 level và ranh giới phát hành chính thức sau playtest; không chứng nhận client hiện tại đã đủ nội dung hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
+**Phiên bản 0.8.0 · 2026-10-02 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề, campaign playtest 30 level và ranh giới phát hành chính thức sau playtest; không chứng nhận client hiện tại đã đủ nội dung hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
 
 ## Điểm bắt đầu
 
@@ -27,9 +27,9 @@ Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài li
 | --- | --- |
 | D-01 | Playtest trước phát hành có 30 level liên tiếp, N=4–6, không chọn màn/chương; schema giữ N=4–12 |
 | D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; profile 25–30 phải duyệt riêng nhưng chỉ dùng S1–S3; không yêu cầu đoán |
-| D-03 | Bốn trạng thái kỹ thuật `empty/x/x_error/candy`; `candy` nay trình bày là kẹo đã tìm thấy |
-| D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X; Restart có xác nhận |
-| D-05 | Một Hint/lượt, ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
+| D-03 | Năm trạng thái kỹ thuật `empty/x/x_error/candy/locked`; `locked` là auto-mark X do hệ thống; `given` là cờ hiển thị |
+| D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X, grouped undo (candy + auto-marks = 1 nhóm); Restart có xác nhận |
+| D-05 | Một Hint/lượt với progressive reveal (unit → cell), ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
 | D-06 | Godot 4.x/GDScript, runtime 2D; kẹo bọc giấy gốc và hiệu ứng 2D, không bắt buộc model/rig kẹo |
 | D-07 | Offline, Android/iOS, tiếng Việt; không tài khoản, quảng cáo, IAP hoặc analytics mạng trong bản đầu |
 | D-08 | X đỏ khóa trong lượt; ghi chú X không là chứng cứ của solver/Hint |

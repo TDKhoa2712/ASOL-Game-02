@@ -37,6 +37,10 @@ Mã QA truy ngược về GR/UX/LV/TECH/ART. Test validator hiện có chỉ xá
 | QA-45 | Ngưỡng 12 điểm logic, hai ngón/lòng bàn tay, bắt đầu ngoài bàn, nhấc ngoài bàn, app nền | Không nhầm tap/drag/double, không nhận ngón phụ; chạm đã nhấc được lưu, nét chưa nhấc bị hủy, nét hợp lệ commit một lần |
 | QA-54 | Restart giữa lượt: hủy và xác nhận | Hủy giữ nguyên state; xác nhận tạo lượt mới cùng level, reset board/3 tim/lỗi/scorecard/Hint/thời gian và xóa Undo |
 | QA-55 | Undo sau MarkX/ClearX/stroke, sau TryCandy và sau lifecycle | Hoàn nguyên đúng một diff X đơn hoặc toàn stroke; không đổi candy/X đỏ/tim/lỗi/scorecard/Hint; không Redo/không nhảy qua TryCandy; Back/Home/app đóng xóa khe |
+| QA-58 | Auto-mark: đặt candy đúng trên bàn có ô trống cùng hàng/cột/luống/chéo | Các ô BLANK cùng hàng/cột/luống/chéo với candy chuyển thành LOCKED; locked cells hiện X mờ, player không xóa được; tập locked khớp với tập expected từ quy tắc loại trừ |
+| QA-59 | Grouped undo: Undo ngay sau khi đặt candy có auto-marks | Candy bị hoàn nguyên về BLANK và tất cả locked cells trong cùng nhóm cũng trở về trạng thái trước; một lần nhấn Undo cho cả nhóm |
+| QA-60 | Progressive hint: click Hint nhiều lần trên cùng lượt | Click đầu tiên highlight unit (zone/row/col); click tiếp thu hẹp về ô cụ thể; mỗi click tiêu đúng 1 unit từ budget; không tiêu thêm khi đã reveal đến ô |
+| QA-61 | Clean-room gate cho rebuild modules | `grep -rE` các tên từ reference (EventBus, EventName, GameState, SaveStore, SoundManager, v.v.) trong `game/scripts/` không có kết quả; không import từ `extracted_reusable`; verify bằng `tools/verify.py` |
 
 ## 3. Hint, tutorial, màn kết quả
 
