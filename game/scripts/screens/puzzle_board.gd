@@ -18,6 +18,9 @@ var _decoder: TouchDecoder = null
 var _candy_tex: Texture2D = null
 var _highlight_cells: Array = []
 var _highlight_unit: String = ""
+var _preview_cells: Array = []
+var _preview_mark: bool = true
+var _touch_in_progress: bool = false
 
 func configure(session: Variant) -> void:
 	_session = session
@@ -31,12 +34,19 @@ func configure(session: Variant) -> void:
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
 	_decoder.cell_swiped.connect(func(cells: Array): cell_swiped.emit(cells))
+	_decoder.preview_changed.connect(_on_preview_changed)
 	_highlight_cells = []
 	_highlight_unit = ""
+	_preview_cells = []
 	queue_redraw()
 
 func redraw() -> void:
 	queue_redraw()
+
+func settle_input() -> void:
+	if _decoder != null:
+		_decoder.flush_pending()
+		_decoder.cancel()
 
 func highlight_cell(row: int, col: int) -> void:
 	_highlight_cells = [[row, col]]
@@ -65,6 +75,22 @@ func _ready() -> void:
 	if ResourceLoader.exists(candy_path):
 		_candy_tex = load(candy_path) as Texture2D
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _decoder != null:
+		_decoder.flush_pending()
+		_decoder.cancel()
+
+func _on_preview_changed(cells: Array) -> void:
+	_preview_cells = cells.duplicate(true)
+	if _session != null and not _preview_cells.is_empty():
+		var first: Array = _preview_cells[0]
+		var first_kind: int = _session.cell_at(int(first[0]), int(first[1]))
+		if not CellModel.is_available(first_kind):
+			_preview_cells = []
+		else:
+			_preview_mark = first_kind == CellModel.CellKind.BLANK
+	queue_redraw()
+
 func _process(_delta: float) -> void:
 	if _decoder != null:
 		_decoder.tick(Time.get_ticks_msec())
@@ -73,6 +99,7 @@ func _gui_input(event: InputEvent) -> void:
 	if _session == null or _decoder == null or _session.phase != 0:
 		return
 	if event is InputEventScreenTouch:
+		_touch_in_progress = event.pressed
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
@@ -86,6 +113,8 @@ func _gui_input(event: InputEvent) -> void:
 			_decoder.move(c[0], c[1])
 		accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if _touch_in_progress:
+			return
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
@@ -169,6 +198,11 @@ func _draw() -> void:
 			draw_style_box(sb, cell_rect)
 
 			var kind: int = _session.board[r][c]
+			if _preview_cells.has([r, c]):
+				if _preview_mark and kind == CellModel.CellKind.BLANK:
+					kind = CellModel.CellKind.MARK
+				elif not _preview_mark and kind == CellModel.CellKind.MARK:
+					kind = CellModel.CellKind.BLANK
 			var ov: Color = Palette.cell_state_overlay(kind)
 			if ov.a > 0.0:
 				var ov_sb := StyleBoxFlat.new()

@@ -116,11 +116,21 @@ static func build(root: Control) -> Dictionary:
 	var dock := HBoxContainer.new()
 	dock.name = "BottomDock"
 	dock.alignment = BoxContainer.ALIGNMENT_CENTER
+	dock.add_theme_constant_override("separation", 52)
 	stack.add_child(dock)
+	var undo := _circle("UndoBtn", "res://assets/ui/board/icon_undo.png", 110)
+	dock.add_child(undo)
 	var hint := _circle("HintBtn", "res://assets/ui/board/icon_hint.png", 110)
 	dock.add_child(hint)
+	var confirm := ConfirmationDialog.new()
+	confirm.name = "RestartConfirm"
+	confirm.title = "Chơi lại màn này?"
+	confirm.dialog_text = "Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại."
+	confirm.get_ok_button().text = "Chơi lại"
+	confirm.get_cancel_button().text = "Tiếp tục"
+	root.add_child(confirm)
 	return {"board": board, "back": back, "help": help, "restart": restart,
-		"settings": settings, "hint": hint, "level": level_value,
+		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
 		"regions": region_row, "lives": lives_row, "rules": rules}
 
 static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer) -> void:
@@ -142,7 +152,7 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 	for index in range(size):
 		var icon := TextureRect.new()
 		icon.texture = candy_texture
-		icon.custom_minimum_size = Vector2(48, 48)
+		icon.custom_minimum_size = Vector2(34, 34)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		var zone_id: String = char(65 + index)
 		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Color(1, 1, 1, 0.25)
@@ -151,7 +161,7 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 	for index in range(3):
 		var icon := TextureRect.new()
 		icon.texture = heart_texture
-		icon.custom_minimum_size = Vector2(42, 42)
+		icon.custom_minimum_size = Vector2(36, 30)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.modulate = Color.WHITE if index < session.hearts else Color(1, 1, 1, 0.25)
 		lives_row.add_child(icon)
@@ -173,18 +183,28 @@ static func _circle(node_name: String, icon_path: String, diameter: float) -> Bu
 	var button := Button.new()
 	button.name = node_name
 	button.custom_minimum_size = Vector2.ONE * diameter
-	button.flat = false
-	var style := StyleBoxFlat.new()
-	style.bg_color = Color.WHITE
-	style.set_corner_radius_all(999)
-	style.shadow_color = Palette.SHADOW_SOFT
-	style.shadow_size = 6
-	style.shadow_offset = Vector2(0, 2)
-	for state in ["normal", "hover", "pressed", "focus"]:
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
+		var style := StyleBoxFlat.new()
+		style.bg_color = Color("#F4EEE9") if state == "pressed" else Color("#F0EBE6") if state == "disabled" else Color("#FFFDFB") if state == "hover" else Color.WHITE
+		style.set_corner_radius_all(999)
+		style.shadow_color = Palette.SHADOW_SOFT
+		style.shadow_size = 4 if state == "pressed" else 8
+		style.shadow_offset = Vector2(0, 2)
 		button.add_theme_stylebox_override(state, style)
-	button.icon = load(icon_path) as Texture2D
-	button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	button.expand_icon = true
+	var center := CenterContainer.new()
+	center.name = "IconCenter"
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	button.add_child(center)
+	var icon := TextureRect.new()
+	icon.name = "Icon"
+	icon.texture = load(icon_path) as Texture2D
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2.ONE * diameter * 0.54
+	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.add_child(icon)
 	return button
 
 static func _label(value: String, font_size: int, color: Color) -> Label:

@@ -111,8 +111,11 @@ func _test_puzzle_board() -> void:
 	var swipe_box: Array = []
 	board.cell_swiped.connect(func(cells: Array): swipe_box.append(cells))
 	board._decoder.begin(0, 0, 0)
+	_assert(board._preview_cells == [[0, 0]], "board previews touch immediately")
 	board._decoder.move(0, 2)
+	_assert(board._preview_cells == [[0, 0], [0, 1], [0, 2]], "board previews drag")
 	board._decoder.finish(100)
+	_assert(board._preview_cells.is_empty(), "board clears drag preview")
 	_assert(swipe_box.size() == 1 and swipe_box[0] == [[0, 0], [0, 1], [0, 2]], "board forwards swipe trail")
 
 	board.free()
@@ -125,6 +128,7 @@ func _test_title_screen() -> void:
 	_assert(title.runtime != null, "title runtime set")
 	_assert(title.find_child("CandyLogo", true, false) != null, "title logo present")
 	_assert(title.find_child("SafeArea", true, false) != null, "title safe area present")
+	_assert(title.help_btn != null and title.help_dialog != null, "home help restored")
 	_assert(title.level_label != null and title.level_label.text.contains("1-2"), "title level label updated")
 
 	var play_box := [false]
@@ -210,6 +214,9 @@ func _test_puzzle_screen() -> void:
 	var packed := load("res://scenes/puzzle.tscn") as PackedScene
 	var puzzle := packed.instantiate() as PuzzleScreen
 	puzzle._ensure_nodes()
+	_assert(puzzle.undo_btn != null and puzzle.restart_confirm != null, "puzzle controls restored")
+	var undo_icon: TextureRect = puzzle.undo_btn.get_node_or_null("IconCenter/Icon")
+	_assert(undo_icon != null and undo_icon.custom_minimum_size.x < puzzle.undo_btn.custom_minimum_size.x, "board icon sits inside round button")
 	puzzle.session = session
 	puzzle._connect_session()
 	if puzzle.board != null:
@@ -228,6 +235,14 @@ func _test_puzzle_screen() -> void:
 	_assert(session.board[2][1] == CellModel.CellKind.MARK, "swipe continues across immutable cells")
 	_assert(session.board[0][0] == CellModel.CellKind.ERROR, "swipe skips error")
 	_assert(session.board[1][3] == CellModel.CellKind.CANDY, "swipe skips candy")
+	puzzle._on_undo()
+	_assert(session.board[2][0] == CellModel.CellKind.BLANK and session.board[2][1] == CellModel.CellKind.BLANK, "undo clears whole stroke")
+	puzzle.board._decoder.begin(2, 0, 1000)
+	puzzle.board._decoder.finish(1010)
+	puzzle.board._decoder.begin(2, 0, 1100)
+	puzzle.board._decoder.move(2, 1)
+	puzzle.board._decoder.finish(1200)
+	_assert(session.board[2][0] == CellModel.CellKind.BLANK, "second touch drag clears first mark")
 
 	var won_box := [false, false]
 	puzzle.level_done.connect(func(won: bool):

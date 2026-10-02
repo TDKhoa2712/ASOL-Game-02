@@ -28,6 +28,8 @@ var help_btn: Button
 var settings_btn: Button
 var region_display: HBoxContainer
 var rules_card: PanelContainer
+var undo_btn: Button
+var restart_confirm: ConfirmationDialog
 
 func _ensure_nodes() -> void:
 	if board != null:
@@ -43,6 +45,8 @@ func _ensure_nodes() -> void:
 	settings_btn = nodes["settings"]
 	level_label = nodes["level"]
 	rules_card = nodes["rules"]
+	undo_btn = nodes["undo"]
+	restart_confirm = nodes["confirm"]
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -54,6 +58,10 @@ func _connect_ui() -> void:
 		hint_btn.pressed.connect(_on_hint)
 	if restart_btn != null and not restart_btn.pressed.is_connected(_on_restart):
 		restart_btn.pressed.connect(_on_restart)
+	if undo_btn != null and not undo_btn.pressed.is_connected(_on_undo):
+		undo_btn.pressed.connect(_on_undo)
+	if restart_confirm != null and not restart_confirm.confirmed.is_connected(_confirm_restart):
+		restart_confirm.confirmed.connect(_confirm_restart)
 	if home_btn != null and not home_btn.pressed.is_connected(_on_home):
 		home_btn.pressed.connect(_on_home)
 	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
@@ -156,21 +164,11 @@ func _on_board_swipe(cells: Array) -> void:
 	if not CellModel.is_available(first_kind):
 		return
 	var paint_mark: bool = first_kind == CellModel.CellKind.BLANK
-	var changed: bool = false
-	for cell in cells:
-		if not cell is Array or cell.size() < 2:
-			continue
-		var row: int = int(cell[0])
-		var col: int = int(cell[1])
-		var kind: int = session.cell_at(row, col)
-		if (paint_mark and kind == CellModel.CellKind.BLANK) or (not paint_mark and kind == CellModel.CellKind.MARK):
-			session.mark_x(row, col)
-			changed = true
-	if changed:
-		if sfx != null:
-			sfx.play(SfxCatalog.Effect.MARK)
-		if board != null:
-			board.redraw()
+	session.mark_stroke(cells, paint_mark)
+	if sfx != null:
+		sfx.play(SfxCatalog.Effect.MARK)
+	if board != null:
+		board.redraw()
 
 func _on_hint() -> void:
 	if session == null or runtime == null:
@@ -196,6 +194,12 @@ func _on_hint() -> void:
 		sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
 func _on_restart() -> void:
+	if board != null:
+		board.settle_input()
+	if restart_confirm != null:
+		restart_confirm.popup_centered(Vector2i(650, 260))
+
+func _confirm_restart() -> void:
 	_hint_click_count = 0
 	if runtime != null:
 		session = runtime.restart_level()
@@ -206,7 +210,17 @@ func _on_restart() -> void:
 		if sfx != null:
 			sfx.play(SfxCatalog.Effect.RESTART)
 
+func _on_undo() -> void:
+	if board != null:
+		board.settle_input()
+	if session != null:
+		session.undo_mark()
+		if board != null:
+			board.clear_highlight()
+
 func _on_home() -> void:
+	if board != null:
+		board.settle_input()
 	if runtime != null and session != null and runtime.sessions != null:
 		runtime.sessions.save_session(session.to_save_data())
 	go_home.emit()

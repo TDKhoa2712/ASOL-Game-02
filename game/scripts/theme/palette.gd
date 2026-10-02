@@ -2,16 +2,16 @@ extends RefCounted
 
 # Region colors for boards N=4-6.
 const ZONE_COLORS: Array[Color] = [
-	Color("#E8A8C1"),
-	Color("#A5C8E8"),
-	Color("#B5D99C"),
-	Color("#F5D680"),
-	Color("#D4A5E8"),
-	Color("#F5B89C"),
-	Color("#8CC8C8"),
-	Color("#E8C8A5"),
-	Color("#C8E8A5"),
-	Color("#E8A5A5"),
+	Color("#91D984"),
+	Color("#9586D9"),
+	Color("#E0BD43"),
+	Color("#F6DA98"),
+	Color("#EFACDD"),
+	Color("#D884A0"),
+	Color("#F4AA71"),
+	Color("#BA8665"),
+	Color("#469B68"),
+	Color("#64B8CB"),
 	Color("#A5E8D4"),
 	Color("#C8A5E8"),
 ]
@@ -28,7 +28,7 @@ const PILL_RADIUS := 28
 const CARD_CORNER := 24
 const BOARD_CARD_CORNER := 32
 const CARD_SHADOW := Color(0.545, 0.353, 0.290, 0.15)
-const INK := Color("#344054")
+const INK := Color("#6D4A45")
 const INK_LIGHT := Color("#667085")
 const ACCENT_ORANGE := Color("#E8723C")
 const ACCENT_BLUE := Color("#4A90D9")
