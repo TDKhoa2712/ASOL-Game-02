@@ -48,19 +48,19 @@ Trên bàn N=6, vùng chạm mỗi ô/nút ít nhất 44×44 điểm logic tại
 
 | ID | Yêu cầu |
 | --- | --- |
-| UX-09 | Một chạm trên empty hiện X tức thì; trên X hiện empty tức thì. Sau khi nhấc, đây là preview tối đa 280 ms rồi mới lưu. X đỏ/candy không đổi. |
+| UX-09 | Một chạm trên empty hiện X tức thì; trên X hiện empty tức thì. Sau khi nhấc, đây là preview tối đa 350 ms rồi mới lưu. X đỏ/candy không đổi. |
 | UX-10 | Hai chạm nhanh **cùng ô** gọi một `TryCandy`; bỏ preview X của chạm đầu trước khi chấm đúng/sai. Không có X lưu trung gian. |
 | UX-11 | Chạm hai ô khác nhau là hai chạm đơn. Nét kéo quá 12 điểm logic lấy chế độ đánh/xóa từ ô đầu, đi qua mỗi ô một lần và lưu một batch khi nhấc ngón. |
-| UX-12 | Kẹo đúng: chỉ báo vùng tương ứng sáng lên trong hàng tiến độ, hiệu ứng hé lộ kẹo và “Tìm thấy rồi!”/“Giỏi lắm!” không che ô lâu quá 0,7 giây. |
+| UX-12 | Kẹo đúng: chỉ báo vùng tương ứng sáng lên trong hàng tiến độ, hiệu ứng hé lộ kẹo và “Tìm thấy rồi!”/”Giỏi lắm!” không che ô lâu quá 0,7 giây. Auto-mark: các ô locked xuất hiện với stagger animation (~40 ms/ô) sau khi kẹo hé lộ; locked cell hiển thị X mờ (reduced opacity) với overlay tint khác biệt rõ so với X do người chơi đánh. |
 | UX-13 | Sai: X đỏ có hình dấu/cảnh báo ngoài màu, tim đổi cùng lúc, lý do cục bộ có chứng cứ hoặc câu trung tính. |
-| UX-14 | Hint tô focus/source/target và chứng cứ, có nút đóng; sau evidence đầu tiên, nút chuyển sang “Đã dùng”. `NoHint` giữ nút dùng được. Trợ giúp và Settings quay lại đúng puzzle. |
+| UX-14 | Hint tô focus/source/target và chứng cứ, có nút đóng; sau evidence đầu tiên, nút chuyển sang “Đã dùng”. `NoHint` giữ nút dùng được. Trợ giúp và Settings quay lại đúng puzzle. Progressive hint: click đầu tiên highlight unit (zone/row/col nơi tìm được hint), các click tiếp theo thu hẹp về ô cụ thể; mỗi click tiêu 1 unit từ budget hint. |
 | UX-15 | Back To Home lưu ngay, không hỏi; Home Play tiếp tục đúng board. |
-| UX-24 | Undo chỉ bật khi action X gần nhất còn trong khe. Một lần nhấn hoàn nguyên một ô hoặc toàn bộ stroke; `TryCandy`, điều hướng, kết thúc lượt và app đóng làm nút tắt. |
+| UX-24 | Undo chỉ bật khi action X gần nhất còn trong khe. Một lần nhấn hoàn nguyên một ô hoặc toàn bộ stroke; `TryCandy`, điều hướng, kết thúc lượt và app đóng làm nút tắt. Grouped undo: khi candy vừa đặt có auto-marks đi kèm, nút Undo hoàn nguyên candy + tất cả locked cells trong cùng nhóm bằng một lần nhấn. |
 | UX-25 | Restart luôn yêu cầu xác nhận “Bắt đầu lại Level n?”; xác nhận reset toàn bộ lượt cùng level, hủy giữ nguyên board. |
 | UX-22 | Chỉ nhận `index=0` bắt đầu trong bàn làm ngón chính; ngón phụ/chạm lòng bàn tay phát sinh sau đó không được thêm nét, tìm kẹo hay chiếm quyền. Tiếp xúc lòng bàn tay đầu tiên trong bàn vẫn cần thử trên thiết bị vì input thường không gắn nhãn palm. |
 | UX-23 | Nét kéo đi nhanh qua nhiều ô phải phủ đủ ô trung gian; ô X đỏ/candy/given là chướng ngại bất biến nhưng không dừng nét. |
 
-Cửa sổ 280 ms đo từ lần nhấc thứ nhất đến lần chạm xuống thứ hai; ngưỡng kéo 12 điểm logic là tham số playtest. Godot nhận vị trí theo viewport; phải quy đổi theo UI scale trước khi đo ngưỡng. X preview xuất hiện trong khung hình đầu tiên (mục tiêu dưới 50 ms). Nếu chạm thứ hai cùng ô chuyển thành kéo, commit chạm đầu rồi xử lý nét thứ hai riêng từ trạng thái đã commit; không tìm kẹo. Nếu ngón chính nhấc ngoài bàn sau khi kéo, commit các ô đã đi qua. Nếu app nền/chuyển màn sau chạm đơn đã nhấc nhưng còn chờ, commit chạm đơn rồi lưu; nếu nét đang kéo/chạm chưa nhấc, hủy preview. `TryCandy` phản hồi dưới 100 ms sau chạm thứ hai nếu save thành công. Khi người dùng chạm lên X đỏ, không đổi và không mất thêm tim. Candy/given bất biến.
+Cửa sổ 350 ms đo từ lần nhấc thứ nhất đến lần chạm xuống thứ hai; ngưỡng kéo 12 điểm logic là tham số playtest. Godot nhận vị trí theo viewport; phải quy đổi theo UI scale trước khi đo ngưỡng. X preview xuất hiện trong khung hình đầu tiên (mục tiêu dưới 50 ms). Nếu chạm thứ hai cùng ô chuyển thành kéo, commit chạm đầu rồi xử lý nét thứ hai riêng từ trạng thái đã commit; không tìm kẹo. Nếu ngón chính nhấc ngoài bàn sau khi kéo, commit các ô đã đi qua. Nếu app nền/chuyển màn sau chạm đơn đã nhấc nhưng còn chờ, commit chạm đơn rồi lưu; nếu nét đang kéo/chạm chưa nhấc, hủy preview. `TryCandy` phản hồi dưới 100 ms sau chạm thứ hai nếu save thành công. Khi người dùng chạm lên X đỏ, không đổi và không mất thêm tim. Candy/given bất biến.
 
 ## 4. Tutorial
 

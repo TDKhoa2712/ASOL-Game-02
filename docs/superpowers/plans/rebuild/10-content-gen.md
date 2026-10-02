@@ -7,6 +7,8 @@
 
 Module 9 modules trước tạo code hoàn chỉnh nhưng game cần DATA để chạy: level banks, pace sidecars, và campaign playlist. Module này dùng tools có sẵn (`GDD/tools/generate_levels.py`, `GDD/tools/validate_levels.py`) để sinh và validate level data theo bank schema mới.
 
+> **Lưu ý CLI:** Dùng `GDD/tools/generate_levels.py` với `--profile/--out/--exclude`. Output là raw levels; `convert_to_bank.py` đóng gói thành bank format v1.
+
 ---
 
 ## Bước 1: Sinh levels cho bank 4×4
@@ -14,14 +16,9 @@ Module 9 modules trước tạo code hoàn chỉnh nhưng game cần DATA để 
 **Tool:** `GDD/tools/generate_levels.py`
 
 ```bash
-# Sinh levels 4×4, rank 1 (dễ), 15 levels
-python -B GDD/tools/generate_levels.py --size 4 --rank 1 --count 15 --output game/data/banks/bank_4x4_r1_raw.json
-
-# Sinh levels 4×4, rank 2 (trung bình), 10 levels
-python -B GDD/tools/generate_levels.py --size 4 --rank 2 --count 10 --output game/data/banks/bank_4x4_r2_raw.json
-
-# Sinh levels 4×4, rank 3 (khó), 5 levels
-python -B GDD/tools/generate_levels.py --size 4 --rank 3 --count 5 --output game/data/banks/bank_4x4_r3_raw.json
+# Sinh levels 4×4 — dùng actual generator CLI
+# Output: thư mục chứa {levels: [...]} JSON
+python -B GDD/tools/generate_levels.py --profile profile_4x4.json --out game/data/banks/raw_4x4 --exclude <existing>
 ```
 
 **Lưu ý:** Nếu generator hiện tại chưa output bank schema mới, cần adapter script chuyển đổi. Xem bước 3.
@@ -33,8 +30,8 @@ python -B GDD/tools/generate_levels.py --size 4 --rank 3 --count 5 --output game
 Playtest demo-30 có thể chỉ dùng 4×4. Nếu playlist cần 5×5/6×6:
 
 ```bash
-python -B GDD/tools/generate_levels.py --size 5 --rank 1 --count 5 --output game/data/banks/bank_5x5_r1_raw.json
-python -B GDD/tools/generate_levels.py --size 6 --rank 1 --count 5 --output game/data/banks/bank_6x6_r1_raw.json
+python -B GDD/tools/generate_levels.py --profile profile_5x5.json --out game/data/banks/raw_5x5 --exclude <existing>
+python -B GDD/tools/generate_levels.py --profile profile_6x6.json --out game/data/banks/raw_6x6 --exclude <existing>
 ```
 
 ---
@@ -74,8 +71,9 @@ def convert_to_bank(raw_files: list[tuple[int, str]], size: int, output: str):
     }
     for rank, path in raw_files:
         with open(path) as f:
-            raw_levels = json.load(f)
-        bank["ranks"][str(rank)] = [convert_level(lv, rank) for lv in raw_levels]
+            data = json.load(f)
+            levels = data["levels"] if isinstance(data, dict) and "levels" in data else data
+        bank["ranks"][str(rank)] = [convert_level(lv, rank) for lv in levels]
     
     with open(output, "w") as f:
         json.dump(bank, f, indent=2)
@@ -111,9 +109,11 @@ def generate_pace(bank_path: str, output_path: str):
         pace["pacing"][rank_key] = []
         for level in levels:
             steps = level.get("steps", len(level["solution"]))
-            # rSeq: reasoning sequence (1 = single-step, 2 = two-step, etc.)
-            r_seq = level.get("logicTrace", [1] * steps)
-            if not r_seq:
+            # rSeq: extract technique level from trace steps
+            trace = level.get("logicTrace", [])
+            if trace and isinstance(trace[0], dict):
+                r_seq = [{"S2": 1, "S3": 2}.get(step.get("rule", "S2"), 1) for step in trace]
+            else:
                 r_seq = [1] * steps
             # hintCosts: progressive hint clicks needed per step
             hint_costs = [max(1, r) for r in r_seq]
@@ -133,13 +133,15 @@ def generate_pace(bank_path: str, output_path: str):
 
 ### `game/data/campaigns/demo_30.json`
 
+> **Playtest scope:** L01-L02 tutorial, L03-L12 easy, L13-L30 medium. 'hard' requires verified S3 profile — deferred until post-playtest.
+
 ```json
 {
     "campaignVersion": 1,
     "id": "demo-30",
     "playlist": [
-        {"label": "L01", "size": 4, "rank": 1, "index": 0, "difficulty": "easy"},
-        {"label": "L02", "size": 4, "rank": 1, "index": 1, "difficulty": "easy"},
+        {"label": "L01", "size": 4, "rank": 1, "index": 0, "difficulty": "tutorial"},
+        {"label": "L02", "size": 4, "rank": 1, "index": 1, "difficulty": "tutorial"},
         {"label": "L03", "size": 4, "rank": 1, "index": 2, "difficulty": "easy"},
         {"label": "L04", "size": 4, "rank": 1, "index": 3, "difficulty": "easy"},
         {"label": "L05", "size": 4, "rank": 1, "index": 4, "difficulty": "easy"},
@@ -160,33 +162,35 @@ def generate_pace(bank_path: str, output_path: str):
         {"label": "L20", "size": 4, "rank": 2, "index": 7, "difficulty": "medium"},
         {"label": "L21", "size": 4, "rank": 2, "index": 8, "difficulty": "medium"},
         {"label": "L22", "size": 4, "rank": 2, "index": 9, "difficulty": "medium"},
-        {"label": "L23", "size": 4, "rank": 3, "index": 0, "difficulty": "hard"},
-        {"label": "L24", "size": 4, "rank": 3, "index": 1, "difficulty": "hard"},
-        {"label": "L25", "size": 4, "rank": 3, "index": 2, "difficulty": "hard"},
-        {"label": "L26", "size": 4, "rank": 3, "index": 3, "difficulty": "hard"},
-        {"label": "L27", "size": 4, "rank": 3, "index": 4, "difficulty": "hard"},
-        {"label": "L28", "size": 4, "rank": 3, "index": 5, "difficulty": "hard" },
-        {"label": "L29", "size": 4, "rank": 3, "index": 6, "difficulty": "hard"},
-        {"label": "L30", "size": 4, "rank": 3, "index": 7, "difficulty": "hard"}
+        {"label": "L23", "size": 4, "rank": 3, "index": 0, "difficulty": "medium"},
+        {"label": "L24", "size": 4, "rank": 3, "index": 1, "difficulty": "medium"},
+        {"label": "L25", "size": 4, "rank": 3, "index": 2, "difficulty": "medium"},
+        {"label": "L26", "size": 4, "rank": 3, "index": 3, "difficulty": "medium"},
+        {"label": "L27", "size": 4, "rank": 3, "index": 4, "difficulty": "medium"},
+        {"label": "L28", "size": 4, "rank": 3, "index": 5, "difficulty": "medium"},
+        {"label": "L29", "size": 4, "rank": 3, "index": 6, "difficulty": "medium"},
+        {"label": "L30", "size": 4, "rank": 3, "index": 7, "difficulty": "medium"}
     ]
 }
 ```
 
-**Phân bổ:** 12 easy (rank 1) → 10 medium (rank 2) → 8 hard (rank 3) = 30 levels.
+**Phân bổ:** 12 easy (rank 1) → 10 medium (rank 2) → 8 medium (rank 3) = 30 levels.
 
 ---
 
-## Bước 6: Validate toàn bộ
+### Validator M10 (to be implemented in `tools/validate_content.py`)
+
+> Các lệnh dưới đây là target CLI cho validator riêng của M10, không phải `GDD/tools/validate_levels.py` hiện có.
 
 ```bash
 # Validate bank schema
-python -B GDD/tools/validate_levels.py game/data/banks/bank_4x4.json
+python -B tools/validate_content.py game/data/banks/bank_4x4.json
 
 # Validate pace vs bank consistency
-python -B GDD/tools/validate_levels.py game/data/banks/bank_4x4.json --pace game/data/banks/bank_4x4.pace.json
+python -B tools/validate_content.py game/data/banks/bank_4x4.json --pace game/data/banks/bank_4x4.pace.json
 
 # Validate playlist references exist in bank
-python -B GDD/tools/validate_levels.py game/data/campaigns/demo_30.json --bank game/data/banks/bank_4x4.json
+python -B tools/validate_content.py game/data/campaigns/demo_30.json --bank game/data/banks/bank_4x4.json
 ```
 
 ---
@@ -227,7 +231,7 @@ Game có đủ code + data để:
 2. Chơi 30 levels tuần tự L01-L30
 3. Auto-mark, undo, progressive hints hoạt động
 4. Save/load session, progress persist
-5. Thắng L30 → replay campaign
+5. Thắng L30 → hiện hoàn thành nội dung hiện có
 
 **Thiếu cho production (ngoài scope playtest):**
 - Audio assets thật (cần sound designer)

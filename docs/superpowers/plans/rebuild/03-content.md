@@ -26,6 +26,8 @@ game/data/
 
 ### Schema: Bank file (`bank_{N}x{N}.json`)
 
+> **Lưu ý:** Bank levels là dữ liệu puzzle thuần (regions, solution, givens, logicTrace). Không chứa metadata gameplay (id, order, difficulty) — playlist cung cấp chúng. Bank-only fields (`seed`, `steps`, `profile`, `rating`, `pidHash`) là pipeline metadata, không dùng trong gameplay. `bank_reader.get_level(size, rank, index)` trả puzzle data; campaign ghép với playlist entry để tạo level đầy đủ.
+
 ```json
 {
   "bankVersion": 1,
@@ -34,7 +36,7 @@ game/data/
     "1": [
       {
         "seed": 7,
-        "regions": ["DDAC", "BCDD", "DDCD", "DDDC"],
+        "regions": ["AABB", "ABBB", "CCBB", "CCDB"],
         "solution": [1, 3, 0, 2],
         "givens": [],
         "steps": 4,
@@ -42,8 +44,9 @@ game/data/
         "rating": 4,
         "pidHash": "6c95fe9a",
         "logicTrace": [
-          {"rule": "S2", "focus": {"type": "region", "id": "A"}, "conclusion": {"type": "place", "r": 0, "c": 2}, "textKey": "hint.single.region"}
+          {"rule": "S2", "focus": {"type": "region", "id": "A"}, "conclusion": {"type": "place", "r": 0, "c": 1}, "textKey": "hint.single.region"}
         ]
+        // Abbreviated: full trace would have 4 S2 steps for this rank-1 puzzle (one per placement)
       }
     ],
     "2": [...],
@@ -226,6 +229,8 @@ func _pace_path(size: int) -> String
 
 ## File 3: `game/scripts/content/level_validator.gd`
 
+> **Phân công validation:** M01 `candy_rules.verify_level()` kiểm tra structural (size, regions, solution, adjacency, zone uniqueness). M03 `level_validator.check()` kiểm tra full schema v4 (bao gồm trace, givens validation, id format). `check_bank_level()` thêm bank-specific fields.
+
 **Trách nhiệm:** Schema validation cho individual level entries.
 
 **Tham khảo hành vi từ:** `validate_levels.py` (Python) → GDScript port
@@ -254,7 +259,7 @@ static func check_id(level_id: String) -> bool
 static func _check_schema(level: Dictionary) -> Array[String]
     # Required: regions, solution, givens
     # Bank fields: seed, steps, profile, rating, pidHash
-    # Optional: logicTrace
+    # logicTrace **required** for check_bank_level() — bank levels need machine-verifiable proof. Optional for check() (dev/testing)
 
 static func _check_geometry(level: Dictionary) -> Array[String]
     # size 4-12, regions NxN strings, solution N entries, each 0..N-1

@@ -101,7 +101,7 @@ func save() -> bool
     # Persist current progress to disk
 
 func new_progress(first_level_id: String) -> Dictionary
-    # Create fresh progress: {progressVersion, currentLevelId, completedLevelIds, results, tutorialState}
+    # Create fresh progress: {progressVersion, currentLevelId, completedLevelIds, results, tutorialSeenIds}
 
 func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary
     # Returns {ok: bool, data: Dictionary} with updated progress
@@ -122,7 +122,7 @@ func _migrate(data: Dictionary) -> Dictionary
   "currentLevelId": "L01",
   "completedLevelIds": [],
   "results": {},
-  "tutorialState": { "tutorialSeenIds": [] }
+  "tutorialSeenIds": []
 }
 ```
 
@@ -154,8 +154,9 @@ func save_session(data: Dictionary) -> bool
 func load_session(level_id: String, expected_hash: String) -> Dictionary
     # Returns {ok, data, reason, recreate} — recreate=true khi hash mismatch
 func clear() -> void
+func has_pending() -> bool
 func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary
-    # {sessionVersion, levelId, puzzleHash, boardSize, cells, hearts, mistakeCount, hintCount, elapsedMs}
+    # {sessionVersion, levelId, puzzleHash, boardSize, cells (flat Array of N² strings, row-major), hearts, mistake_count, hints_used, elapsedMs, status}
 
 # --- Internal ---
 
@@ -169,11 +170,12 @@ func _validate(data: Dictionary, level_id: String, expected_hash: String) -> Dic
   "levelId": "L01",
   "puzzleHash": "abc123",
   "boardSize": 4,
-  "cells": {},
+  "cells": ["empty", "candy", "locked", "empty", "empty", "x", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty", "empty"],
   "hearts": 3,
-  "mistakeCount": 0,
-  "hintCount": 0,
-  "elapsedMs": 0
+  "mistake_count": 0,
+  "hints_used": 0,
+  "elapsedMs": 0,
+  "status": "playing"
 }
 ```
 
@@ -197,11 +199,11 @@ const VERSION := 1
 const DEFAULTS := {
     "audio": true,
     "haptic": true,
-    "reducedMotion": false,
-    "highContrast": false,
-    "largeText": false,
+    "reduced_motion": false,
+    "high_contrast": false,
+    "large_text": false,
 }
-const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reducedMotion", "highContrast", "largeText"]
+const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reduced_motion", "high_contrast", "large_text"]
 
 var _path: String
 var _data: Dictionary = {}

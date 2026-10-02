@@ -11,6 +11,8 @@ Kẹo mặc định có thân tròn hơi dẹt, hai đầu giấy gói xoắn v�
 | ART-01 | Vùng có nền sáng, viền, nhãn A–F và họa tiết riêng; bàn N≤6 của bản đầu |
 | ART-02 | Kẹo nằm gọn trong 60–70% cạnh ô; không che biên vùng, X hoặc tọa độ; cùng mẫu cho given và kẹo tự tìm |
 | ART-03 | X thường nét trung tính; X đỏ có dấu cảnh báo/khóa ngoài màu; hai trạng thái phân biệt khi thang xám |
+| ART-14 | LOCKED cell: X mờ (reduced opacity) với LOCKED_OVERLAY color tint, phân biệt rõ với X do người chơi; không tương tác được |
+| ART-15 | GIVEN candy: cùng hình kẹo mặc định với halo/glow nhẹ để phân biệt với kẹo người chơi tự tìm |
 | ART-04 | Lá/hoa/giỏ và sparkle ở ngoài vùng thao tác; không che luật, tim, nút hoặc lưới |
 | ART-05 | Logo, kẹo, giỏ, nền, icon và âm thanh có nguồn gốc/giấy phép/file nguồn rõ |
 | ART-12 | Không có gói ngoại hình bán hoặc bộ sưu tập; yêu cầu appearanceId/clip nhân vật cũ ngừng áp dụng cho bản đầu |
@@ -44,7 +46,7 @@ Các motif theo dải màn chỉ thay viền trang trí/backdrop, không thay ma
 
 Kẹo đã tìm luôn ở lại ô. Mốc “Giỏi lắm!” chỉ phát một lần khi đạt ít nhất nửa số kẹo cần tự tìm; kẹo cuối ưu tiên thắng. Có thể dùng giỏ đầy ở màn 30 của campaign playtest nhưng không thêm màn phải chờ. Hiệu ứng không tự cộng điểm, mất tim, lưu game hoặc xác định thắng.
 
-Âm X là tick nhẹ, clear là tick mềm hơn, đúng là tiếng giấy gói/chime ngắn, sai là tiếng trầm nhẹ, thắng là motif dưới hai giây. Không dùng âm thanh động vật. Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. Nhạc nền chưa thuộc asset bắt buộc bản đầu. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
+Âm X là tick nhẹ, clear là tick mềm hơn, đúng là tiếng giấy gói/chime ngắn, sai là tiếng trầm nhẹ, thắng là motif dưới hai giây. lock_tick: tiếng tick nhẹ cho mỗi ô auto-marked, phát theo stagger animation. SFX rate limiting: mỗi hiệu ứng có min_interval tối thiểu để tránh spam khi nhiều ô locked xuất hiện liên tiếp trong auto-mark cascade. Không dùng âm thanh động vật. Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. Nhạc nền chưa thuộc asset bắt buộc bản đầu. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
 
 ## 4. Bàn giao asset và pipeline
 

@@ -12,15 +12,17 @@ Python validator và runtime phải dùng cùng vector hành vi CanDoKu. `legacy
 
 | ID | Module | Trách nhiệm |
 | --- | --- | --- |
-| TECH-01 | Level loader/validator | Schema v4, N≤12, vùng A–L, nghiệm, givens, trace S2/S3, release band theo order |
-| TECH-02 | Puzzle core | Luật GR-01..08, chấm `TryCandy`, trạng thái thắng/điểm |
-| TECH-03 | Gesture/session | Preview X tức thì, nhận chạm đôi/kéo một ngón, commit action tuần tự, khe Undo X một bước, Restart, tim, lỗi, thời gian, trạng thái phiên |
-| TECH-04 | Hint engine | Một Hint/lượt; S2 hoặc chuỗi S3→S2 từ kẹo đúng hiện tại; dựng bằng chứng, bỏ qua X/X đỏ |
-| TECH-05 | UI controller | Action → event/view model; điều hướng Home/Puzzle/Results/Help/Settings |
-| TECH-06 | Save repository | Một session hiện tại + progress độc lập, backup/atomic write |
-| TECH-07 | Content pipeline | Validator, lọc trùng, `--release`, báo cáo biên tập |
-| TECH-18 | Visual presenter | Nhãn vùng → nền/viền/tiến độ; token `candy` → kẹo mặc định; hiệu ứng 2D/reduced motion; không chứa luật |
+| TECH-01 | Content (M03) | `bank_reader`, `pace_reader`, `board_transform`, `region_painter`, `level_validator` — đọc bank JSON chứa level theo rank, pace sidecar chứa hint economy (hintCosts), transform ×8 nhân nội dung, validate schema v4/trace/nghiệm |
+| TECH-02 | Core (M01) | `cell_model`, `candy_rules`, `board_solver` — luật GR-01..08, chấm `TryCandy` dựa trên solution (`solution[row] == col`), auto-mark (S1 lock ô cùng row/col/zone), 5 cell states + given flag |
+| TECH-03 | Input (M04) | `touch_decoder`, `play_session`, `action_recorder` — preview X tức thì, chạm đôi/kéo một ngón, commit action tuần tự, grouped undo (candy + auto-marks = 1 undo group), Restart, tim, lỗi, thời gian, trạng thái phiên |
+| TECH-04 | Core/board_solver | S1 auto-mark → S2 naked single → S3 lock intersection (4 modes: zone→row, zone→col, row→zone, col→zone); solve loop lặp S1→S2→S3 đến khi đủ candy hoặc STUCK; progressive hint dùng hintCosts từ pace |
+| TECH-05 | UI controller (M08) | Action → event/view model; điều hướng Home/Puzzle/Results/Help/Settings; composition root khởi tạo và inject dependencies |
+| TECH-06 | State (M02) | `dual_slot_store`, `progress_manager` — session hiện tại + progress độc lập, backup/atomic write |
+| TECH-07 | Content pipeline (M10) | Validator, lọc trùng, `--release`, báo cáo biên tập; sinh bank/pace/campaign JSON |
+| TECH-18 | Visual presenter (M05/M06) | Nhãn vùng → nền/viền/tiến độ; token `candy` → kẹo mặc định; hiệu ứng 2D/reduced motion; auto-mark animation; không chứa luật |
 | TECH-20 | Asset loader | Nạp resource kẹo/UI dùng chung, asset dự phòng khi lỗi; không có bộ chọn ngoại hình hoặc cache bộ sưu tập |
+
+Kiến trúc rebuild dùng **composition root pattern** — không có autoloads. App shell (`app_shell`) khởi tạo tất cả module và inject dependencies. Signals thay thế global event bus. Mỗi module ≤ 300 dòng, một file, một trách nhiệm. Pure logic modules (cell_model, candy_rules, board_solver, board_transform) là stateless static functions.
 
 ## 3. Schema level v4
 
@@ -57,6 +59,15 @@ Validator tự tính `P(source)` và `P(target)` từ candy đã chứng minh c�
 
 Màu vùng là theme mapping từ A–L, không nằm trong JSON. Mọi ô `candy` dùng cùng asset kẹo mặc định. Nền/viền/nhãn/họa tiết và hàng tiến độ nhận diện vùng. Đổi theme không đổi nghiệm, trạng thái, `puzzleHash` hoặc schema. Không thêm `selectedAppearanceId` vào progress bản đầu.
 
+### 3b. Kiến trúc bank/pace/playlist
+
+Rebuild thay thế cách nạp level đơn file bằng kiến trúc ba lớp:
+
+- **Bank** (`data/banks/`): JSON chứa level nhóm theo rank (easy/medium/hard). Mỗi bank là một bộ sưu tập level cùng kích thước/độ khó. `bank_reader` đọc và lọc level từ bank.
+- **Pace** (sidecar): File JSON đi kèm bank, chứa hint economy — `hintCosts` cho từng level/rank, điều chỉnh chi phí hint theo tiến trình. `pace_reader` đọc pace data.
+- **Playlist/Campaign** (`data/campaigns/`): Tham chiếu vào bank theo ID level, xác định thứ tự chơi 30 levels cho playtest. Campaign không chứa dữ liệu level, chỉ references.
+- **Transform ×8**: `board_transform` áp dụng 8 phép biến đổi đối xứng (rotation + reflection) lên mỗi level, nhân nội dung mà không cần thêm level gốc.
+
 ## 4. Progress và session
 
 `progress.json` chứa tiến trình tuyến tính; `session.json` chỉ chứa lượt của `currentLevelId`. Mỗi file ghi qua temp + replace nguyên tử, progress có một bản hợp lệ trước để phục hồi. Khi thắng, ghi progress với level kế và kết quả trước khi hiện màn thắng, rồi xóa session cũ. Sau crash giữa hai bước, `session.levelId` khác `progress.currentLevelId` thì bỏ session cũ. Khi thua, session `failed` được lưu và Home Play trở lại màn thua.
@@ -77,19 +88,19 @@ Màu vùng là theme mapping từ A–L, không nằm trong JSON. Mọi ô `cand
   "levelId": "L02",
   "puzzleHash": "<sha256 of canonical puzzle data>",
   "status": "playing",
-  "cells": ["empty", "x", "x_error", "candy"],
+  "cells": ["empty", "x", "x_error", "candy", "locked"],
   "hearts": 2,
-  "mistakeCount": 1,
-  "hintCount": 0,
+  "mistake_count": 1,
+  "hints_used": 0,
   "elapsedMs": 84000
 }
 ```
 
-`cells` trên là ví dụ rút gọn; dữ liệu thật có N² ô theo hàng trước, cột sau. Given lưu `empty` trong session và được ghép từ level khi render. `hintCount` chỉ nhận `0` hoặc `1`; reload/Back To Home giữ giá trị, còn Retry/Restart tạo session lượt mới với `0`. `correctPlacedCount` được suy từ các ô `candy` không phải given; scorecard tính theo GR-18, không lưu hai nguồn điểm có thể lệch nhau. `puzzleHash` là SHA-256 của JSON compact UTF-8 cho `[size,regions,givens sắp theo (r,c),solution]`. Session sai hash/version/cell bất hợp lệ thì báo và tạo lại **cùng level**, không tiến level. `currentLevelId=null` nghĩa là hoàn thành toàn bộ nội dung hiện có. Khi append level mới, quét danh sách completed để xác định successor đầu tiên chưa xong. Không cho chọn ID đã qua trong UI.
+`cells` trên là ví dụ rút gọn; dữ liệu thật có N² ô theo hàng trước, cột sau (NxN cell states). Given lưu `empty` trong session và được ghép từ level data khi render. `locked` cells (auto-mark do hệ thống) lưu `"locked"` trong session. `hints_used` đếm số click progressive hint đã dùng; reload/Back To Home giữ giá trị, còn Retry/Restart tạo session lượt mới với `0`. `correct_count` được suy từ các ô `candy` không phải given; scorecard tính theo GR-18, không lưu hai nguồn điểm có thể lệch nhau. `puzzleHash` là SHA-256 của JSON compact UTF-8 cho `[size,regions,givens sắp theo (r,c),solution]`. Session sai hash/version/cell bất hợp lệ thì báo và tạo lại **cùng level**, không tiến level. `currentLevelId=null` nghĩa là hoàn thành toàn bộ nội dung hiện có. Khi append level mới, quét danh sách completed để xác định successor đầu tiên chưa xong. Không cho chọn ID đã qua trong UI.
 
 | ID | Quy tắc |
 | --- | --- |
-| TECH-08 | Preview X/kéo và khe Undo chỉ tồn tại trong runtime; sau action đã xác nhận và đổi board/tim/hint, ghi session trước phản hồi bền vững. Preview/khe Undo không lưu. Back To Home/app đóng xóa khe dù session board vẫn được giữ. |
+| TECH-08 | Preview X/kéo và Undo stack chỉ tồn tại trong runtime; sau action đã xác nhận và đổi board/tim/hint, ghi session trước phản hồi bền vững. Preview/Undo stack không lưu vào session. Back To Home/app đóng xóa stack dù session board vẫn được giữ. |
 | TECH-09 | Progress tách session; session hỏng không xóa completed/results. Progress chính hỏng thử bản hợp lệ trước, không ghi đè bằng trống. |
 | TECH-10 | Kiểm version/hash khi load; hỗ trợ chuyển session v2 sang v3 qua biên tương thích riêng. |
 | TECH-11 | Không dữ liệu cá nhân hoặc truyền analytics mạng trong bản đầu. |
@@ -106,9 +117,9 @@ getHint(level,session) -> HintEvidence | NoHint
 completeLevel(level,session) -> Progress | Error
 ```
 
-Gesture layer quyết định một chạm/chạm đôi/nét kéo; core không đo thời gian chạm. UI áp preview từ bản sao trạng thái đã commit, rồi gửi action sau khi rõ cử chỉ. `MarkStroke` nhận danh sách ô đã đi qua theo thứ tự, loại trùng, áp cùng chế độ `mark` hoặc `clear` từ ô đầu; core bỏ qua các ô không hợp lệ và commit toàn bộ trong một transaction. Bắt đầu trên X đỏ/candy/given không mở nét. Một action X lưu đúng diff vào khe Undo runtime; `UndoX` hoàn nguyên toàn diff rồi làm rỗng khe. `TryCandy` xóa khe trước khi chấm, nên không thể Undo xuyên qua. `RestartLevel` chỉ chạy sau xác nhận UI và tạo session mới cùng level. Core trả `XMarked`, `XCleared`, `XUndoApplied`, `SessionRestarted`, `CandyFound(region)`, `Mistake(reason)`, `HeartLost`, `ScoreChanged`, `LevelWon`, `LevelFailed`. UI/animation chỉ dùng event; `x_error` là ô bất biến trong lượt. Input bị khóa trong chuyển result. Với action thắng, service commit progress trước `LevelWon`; nếu ghi lỗi, giữ state cũ và báo thử lại. Scorecard được tính từ board/lỗi, nên save và Result có một nguồn chuẩn.
+Gesture layer quyết định một chạm/chạm đôi/nét kéo; core không đo thời gian chạm. UI áp preview từ bản sao trạng thái đã commit, rồi gửi action sau khi rõ cử chỉ. `MarkStroke` nhận danh sách ô đã đi qua theo thứ tự, loại trùng, áp cùng chế độ `mark` hoặc `clear` từ ô đầu; core bỏ qua các ô không hợp lệ và commit toàn bộ trong một transaction. Bắt đầu trên X đỏ/candy/given không mở nét. Một action hoặc group lưu vào Undo stack runtime (tối đa 100 nhóm); `UndoX` pop nhóm cuối rồi hoàn nguyên toàn diff. `TryCandy` sai xóa toàn bộ stack, nên không thể Undo xuyên qua lần thử sai. `RestartLevel` chỉ chạy sau xác nhận UI và tạo session mới cùng level. Core trả `XMarked`, `XCleared`, `XUndoApplied`, `SessionRestarted`, `CandyFound(row, col, region)`, `Mistake(row, col, reason)`, `HeartLost(remaining)`, `AutoMarked(cells)`, `LevelWon`, `LevelFailed`. `AutoMarked(cells)` phát ra khi hệ thống tự đánh dấu LOCKED các ô cùng row/col/zone/diagonal với candy vừa đặt hoặc givens khi init board. UI/animation chỉ dùng event; `x_error` là ô bất biến trong lượt. Input bị khóa trong chuyển result. Với action thắng, service commit progress trước `LevelWon`; nếu ghi lỗi, giữ state cũ và báo thử lại. Scorecard được tính từ board/lỗi, nên save và Result có một nguồn chuẩn.
 
-Trình nhận cử chỉ chỉ chấp nhận ngón `event.index == 0` nếu điểm đầu ở trong bàn, rồi giữ ID này đến khi nhấc; bỏ qua mọi ngón phụ và điểm chạm bắt đầu ngoài bàn. Đây là chặn multi-touch/ngón phụ, không phải thuật toán nhận dạng palm đầu tiên trong bàn. Sau khi nhấn, X preview xuất hiện trong khung hình đầu. Chuyển sang kéo khi độ dịch chuyển từ điểm đầu vượt **12 điểm logic** sau quy đổi UI scale; các ô cắt bởi đoạn từ vị trí trước đến vị trí mới được lấy bằng phép quét lưới phủ đủ ô trung gian. Mỗi ô chỉ được ghé một lần. Sau chạm đầu đã nhấc, mở cửa sổ **280 ms đến lần chạm xuống thứ hai**. Nếu lần hai ở cùng ô và cả hai lần không vượt ngưỡng kéo, hoàn tác preview chạm đầu rồi gọi một `TryCandy`. Chạm khác ô commit chạm đầu trước khi mở cử chỉ mới. Chạm thứ hai thành nét kéo cũng commit chạm đầu; nét hai lấy chế độ từ ô đầu **sau commit**, không gọi `TryCandy`. Cửa sổ/ngưỡng là cấu hình cần playtest, không phụ thuộc hoàn toàn vào cờ `double_tap` của hệ điều hành; [Godot cung cấp `index` và `double_tap` trên sự kiện chạm](https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html). App nền/chuyển màn commit chạm đơn đã nhấc nhưng còn chờ; hủy preview của chạm/nét đang giữ. Có thể nhận action ngữ nghĩa riêng từ trình đọc màn hình.
+Trình nhận cử chỉ chỉ chấp nhận ngón `event.index == 0` nếu điểm đầu ở trong bàn, rồi giữ ID này đến khi nhấc; bỏ qua mọi ngón phụ và điểm chạm bắt đầu ngoài bàn. Đây là chặn multi-touch/ngón phụ, không phải thuật toán nhận dạng palm đầu tiên trong bàn. Sau khi nhấn, X preview xuất hiện trong khung hình đầu. Chuyển sang kéo khi độ dịch chuyển từ điểm đầu vượt **12 điểm logic** sau quy đổi UI scale; các ô cắt bởi đoạn từ vị trí trước đến vị trí mới được lấy bằng phép quét lưới phủ đủ ô trung gian. Mỗi ô chỉ được ghé một lần. Sau chạm đầu đã nhấc, mở cửa sổ **350 ms đến lần chạm xuống thứ hai**. Nếu lần hai ở cùng ô và cả hai lần không vượt ngưỡng kéo, hoàn tác preview chạm đầu rồi gọi một `TryCandy`. Chạm khác ô commit chạm đầu trước khi mở cử chỉ mới. Chạm thứ hai thành nét kéo cũng commit chạm đầu; nét hai lấy chế độ từ ô đầu **sau commit**, không gọi `TryCandy`. Cửa sổ/ngưỡng là cấu hình cần playtest, không phụ thuộc hoàn toàn vào cờ `double_tap` của hệ điều hành; [Godot cung cấp `index` và `double_tap` trên sự kiện chạm](https://docs.godotengine.org/en/stable/classes/class_inputeventscreentouch.html). App nền/chuyển màn commit chạm đơn đã nhấc nhưng còn chờ; hủy preview của chạm/nét đang giữ. Có thể nhận action ngữ nghĩa riêng từ trình đọc màn hình.
 
 ## 6. Ngân sách và cổng kỹ thuật
 

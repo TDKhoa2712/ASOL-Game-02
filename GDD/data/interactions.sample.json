@@ -1,7 +1,7 @@
 {
   "contractVersion": 2,
   "levelId": "T01",
-  "doubleTapWindowMs": 280,
+  "doubleTapWindowMs": 350,
   "touchSlopLogicalPx": 12,
   "cellLogicalPx": 100,
   "cases": [

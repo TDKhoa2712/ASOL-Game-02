@@ -13,7 +13,7 @@ Nguồn đối chiếu: mô tả nhà phát hành Oakever trên [Google Play](ht
 | Điều tham khảo | Cách thiết kế trong CanDoKu |
 | --- | --- |
 | Một mục tiêu mỗi hàng/cột/vùng, không chạm | Giữ họ luật suy luận; viên kẹo và luống vườn là cách trình bày riêng |
-| Chạm đôi và ba cơ hội sai trong mô tả chính thức | Giữ contract input/ba tim sẵn có của dự án; ngưỡng 280 ms và kéo 12 điểm là thông số CanDoKu cần playtest |
+| Chạm đôi và ba cơ hội sai trong mô tả chính thức | Giữ contract input/ba tim sẵn có của dự án; ngưỡng 350 ms và kéo 12 điểm là thông số CanDoKu cần playtest |
 | Nhịp giải đố offline | Client hiện có bốn màn; mục tiêu kế tiếp là campaign playtest gốc 30 màn, tự lưu cục bộ |
 | Chủ đề và phần thưởng cảm xúc | Kẹo hé lộ, giỏ picnic, hoa và lời động viên gốc; không dùng nhân vật của game tham chiếu hoặc sao chép HUD |
 

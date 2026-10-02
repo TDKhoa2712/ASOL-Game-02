@@ -21,10 +21,10 @@
 ```bash
 # 1. Kiểm tra branch — phải bắt đầu từ dev
 git status
-git branch --show-current   # phải là dev hoặc codex/<module>
+git branch --show-current   # phải là dev hoặc <type>/<scope>-<mô-tả>
 
 # 2. Tạo nhánh module (nếu chưa có)
-git checkout -b codex/rebuild-module-NN
+git checkout -b <type>/<scope>-<mô-tả>   # ví dụ: feat/m01-core, feat/m03-content
 
 # 3. Giữ nguyên thay đổi sẵn có — KHÔNG stash/reset code người khác
 git status  # ghi nhận modified files, chỉ commit files thuộc module mình
@@ -81,56 +81,75 @@ Wave 6:              M10-Content-Generation
 ```gdscript
 # cell_model.gd
 enum CellKind { BLANK = 0, MARK = 1, CANDY = 2, WRONG = 3, GIVEN = 4, LOCKED = 5 }
-static func is_empty(k: int) -> bool      # BLANK hoặc MARK
+static func is_empty(k: int) -> bool      # chỉ BLANK
 static func is_placed(k: int) -> bool     # CANDY hoặc GIVEN
-static func is_candy(k: int) -> bool      # CANDY
+static func is_candy(k: int) -> bool      # CANDY hoặc GIVEN (solver treats cả hai là candy)
 static func is_available(k: int) -> bool  # BLANK hoặc MARK — player có thể tương tác
-static func is_locked(k: int) -> bool     # LOCKED
-static func label(k: int) -> String       # "BLANK", "MARK", ...
+static func is_locked(k: int) -> bool     # GIVEN hoặc LOCKED — immutable
+static func is_cross(k: int) -> bool      # MARK, WRONG hoặc LOCKED — hiện dấu X
+static func label(k: int) -> String       # "blank", "mark", ... (lowercase)
 
 # candy_rules.gd
-static func attempt_candy(level: Dictionary, cells: Array, row: int, col: int) -> Dictionary
-    # Returns: {valid: bool, clash_label: String, auto_marks: Array[[row,col]]}
-static func compute_auto_marks(level: Dictionary, cells: Array, row: int, col: int) -> Array
-    # Returns: Array of [row, col] to lock
-static func compute_all_auto_marks(level: Dictionary, cells: Array) -> Array
-static func check_win(level: Dictionary, cells: Array) -> bool
+static func attempt_candy(board: Array, regions: Array, solution: Array,
+        hearts: int, mistake_count: int, row: int, col: int) -> Dictionary
+    # Validation: solution[row] == col (GDD 02 GR-15)
+    # Returns: {board, hearts, mistake_count, phase, events, reason, auto_marks}
+    # phase: "active" | "won" | "failed"
+static func can_place(board: Array, regions: Array, row: int, col: int) -> bool
+    # Core constraint: cell available, no candy in row/col/zone, no adjacent candy
+static func detect_clash(regions: Array, board: Array, a: Array, b: Array) -> int
+    # Returns Clash enum — for mistake explanation only
+static func compute_auto_marks(board: Array, regions: Array, candy_row: int, candy_col: int) -> Array
+    # Returns [row, col] pairs of BLANK cells to set LOCKED
+static func compute_all_auto_marks(board: Array, regions: Array) -> Array
+    # Recompute all locks from all placed candy — for restore/undo
+static func verify_level(level: Dictionary) -> bool
+    # Structural validation: size, regions, solution, adjacency, zone uniqueness
+static func tally(correct_count: int, mistake_count: int) -> int
+static func correct_count(board: Array) -> int
 
-# board_solver.gd
-static func next_hint(board: Array, size: int, zones: Array, solution: Array) -> Dictionary
-    # Returns: {row, col, reason} hoặc {}
-static func progressive_hint(board: Array, size: int, zones: Array, solution: Array, click: int, max_clicks: Array) -> Dictionary
-    # Returns: {row, col, unit_type?, unit_id?} hoặc {}
-static func compute_cell_ranks(size: int, zones: Array) -> Array
+# board_solver.gd — Solve loop: S1(mark) → S2(single) → S3(lock intersection)
+enum Technique { ELIMINATION, SINGLE_CANDIDATE, LOCK_INTERSECTION }
+static func next_hint(board: Array, size: int, regions: Array, solution: Array) -> Dictionary
+    # Returns: {found, technique, cell, unit_type, unit_id, explanation} or {found: false}
+static func progressive_hint(board: Array, size: int, regions: Array,
+        solution: Array, max_clicks: int) -> Dictionary
+    # Returns: {stage: "unit"|"cell"|"place", highlight: Array, text: String}
+static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[int]
+static func compute_cell_ranks(size: int, regions: Array, solution: Array,
+        givens: Array) -> Array
+    # NxN Array; rank = highest technique needed
 ```
 
 ### Module 2: State (`scripts/state/`)
 
 ```gdscript
 # dual_slot_store.gd
-func _init(dir: String, name: String)
-func load() -> Variant           # Returns parsed data hoặc null
-func save(data: Variant) -> bool # Returns success
+func _init(directory: String, file_name: String)
+func write_json(data: Dictionary) -> bool
+func read_json() -> Dictionary  # {ok, data, recovered, reason}
 func remove_all() -> void
 
 # progress_manager.gd
-func _init(store: DualSlotStore)
-func current_level() -> String       # "L01", "L02", ...
-func advance(label: String, score: Dictionary) -> void
-func completed_count() -> int
-func is_done() -> bool
-func to_dict() -> Dictionary
-signal progress_changed()
+func _init(profile_dir: String)
+func load() -> Dictionary      # {ok, data, recovered, reason}
+func save() -> bool
+func new_progress(first_level_id: String) -> Dictionary
+func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary
+func puzzle_fingerprint(level: Dictionary) -> String
+signal save_failed(reason: String)
 
 # session_store.gd
-func _init(store: DualSlotStore)
+func _init(profile_dir: String)
 func save_session(data: Dictionary) -> bool
-func load_session() -> Variant       # Dictionary hoặc null
-func clear_session() -> void
+func load_session(level_id: String, expected_hash: String) -> Dictionary
+    # Returns: {ok, data, reason, recreate}
+func clear() -> void
 func has_pending() -> bool
+func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary
 
 # config_store.gd
-func _init(store: DualSlotStore)
+func _init(profile_dir: String)
 func get_option(key: String) -> Variant
 func set_option(key: String, value: Variant) -> void
 signal option_changed(key: String, value: Variant)
@@ -141,28 +160,27 @@ signal option_changed(key: String, value: Variant)
 
 ```gdscript
 # bank_reader.gd
-func load_bank(size: int) -> bool
+func load_bank(size: int) -> Dictionary   # {ok: bool, errors: Array[String]}
 func get_level(size: int, rank: int, index: int) -> Dictionary
-    # Returns: {size, regions, solution, givens, steps, profile, rating, pidHash, logicTrace, seed}
 func get_levels(size: int, rank: int) -> Array
 func level_count(size: int, rank: int) -> int
 func total_count(size: int) -> int
 
 # pace_reader.gd
-func load_pace(size: int) -> bool
+func load_pace(size: int) -> Dictionary   # {ok: bool, errors: Array[String]}
 func get_pace(size: int, rank: int, index: int) -> Dictionary
-    # Returns: {rSeq: Array[int], hintCosts: Array[int]}
-func validate_against_bank(bank: BankReader) -> bool
+func validate_against_bank(bank: BankReader, size: int) -> Array[String]
+
+# level_validator.gd
+static func check(level: Dictionary) -> Dictionary  # {ok, errors}
+static func check_bank_level(level: Dictionary) -> Dictionary
 
 # board_transform.gd
 const TRANSFORM_COUNT := 8
-enum Transform { R0, R90, R180, R270, M0, M90, M180, M270 }
 static func apply(level: Dictionary, t: int) -> Dictionary
-    # Returns: level với regions/solution/givens đã transform
 
 # region_painter.gd
-static func assign_colors(zone_grid: Array, zone_count: int) -> Dictionary
-    # Returns: {zone_id: color_index}
+static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dictionary
 ```
 
 ### Module 4: Input (`scripts/input/`)
@@ -185,17 +203,19 @@ func pop_group() -> Array
 func can_undo() -> bool
 func depth() -> int
 func clear() -> void
-func to_save_data() -> Array
-static func from_save_data(data: Array) -> ActionRecorder
+# Undo stack is runtime-only (GDD TECH-08) — NOT persisted in session save.
 
 # play_session.gd
 signal state_changed()
-signal candy_found(row: int, col: int)
-signal mistake_made(row: int, col: int, clash_label: String)
+signal candy_found(row: int, col: int, region: String)
+signal mistake_made(row: int, col: int, reason: String)
+signal heart_lost(remaining: int)
 signal auto_marked(cells: Array)
 signal level_won()
 signal level_failed()
-enum Phase { ACTIVE, WON, LOST }
+# Given serialization: GIVEN cells lưu "empty" trong session JSON.
+# Khi init/restore, play_session đọc level.givens để đặt CellKind.GIVEN trên board.
+enum Phase { ACTIVE, WON, FAILED }
 func _init(level_data: Dictionary, initial_hearts: int = 3)
 func mark_x(row: int, col: int) -> void
 func try_candy(row: int, col: int) -> void
@@ -208,7 +228,7 @@ func remaining_candies() -> int
 var level: Dictionary
 var board: Array          # NxN CellKind
 var hearts: int
-var errors: int
+var mistake_count: int
 var hints_used: int
 var elapsed_ms: int
 var phase: int
@@ -268,6 +288,31 @@ static func is_on() -> bool
 static func has_hardware() -> bool
 ```
 
+### Module 7: Campaign (`scripts/campaign/`)
+
+```gdscript
+# campaign_runtime.gd
+func _init(bank: BankReader, pace: PaceReader, progress: ProgressManager, session_store: SessionStore)
+func boot() -> Dictionary  # {ok, level, pace_entry, error}
+func current_level() -> Dictionary
+func current_pace() -> Dictionary
+func advance(score_data: Dictionary) -> Dictionary  # {ok, next_level, campaign_complete}
+func replay_campaign() -> void  # only after campaign_complete
+signal campaign_complete()
+
+# nav_controller.gd
+enum Screen { TITLE, PUZZLE, WIN, FAIL, OPTIONS }
+signal screen_changed(from: String, to: String)
+func go_to(screen: int) -> void
+func current() -> int
+
+# tutorial_guide.gd
+func _init(progress: ProgressManager)
+func is_tutorial(level_id: String) -> bool
+func tutorial_steps(level_id: String) -> Array
+func mark_seen(tutorial_id: String) -> void
+```
+
 ---
 
 ## Nguyên tắc thiết kế
@@ -278,6 +323,7 @@ static func has_hardware() -> bool
 4. **Offline-first** — Không phụ thuộc backend, mạng, hay account.
 5. **Testable** — Logic tách khỏi UI, static functions cho pure logic, test GDScript headless.
 6. **Dùng asset có sẵn** — Không tạo asset mới; liệt kê asset cần bổ sung riêng.
+7. **Composition root, không autoloads** — `app_shell.gd` khởi tạo tất cả module và inject dependencies. Không dùng autoloads.
 
 ---
 
@@ -388,7 +434,7 @@ game/
 **Tối ưu song song:** Wave 1+2 có thể chạy 5 agents đồng thời → giảm wall-clock từ ~17h xuống ~8h.
 
 **Quy tắc phân nhánh song song:**
-- Mỗi agent tạo branch `codex/rebuild-module-NN` từ dev
+- Mỗi agent tạo branch `<type>/<scope>-<mô-tả>` từ dev (ví dụ: `feat/m01-core`, `fix/m04-drag-selection`)
 - Chỉ commit files thuộc module mình: `game/scripts/<folder>/` + `game/tests/test_<name>.gd`
 - Không sửa files ngoài module (trừ khi module plan chỉ định rõ)
 - Merge vào dev theo thứ tự wave: Wave 1 merge trước, rồi Wave 2, v.v.
@@ -450,7 +496,7 @@ game/
 2. **Level architecture: Bank + Pace + Playlist** — Bank chứa levels theo rank, Pace chứa hint economy, Playlist (campaign) tham chiếu vào bank. Transform ×8 cho replay.
 3. **Schema giữ nguyên** — Level v4 (string regions, logicTrace proof), progress v2, session v3
 4. **Không tạo asset mới** — Chỉ dùng asset hiện có; liệt kê thiếu ở bảng trên
-5. **Giữ contract hiện hành** — candy/TryCandy/CandyFound theo RST-008
+5. **Giữ contract hiện hành** — candy/TryCandy/CandyFound theo RST-008. TryCandy đúng/sai dựa vào `solution[row] == col` (GDD 02 GR-15); `detect_clash()` chỉ dùng để giải thích lý do sai.
 6. **Phạm vi playtest** — 30 level (playlist), N=4-6, S1-S3, không Endless/IAP/ads
 7. **Test headless** — Mỗi module có test chạy được bằng `godot --headless`
 8. **Scale design** — Bank format cho phép thêm hàng trăm level mà không đổi code; transform ×8 nhân nội dung

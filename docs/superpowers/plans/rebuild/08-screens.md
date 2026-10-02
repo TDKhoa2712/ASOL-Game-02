@@ -5,7 +5,7 @@
 
 ## Tổng quan
 
-Module Screens là lớp trình bày UI. Reference có BaseGamePage (7611 dòng) + GamePage (5054 dòng) — god objects chứa tools, drafts, hints, combos, ads, countdown, rank, streak, golden fish, cheat commands. Rebuild tách thành 7 files nhỏ, mỗi file < 400 dòng.
+Module Screens là lớp trình bày UI. Reference có BaseGamePage (7611 dòng) + GamePage (5054 dòng) — god objects chứa tools, drafts, hints, combos, ads, countdown, rank, streak, golden fish, cheat commands. Rebuild tách thành 7 files nhỏ, mỗi file ≤ 300 dòng.
 
 **Cải tiến từ reference:**
 - GIVEN cell rendering (darker candy + gold halo, distinct from player candy)
@@ -143,29 +143,31 @@ func _on_board_double_tap(row: int, col: int) -> void:
     # Play SFX + haptic based on result
 
 func _on_hint() -> void:
-    # Progressive hint using pace data:
-    # Click 1: get hint from BoardSolver.progressive_hint(click=1)
-    #          -> highlight entire unit (row/col/zone)
-    # Click 2+: BoardSolver.progressive_hint(click=N)
-    #          -> narrow to cell
-    # Use current_pace().hintCosts to determine max clicks
-    var pace := runtime.current_pace()
+    # Budget check: pace defines max hint clicks via hintCosts array.
+    var pace_data := runtime.current_pace()
+    var costs := pace_data.get("hintCosts", [1])
+    var max_clicks := costs.size()
+    # _hint_click_count tracks depth within current hint sequence (resets on candy found).
+    # session.hints_used tracks total budget across the round (checked by session itself if needed).
+    if _hint_click_count >= max_clicks:
+        return  # budget exhausted for this sequence
+    # Progressive hint: contract returns {stage, highlight, text} or {found:false}.
     var level := session.level
     var hint := BoardSolver.progressive_hint(
         session.board, level["size"], level["regions"],
-        level["solution"], _hint_click_count + 1,
-        pace.get("hintCosts", [1])
+        level["solution"], _hint_click_count + 1
     )
-    if hint.is_empty():
-        return
+    if not hint.get("found", true):
+        return  # no hint available (board already solved or no solvable step)
     _hint_click_count += 1
-    _hint_target = [hint["row"], hint["col"]]
-    if hint.has("unit_type"):
-        board.highlight_unit(hint["unit_type"], hint["unit_id"])
-    else:
-        board.highlight_cell(hint["row"], hint["col"])
-    sfx.play(SfxCatalog.Effect.HINT_SHOW)
     session.use_hint()
+    var stage := hint["stage"]  # "unit", "cell", or "place"
+    var hl := hint["highlight"]  # Array: unit info or cell coords
+    if stage == "unit":
+        board.highlight_unit(hl[0], hl[1])  # unit_type, unit_id
+    else:
+        board.highlight_cell(hl[0], hl[1])  # row, col
+    sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
 func _on_undo() -> void:
     # session.undo(), play SFX
@@ -178,7 +180,7 @@ func _on_restart() -> void:
 func _on_home() -> void:
     # If session dirty: save before leaving
 
-func _on_candy_found(row: int, col: int) -> void:
+func _on_candy_found(row: int, col: int, region: String) -> void:
     sfx.play(SfxCatalog.Effect.CANDY_YES)
     Vibration.pulse(Vibration.Strength.NORMAL)
     _hint_click_count = 0  # reset hint for next step
@@ -210,7 +212,7 @@ func _process(delta: float) -> void
 ```
 
 **Khác biệt với reference:**
-- ~350 dòng thay 7611+5054 (12,665 dòng combined)
+- ~250 dòng thay 7611+5054 (12,665 dòng combined)
 - **Thêm:** `_on_auto_marked()` — animates LOCKED cells appearing after candy
 - **Thêm:** Progressive hint flow (`_hint_click_count`, `progressive_hint()`, unit highlight)
 - **Thêm:** `LOCK_CELL` SFX on auto-mark
@@ -268,7 +270,7 @@ func highlight_cell(row: int, col: int) -> void:
     _highlight_unit = ""
     queue_redraw()
 
-func highlight_unit(unit_type: String, unit_id: int) -> void:
+func highlight_unit(unit_type: String, unit_id: Variant) -> void:
     # Highlight all cells in a row/col/zone for progressive hint
     _highlight_unit = unit_type
     _highlight_cells = _cells_in_unit(unit_type, unit_id)
@@ -331,7 +333,7 @@ func _draw_cell_x(rect: Rect2, is_wrong: bool, is_locked: bool) -> void:
 func _draw_lock_overlay(rect: Rect2, alpha: float) -> void:
     # Draw LOCKED_OVERLAY with animation alpha
 
-func _cells_in_unit(unit_type: String, unit_id: int) -> Array:
+func _cells_in_unit(unit_type: String, unit_id: Variant) -> Array:
     # Return all [row,col] in a row/col/zone for progressive hint
 
 func _board_rect() -> Rect2
@@ -339,7 +341,7 @@ func _cell_gap(board_w: float) -> float
 ```
 
 **Khác biệt với reference:**
-- ~350 dòng thay 1803
+- ~250 dòng thay 1803
 - **Thêm:** `_draw_cell_candy(is_given)` — renders GIVEN vs CANDY distinctly
 - **Thêm:** `_draw_cell_x(is_wrong, is_locked)` — renders WRONG vs LOCKED vs MARK
 - **Thêm:** `_draw_lock_overlay()` — dimmed overlay for LOCKED cells
@@ -376,7 +378,7 @@ var _is_last_level: bool
 
 func setup(won: bool, score: int, level_id: String, is_last: bool) -> void:
     # Show appropriate message, buttons, score
-    # Win last level: show "Replay from L01" button (RST-003)
+    # Win last level: show 'Hoàn thành!' message. Replay button hidden for campaign30 playtest (GDD GR-28); only visible for fixture-4 test build (RST-003).
 
 func _on_next() -> void:
     next_pressed.emit()

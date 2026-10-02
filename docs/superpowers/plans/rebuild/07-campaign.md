@@ -12,13 +12,14 @@ Reference có level_selector system (60+ files, 5 cursor classes, AB test strate
 ### Hai chế độ chơi
 
 1. **Campaign mode** (demo-30): Playlist cố định 30 level tham chiếu vào banks. Player chơi tuần tự L01→L30.
-2. **Infinite mode** (future): Bank cursor duyệt tất cả levels theo rank progression, transform ×8 cho replay. (Chỉ thiết kế API, chưa cần UI)
+2. **Infinite mode** (future — không implement trong R1): Bank cursor duyệt tất cả levels theo rank progression, transform ×8 cho replay. (Chỉ thiết kế API, chưa cần UI)
 
 ---
 
 ## File 1: `game/scripts/campaign/bank_cursor.gd`
 
 **Trách nhiệm:** Track position in level bank, handle transforms for replay.
+BankCursor phục vụ transform x8 content multiplication cho campaign hiện tại; infinite loop mode là future.
 
 **Tham khảo hành vi từ:** `gameplay/selector/cursor/main_bank_cursor.gd` (position + transform counter)
 
@@ -84,7 +85,7 @@ static func from_dict(d: Dictionary, bank_count: int) -> RefCounted  # returns B
 
 ## File 2: `game/scripts/campaign/campaign_runtime.gd`
 
-**Trách nhiệm:** Campaign lifecycle — load, play, advance, replay. Supports both playlist mode and infinite mode.
+**Trách nhiệm:** Campaign lifecycle — load, play, advance, replay. Supports both playlist mode and infinite mode (future — không implement trong R1).
 
 **Tham khảo hành vi từ:** `gameplay/selector/level_selector.gd` + `mvp_runtime.gd` hiện tại
 
@@ -111,21 +112,20 @@ var pace: PaceReader
 var progress: ProgressManager
 var sessions: SessionStore
 var current_session: PlaySession = null
-var _profile_dir: String
 var _playlist: Array = []     # loaded from demo_30.json
 
 # --- Lifecycle ---
 
-func _init(profile_dir: String) -> void
+func _init(bank: BankReader, pace: PaceReader, progress: ProgressManager, session_store: SessionStore) -> void
+    # DI constructor — matches master plan contract
 
-func boot() -> bool
-    # 1. Load all banks (4x4, 5x5, 6x6)
-    # 2. Load all pace sidecars
-    # 3. Validate pace vs bank
-    # 4. Load campaign playlist
-    # 5. Load progress
-    # 6. If pending session, try to restore it
-    # Returns false on critical error
+func boot() -> Dictionary
+    # Returns: {ok: bool, level: Dictionary, pace_entry: Dictionary, error: String}
+    # 1. Validate pace vs bank
+    # 2. Load campaign playlist
+    # 3. Determine current level from progress
+    # 4. If pending session, try to restore it
+    # 5. Return current level data + pace for immediate use
 
 func start_level(label: String) -> PlaySession
     # Resolve label → bank ref (size, rank, index) via playlist
@@ -142,7 +142,8 @@ func on_level_won(label: String, score_data: Dictionary) -> void
     # If save fails: keep session, emit save_failed
 
 func on_level_lost(label: String) -> void
-    # Clear session, emit level_lost
+    # Save session with status 'failed', emit level_lost
+    # Session cleared only after player taps Retry (which calls restart_level)
 
 func retry_save() -> bool
 
@@ -150,6 +151,9 @@ func restart_level() -> PlaySession
 
 func replay_campaign() -> void
     # Reset to first playlist entry (RST-003)
+    # Chỉ available sau `campaign_complete`. UI 'Replay from L01' chỉ hiện
+    # trên result screen của level cuối cùng. RST-003 không áp dụng cho
+    # playtest 30 level.
 
 # --- Queries ---
 
@@ -189,7 +193,7 @@ func _load_playlist(path: String) -> Dictionary
 
 **Khác biệt với reference:**
 - Playlist-based thay cursor-based progression (cho campaign mode)
-- Bank cursor available nhưng chưa dùng cho UI (future infinite mode)
+- Bank cursor available nhưng chưa dùng cho UI (future — không implement trong R1)
 - `_fetch_level()` integrates transform system
 - `current_pace()` returns hint economy data for hint system
 - Không DDA difficulty adjustment
@@ -212,18 +216,24 @@ signal milestone_reached(milestone_id: String)
 signal tutorial_step(text: String, highlight_cell: Array)
 
 const MILESTONES := {
-    "T1": {"trigger": "first_board", "text": "Tap a cell to mark X — eliminate where candy can't be"},
-    "T2": {"trigger": "first_mark", "text": "Double-tap to try placing candy"},
-    "T3": {"trigger": "first_candy", "text": "Find all candies to win!"},
-    "T4": {"trigger": "first_hint", "text": "Use hints when you're stuck"},
+    "T1": {"trigger": "first_board", "text": "Tap a cell to mark X"},
+    "T2": {"trigger": "first_mark", "text": "Tap X again to clear it"},
+    "T3": {"trigger": "first_clear", "text": "Drag across cells to mark a line"},
+    "T4": {"trigger": "first_drag", "text": "Double-tap to try placing candy"},
+    "T5": {"trigger": "first_candy", "text": "Four rules: row, column, zone, diagonal"},
+    "T6": {"trigger": "rules_shown", "text": "Use Hint when you're stuck"},
 }
 
+var _progress: ProgressManager
 var _seen_ids: Array[String] = []
 
-func _init(seen_ids: Array = []) -> void
+func _init(progress: ProgressManager) -> void
+    # Reads tutorialSeenIds from progress on init
 
+func is_tutorial(level_id: String) -> bool
+func tutorial_steps(level_id: String) -> Array
+func mark_seen(tutorial_id: String) -> void
 func check_trigger(trigger_name: String, context: Dictionary = {}) -> void
-func mark_seen(milestone_id: String) -> void
 func seen_ids() -> Array[String]
 func is_all_done() -> bool
 ```
@@ -242,27 +252,28 @@ extends RefCounted
 
 signal screen_changed(from_screen: String, to_screen: String)
 
-enum Screen { TITLE, PUZZLE, WIN, LOSE, OPTIONS }
+enum Screen { TITLE, PUZZLE, WIN, FAIL, OPTIONS }
 
 const SCREEN_NAMES := {
     Screen.TITLE: "title",
     Screen.PUZZLE: "puzzle",
     Screen.WIN: "win",
-    Screen.LOSE: "lose",
+    Screen.FAIL: "fail",
     Screen.OPTIONS: "options",
 }
 
 const ROUTES := {
     Screen.TITLE: [Screen.PUZZLE, Screen.OPTIONS],
-    Screen.PUZZLE: [Screen.WIN, Screen.LOSE, Screen.TITLE, Screen.OPTIONS],
+    Screen.PUZZLE: [Screen.WIN, Screen.FAIL, Screen.TITLE, Screen.OPTIONS],
     Screen.WIN: [Screen.PUZZLE, Screen.TITLE],
-    Screen.LOSE: [Screen.PUZZLE, Screen.TITLE],
+    Screen.FAIL: [Screen.PUZZLE, Screen.TITLE],
     Screen.OPTIONS: [Screen.TITLE, Screen.PUZZLE],
 }
 
-var current: int = Screen.TITLE
+var _current: int = Screen.TITLE
 
 func go_to(target: int) -> bool
+func current() -> int
 func current_name() -> String
 ```
 
