@@ -16,7 +16,7 @@
 | M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Hoàn tất (PR #3 merged) |
 | M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Hoàn tất (PR #5 merged) |
 | M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (PR #2 merged) |
-| M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Hoàn tất (chuẩn bị mở PR) |
+| M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Hoàn tất (PR #6 đang mở) |
 | M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Thiết kế xong |
 | M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Thiết kế xong |
 | M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Thiết kế xong |
@@ -34,7 +34,7 @@
 - **M04 Input:** Hoàn tất trên nhánh `feat/m04-input` (commit `5f4e5ae`). Triển khai `touch_decoder.gd`, `action_recorder.gd`, `play_session.gd`, test suite `test_play_session.gd` và `test_touch_decoder.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS (log `scratch/verification/20261002T091947.967716Z.txt`). PR #5 đã merge vào `dev`.
 
 **Wave 3 (M06 Feedback + M07 Campaign):**
-- **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). Chuẩn bị tạo PR vào `dev`.
+- **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). PR #6 đang mở vào `dev`.
 - **M07 Campaign:** Sẵn sàng bắt đầu.
 
 ```
@@ -54,5 +54,5 @@ Wave 6: M10                 (content generation)
 
 ## Blockers
 
-Không có blocker kỹ thuật. M06 mở PR vào `dev`.
+Không có blocker kỹ thuật. M06 chờ review PR #6 vào `dev`.
 
