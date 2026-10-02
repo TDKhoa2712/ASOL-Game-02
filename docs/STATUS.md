@@ -17,8 +17,8 @@
 | M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Hoàn tất (PR #5 merged) |
 | M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (PR #2 merged) |
 | M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Hoàn tất (PR #6 đang mở) |
-| M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Thiết kế xong |
-| M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Thiết kế xong |
+| M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Hoàn tất (PR #7 merged) |
+| M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Hoàn tất |
 | M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Thiết kế xong |
 | M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Thiết kế xong |
 
@@ -35,13 +35,16 @@
 
 **Wave 3 (M06 Feedback + M07 Campaign):**
 - **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). PR #6 đang mở vào `dev`.
-- **M07 Campaign:** Đã triển khai trên nhánh `feat/m07-campaign` (khởi tạo tại commit `44e5e76`), [PR #7](https://github.com/TDKhoa2712/ASOL-Game-02/pull/7) đang mở vào `dev`. Bốn script campaign và `test_campaign_runtime.gd` đạt module test, clean-room checks và full headless verification sau sửa lỗi khôi phục thắng (log `scratch/verification/20261002T103420.821413Z.txt`). Dữ liệu mẫu hiện chỉ có L01; ghi chú phạm vi còn lại và hướng Endless tại [CAMPAIGN_FOLLOWUP](CAMPAIGN_FOLLOWUP.md).
+- **M07 Campaign:** Hoàn tất trên nhánh `feat/m07-campaign`, đã merge vào `dev` qua PR #7 (commit `051554d`). Bốn script campaign và `test_campaign_runtime.gd` đạt module test, clean-room checks và full headless verification.
+
+**Wave 4 (M08 Screens):**
+- **M08 Screens:** Hoàn tất trên nhánh `feat/m08-screens`. Triển khai `app_shell.gd`, `puzzle_board.gd`, `puzzle_screen.gd`, `title_screen.gd`, `result_screen.gd`, `options_screen.gd`, `pill_toggle.gd`, 6 scene `.tscn` (`main.tscn`, `title.tscn`, `puzzle.tscn`, `win.tscn`, `fail.tscn`, `options.tscn`), và test suite `test_screens.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS (log `scratch/verification/20261002T104959.050114Z.txt`).
 
 ```
 Wave 1: M01 + M05           (đã merge)
 Wave 2: M02 + M03 + M04     (đã merge)
-Wave 3: M06 + M07           (M06 hoàn tất, M07 đã implement trên nhánh riêng)
-Wave 4: M08                 (cần Wave 1-3)
+Wave 3: M06 + M07           (M06 đã xong, M07 đã merge)
+Wave 4: M08                 (hoàn tất)
 Wave 5: M09                 (integration)
 Wave 6: M10                 (content generation)
 ```
