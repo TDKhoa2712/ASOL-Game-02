@@ -2,9 +2,11 @@
 extends RefCounted
 
 const LevelValidator = preload("res://scripts/content/level_validator.gd")
+const BankCodec = preload("res://scripts/content/bank_codec.gd")
 
 const BANK_DIR := "res://data/banks/"
 const BANK_VERSION := 1
+const _CODEC_KEY := "candoku-2026-bank-key"
 
 var _cache: Dictionary = {}   # "4_1" -> Array of level dicts
 
@@ -80,7 +82,13 @@ func _parse_bank(path: String) -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return {"ok": false, "errors": ["Failed to open file: " + path] as Array[String], "data": {}}
-	var text := file.get_as_text()
+	var text: String
+	if OS.has_feature("editor"):
+		text = file.get_as_text()
+	else:
+		var raw := file.get_buffer(file.get_length())
+		var decoded := BankCodec.xor_transform(raw, _CODEC_KEY)
+		text = decoded.get_string_from_utf8()
 	var json := JSON.new()
 	var err := json.parse(text)
 	if err != OK:
