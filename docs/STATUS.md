@@ -11,11 +11,11 @@
 
 | Module | Plan | Status |
 |--------|------|--------|
-| M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Thiết kế xong |
+| M01 Core | [01-core.md](superpowers/plans/rebuild/01-core.md) | Hoàn tất (PR #1 merged) |
 | M02 State | [02-state.md](superpowers/plans/rebuild/02-state.md) | Thiết kế xong |
 | M03 Content | [03-content.md](superpowers/plans/rebuild/03-content.md) | Thiết kế xong |
 | M04 Input | [04-input.md](superpowers/plans/rebuild/04-input.md) | Thiết kế xong |
-| M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Thiết kế xong |
+| M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (sẵn sàng PR) |
 | M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Thiết kế xong |
 | M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Thiết kế xong |
 | M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Thiết kế xong |
@@ -24,14 +24,15 @@
 
 ### Tiến độ implement
 
-Wave 1 đã bắt đầu. M05 Theme hoàn tất trên nhánh `feat/m05-theme` tại revision `79287da`; chờ review và merge vào `dev`. Các module còn lại tiếp tục theo thứ tự wave bên dưới.
-
-Gate M05: Godot `--check-only` cho `palette.gd` và `layout_tokens.gd` đều exit 0; clean-room và kiểm tra import `extracted_reusable` không có match. `rtk python -B tools/verify.py --godot <executable>` PASS tại revision `79287da` (log `scratch/verification/20261002T081518.053656Z.txt`). M05 không có test riêng theo module map; tích hợp giao diện thuộc M08.
+**Wave 1 (M01 Core + M05 Theme): Hoàn tất.**
+- **M01 Core:** Hoàn tất trên nhánh `feat/m01-core`, đã merge vào `dev` qua PR #1 (commit `6204da9`). Triển khai `cell_model.gd`, `candy_rules.gd`, `board_solver.gd`, test suite `test_candy_rules.gd` và `test_board_solver.gd`. Pass toàn bộ gate checks và clean-room checks.
+- **M05 Theme:** Hoàn tất trên nhánh `feat/m05-theme` (rebased trên `dev` chứa M01). Triển khai `palette.gd` và `layout_tokens.gd` với đầy đủ trạng thái `GIVEN`/`LOCKED` và animation tokens. Godot `--check-only` exit 0, pass clean-room và không import từ `extracted_reusable`.
+- **Sẵn sàng cho Wave 2:** Sau khi merge `feat/m05-theme`, Wave 2 (M02 State, M03 Content, M04 Input) có thể chạy song song.
 
 ```
-Wave 1: M01 + M05           (song song)
-Wave 2: M02 + M03 + M04     (song song, cần Wave 1)
-Wave 3: M06 + M07           (song song, cần Wave 2)
+Wave 1: M01 + M05           (Hoàn tất)
+Wave 2: M02 + M03 + M04     (Sẵn sàng bắt đầu)
+Wave 3: M06 + M07           (cần Wave 2)
 Wave 4: M08                 (cần Wave 1-3)
 Wave 5: M09                 (integration)
 Wave 6: M10                 (content generation)
@@ -45,4 +46,4 @@ Wave 6: M10                 (content generation)
 
 ## Blockers
 
-Không có blocker. Sẵn sàng implement.
+Không có blocker. Wave 1 hoàn thành, sẵn sàng mở Wave 2.
