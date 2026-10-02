@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-013 — Hoàn tất Module 9 (Integration) và lưu trữ mã nguồn cũ
+
+Ngày 2026-10-02. Hoàn tất Module 9 (Integration & Verification) kết nối toàn bộ hệ thống rebuild từ M01 đến M08:
+- **Lưu trữ mã cũ:** Di chuyển 20 script cũ từ `game/scripts/`, các scene cũ từ `game/scenes/` và 16 test suite cũ `run_*.gd` sang thư mục lưu trữ `archive/legacy_pre_rebuild/`.
+- **Cấu hình dự án:** Cập nhật `game/project.godot` chuyển `run/main_scene` sang `res://scenes/main.tscn`.
+- **Smoke test:** Cập nhật `test_runtime_smoke.py` tham chiếu tới bộ kiểm thử tích hợp `res://tests/test_integration.gd` với kết quả mong đợi `INTEGRATION_PASS`.
+- **Kiểm thử tích hợp (M09):** Bổ sung test suite `test_integration.gd` kiểm chứng trọn vẹn luồng thực thi: khởi động AppShell và dependency injection, chuyển đổi màn hình Title → Puzzle → Win → Next, Puzzle → Fail → Retry, Options toggle audio/haptic, tự động lưu session sau thao tác, phục hồi session khi khởi động lại, và xử lý thông báo lỗi lưu dữ liệu.
+- **Tuân thủ gate:** Clean-room đạt 0 match, không import `extracted_reusable`, không asset mới ngoài quy định, toàn bộ test suite headless của rebuild PASS 100% qua `tools/verify.py`.
+
+
 ## RST-012 — Rebuild hoàn chỉnh từ thiết kế tham khảo
 
 Ngày 2026-10-02. Chủ dự án phê duyệt rebuild hoàn chỉnh game CanDoKu dựa trên phân tích và tối ưu hóa từ bộ tham khảo `extracted_reusable/` (~224 files, ~35,700 dòng).

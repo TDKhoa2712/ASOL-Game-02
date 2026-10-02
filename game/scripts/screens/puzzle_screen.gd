@@ -92,6 +92,12 @@ func _connect_session() -> void:
 		session.level_won.connect(_on_level_won)
 	if not session.level_failed.is_connected(_on_level_failed):
 		session.level_failed.connect(_on_level_failed)
+	if not session.state_changed.is_connected(_on_session_state_changed):
+		session.state_changed.connect(_on_session_state_changed)
+
+func _on_session_state_changed() -> void:
+	if runtime != null and session != null and runtime.sessions != null and session.phase == 0:
+		runtime.sessions.save_session(session.to_save_data())
 
 func _process(delta: float) -> void:
 	if session != null and session.phase == 0:
