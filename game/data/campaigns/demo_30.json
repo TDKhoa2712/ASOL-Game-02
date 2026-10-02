@@ -1,0 +1,7 @@
+{
+  "campaignVersion": 1,
+  "id": "demo-30",
+  "playlist": [
+    {"size": 4, "rank": 1, "index": 0, "label": "L01", "difficulty": "tutorial"}
+  ]
+}

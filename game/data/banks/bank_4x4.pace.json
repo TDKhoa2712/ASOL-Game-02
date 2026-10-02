@@ -1,0 +1,12 @@
+{
+  "bankVersion": 1,
+  "size": 4,
+  "pacing": {
+    "1": [
+      {
+        "rSeq": [1, 1, 1, 1],
+        "hintCosts": [1, 1, 1, 1]
+      }
+    ]
+  }
+}
