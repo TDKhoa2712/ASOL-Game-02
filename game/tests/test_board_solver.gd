@@ -13,6 +13,7 @@ func _init() -> void:
 	_test_solve_sequence()
 	_test_compute_cell_ranks()
 	_test_lock_intersection()
+	_test_internal_exclusions_are_not_candidates()
 	if _fails.is_empty():
 		print("CORE_BOARD_SOLVER_PASS")
 		quit(0)
@@ -78,6 +79,12 @@ func _test_lock_intersection() -> void:
 	var result := BoardSolver._try_lock_intersection(board, 4, regions)
 	# On empty 4x4 board, S3 may or may not find eliminations depending on geometry
 	_assert(result.has("found"), "lock intersection returns found key")
+
+func _test_internal_exclusions_are_not_candidates() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
+	board[0][0] = CellModel.CellKind.MARK
+	_assert(not BoardSolver._is_candidate(board, 4, regions, 0, 0), "internal exclusion is not a candidate")
 
 func _empty_board(size: int) -> Array:
 	var board: Array = []

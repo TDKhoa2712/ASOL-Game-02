@@ -5,6 +5,7 @@ const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const RuleIcon = preload("res://scripts/screens/rule_icon.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
+const RegionPainter = preload("res://scripts/content/region_painter.gd")
 
 static func build(root: Control) -> Dictionary:
 	var background := ColorRect.new()
@@ -89,10 +90,13 @@ static func build(root: Control) -> Dictionary:
 	]
 	for rule in rule_data:
 		var tile := HBoxContainer.new()
+		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		tile.add_theme_constant_override("separation", 8)
 		grid.add_child(tile)
 		tile.add_child(RuleIcon.new(rule[0], candy_texture))
 		var caption := _label(rule[1], 20, Palette.TEXT_RULE)
+		caption.custom_minimum_size.x = 200
+		caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		tile.add_child(caption)
@@ -134,12 +138,14 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 			if CellModel.is_placed(session.board[row][col]):
 				found[CandyRules.zone_of(regions, row, col)] = true
 	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
+	var zone_colors: Dictionary = RegionPainter.assign_colors(size, regions, Palette.ZONE_COLORS)
 	for index in range(size):
 		var icon := TextureRect.new()
 		icon.texture = candy_texture
 		icon.custom_minimum_size = Vector2(48, 48)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.modulate = Palette.ZONE_COLORS[index] if found.has(char(65 + index)) else Color(1, 1, 1, 0.25)
+		var zone_id: String = char(65 + index)
+		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Color(1, 1, 1, 0.25)
 		regions_row.add_child(icon)
 	var heart_texture := load("res://assets/ui/board/heart.svg") as Texture2D
 	for index in range(3):
@@ -167,7 +173,7 @@ static func _circle(node_name: String, icon_path: String, diameter: float) -> Bu
 	var button := Button.new()
 	button.name = node_name
 	button.custom_minimum_size = Vector2.ONE * diameter
-	button.flat = true
+	button.flat = false
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color.WHITE
 	style.set_corner_radius_all(999)

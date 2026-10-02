@@ -41,7 +41,7 @@ func _ensure_nodes() -> void:
 	options_btn = Button.new()
 	options_btn.name = "OptionsButton"
 	options_btn.custom_minimum_size = Vector2(88, 88)
-	options_btn.flat = true
+	options_btn.flat = false
 	options_btn.icon = load("res://assets/ui/home/icon_settings.png") as Texture2D
 	options_btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	options_btn.expand_icon = true

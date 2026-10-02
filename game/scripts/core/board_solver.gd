@@ -237,7 +237,7 @@ static func _build_work_board(board: Array, size: int, regions: Array) -> Array:
 	return work
 
 static func _is_candidate(board: Array, _size: int, regions: Array, row: int, col: int) -> bool:
-	return CellModel.is_available(board[row][col]) and CandyRules.can_place(board, regions, row, col)
+	return board[row][col] == CellModel.CellKind.BLANK and CandyRules.can_place(board, regions, row, col)
 
 static func _candidates_in_zone(board: Array, size: int, regions: Array, zone: String) -> Array:
 	var cands: Array = []
