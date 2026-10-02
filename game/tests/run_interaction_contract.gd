@@ -58,11 +58,11 @@ func _run() -> void:
 			"actions": ["MarkX"],
 		},
 		{
-			"id": "exact_280_ms_is_double_tap",
+			"id": "exact_350_ms_is_double_tap",
 			"kind": "double",
 			"initial": {},
 			"cell": [0, 1],
-			"intervalMs": 280,
+			"intervalMs": 350,
 			"expected": {"0,1": "candy"},
 			"hearts": 3,
 			"actions": ["TryCandy"],

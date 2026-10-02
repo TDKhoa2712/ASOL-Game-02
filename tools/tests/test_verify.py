@@ -51,7 +51,11 @@ class VerifyTests(unittest.TestCase):
         runner = self.load_runner()
         checks = runner.build_checks(ROOT, "godot")
         actual = {command[-1] for name, command in checks if name.startswith("godot:")}
-        expected = {"res://tests/" + p.name for p in (ROOT / "game/tests").glob("run_*.gd")}
+        expected = {
+            "res://tests/" + p.name
+            for pattern in ("run_*.gd", "test_*.gd")
+            for p in (ROOT / "game/tests").glob(pattern)
+        }
         self.assertEqual(actual, expected)
         self.assertTrue(actual)
 
