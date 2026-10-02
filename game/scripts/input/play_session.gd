@@ -23,6 +23,7 @@ var mistake_count: int = 0
 var hints_used: int = 0
 var elapsed_ms: int = 0
 var phase: int = Phase.ACTIVE
+var _undo_cells: Array = []
 
 func _init(level_data: Dictionary, initial_hearts: int = 3) -> void:
 	level = level_data
@@ -56,7 +57,39 @@ func mark_x(row: int, col: int) -> void:
 	if not CellModel.is_available(current):
 		return
 
+	_undo_cells = [[row, col, current]]
 	board[row][col] = CellModel.CellKind.BLANK if current == CellModel.CellKind.MARK else CellModel.CellKind.MARK
+	state_changed.emit()
+
+func mark_stroke(cells: Array, paint_mark: bool) -> void:
+	if phase != Phase.ACTIVE:
+		return
+	var before: Array = []
+	var seen: Dictionary = {}
+	var required: int = CellModel.CellKind.BLANK if paint_mark else CellModel.CellKind.MARK
+	var target: int = CellModel.CellKind.MARK if paint_mark else CellModel.CellKind.BLANK
+	for value in cells:
+		if not value is Array or value.size() < 2:
+			continue
+		var row: int = int(value[0])
+		var col: int = int(value[1])
+		var key := Vector2i(row, col)
+		if seen.has(key) or row < 0 or row >= board.size() or col < 0 or col >= board.size():
+			continue
+		seen[key] = true
+		if board[row][col] == required:
+			before.append([row, col, required])
+			board[row][col] = target
+	if not before.is_empty():
+		_undo_cells = before
+		state_changed.emit()
+
+func undo_mark() -> void:
+	if phase != Phase.ACTIVE or _undo_cells.is_empty():
+		return
+	for cell in _undo_cells:
+		board[int(cell[0])][int(cell[1])] = int(cell[2])
+	_undo_cells = []
 	state_changed.emit()
 
 func try_candy(row: int, col: int) -> void:
@@ -67,6 +100,7 @@ func try_candy(row: int, col: int) -> void:
 	var current: int = board[row][col]
 	if not CellModel.is_available(current):
 		return
+	_undo_cells = []
 
 	var regions: Array = level.get("regions", [])
 	var solution: Array = level.get("solution", [])

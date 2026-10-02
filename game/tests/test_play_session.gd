@@ -7,6 +7,7 @@ var _fails: Array[String] = []
 
 func _init() -> void:
 	_test_mark_toggle()
+	_test_stroke_undo()
 	_test_try_candy_correct()
 	_test_try_candy_wrong()
 	_test_error_immutable()
@@ -29,6 +30,17 @@ func _test_mark_toggle() -> void:
 	_assert(session.cell_at(2, 2) == CellModel.CellKind.MARK, "mark placed")
 	session.mark_x(2, 2)
 	_assert(session.cell_at(2, 2) == CellModel.CellKind.BLANK, "mark removed")
+
+func _test_stroke_undo() -> void:
+	var session := PlaySession.new(_make_level(), 3)
+	session.mark_stroke([[1, 0], [1, 1], [1, 2]], true)
+	_assert(session.cell_at(1, 0) == CellModel.CellKind.MARK and session.cell_at(1, 2) == CellModel.CellKind.MARK, "stroke paints cells")
+	session.undo_mark()
+	_assert(session.cell_at(1, 0) == CellModel.CellKind.BLANK and session.cell_at(1, 2) == CellModel.CellKind.BLANK, "undo reverses whole stroke")
+	session.mark_x(2, 2)
+	session.try_candy(0, 1)
+	session.undo_mark()
+	_assert(session.cell_at(2, 2) == CellModel.CellKind.MARK, "candy action clears undo")
 
 func _test_try_candy_correct() -> void:
 	var session := PlaySession.new(_make_level(), 3)
