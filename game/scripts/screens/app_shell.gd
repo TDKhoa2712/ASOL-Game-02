@@ -25,38 +25,49 @@ var config: ConfigStore
 var nav: NavController
 var sfx: SfxPlayer
 var bgm: BgmPlayer
+var profile_dir: String = "user://profile"
 var _previous_screen_name: String = "title"
+var _last_won_level: String = ""
+var _last_won_elapsed: int = 0
+var _last_won_is_last: bool = false
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
 
 func _ready() -> void:
-	var profile_dir := "user://profile"
-	config = ConfigStore.new(profile_dir)
-	config.option_changed.connect(_apply_setting)
+	if config == null:
+		config = ConfigStore.new(profile_dir)
+		config.option_changed.connect(_apply_setting)
 
-	sfx = SfxPlayer.new()
-	sfx.name = "SfxPlayer"
-	add_child(sfx)
-	bgm = BgmPlayer.new()
-	bgm.name = "BgmPlayer"
-	add_child(bgm)
+	if sfx == null:
+		sfx = SfxPlayer.new()
+		sfx.name = "SfxPlayer"
+		add_child(sfx)
+	if bgm == null:
+		bgm = BgmPlayer.new()
+		bgm.name = "BgmPlayer"
+		add_child(bgm)
 	_apply_all_settings()
 
-	var bank := BankReader.new()
-	var pace := PaceReader.new()
-	var progress := ProgressManager.new(profile_dir)
-	var sessions := SessionStore.new(profile_dir)
-	runtime = CampaignRuntime.new(bank, pace, progress, sessions)
-	runtime.save_failed.connect(_on_save_failed)
+	if runtime == null:
+		var bank := BankReader.new()
+		var pace := PaceReader.new()
+		var progress := ProgressManager.new(profile_dir)
+		var sessions := SessionStore.new(profile_dir)
+		runtime = CampaignRuntime.new(bank, pace, progress, sessions)
 
-	var boot_res := runtime.boot()
-	if not boot_res.get("ok", false):
-		_on_boot_error(str(boot_res.get("error", "Boot failed")))
-		return
+	if not runtime.save_failed.is_connected(_on_save_failed):
+		runtime.save_failed.connect(_on_save_failed)
 
-	nav = NavController.new()
-	nav.screen_changed.connect(_swap_screen)
+	if runtime.playlist_order().is_empty():
+		var boot_res := runtime.boot()
+		if not boot_res.get("ok", false):
+			_on_boot_error(str(boot_res.get("error", "Boot failed")))
+			return
+
+	if nav == null:
+		nav = NavController.new()
+		nav.screen_changed.connect(_swap_screen)
 
 	var bgm_path := "res://audio/bgm/main_theme.ogg"
 	if ResourceLoader.exists(bgm_path):
@@ -94,7 +105,7 @@ func _instantiate_screen(to_name: String) -> void:
 	match to_name:
 		"title":
 			if screen.has_signal("play_pressed"):
-				screen.connect("play_pressed", func(): nav.go_to(NavController.Screen.PUZZLE))
+				screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("options_pressed"):
 				screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
 			if screen.has_method("setup"):
@@ -113,17 +124,17 @@ func _instantiate_screen(to_name: String) -> void:
 				screen.connect("home_pressed", func(): nav.go_to(NavController.Screen.TITLE))
 			if screen.has_signal("replay_pressed"):
 				screen.connect("replay_pressed", _on_replay_campaign)
-			var label: String = runtime.current_level_label()
-			var elapsed: int = runtime.current_session.elapsed_ms if runtime.current_session != null else 0
-			var is_last: bool = runtime.is_campaign_done()
+			var label: String = _last_won_level if _last_won_level != "" else runtime.current_level_label()
+			var elapsed: int = _last_won_elapsed
+			var is_last: bool = _last_won_is_last or runtime.is_campaign_done()
 			if screen.has_method("setup"):
 				screen.call("setup", true, elapsed, label, is_last)
 		"fail":
 			if screen.has_signal("retry_pressed"):
-				screen.connect("retry_pressed", func(): nav.go_to(NavController.Screen.PUZZLE))
+				screen.connect("retry_pressed", _on_retry_level)
 			if screen.has_signal("home_pressed"):
 				screen.connect("home_pressed", func(): nav.go_to(NavController.Screen.TITLE))
-			var label: String = runtime.current_level_label()
+			var label: String = _last_won_level if _last_won_level != "" else runtime.current_level_label()
 			if screen.has_method("setup"):
 				screen.call("setup", false, 0, label, false)
 		"options":
@@ -135,21 +146,37 @@ func _instantiate_screen(to_name: String) -> void:
 	if screen_host != null:
 		screen_host.add_child(screen)
 
+func _on_title_play() -> void:
+	if runtime != null and runtime.is_campaign_done():
+		runtime.replay_campaign()
+	nav.go_to(NavController.Screen.PUZZLE)
+
 func _on_level_done(won: bool) -> void:
 	var label := runtime.current_level_label()
+	_last_won_level = label
 	if won:
 		var sess = runtime.current_session
+		var elapsed: int = sess.elapsed_ms if sess != null else 0
+		_last_won_elapsed = elapsed
+		_last_won_is_last = (runtime.completed_count() + 1 >= runtime.playlist_order().size())
 		var score_data := {
-			"time_ms": sess.elapsed_ms if sess != null else 0,
+			"time_ms": elapsed,
 			"mistakes": sess.mistake_count if sess != null else 0,
 		}
 		runtime.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)
 	else:
+		_last_won_elapsed = 0
+		_last_won_is_last = false
 		runtime.on_level_lost(label)
 		nav.go_to(NavController.Screen.FAIL)
 
 func _on_next_level() -> void:
+	nav.go_to(NavController.Screen.PUZZLE)
+
+func _on_retry_level() -> void:
+	if runtime != null:
+		runtime.restart_level()
 	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_replay_campaign() -> void:

@@ -18,9 +18,9 @@
 | M05 Theme | [05-theme.md](superpowers/plans/rebuild/05-theme.md) | Hoàn tất (PR #2 merged) |
 | M06 Feedback | [06-feedback.md](superpowers/plans/rebuild/06-feedback.md) | Hoàn tất (PR #6 đang mở) |
 | M07 Campaign | [07-campaign.md](superpowers/plans/rebuild/07-campaign.md) | Hoàn tất (PR #7 merged) |
-| M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Hoàn tất |
-| M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Thiết kế xong |
-| M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Thiết kế xong |
+| M08 Screens | [08-screens.md](superpowers/plans/rebuild/08-screens.md) | Hoàn tất (PR #8 merged) |
+| M09 Integration | [09-integration.md](superpowers/plans/rebuild/09-integration.md) | Hoàn tất |
+| M10 Content Gen | [10-content-gen.md](superpowers/plans/rebuild/10-content-gen.md) | Sẵn sàng thực hiện |
 
 ### Tiến độ implement
 
@@ -34,18 +34,21 @@
 - **M04 Input:** Hoàn tất trên nhánh `feat/m04-input` (commit `5f4e5ae`). Triển khai `touch_decoder.gd`, `action_recorder.gd`, `play_session.gd`, test suite `test_play_session.gd` và `test_touch_decoder.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS (log `scratch/verification/20261002T091947.967716Z.txt`). PR #5 đã merge vào `dev`.
 
 **Wave 3 (M06 Feedback + M07 Campaign):**
-- **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). PR #6 đang mở vào `dev`.
+- **M06 Feedback:** Hoàn tất trên nhánh `feat/m06-feedback` (commit `1c04935`). Triển khai `sfx_catalog.gd`, `sfx_player.gd`, `bgm_player.gd`, `vibration.gd`, test suite `test_feedback.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS tại revision `1c04935` (log `scratch/verification/20261002T093716.426350Z.txt`). PR #6 đã merge vào `dev`.
 - **M07 Campaign:** Hoàn tất trên nhánh `feat/m07-campaign`, đã merge vào `dev` qua PR #7 (commit `051554d`). Bốn script campaign và `test_campaign_runtime.gd` đạt module test, clean-room checks và full headless verification.
 
 **Wave 4 (M08 Screens):**
-- **M08 Screens:** Hoàn tất trên nhánh `feat/m08-screens`. Triển khai `app_shell.gd`, `puzzle_board.gd`, `puzzle_screen.gd`, `title_screen.gd`, `result_screen.gd`, `options_screen.gd`, `pill_toggle.gd`, 6 scene `.tscn` (`main.tscn`, `title.tscn`, `puzzle.tscn`, `win.tscn`, `fail.tscn`, `options.tscn`), và test suite `test_screens.gd`. Pass toàn bộ gate checks, clean-room checks (0 match), không import `extracted_reusable`. Full headless verification PASS (log `scratch/verification/20261002T104959.050114Z.txt`).
+- **M08 Screens:** Hoàn tất trên nhánh `feat/m08-screens`, đã merge vào `dev` qua PR #8 (commit `d3b96e3`). Triển khai `app_shell.gd`, `puzzle_board.gd`, `puzzle_screen.gd`, `title_screen.gd`, `result_screen.gd`, `options_screen.gd`, `pill_toggle.gd`, 6 scene `.tscn` (`main.tscn`, `title.tscn`, `puzzle.tscn`, `win.tscn`, `fail.tscn`, `options.tscn`), và test suite `test_screens.gd`.
+
+**Wave 5 (M09 Integration):**
+- **M09 Integration:** Hoàn tất trên nhánh `feat/m09-integration`. Kết nối end-to-end toàn bộ modules M01-M08, thêm `test_integration.gd` kiểm thử toàn bộ luồng giao diện, lưu trữ, điều hướng và cài đặt. Cập nhật `project.godot` chuyển `run/main_scene` sang `main.tscn`. Lưu trữ an toàn 20 script cũ, các scene cũ và 16 test cũ `run_*.gd` vào `archive/legacy_pre_rebuild/`. Cập nhật `test_runtime_smoke.py` chạy qua `test_integration.gd`. Pass 100% full headless verification suite.
 
 ```
 Wave 1: M01 + M05           (đã merge)
 Wave 2: M02 + M03 + M04     (đã merge)
-Wave 3: M06 + M07           (M06 đã xong, M07 đã merge)
-Wave 4: M08                 (hoàn tất)
-Wave 5: M09                 (integration)
+Wave 3: M06 + M07           (đã merge)
+Wave 4: M08                 (đã merge)
+Wave 5: M09                 (hoàn tất)
 Wave 6: M10                 (content generation)
 ```
 
