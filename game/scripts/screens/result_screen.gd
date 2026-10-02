@@ -15,6 +15,7 @@ var _is_last_level: bool = false
 
 var message_label: Label
 var score_label: Label
+var result_message: Label
 var next_btn: Button
 var retry_btn: Button
 var home_btn: Button
@@ -60,6 +61,13 @@ func _ensure_nodes() -> void:
 	message_label.add_theme_font_size_override("font_size", 54)
 	message_label.add_theme_color_override("font_color", Palette.INK)
 	stack.add_child(message_label)
+	result_message = Label.new()
+	result_message.name = "ResultMessage"
+	result_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	result_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	result_message.add_theme_font_size_override("font_size", 26)
+	result_message.add_theme_color_override("font_color", Palette.INK_LIGHT)
+	stack.add_child(result_message)
 	score_label = Label.new()
 	score_label.name = "ScoreLabel"
 	score_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -108,9 +116,11 @@ func _update_ui() -> void:
 		_background.color = Color("#E2F1E8") if _is_win else Color("#FCECE2")
 	if message_label != null:
 		if _is_win:
-			message_label.text = "Hoàn thành chiến dịch!" if _is_last_level else "Hoàn hồi!"
+			message_label.text = "Hoàn thành chiến dịch!" if _is_last_level else "Hoan hô!"
 		else:
 			message_label.text = "Hết tim"
+	if result_message != null:
+		result_message.text = "Bạn đã tìm đủ kẹo!" if _is_win else "Bạn có thể thử lại màn này."
 	if score_label != null:
 		if _is_win:
 			var sec: int = int(_score / 1000.0) if _score > 1000 else _score

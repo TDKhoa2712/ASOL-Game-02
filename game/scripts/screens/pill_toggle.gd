@@ -12,7 +12,7 @@ func _init() -> void:
 	flat = true
 	text = ""
 	focus_mode = Control.FOCUS_NONE
-	custom_minimum_size = Vector2(56, 32)
+	custom_minimum_size = Vector2(72, 44)
 	toggled.connect(_on_toggled)
 
 func _ready() -> void:
@@ -33,7 +33,7 @@ func _on_toggled(pressed_val: bool) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	var pill_size := Vector2(50, 28)
+	var pill_size := Vector2(66, 38)
 	var r := Rect2((size - pill_size) * 0.5, pill_size)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Palette.BTN_PRIMARY if _on else Palette.DIVIDER

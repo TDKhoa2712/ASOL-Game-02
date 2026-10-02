@@ -157,6 +157,7 @@ func _test_result_screen() -> void:
 
 	win_screen.setup(true, 12000, "1-1", false)
 	_assert(win_screen.find_child("ResultCard", true, false) != null, "win result card present")
+	_assert(win_screen.find_child("ResultMessage", true, false) != null, "result shows a supporting message")
 	_assert(win_screen._is_win, "result is win")
 	_assert(not win_screen._is_last_level, "result not last level")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next btn visible on win")
@@ -196,6 +197,8 @@ func _test_options_screen() -> void:
 	options.setup(config)
 
 	_assert(options.vbox != null and options.vbox.get_child_count() == ConfigStore.EDITABLE_KEYS.size(), "options rows generated")
+	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
+	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 
 	options._on_toggle("audio", false)
 	_assert(not bool(config.get_option("audio")), "audio disabled via options screen")
