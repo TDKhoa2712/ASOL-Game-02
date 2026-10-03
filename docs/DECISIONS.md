@@ -1,5 +1,14 @@
 # Quyết định điều hành hiện hành
 
+## RST-016 — Bỏ preview X khi chạm xuống
+
+Ngày 2026-10-03. Chủ dự án yêu cầu thực hiện plan `2026-10-03-fix-doubletap-x-preview.md` để sửa nháy X khi chạm đôi:
+
+- Chạm xuống không hiện preview X; chạm đôi đặt kẹo không nháy X trước đó.
+- Preview đánh/xóa X bắt đầu khi kéo, gồm ô đầu và các ô trung gian.
+- Chạm đơn vẫn commit sau cửa sổ chạm đôi 350 ms; không thay đổi timing hoặc luật đặt kẹo.
+- Thay yêu cầu preview ngay khi chạm xuống trong GDD 02; không thay các quyết định về Undo hoặc auto-lock.
+
 ## RST-015 — Chỉnh lại gameplay và giao diện theo nguồn tham khảo
 
 Ngày 2026-10-02. Chủ dự án yêu cầu căn chỉnh lại cơ chế gameplay và giao diện sau khi rebuild đã hoàn tất:

@@ -4,6 +4,14 @@
 
 ## Mục tiêu hiện tại: Chỉnh lại gameplay và giao diện
 
+### Sửa nháy X khi chạm đôi (2026-10-03)
+
+Nhánh `fix/doubletap-x-preview`, từ `fix/region-painter-unique-colors` tại `dd5f712`: bỏ preview X khi chạm xuống; preview chỉ bắt đầu khi kéo và vẫn gồm ô đầu. Chạm đơn commit đúng mốc 350 ms. GDD 02 đã đồng bộ theo RST-016.
+
+TDD: test decoder và màn hình fail tại preview khi chạm xuống trước sửa, pass sau sửa; kiểm thêm preview của chạm thứ hai chuyển thành kéo. Suite `touch_decoder`, `screens`, `colorblind`, `play_session` PASS; clean-room và kiểm import có 0 match. Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2>` PASS: 3 nhóm Python, validator GDD/bank/playlist và 18 suite Godot. Evidence: `scratch/verification/20261003T125135.722105Z.txt`, revision nền `dd5f712` với thay đổi task; SHA256 inputs có trong log.
+
+Gate chạy trên working tree có sửa dữ liệu và UID sẵn có, đã giữ nguyên bằng đối chiếu hash. Chưa QA giao diện/gesture trên thiết bị, chưa merge vào `dev`.
+
 **Quyết định:** RST-015 (gameplay/UI realignment)
 **Plan:** [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md)
 

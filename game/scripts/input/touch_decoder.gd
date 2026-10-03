@@ -28,7 +28,6 @@ func begin(row: int, col: int, time_ms: int) -> void:
 
 	_swipe_trail = [[row, col]]
 	_last_swipe_cell = [row, col]
-	preview_changed.emit(_swipe_trail.duplicate())
 
 func move(row: int, col: int) -> void:
 	if not _pointer_active:
