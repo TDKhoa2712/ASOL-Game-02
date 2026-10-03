@@ -6,10 +6,9 @@ const BoardTransform = preload("res://scripts/content/board_transform.gd")
 const ProgressManager = preload("res://scripts/state/progress_manager.gd")
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
-const ShapeFingerprint = preload("res://scripts/content/shape_fingerprint.gd")
-const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const PaceAdjuster = preload("res://scripts/campaign/pace_adjuster.gd")
+const SnapshotBuilder = preload("res://scripts/campaign/snapshot_builder.gd")
 
 const PLAYLIST_PATH := "res://data/campaigns/demo_30.json"
 const CAMPAIGN_VERSION := 1
@@ -82,11 +81,11 @@ func start_level(label: String) -> PlaySession:
 	var snapshot: Dictionary
 	if not _current_snapshot.is_empty() and _current_snapshot.get("level_id") == label:
 		snapshot = _current_snapshot
-		var restored := _build_level_from_snapshot(snapshot)
+		var restored := SnapshotBuilder.restore_level(snapshot)
 		restored["hash"] = level.hash
 		level = restored
 	else:
-		snapshot = _build_snapshot(label, level)
+		snapshot = SnapshotBuilder.build(label, level, _resolve_playlist_entry(label), Palette.ZONE_COLORS)
 	_current_snapshot = snapshot
 	var session := PlaySession.new(level)
 	var save_data := session.to_save_data()
@@ -237,40 +236,6 @@ func _fetch_level(size: int, rank: int, index: int, transform: int = 0) -> Dicti
 	if level.is_empty():
 		return {}
 	return BoardTransform.apply(level, transform) if transform > 0 else level.duplicate(true)
-
-func _build_snapshot(label: String, level: Dictionary) -> Dictionary:
-	var entry := _resolve_playlist_entry(label)
-	var n: int = int(level.get("size", 4))
-	var regions: Array = level.get("regions", [])
-	var colors := RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
-	var color_hex: Dictionary = {}
-	for zone_key in colors:
-		color_hex[zone_key] = (colors[zone_key] as Color).to_html()
-	return {
-		"level_id": label,
-		"size": n,
-		"rank": int(entry.get("rank", 1)),
-		"bank_index": int(entry.get("index", 0)),
-		"transform_id": int(entry.get("transform", 0)),
-		"regions": regions.duplicate(true),
-		"solution": level.get("solution", []).duplicate(true),
-		"givens": level.get("givens", []).duplicate(true),
-		"zone_colors": color_hex,
-		"zone_overlays": {},
-		"hearts_start": 3,
-		"seed": int(level.get("seed", 0)),
-		"shape_hash": ShapeFingerprint.compute(n, regions),
-	}
-
-func _build_level_from_snapshot(snap: Dictionary) -> Dictionary:
-	return {
-		"size": snap.get("size", 4),
-		"regions": snap.get("regions", []).duplicate(true),
-		"solution": snap.get("solution", []).duplicate(true),
-		"givens": snap.get("givens", []).duplicate(true),
-		"seed": snap.get("seed", 0),
-		"id": snap.get("level_id", ""),
-	}
 
 func _load_playlist(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):
