@@ -11,9 +11,13 @@ signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
 signal cell_swiped(cells: Array)
 
+const OVERLAY_CHARS = ["", "★", "◆", "♥", "▲", "✕", "●"]
+
 var _session: Variant = null
 var _zone_grid: Array = []
 var _zone_colors: Dictionary = {}
+var _zone_overlays: Dictionary = {}
+var _colorblind: bool = false
 var _decoder: TouchDecoder = null
 var _candy_tex: Texture2D = null
 var _highlight_cells: Array = []
@@ -29,7 +33,13 @@ func configure(session: Variant) -> void:
 	var n: int = int(_session.level.get("size", 0))
 	var regions: Array = _session.level.get("regions", [])
 	_zone_grid = RegionPainter.precompute_grid(n, regions)
-	_zone_colors = RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
+	if _colorblind:
+		var painted := RegionPainter.assign_with_overlays(n, regions, Palette.ZONE_COLORS)
+		_zone_colors = painted.colors
+		_zone_overlays = painted.overlays
+	else:
+		_zone_colors = RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
+		_zone_overlays = {}
 	_decoder = TouchDecoder.new()
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
@@ -39,6 +49,9 @@ func configure(session: Variant) -> void:
 	_highlight_unit = ""
 	_preview_cells = []
 	queue_redraw()
+
+func set_colorblind(enabled: bool) -> void:
+	_colorblind = enabled
 
 func redraw() -> void:
 	queue_redraw()
@@ -196,6 +209,13 @@ func _draw() -> void:
 			sb.bg_color = base_col
 			sb.set_corner_radius_all(cr)
 			draw_style_box(sb, cell_rect)
+
+			var icon_val: int = _zone_overlays.get(zone, 0)
+			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
+				var is_dark := base_col.get_luminance() < 0.5
+				var tint := RegionPainter.overlay_tint(base_col, is_dark)
+				var icon_size := int(cell_w * 0.35)
+				draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
 
 			var kind: int = _session.board[r][c]
 			if _preview_cells.has([r, c]):

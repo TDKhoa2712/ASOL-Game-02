@@ -118,7 +118,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("level_done"):
 				screen.connect("level_done", _on_level_done)
 			if screen.has_method("setup"):
-				screen.call("setup", runtime, sfx)
+				screen.call("setup", runtime, sfx, config)
 		"win":
 			if screen.has_signal("next_pressed"):
 				screen.connect("next_pressed", _on_next_level)
