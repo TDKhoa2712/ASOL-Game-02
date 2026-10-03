@@ -14,6 +14,7 @@ const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 
 var runtime: Variant = null
 var sfx: Variant = null
+var config: Variant = null
 var session: Variant = null
 var _hint_click_count: int = 0
 
@@ -76,9 +77,10 @@ func _connect_ui() -> void:
 		if not board.cell_swiped.is_connected(_on_board_swipe):
 			board.cell_swiped.connect(_on_board_swipe)
 
-func setup(rt: Variant, sfx_player: Variant) -> void:
+func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
 	runtime = rt
 	sfx = sfx_player
+	config = cfg
 	_hint_click_count = 0
 	if runtime != null:
 		if runtime.current_session != null:
@@ -90,6 +92,8 @@ func setup(rt: Variant, sfx_player: Variant) -> void:
 	_ensure_nodes()
 	if board != null and session != null:
 		board.configure(session)
+		if config != null:
+			board.set_colorblind(config.get_option("colorblind"))
 	_connect_session()
 	_connect_ui()
 	_update_hearts()
@@ -205,6 +209,8 @@ func _confirm_restart() -> void:
 		session = runtime.restart_level()
 		if board != null:
 			board.configure(session)
+			if config != null:
+				board.set_colorblind(config.get_option("colorblind"))
 		_connect_session()
 		_update_hearts()
 		if sfx != null:
