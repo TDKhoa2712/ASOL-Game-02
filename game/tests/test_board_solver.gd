@@ -21,6 +21,7 @@ func _init() -> void:
 	_test_contradiction_returns_dict()
 	_test_clone_board()
 	_test_replay_solve_standard()
+	_test_advanced_technique_puzzle()
 	if _fails.is_empty():
 		print("CORE_BOARD_SOLVER_PASS")
 		quit(0)
@@ -162,3 +163,27 @@ func _test_replay_solve_standard() -> void:
 	_assert(result.get("steps", 0) == 4, "4 steps for 4x4 (one candy per row)")
 	_assert(result.has("profile"), "replay has profile")
 	_assert(result.get("max_technique", 0) >= 1, "some technique used")
+
+func _test_advanced_technique_puzzle() -> void:
+	# 5x5 pentomino-style regions: S4 (SUBSET_PAIR) is required to solve
+	# Discovered via exploration: givens=[[1,4]] forces the solver to invoke
+	# _try_locked_subsets (S4) at least once before reaching a solution.
+	# Profile confirmed: s4=1, max_technique=7 (CONTRA_CHAIN also needed).
+	var size := 5
+	var regions := ["AABCC", "AABBC", "DABBC", "DDDBC", "DDEEE"]
+	var solution := [1, 4, 0, 3, 2]
+	# One given: row 1 col 4 (zone C)
+	var givens := [[1, 4]]
+
+	var result := BoardSolver.replay_solve(size, regions, solution, givens)
+	_assert(result.get("solved", false), "advanced puzzle: solved")
+	_assert(result.get("max_technique", 0) >= 4, "advanced puzzle: required S4+")
+	# Verify profile shows S4+ technique was actually used
+	var profile: Dictionary = result.get("profile", {})
+	var used_advanced := false
+	for key in ["s4", "s5", "s6", "s7"]:
+		if profile.get(key, 0) > 0:
+			used_advanced = true
+	_assert(used_advanced, "advanced puzzle: profile shows S4+ technique used")
+	# Verify specifically that SUBSET_PAIR (S4) was invoked
+	_assert(profile.get("s4", 0) > 0, "advanced puzzle: S4 SUBSET_PAIR invoked")
