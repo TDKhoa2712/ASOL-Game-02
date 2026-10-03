@@ -64,6 +64,12 @@ Wave 6: M10                 (đã merge)
 - Snapshot thiếu fields `rating`/`solve_profile` từ spec (chưa có consumer)
 - Chưa có bank 5×5/6×6 (tooling sẵn sàng; generation là bước riêng)
 
+### Last-mile Task 1 trên nhánh `feat/campaign-dda-rank-selection`
+
+CampaignRuntime đã áp dụng DDA khi chọn rank từ bank và pace, fallback về rank playlist nếu rank/index điều chỉnh thiếu dữ liệu. Puzzle đang chơi được ghim bằng snapshot để restart và resume không đổi level khi streak đổi. Test campaign runtime, pace adjuster và session store pass trên nhánh này; chưa merge vào `dev`.
+
+Full gate ngày 2026-10-03 vẫn fail ở `python:game/tests` (fixture `game/data/t01.json` đã xóa) và `levels:game/data/campaign_m1.json` (file đã xóa). 18 suite Godot cùng các validator nội dung pass. Tác động: chưa đủ điều kiện merge; người xử lý nhánh kiểm chứng cần đồng bộ runner và fixture trong task riêng, rồi chạy lại `rtk python -B tools/verify.py --godot <Godot 4.7.2>` trên revision ổn định. Evidence: `scratch/verification/20261003T102103.124303Z.txt`.
+
 ## Baseline
 
 - `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + 4 follow-ups
