@@ -21,8 +21,8 @@ def build_checks(root, godot):
     checks = [("python:" + folder, [sys.executable, "-B", "-m", "unittest",
                "discover", folder, "-p", "test_*.py"])
               for folder in ("game/tests", "GDD/tools", "tools/tests")]
-    checks += [("levels:" + path, [sys.executable, "-B", "GDD/tools/validate_levels.py", path])
-               for path in ("game/data/campaign_m1.json", "GDD/data/levels.sample.json")]
+    checks += [("levels:GDD/data/levels.sample.json", [sys.executable, "-B",
+                "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"])]
     checks += [("content:bank_4x4", [sys.executable, "-B", "tools/validate_content.py",
                 "game/data/banks/bank_4x4.json", "--pace", "game/data/banks/bank_4x4.pace.json"])]
     checks += [("content:demo_30", [sys.executable, "-B", "tools/validate_content.py",

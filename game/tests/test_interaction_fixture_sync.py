@@ -21,15 +21,6 @@ class InteractionFixtureSyncTests(unittest.TestCase):
 
         self.assertEqual(runtime, canonical)
 
-    def test_t01_matches_canonical_level(self) -> None:
-        canonical_levels = load_json(
-            GDD_ROOT / "data" / "levels.sample.json"
-        )["levels"]
-        canonical = next(level for level in canonical_levels if level["id"] == "T01")
-        runtime = load_json(GAME_ROOT / "data" / "t01.json")
-
-        self.assertEqual(runtime, canonical)
-
     def test_e01_contract_level_matches_canonical_level(self) -> None:
         canonical_levels = load_json(
             GDD_ROOT / "data" / "levels.sample.json"

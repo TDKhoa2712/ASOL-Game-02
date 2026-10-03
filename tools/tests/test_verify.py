@@ -59,6 +59,15 @@ class VerifyTests(unittest.TestCase):
         self.assertEqual(actual, expected)
         self.assertTrue(actual)
 
+    def test_level_validation_targets_exist(self):
+        runner = self.load_runner()
+        checks = runner.build_checks(ROOT, "godot")
+        targets = [command[-1] for name, command in checks if name.startswith("levels:")]
+        self.assertTrue(targets)
+        for target in targets:
+            with self.subTest(target=target):
+                self.assertTrue((ROOT / target).is_file())
+
     def test_metadata_failure_after_checks_cannot_report_pass(self):
         runner = self.load_runner()
         with tempfile.TemporaryDirectory() as folder:
