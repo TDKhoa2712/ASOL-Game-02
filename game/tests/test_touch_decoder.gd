@@ -7,6 +7,7 @@ var _fails: Array[String] = []
 func _init() -> void:
 	_test_single_tap()
 	_test_double_tap()
+	_test_double_tap_no_preview_leak()
 	_test_distinct_taps_without_wait()
 	_test_swipe()
 	_test_swipe_interpolation()
@@ -46,6 +47,18 @@ func _test_double_tap() -> void:
 	_assert(dtaps.size() == 1, "double tap emitted on release")
 	d.tick(1600)
 	_assert(taps.is_empty(), "double tap never commits a mark")
+
+func _test_double_tap_no_preview_leak() -> void:
+	var d := TouchDecoder.new()
+	var previews: Array = []
+	d.preview_changed.connect(func(cells): previews.append(cells.duplicate(true)))
+	d.begin(2, 3, 1000)
+	_assert(previews.back() == [[2, 3]], "first touch shows preview")
+	d.finish(1010)
+	_assert(previews.back().is_empty(), "preview cleared while waiting for double tap")
+	d.begin(2, 3, 1200)
+	d.finish(1220)
+	_assert(previews.back().is_empty(), "preview stays clear after double tap completes")
 
 func _test_distinct_taps_without_wait() -> void:
 	var d := TouchDecoder.new()

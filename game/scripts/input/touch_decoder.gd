@@ -73,6 +73,7 @@ func finish(time_ms: int) -> void:
 		var tap_cell: Array = _swipe_trail[0]
 		_swipe_trail.clear()
 		_last_swipe_cell.clear()
+		preview_changed.emit([])
 		_has_pending_tap = true
 		_pending_tap_cell = tap_cell
 		_pending_tap_time = time_ms
