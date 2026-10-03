@@ -201,10 +201,16 @@ def main():
     parser.add_argument('--profile', type=Path)
     parser.add_argument('--out', type=Path, required=True, help='new output directory (never overwritten)')
     parser.add_argument('--exclude', type=Path, action='append', default=[])
+    parser.add_argument('--size', type=int, choices=[4, 5, 6],
+                        help='Filter profile slots to only this grid size (default: all sizes in profile)')
     args = parser.parse_args()
     if args.out.exists():
         parser.error('output directory already exists; select a new directory')
     profile = json.loads(args.profile.read_text(encoding='utf-8'), object_pairs_hook=object_no_duplicates) if args.profile else pilot_profile()
+    if args.size is not None:
+        profile['slots'] = [s for s in profile['slots'] if s['size'] == args.size]
+        if not profile['slots']:
+            parser.error(f'no slots for size {args.size} in profile')
     excluded = []
     for path in args.exclude:
         excluded.extend(json.loads(path.read_text(encoding='utf-8'), object_pairs_hook=object_no_duplicates)['levels'])

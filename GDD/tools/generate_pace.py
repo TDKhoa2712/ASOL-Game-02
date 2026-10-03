@@ -46,8 +46,8 @@ def generate_pace(bank_path: str, output_path: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("bank", type=str, help="Input bank JSON file")
-    parser.add_argument("output", type=str, help="Output pace JSON file")
+    parser.add_argument("--bank", type=str, required=True, help="Input bank JSON file")
+    parser.add_argument("--output", type=str, required=True, help="Output pace JSON file")
     args = parser.parse_args()
 
     generate_pace(args.bank, args.output)
