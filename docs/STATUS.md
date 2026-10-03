@@ -58,14 +58,15 @@ Wave 6: M10                 (đã merge)
 **Gate trước merge:** 12/12 Godot test suites PASS, clean-room 0 match, tất cả modules ≤ 300 dòng.
 
 **Việc còn mở (deferred):**
-- DDA `rank_offset` được tính nhưng chưa được campaign_runtime áp dụng khi chọn rank level
 - Colorblind overlay: ThemeDB.fallback_font có thể thiếu glyph unicode trên một số thiết bị (cần manual QA)
 - Snapshot thiếu fields `rating`/`solve_profile` từ spec (chưa có consumer)
-- Chưa có bank 5×5/6×6 (tooling sẵn sàng; generation là bước riêng)
+- Bank 5×5 đã có nhưng chưa được đưa vào playlist; bank 6×6 chưa có
 
 ### Last-Mile Task 1: DDA rank_offset wired into campaign (đã merge vào `dev` 2026-10-03)
 
 CampaignRuntime đã áp dụng DDA khi chọn rank từ bank và pace, fallback về rank playlist nếu rank/index điều chỉnh thiếu dữ liệu. Puzzle đang chơi được ghim bằng snapshot để restart và resume không đổi level khi streak đổi.
+
+Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runtime.gd` xác nhận tăng/hạ rank, fallback và giữ puzzle qua restart/resume.
 
 ### Last-Mile Task 2: Colorblind toggle in options screen (đã merge vào `dev` 2026-10-03)
 
@@ -82,12 +83,12 @@ CampaignRuntime đã áp dụng DDA khi chọn rank từ bank và pace, fallback
 
 ## Baseline
 
-- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + 4 follow-ups
+- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + last-mile tasks 1–3
 - Reference: `extracted_reusable/` (~224 files)
 - Tag bảo toàn: `pre-reset-pipeline-2026-09-27`
 
 ## Việc cần chốt và kiểm chứng
 
 - **Undo X so với RST-015:** ảnh hưởng hợp đồng gameplay và tài liệu. Chủ dự án chốt giữ Undo giới hạn hay bỏ; sau quyết định, đồng bộ code/test/docs và chạy gate lại. Thử lại nghiệm thu gameplay khi đã chốt.
-- **Full gate:** trên HEAD `9edafd4` cùng working tree chưa sạch, chạy `rtk python -B tools/verify.py --godot <Godot 4.7.2>` ngày 2026-10-03: **FAIL**. 13 suite Godot, validator bank/pace/playlist và test Python GDD/tools, tools/tests pass; Python `game/tests` fail vì `test_interaction_fixture_sync.py` còn đọc `game/data/t01.json` đã bị xóa; runner còn kiểm `game/data/campaign_m1.json` đã bị xóa. Log: `scratch/verification/20261002T170324.499222Z.txt` (UTC, Git ignore). Người thực hiện nhánh cần đồng bộ runner/test fixture với dữ liệu hiện hành, chạy lại full gate trên inputs ổn định. Chỉ thử merge khi gate pass.
+- **Full gate:** trên `dev` với commit sửa runner `c577210`, `rtk python -B tools/verify.py --godot <Godot 4.7.2>` ngày 2026-10-03: **PASS**. Python suites, GDD sample, bank/playlist validators và 18 suite Godot đều pass. Runner đã bỏ tham chiếu tới `game/data/campaign_m1.json`; test fixture đã bỏ tham chiếu tới `game/data/t01.json`. Log: `scratch/verification/20261003T102902.224427Z.txt` (UTC, Git ignore). Working tree còn thay đổi dữ liệu và `.uid` ngoài commit, nên gate này chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
 - **QA UI/thiết bị:** chưa chạy trong lượt rà tài liệu. Người thực hiện nhánh kiểm gesture/UI từ entry scene và trên Android; chủ dự án duyệt kết quả playtest. Chỉ đánh dấu đạt khi có bằng chứng theo revision. iOS còn cần môi trường build/signing.
