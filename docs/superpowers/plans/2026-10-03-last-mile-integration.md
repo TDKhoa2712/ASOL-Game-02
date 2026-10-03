@@ -221,7 +221,7 @@ func _apply_setting(key: String, value: Variant) -> void:
             Vibration.set_on(bool(value))
 ```
 
-- [ ] **Step 1: Sửa `options_screen.gd` — thêm colorblind key**
+- [x] **Step 1: Sửa `options_screen.gd` — thêm colorblind key**
 
 Thêm "colorblind" vào LABELS:
 ```gdscript
@@ -258,7 +258,7 @@ for key in WIDE_KEYS:
     vbox.add_child(_make_tile(key, false))
 ```
 
-- [ ] **Step 2: Sửa `app_shell.gd` — xử lý colorblind setting change**
+- [x] **Step 2: Sửa `app_shell.gd` — xử lý colorblind setting change**
 
 Thêm case "colorblind" trong `_apply_setting()`:
 ```gdscript
@@ -287,14 +287,14 @@ Hoặc đơn giản hơn: khi quay lại puzzle screen từ options, `_swap_scre
 
 **→ Flow đã hoạt động cho trường hợp quay lại puzzle.** Chỉ cần thêm toggle vào options UI. Nếu muốn live-update (bật colorblind mà không thoát puzzle), thì cần thêm logic — nhưng hiện tại options tạo screen mới khi quay lại, nên OK.
 
-- [ ] **Step 3: Kiểm tra line count**
+- [x] **Step 3: Kiểm tra line count**
 
 ```bash
 wc -l game/scripts/screens/options_screen.gd game/scripts/screens/app_shell.gd
 ```
 Expected: options_screen ~228 dòng, app_shell ~220 dòng. Cả hai < 300.
 
-- [ ] **Step 4: Run existing tests**
+- [x] **Step 4: Run existing tests**
 
 ```bash
 godot --headless --path game --script res://tests/test_colorblind.gd
@@ -306,7 +306,7 @@ godot --headless --path game --script res://tests/test_config_store.gd
 ```
 Expected: STATE_CONFIG_PASS
 
-- [ ] **Step 5: Manual QA (headless không verify rendering)**
+- [x] **Step 5: Manual QA (headless không verify rendering)**
 
 1. Chạy game từ entry scene
 2. Vào Options → verify toggle "Hỗ trợ phân biệt màu" hiển thị
@@ -315,7 +315,7 @@ Expected: STATE_CONFIG_PASS
 
 Ghi rõ: headless tests KHÔNG verify rendering. Manual QA bắt buộc.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add game/scripts/screens/options_screen.gd

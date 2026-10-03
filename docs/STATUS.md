@@ -60,9 +60,15 @@ Wave 6: M10                 (đã merge)
 **Việc còn mở (deferred):**
 - DDA `rank_offset` được tính nhưng chưa được campaign_runtime áp dụng khi chọn rank level
 - Colorblind overlay: ThemeDB.fallback_font có thể thiếu glyph unicode trên một số thiết bị (cần manual QA)
-- set_colorblind() mid-session (sau setup ban đầu) cần gọi thêm configure() hoặc queue_redraw()
 - Snapshot thiếu fields `rating`/`solve_profile` từ spec (chưa có consumer)
 - Chưa có bank 5×5/6×6 (tooling sẵn sàng; generation là bước riêng)
+
+### Last-Mile Task 2: Colorblind toggle in options screen (đã merge vào `dev` 2026-10-03)
+
+- Thêm toggle "Hỗ trợ phân biệt màu" (`colorblind`) vào `options_screen.gd` thông qua `WIDE_KEYS`.
+- `app_shell.gd`: xử lý thiết lập `colorblind` trong `_apply_setting()`, tự động đồng bộ và vẽ lại bàn cờ qua `_refresh_puzzle_colorblind()`.
+- Flow options -> puzzle tạo lại màn hình mới và áp dụng `set_colorblind()` trước `configure()`.
+- Test suite: `test_screens.gd` (PASS), `test_colorblind.gd` (PASS), `test_config_store.gd` (PASS), `test_integration.gd` (PASS).
 
 ## Baseline
 
