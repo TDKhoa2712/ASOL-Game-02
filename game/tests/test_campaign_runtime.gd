@@ -21,6 +21,9 @@ func _init() -> void:
 	_test_cursor()
 	_test_navigation()
 	_test_tutorial()
+	_test_snapshot_creation()
+	_test_restart_reuses_snapshot()
+	_test_dda_integration()
 	for failure in failures:
 		printerr(failure)
 	if failures.is_empty():
@@ -171,6 +174,38 @@ func _test_tutorial() -> void:
 	_check(guide.seen_ids().has("T1"), "seen persists in progress")
 	_cleanup(runtime)
 
+func _test_snapshot_creation() -> void:
+	var runtime := _runtime("snapshot")
+	_check(runtime.boot().ok, "snapshot boot")
+	var session := runtime.start_level("L01")
+	_check(session != null, "snapshot start level")
+	var saved := runtime.sessions._store.read_json()
+	_check(saved.ok, "snapshot session saved")
+	_check(saved.data.has("snapshot"), "session has snapshot field")
+	var snap: Dictionary = saved.data.get("snapshot", {})
+	_check(snap.has("regions"), "snapshot has regions")
+	_check(snap.has("solution"), "snapshot has solution")
+	_check(snap.has("zone_colors"), "snapshot has zone_colors")
+	_check(snap.has("shape_hash"), "snapshot has shape_hash")
+	_check(str(snap.get("shape_hash", "")).begins_with("4x4_"), "shape_hash format")
+	_cleanup(runtime)
+
+func _test_restart_reuses_snapshot() -> void:
+	var runtime := _runtime("restart_snap")
+	_check(runtime.boot().ok, "restart_snap boot")
+	var s1 := runtime.start_level("L01")
+	_check(s1 != null, "restart_snap first start")
+	var snap1: Dictionary = runtime.sessions._store.read_json().data.get("snapshot", {})
+	var s2 := runtime.restart_level()
+	_check(s2 != null, "restart_snap restart")
+	var snap2: Dictionary = runtime.sessions._store.read_json().data.get("snapshot", {})
+	_check(snap2.get("regions", []) == snap1.get("regions", []), "restart same regions")
+	_check(snap2.get("zone_colors", {}) == snap1.get("zone_colors", {}), "restart same colors")
+	_check(snap2.get("solution", []) == snap1.get("solution", []), "restart same solution")
+	var again := CampaignRuntime.new(runtime.bank, runtime.pace, runtime.progress, runtime.sessions)
+	_check(again.boot().ok and again._current_snapshot.get("shape_hash") == snap1.get("shape_hash"), "resume restores snapshot")
+	_cleanup(runtime)
+
 func _cleanup(runtime: CampaignRuntime) -> void:
 	runtime.progress._store.remove_all()
 	runtime.sessions.clear()
@@ -187,3 +222,14 @@ func _finish_level(runtime: CampaignRuntime) -> void:
 func _check(condition: bool, label: String) -> void:
 	if not condition:
 		failures.append("FAIL: " + label)
+
+func _test_dda_integration() -> void:
+	var runtime := _runtime("dda")
+	_check(runtime.boot().ok, "dda boot")
+	_check(runtime.pace_adjuster != null, "pace_adjuster initialized")
+	_check(runtime.pace_adjuster.rank_offset(1, 1) == 0, "initial offset 0")
+	var label: String = runtime.current_level_label()
+	runtime.start_level(label)
+	runtime.on_level_lost(label)
+	_check(int(runtime.progress.current.get("dda", {}).get("fail_streak", 0)) == 1, "loss persisted to dda")
+	_cleanup(runtime)

@@ -113,6 +113,8 @@ func _instantiate_screen(to_name: String) -> void:
 		"puzzle":
 			if screen.has_signal("go_home"):
 				screen.connect("go_home", func(): nav.go_to(NavController.Screen.TITLE))
+			if screen.has_signal("options_pressed"):
+				screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
 			if screen.has_signal("level_done"):
 				screen.connect("level_done", _on_level_done)
 			if screen.has_method("setup"):

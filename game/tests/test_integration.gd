@@ -110,7 +110,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	var win_screen = shell.screen_host.get_child(0)
 	_assert(win_screen != null and win_screen.name == "WinScreen", "screen host holds WinScreen")
 	_assert(shell._last_won_level == "L01", "recorded won level is L01")
-	_assert(win_screen.message_label != null and win_screen.message_label.text.contains("Thành công"), "win screen message shown")
+	_assert(win_screen.message_label != null and win_screen.message_label.text.contains("Hoan hô"), "win screen message shown")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next button visible")
 
 	# 3. Press Next on WinScreen to advance to L02
@@ -265,7 +265,7 @@ func _test_session_autosave_and_reboot_recovery() -> void:
 
 	_assert(shell2.runtime.has_pending_session(), "pending session detected on reboot")
 	var title2 = shell2.screen_host.get_child(0)
-	_assert(title2.play_btn.text == "Tiếp tục", "title button displays 'Tiếp tục'")
+	_assert(title2.play_btn.text == "Level %s" % shell2.runtime.current_level_label().trim_prefix("L"), "title button displays only the resumed level")
 
 	title2._on_play()
 	var puzzle2 = shell2.screen_host.get_child(0)

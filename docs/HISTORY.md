@@ -1,8 +1,12 @@
 # Lịch sử dự án
 
-## 2026-10-02 — Rebuild hoàn chỉnh (RST-012)
+## 2026-10-02 — Chỉnh lại gameplay và giao diện (RST-015)
 
-Phê duyệt rebuild toàn bộ game từ thiết kế tham khảo `extracted_reusable/`. 10 module plans, master plan với interface contracts và parallel execution map. AGENTS.md viết lại cho multi-agent. Docs cập nhật toàn bộ.
+Sau rebuild, chủ dự án yêu cầu bỏ auto-lock, đổi WRONG→ERROR vĩnh viễn, bật swipe và chỉnh UI. Plan ban đầu cũng yêu cầu bỏ Undo. Nhánh realignment đã có các thay đổi gameplay/UI nhưng còn giữ Undo giới hạn cho X; xem [STATUS](STATUS.md) để biết chênh lệch cần chốt và kết quả kiểm chứng.
+
+## 2026-10-02 — Rebuild hoàn tất (RST-012→RST-014)
+
+Rebuild hoàn chỉnh 10 modules (M01-M10), 6 waves, tất cả merge vào `dev` (PR #1–#10). 30 levels playtest sinh bằng generator offline. Module plans đã hoàn tất và dọn dẹp.
 
 ## 2026-10-01 — Playtest 30 level (RST-011)
 

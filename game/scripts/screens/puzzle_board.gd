@@ -9,16 +9,18 @@ const TouchDecoder = preload("res://scripts/input/touch_decoder.gd")
 
 signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
+signal cell_swiped(cells: Array)
 
 var _session: Variant = null
 var _zone_grid: Array = []
 var _zone_colors: Dictionary = {}
 var _decoder: TouchDecoder = null
 var _candy_tex: Texture2D = null
-var _lock_anim_cells: Array = []
-var _lock_anim_progress: float = 1.0
 var _highlight_cells: Array = []
 var _highlight_unit: String = ""
+var _preview_cells: Array = []
+var _preview_mark: bool = true
+var _touch_in_progress: bool = false
 
 func configure(session: Variant) -> void:
 	_session = session
@@ -31,14 +33,20 @@ func configure(session: Variant) -> void:
 	_decoder = TouchDecoder.new()
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
+	_decoder.cell_swiped.connect(func(cells: Array): cell_swiped.emit(cells))
+	_decoder.preview_changed.connect(_on_preview_changed)
 	_highlight_cells = []
 	_highlight_unit = ""
-	_lock_anim_cells = []
-	_lock_anim_progress = 1.0
+	_preview_cells = []
 	queue_redraw()
 
 func redraw() -> void:
 	queue_redraw()
+
+func settle_input() -> void:
+	if _decoder != null:
+		_decoder.flush_pending()
+		_decoder.cancel()
 
 func highlight_cell(row: int, col: int) -> void:
 	_highlight_cells = [[row, col]]
@@ -60,31 +68,38 @@ func clear_highlight() -> void:
 	_highlight_unit = ""
 	queue_redraw()
 
-func animate_locks(cells: Array) -> void:
-	_lock_anim_cells = cells.duplicate()
-	_lock_anim_progress = 0.0
-	queue_redraw()
-
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	custom_minimum_size = Vector2(280, 280)
+	custom_minimum_size = Vector2(760, 760)
 	var candy_path := "res://assets/ui/board/candy.svg"
 	if ResourceLoader.exists(candy_path):
 		_candy_tex = load(candy_path) as Texture2D
 
-func _process(delta: float) -> void:
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _decoder != null:
+		_decoder.flush_pending()
+		_decoder.cancel()
+
+func _on_preview_changed(cells: Array) -> void:
+	_preview_cells = cells.duplicate(true)
+	if _session != null and not _preview_cells.is_empty():
+		var first: Array = _preview_cells[0]
+		var first_kind: int = _session.cell_at(int(first[0]), int(first[1]))
+		if not CellModel.is_available(first_kind):
+			_preview_cells = []
+		else:
+			_preview_mark = first_kind == CellModel.CellKind.BLANK
+	queue_redraw()
+
+func _process(_delta: float) -> void:
 	if _decoder != null:
 		_decoder.tick(Time.get_ticks_msec())
-	if _lock_anim_progress < 1.0:
-		_lock_anim_progress = minf(_lock_anim_progress + delta / (float(LayoutTokens.LOCK_FADE_MS) / 1000.0), 1.0)
-		queue_redraw()
-		if _lock_anim_progress >= 1.0:
-			_lock_anim_cells = []
 
 func _gui_input(event: InputEvent) -> void:
 	if _session == null or _decoder == null or _session.phase != 0:
 		return
 	if event is InputEventScreenTouch:
+		_touch_in_progress = event.pressed
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
@@ -98,6 +113,8 @@ func _gui_input(event: InputEvent) -> void:
 			_decoder.move(c[0], c[1])
 		accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if _touch_in_progress:
+			return
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
@@ -116,7 +133,7 @@ func _board_rect() -> Rect2:
 	return Rect2((size - Vector2.ONE * side) * 0.5, Vector2.ONE * side)
 
 func _cell_gap(board_w: float) -> float:
-	return maxf(2.0, board_w * LayoutTokens.CELL_GAP_RATIO)
+	return maxf(3.0, board_w * LayoutTokens.CELL_GAP_RATIO)
 
 func _cell_at(pos: Vector2) -> Array:
 	if _session == null:
@@ -157,7 +174,7 @@ func _draw() -> void:
 		return
 	var br := _board_rect()
 	var card_sb := StyleBoxFlat.new()
-	card_sb.bg_color = Palette.BG_PAPER
+	card_sb.bg_color = Palette.PILL_BG
 	card_sb.set_corner_radius_all(int(br.size.x * LayoutTokens.CARD_CORNER_RATIO))
 	var expanded_rect := br.grow(LayoutTokens.CARD_GROW)
 	draw_style_box(card_sb, expanded_rect)
@@ -181,6 +198,11 @@ func _draw() -> void:
 			draw_style_box(sb, cell_rect)
 
 			var kind: int = _session.board[r][c]
+			if _preview_cells.has([r, c]):
+				if _preview_mark and kind == CellModel.CellKind.BLANK:
+					kind = CellModel.CellKind.MARK
+				elif not _preview_mark and kind == CellModel.CellKind.MARK:
+					kind = CellModel.CellKind.BLANK
 			var ov: Color = Palette.cell_state_overlay(kind)
 			if ov.a > 0.0:
 				var ov_sb := StyleBoxFlat.new()
@@ -190,19 +212,13 @@ func _draw() -> void:
 
 			match kind:
 				CellModel.CellKind.MARK:
-					_draw_cell_x(cell_rect, false, false)
+					_draw_cell_x(cell_rect, false)
 				CellModel.CellKind.CANDY:
 					_draw_cell_candy(cell_rect, false)
-				CellModel.CellKind.WRONG:
-					_draw_cell_x(cell_rect, true, false)
+				CellModel.CellKind.ERROR:
+					_draw_cell_x(cell_rect, true)
 				CellModel.CellKind.GIVEN:
 					_draw_cell_candy(cell_rect, true)
-				CellModel.CellKind.LOCKED:
-					var a := 1.0
-					if _lock_anim_cells.has([r, c]):
-						a = _lock_anim_progress
-					_draw_lock_overlay(cell_rect, a)
-					_draw_cell_x(cell_rect, false, true, a)
 
 			if _highlight_cells.has([r, c]):
 				var hl_sb := StyleBoxFlat.new()
@@ -213,43 +229,41 @@ func _draw() -> void:
 				draw_style_box(hl_sb, cell_rect)
 
 func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
-	var pad := rect.size.x * 0.16
-	var candy_rect := rect.grow(-pad)
 	if is_given:
-		var halo_center := rect.position + rect.size * 0.5
-		var halo_rad := rect.size.x * 0.42
-		draw_arc(halo_center, halo_rad, 0.0, TAU, 32, Palette.GIVEN_HALO, 3.0)
-	var tint := Palette.GIVEN_CANDY if is_given else Palette.CANDY_BROWN
+		draw_circle(rect.get_center(), rect.size.x * 0.38, Palette.GIVEN_HALO)
 	if _candy_tex != null:
-		draw_texture_rect(_candy_tex, candy_rect, false, tint)
+		var candy_size := rect.size * 0.74
+		var candy_rect := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
+		draw_texture_rect(_candy_tex, candy_rect, false)
 	else:
-		var center := rect.position + rect.size * 0.5
-		var rad := candy_rect.size.x * 0.45
-		draw_circle(center, rad, tint)
-		if not is_given:
-			var hl_center := center - Vector2(rad * 0.3, rad * 0.3)
-			draw_circle(hl_center, rad * 0.22, Palette.CANDY_LIGHT)
+		_draw_candy_procedural(rect)
 
-func _draw_cell_x(rect: Rect2, is_wrong: bool, is_locked: bool, alpha: float = 1.0) -> void:
-	var stroke_col: Color
-	if is_wrong:
-		stroke_col = Palette.ERROR_RED
-	elif is_locked:
-		stroke_col = Color(Palette.LOCKED_X_COLOR.r, Palette.LOCKED_X_COLOR.g, Palette.LOCKED_X_COLOR.b, Palette.LOCKED_X_ALPHA * alpha)
-	else:
-		stroke_col = Palette.MARK_WHITE
+func _draw_candy_procedural(rect: Rect2) -> void:
+	var center := rect.get_center()
+	var radius := rect.size.x * 0.25
+	var outline := Palette.CANDY_OUTLINE
+	for direction in [-1.0, 1.0]:
+		var wrapper := PackedVector2Array([
+			center + Vector2(direction * radius * 0.65, 0),
+			center + Vector2(direction * radius * 1.6, -radius * 0.65),
+			center + Vector2(direction * radius * 1.6, radius * 0.65),
+		])
+		draw_colored_polygon(wrapper, Palette.CANDY_LIGHT)
+		draw_polyline(wrapper, outline, 2.0, true)
+	draw_circle(center, radius, Palette.CANDY_BROWN)
+	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
+
+func _draw_cell_x(rect: Rect2, is_error: bool) -> void:
+	var stroke_col: Color = Palette.ERROR_RED if is_error else Palette.MARK_WHITE
 	var pad := rect.size.x * 0.28
-	var w := maxf(2.5, rect.size.x * 0.08)
+	var w := maxf(4.0, rect.size.x * 0.09)
 	var p1 := rect.position + Vector2(pad, pad)
 	var p2 := rect.end - Vector2(pad, pad)
 	var p3 := Vector2(rect.end.x - pad, rect.position.y + pad)
 	var p4 := Vector2(rect.position.x + pad, rect.end.y - pad)
-	draw_line(p1, p2, stroke_col, w)
-	draw_line(p3, p4, stroke_col, w)
-
-func _draw_lock_overlay(rect: Rect2, alpha: float) -> void:
-	var ov_col := Color(Palette.LOCKED_OVERLAY.r, Palette.LOCKED_OVERLAY.g, Palette.LOCKED_OVERLAY.b, Palette.LOCKED_OVERLAY.a * alpha)
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = ov_col
-	sb.set_corner_radius_all(int(rect.size.x * LayoutTokens.CELL_CORNER_RATIO))
-	draw_style_box(sb, rect)
+	draw_line(p1, p2, stroke_col, w, true)
+	draw_line(p3, p4, stroke_col, w, true)
+	if is_error:
+		var badge_center := rect.position + rect.size * Vector2(0.78, 0.22)
+		draw_circle(badge_center, rect.size.x * 0.09, Palette.TEXT_ON_ACCENT)
+		draw_circle(badge_center, rect.size.x * 0.07, Palette.ERROR_RED)

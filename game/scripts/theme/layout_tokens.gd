@@ -1,7 +1,7 @@
 extends RefCounted
 
 # Board.
-const BOARD_PADDING := 16
+const BOARD_PADDING := 9
 const CELL_GAP_RATIO := 0.008
 const CELL_CORNER_RATIO := 0.14
 const CARD_CORNER_RATIO := 0.04

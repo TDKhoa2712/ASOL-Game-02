@@ -32,11 +32,9 @@ func _test_catalog_complete() -> void:
 		_assert(SfxCatalog.FILE_MAP.has(val), "path for effect %d" % val)
 		var p: String = SfxCatalog.FILE_MAP[val]
 		_assert(p.begins_with("res://audio/sfx/"), "valid sfx path prefix: %s" % p)
-	_assert(SfxCatalog.FILE_MAP.size() == 11, "11 effects mapped")
+	_assert(SfxCatalog.FILE_MAP.size() == 9, "9 effects mapped")
 
 func _test_catalog_rate_limits() -> void:
-	_assert(SfxCatalog.MIN_INTERVAL_MS.has(SfxCatalog.Effect.LOCK_CELL), "LOCK_CELL has rate limit")
-	_assert(SfxCatalog.MIN_INTERVAL_MS[SfxCatalog.Effect.LOCK_CELL] == 60, "LOCK_CELL interval == 60ms")
 	_assert(SfxCatalog.MIN_INTERVAL_MS.has(SfxCatalog.Effect.MARK), "MARK has rate limit")
 	_assert(SfxCatalog.MIN_INTERVAL_MS[SfxCatalog.Effect.MARK] == 100, "MARK interval == 100ms")
 	_assert(not SfxCatalog.MIN_INTERVAL_MS.has(SfxCatalog.Effect.CANDY_YES), "CANDY_YES has no rate limit")
@@ -75,8 +73,8 @@ func _test_sfx_player_mute() -> void:
 	_assert(not player.is_muted(), "sfx player not muted initially")
 	player.set_muted(true)
 	_assert(player.is_muted(), "sfx player muted after set_muted(true)")
-	player.play(SfxCatalog.Effect.LOCK_CELL)
-	_assert(not player._last_play_ms.has(SfxCatalog.Effect.LOCK_CELL), "muted player does not record play timestamp")
+	player.play(SfxCatalog.Effect.MARK)
+	_assert(not player._last_play_ms.has(SfxCatalog.Effect.MARK), "muted player does not record play timestamp")
 	player.set_muted(false)
 	_assert(not player.is_muted(), "sfx player unmuted")
 	player.queue_free()
@@ -84,12 +82,12 @@ func _test_sfx_player_mute() -> void:
 func _test_sfx_player_rate_limit() -> void:
 	var player := SfxPlayer.new()
 	root.add_child(player)
-	player.play(SfxCatalog.Effect.LOCK_CELL)
-	var first_play: int = player._last_play_ms.get(SfxCatalog.Effect.LOCK_CELL, -1)
-	_assert(first_play >= 0, "LOCK_CELL recorded timestamp on first play")
-	player.play(SfxCatalog.Effect.LOCK_CELL)
-	var second_play: int = player._last_play_ms.get(SfxCatalog.Effect.LOCK_CELL, -1)
-	_assert(second_play == first_play, "LOCK_CELL throttled within min interval")
+	player.play(SfxCatalog.Effect.MARK)
+	var first_play: int = player._last_play_ms.get(SfxCatalog.Effect.MARK, -1)
+	_assert(first_play >= 0, "MARK recorded timestamp on first play")
+	player.play(SfxCatalog.Effect.MARK)
+	var second_play: int = player._last_play_ms.get(SfxCatalog.Effect.MARK, -1)
+	_assert(second_play == first_play, "MARK throttled within min interval")
 
 	# CANDY_YES without rate limiting can update timestamp every time
 	player.play(SfxCatalog.Effect.CANDY_YES)

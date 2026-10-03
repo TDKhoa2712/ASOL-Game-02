@@ -108,9 +108,15 @@ func _test_puzzle_board() -> void:
 	board.clear_highlight()
 	_assert(board._highlight_cells.is_empty(), "clear_highlight clears cells")
 
-	board.animate_locks([[0, 2], [1, 3]])
-	_assert(board._lock_anim_cells.size() == 2, "animate_locks sets cells")
-	_assert(board._lock_anim_progress == 0.0, "lock anim progress reset")
+	var swipe_box: Array = []
+	board.cell_swiped.connect(func(cells: Array): swipe_box.append(cells))
+	board._decoder.begin(0, 0, 0)
+	_assert(board._preview_cells == [[0, 0]], "board previews touch immediately")
+	board._decoder.move(0, 2)
+	_assert(board._preview_cells == [[0, 0], [0, 1], [0, 2]], "board previews drag")
+	board._decoder.finish(100)
+	_assert(board._preview_cells.is_empty(), "board clears drag preview")
+	_assert(swipe_box.size() == 1 and swipe_box[0] == [[0, 0], [0, 1], [0, 2]], "board forwards swipe trail")
 
 	board.free()
 
@@ -120,7 +126,15 @@ func _test_title_screen() -> void:
 	var mock_rt := MockRuntime.new()
 	title.setup(mock_rt)
 	_assert(title.runtime != null, "title runtime set")
-	_assert(title.level_label != null and title.level_label.text.contains("1-2"), "title level label updated")
+	_assert(title.find_child("CandyLogo", true, false) != null, "title logo present")
+	_assert(title.find_child("SafeArea", true, false) != null, "title safe area present")
+	_assert(title.help_btn != null and title.help_dialog != null, "home help restored")
+	_assert(title.play_btn.text == "Level 1-2", "play button shows only current level")
+	_assert(title.find_child("LevelLabel", true, false) == null, "progress count is absent from home")
+	_assert(title.title_label.get_parent().name == "HeroBlock" and title.play_btn.get_parent().name == "ActionBlock", "home separates top branding from bottom action")
+	mock_rt.pending = true
+	title._update_ui()
+	_assert(title.play_btn.text == "Level 1-2", "resume action keeps the same level label")
 
 	var play_box := [false]
 	title.play_pressed.connect(func(): play_box[0] = true)
@@ -147,6 +161,8 @@ func _test_result_screen() -> void:
 	win_screen.home_pressed.connect(func(): home_box[0] = true)
 
 	win_screen.setup(true, 12000, "1-1", false)
+	_assert(win_screen.find_child("ResultCard", true, false) != null, "win result card present")
+	_assert(win_screen.find_child("ResultMessage", true, false) != null, "result shows a supporting message")
 	_assert(win_screen._is_win, "result is win")
 	_assert(not win_screen._is_last_level, "result not last level")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next btn visible on win")
@@ -170,6 +186,7 @@ func _test_result_screen() -> void:
 	var retry_box := [false]
 	fail_screen.retry_pressed.connect(func(): retry_box[0] = true)
 	fail_screen.setup(false, 0, "1-1", false)
+	_assert(fail_screen.find_child("ResultCard", true, false) != null, "fail result card present")
 	_assert(not fail_screen._is_win, "result is fail")
 	_assert(fail_screen.retry_btn != null and fail_screen.retry_btn.visible, "retry btn visible on fail")
 	fail_screen._on_retry()
@@ -184,7 +201,9 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == ConfigStore.EDITABLE_KEYS.size(), "options rows generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 2 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and contrast row generated")
+	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
+	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 
 	options._on_toggle("audio", false)
 	_assert(not bool(config.get_option("audio")), "audio disabled via options screen")
@@ -203,6 +222,9 @@ func _test_puzzle_screen() -> void:
 	var packed := load("res://scenes/puzzle.tscn") as PackedScene
 	var puzzle := packed.instantiate() as PuzzleScreen
 	puzzle._ensure_nodes()
+	_assert(puzzle.undo_btn != null and puzzle.restart_confirm != null, "puzzle controls restored")
+	var undo_icon: TextureRect = puzzle.undo_btn.get_node_or_null("IconCenter/Icon")
+	_assert(undo_icon != null and undo_icon.custom_minimum_size.x < puzzle.undo_btn.custom_minimum_size.x, "board icon sits inside round button")
 	puzzle.session = session
 	puzzle._connect_session()
 	if puzzle.board != null:
@@ -214,6 +236,21 @@ func _test_puzzle_screen() -> void:
 	_assert(session.board[2][0] == CellModel.CellKind.MARK, "cell marked via puzzle screen tap")
 	puzzle._on_board_tap(2, 0)
 	_assert(session.board[2][0] == CellModel.CellKind.BLANK, "cell un-marked via puzzle screen tap")
+	session.try_candy(0, 0)
+	session.try_candy(1, 3)
+	puzzle._on_board_swipe([[2, 0], [1, 3], [0, 0], [2, 1]])
+	_assert(session.board[2][0] == CellModel.CellKind.MARK, "swipe paints blank")
+	_assert(session.board[2][1] == CellModel.CellKind.MARK, "swipe continues across immutable cells")
+	_assert(session.board[0][0] == CellModel.CellKind.ERROR, "swipe skips error")
+	_assert(session.board[1][3] == CellModel.CellKind.CANDY, "swipe skips candy")
+	puzzle._on_undo()
+	_assert(session.board[2][0] == CellModel.CellKind.BLANK and session.board[2][1] == CellModel.CellKind.BLANK, "undo clears whole stroke")
+	puzzle.board._decoder.begin(2, 0, 1000)
+	puzzle.board._decoder.finish(1010)
+	puzzle.board._decoder.begin(2, 0, 1100)
+	puzzle.board._decoder.move(2, 1)
+	puzzle.board._decoder.finish(1200)
+	_assert(session.board[2][0] == CellModel.CellKind.BLANK, "second touch drag clears first mark")
 
 	var won_box := [false, false]
 	puzzle.level_done.connect(func(won: bool):

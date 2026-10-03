@@ -6,6 +6,10 @@ const BoardTransform = preload("res://scripts/content/board_transform.gd")
 const ProgressManager = preload("res://scripts/state/progress_manager.gd")
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
+const ShapeFingerprint = preload("res://scripts/content/shape_fingerprint.gd")
+const RegionPainter = preload("res://scripts/content/region_painter.gd")
+const Palette = preload("res://scripts/theme/palette.gd")
+const PaceAdjuster = preload("res://scripts/campaign/pace_adjuster.gd")
 
 const PLAYLIST_PATH := "res://data/campaigns/demo_30.json"
 const CAMPAIGN_VERSION := 1
@@ -23,6 +27,8 @@ var sessions: SessionStore
 var current_session: PlaySession = null
 var _playlist: Array = []
 var _pending_win: Dictionary = {}
+var _current_snapshot: Dictionary = {}
+var pace_adjuster: PaceAdjuster = PaceAdjuster.new()
 
 func _init(bank_reader: BankReader, pace_reader: PaceReader, progress_manager: ProgressManager, session_store: SessionStore) -> void:
 	bank = bank_reader
@@ -59,6 +65,7 @@ func boot() -> Dictionary:
 		if not progress.save():
 			save_failed.emit("initial_progress")
 			return _boot_error("cannot save progress")
+	if progress.current.get("dda") is Dictionary: pace_adjuster.from_dict(progress.current.dda)
 	if not playlist_order().has(progress.current.currentLevelId):
 		return _boot_error("progress level outside playlist")
 	if sessions.has_pending():
@@ -68,11 +75,23 @@ func boot() -> Dictionary:
 func start_level(label: String) -> PlaySession:
 	if label != current_level_label() or is_campaign_done():
 		return null
+	pace_adjuster.on_level_start()
 	var level := current_level_data()
 	if level.is_empty():
 		return null
+	var snapshot: Dictionary
+	if not _current_snapshot.is_empty() and _current_snapshot.get("level_id") == label:
+		snapshot = _current_snapshot
+		var restored := _build_level_from_snapshot(snapshot)
+		restored["hash"] = level.hash
+		level = restored
+	else:
+		snapshot = _build_snapshot(label, level)
+	_current_snapshot = snapshot
 	var session := PlaySession.new(level)
-	if not sessions.save_session(session.to_save_data()):
+	var save_data := session.to_save_data()
+	save_data["snapshot"] = snapshot.duplicate(true)
+	if not sessions.save_session(save_data):
 		save_failed.emit("session_start")
 		return null
 	current_session = session
@@ -88,6 +107,8 @@ func resume_level() -> PlaySession:
 		if saved.recreate:
 			sessions.clear()
 		return null
+	if saved.data.has("snapshot") and saved.data.snapshot is Dictionary:
+		_current_snapshot = saved.data.snapshot.duplicate(true)
 	current_session = PlaySession.from_save_data(saved.data, level)
 	if saved.data.get("status") == "won" and saved.data.get("pendingScoreData") is Dictionary:
 		_pending_win = {"label": current_level_label(), "score": saved.data.pendingScoreData.duplicate(true)}
@@ -99,6 +120,8 @@ func on_level_won(label: String, score_data: Dictionary) -> void:
 	_pending_win = {"label": label, "score": score_data.duplicate(true)}
 	var win_snapshot := current_session.to_save_data()
 	win_snapshot["pendingScoreData"] = score_data.duplicate(true)
+	if not _current_snapshot.is_empty():
+		win_snapshot["snapshot"] = _current_snapshot.duplicate(true)
 	if not sessions.save_session(win_snapshot):
 		save_failed.emit("session_win")
 		return
@@ -106,8 +129,13 @@ func on_level_won(label: String, score_data: Dictionary) -> void:
 	if not advanced.ok:
 		save_failed.emit(str(advanced.reason))
 		return
+	if _current_snapshot.has("shape_hash"):
+		progress.record_shape(_current_snapshot.shape_hash)
+	pace_adjuster.apply_result(true, score_data, progress.current)
+	progress.save()
 	_pending_win.clear()
 	current_session = null
+	_current_snapshot = {}
 	sessions.clear()
 	var next := next_level_label(label)
 	level_won.emit(label, next)
@@ -119,10 +147,14 @@ func on_level_lost(label: String) -> void:
 		return
 	var saved := current_session.to_save_data()
 	saved.status = "failed"
+	if not _current_snapshot.is_empty():
+		saved["snapshot"] = _current_snapshot.duplicate(true)
 	if not sessions.save_session(saved):
 		save_failed.emit("session_failed")
 		return
 	level_lost.emit(label)
+	pace_adjuster.apply_result(false, {}, progress.current)
+	progress.save()
 
 func retry_save() -> bool:
 	if _pending_win.is_empty():
@@ -147,9 +179,6 @@ func replay_campaign() -> void:
 
 func current_level_label() -> String:
 	return str(progress.current.get("currentLevelId", ""))
-
-func current_level() -> Dictionary:
-	return current_level_data()
 
 func current_level_data() -> Dictionary:
 	var entry := _resolve_playlist_entry(current_level_label())
@@ -208,6 +237,40 @@ func _fetch_level(size: int, rank: int, index: int, transform: int = 0) -> Dicti
 	if level.is_empty():
 		return {}
 	return BoardTransform.apply(level, transform) if transform > 0 else level.duplicate(true)
+
+func _build_snapshot(label: String, level: Dictionary) -> Dictionary:
+	var entry := _resolve_playlist_entry(label)
+	var n: int = int(level.get("size", 4))
+	var regions: Array = level.get("regions", [])
+	var colors := RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
+	var color_hex: Dictionary = {}
+	for zone_key in colors:
+		color_hex[zone_key] = (colors[zone_key] as Color).to_html()
+	return {
+		"level_id": label,
+		"size": n,
+		"rank": int(entry.get("rank", 1)),
+		"bank_index": int(entry.get("index", 0)),
+		"transform_id": int(entry.get("transform", 0)),
+		"regions": regions.duplicate(true),
+		"solution": level.get("solution", []).duplicate(true),
+		"givens": level.get("givens", []).duplicate(true),
+		"zone_colors": color_hex,
+		"zone_overlays": {},
+		"hearts_start": 3,
+		"seed": int(level.get("seed", 0)),
+		"shape_hash": ShapeFingerprint.compute(n, regions),
+	}
+
+func _build_level_from_snapshot(snap: Dictionary) -> Dictionary:
+	return {
+		"size": snap.get("size", 4),
+		"regions": snap.get("regions", []).duplicate(true),
+		"solution": snap.get("solution", []).duplicate(true),
+		"givens": snap.get("givens", []).duplicate(true),
+		"seed": snap.get("seed", 0),
+		"id": snap.get("level_id", ""),
+	}
 
 func _load_playlist(path: String) -> Dictionary:
 	if not FileAccess.file_exists(path):

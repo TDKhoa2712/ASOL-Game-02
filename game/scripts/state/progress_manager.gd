@@ -2,6 +2,7 @@ extends RefCounted
 
 const DualSlotStore = preload("res://scripts/state/dual_slot_store.gd")
 const SCHEMA_VER := 2
+const RECENT_SHAPES_CAP := 50
 
 signal save_failed(reason: String)
 
@@ -31,7 +32,7 @@ func save() -> bool:
 	return true
 
 func new_progress(first_level_id: String) -> Dictionary:
-	return {"progressVersion": SCHEMA_VER, "currentLevelId": first_level_id, "completedLevelIds": [], "results": {}, "tutorialSeenIds": []}
+	return {"progressVersion": SCHEMA_VER, "currentLevelId": first_level_id, "completedLevelIds": [], "results": {}, "tutorialSeenIds": [], "recentShapes": []}
 
 func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary:
 	if not _validate(current) or current.currentLevelId != level_id or not level_order.has(level_id) or current.completedLevelIds.has(level_id):
@@ -57,6 +58,17 @@ func puzzle_fingerprint(level: Dictionary) -> String:
 	context.update(JSON.stringify(basis).to_utf8_buffer())
 	return context.finish().hex_encode()
 
+func record_shape(shape_id: String) -> void:
+	if not current.has("recentShapes") or not current.recentShapes is Array:
+		current["recentShapes"] = []
+	current.recentShapes.append(shape_id)
+	while current.recentShapes.size() > RECENT_SHAPES_CAP:
+		current.recentShapes.pop_front()
+
+func has_recent_shape(shape_id: String) -> bool:
+	var shapes: Array = current.get("recentShapes", [])
+	return shapes.has(shape_id)
+
 func _validate(data: Dictionary) -> bool:
 	return data.get("progressVersion") == SCHEMA_VER \
 		and data.get("currentLevelId") is String \
@@ -67,6 +79,8 @@ func _validate(data: Dictionary) -> bool:
 
 func _migrate(data: Dictionary) -> Dictionary:
 	if data.get("progressVersion") == SCHEMA_VER:
+		if not data.has("recentShapes"):
+			data["recentShapes"] = []
 		return data
 	if data.get("progressVersion") == 1 and data.get("currentLevelId") is String:
 		var migrated := new_progress(data.currentLevelId)

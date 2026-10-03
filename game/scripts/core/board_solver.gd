@@ -2,13 +2,13 @@
 extends RefCounted
 
 const CellModel = preload("res://scripts/core/cell_model.gd")
-const CandyRules = preload("res://scripts/core/candy_rules.gd")
+const SolverTechniques = preload("res://scripts/core/solver_techniques.gd")
 
-enum Technique { ELIMINATION = 1, SINGLE_CANDIDATE = 2, LOCK_INTERSECTION = 3 }
+const Technique = SolverTechniques.Technique
 
 static func next_hint(board: Array, size: int, regions: Array, _solution: Array) -> Dictionary:
 	var work_board: Array = _build_work_board(board, size, regions)
-	var s2: Dictionary = _try_single_candidate(work_board, size, regions)
+	var s2: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
 	if s2.get("found", false):
 		return {
 			"found": true,
@@ -19,11 +19,11 @@ static func next_hint(board: Array, size: int, regions: Array, _solution: Array)
 			"explanation": "Single candidate in " + str(s2["unit_type"]) + " " + str(s2["unit_id"])
 		}
 
-	var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
+	var s3: Dictionary = SolverTechniques._try_lock_intersection(work_board, size, regions)
 	if s3.get("found", false):
 		for cell in (s3["eliminated"] as Array):
-			work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
-		var s2_after: Dictionary = _try_single_candidate(work_board, size, regions)
+			work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+		var s2_after: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
 		if s2_after.get("found", false):
 			return {
 				"found": true,
@@ -42,6 +42,52 @@ static func next_hint(board: Array, size: int, regions: Array, _solution: Array)
 			"explanation": "Lock intersection eliminates candidates"
 		}
 
+	var s4: Dictionary = SolverTechniques._try_locked_subsets(work_board, size, regions, 6)
+	if s4.get("found", false):
+		for cell in (s4["eliminated"] as Array):
+			work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+		var s2_after_s4: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
+		if s2_after_s4.get("found", false):
+			return {
+				"found": true,
+				"technique": s4.get("technique", Technique.SUBSET_PAIR),
+				"cell": s2_after_s4["cell"],
+				"unit_type": s2_after_s4["unit_type"],
+				"unit_id": s2_after_s4["unit_id"],
+				"explanation": "Locked subset revealed cell in " + str(s2_after_s4["unit_type"])
+			}
+		return {
+			"found": true,
+			"technique": s4.get("technique", Technique.SUBSET_PAIR),
+			"cell": (s4["eliminated"] as Array)[0],
+			"unit_type": "zone",
+			"unit_id": s4.get("subset_zones", [""])[0],
+			"explanation": "Locked subset eliminates candidates"
+		}
+
+	var s7: Dictionary = SolverTechniques._try_contradiction(work_board, size, regions, 2)
+	if s7.get("found", false):
+		for cell in (s7["eliminated"] as Array):
+			work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+		var s2_after_s7: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
+		if s2_after_s7.get("found", false):
+			return {
+				"found": true,
+				"technique": Technique.CONTRA_CHAIN,
+				"cell": s2_after_s7["cell"],
+				"unit_type": s2_after_s7["unit_type"],
+				"unit_id": s2_after_s7["unit_id"],
+				"explanation": "Contradiction chain revealed cell"
+			}
+		return {
+			"found": true,
+			"technique": Technique.CONTRA_CHAIN,
+			"cell": (s7["eliminated"] as Array)[0],
+			"unit_type": "zone",
+			"unit_id": "",
+			"explanation": "Contradiction chain eliminates candidate"
+		}
+
 	return {"found": false}
 
 static func progressive_hint(board: Array, size: int, regions: Array,
@@ -53,7 +99,7 @@ static func progressive_hint(board: Array, size: int, regions: Array,
 	if max_clicks <= 1:
 		return {
 			"stage": "unit",
-			"highlight": _unit_cells(size, regions, str(hint["unit_type"]), hint["unit_id"]),
+			"highlight": SolverTechniques._unit_cells(size, regions, str(hint["unit_type"]), hint["unit_id"]),
 			"text": "Look closely at this " + str(hint["unit_type"])
 		}
 
@@ -69,10 +115,10 @@ static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[
 	var current_max: int = 1
 
 	for _step in range(size):
-		_apply_elimination(work_board, size, regions)
+		SolverTechniques._apply_elimination(work_board, size, regions)
 		var placed: bool = false
 		for _loop in range(size * 2):
-			var s2: Dictionary = _try_single_candidate(work_board, size, regions)
+			var s2: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
 			if s2.get("found", false):
 				var cell: Array = s2["cell"]
 				work_board[cell[0]][cell[1]] = CellModel.CellKind.CANDY
@@ -80,10 +126,10 @@ static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[
 				current_max = 1
 				placed = true
 				break
-			var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
+			var s3: Dictionary = SolverTechniques._try_lock_intersection(work_board, size, regions)
 			if s3.get("found", false):
 				for cell in (s3["eliminated"] as Array):
-					work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
+					work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
 				current_max = maxi(current_max, 2)
 				continue
 			break
@@ -115,18 +161,18 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 
 	var current_max: int = 1
 	while true:
-		_apply_elimination(work_board, size, regions)
-		var s2: Dictionary = _try_single_candidate(work_board, size, regions)
+		SolverTechniques._apply_elimination(work_board, size, regions)
+		var s2: Dictionary = SolverTechniques._try_single_candidate(work_board, size, regions)
 		if s2.get("found", false):
 			var cell: Array = s2["cell"]
 			work_board[cell[0]][cell[1]] = CellModel.CellKind.CANDY
 			ranks[cell[0]][cell[1]] = current_max
 			current_max = 1
 			continue
-		var s3: Dictionary = _try_lock_intersection(work_board, size, regions)
+		var s3: Dictionary = SolverTechniques._try_lock_intersection(work_board, size, regions)
 		if s3.get("found", false):
 			for cell in (s3["eliminated"] as Array):
-				work_board[cell[0]][cell[1]] = CellModel.CellKind.LOCKED
+				work_board[cell[0]][cell[1]] = CellModel.CellKind.MARK
 			current_max = maxi(current_max, 2)
 			continue
 		break
@@ -137,91 +183,54 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 			ranks[r][sc] = 4
 	return ranks
 
-static func _apply_elimination(board: Array, _size: int, regions: Array) -> Array:
-	var marks: Array = CandyRules.compute_all_auto_marks(board, regions)
-	for m in marks:
-		board[m[0]][m[1]] = CellModel.CellKind.LOCKED
-	return marks
-
-static func _try_single_candidate(board: Array, size: int, regions: Array) -> Dictionary:
-	for z in _zones(regions, size):
-		if not _has_candy(board, size, regions, "zone", z):
-			var cands: Array = _candidates_in_zone(board, size, regions, z)
-			if cands.size() == 1:
-				return {"found": true, "cell": cands[0], "unit_type": "zone", "unit_id": z}
-
-	for r in range(size):
-		if not _has_candy(board, size, regions, "row", r):
-			var cands: Array = _candidates_in_row(board, size, regions, r)
-			if cands.size() == 1:
-				return {"found": true, "cell": cands[0], "unit_type": "row", "unit_id": r}
-
-	for c in range(size):
-		if not _has_candy(board, size, regions, "col", c):
-			var cands: Array = _candidates_in_col(board, size, regions, c)
-			if cands.size() == 1:
-				return {"found": true, "cell": cands[0], "unit_type": "col", "unit_id": c}
-
-	return {"found": false}
-
-static func _try_lock_intersection(board: Array, size: int, regions: Array) -> Dictionary:
-	# Mode 1 & 2: Zone -> Row / Col
-	for z in _zones(regions, size):
-		if _has_candy(board, size, regions, "zone", z):
+static func replay_solve(size: int, regions: Array, solution: Array, givens: Array) -> Dictionary:
+	var board := _empty_board(size)
+	for g in givens:
+		var gr: int = int(g.get("r", g.get("row", -1))) if g is Dictionary else int(g[0])
+		var gc: int = int(g.get("c", g.get("col", -1))) if g is Dictionary else int(g[1])
+		if gr >= 0 and gr < size and gc >= 0 and gc < size:
+			board[gr][gc] = CellModel.CellKind.GIVEN
+	var profile := {"s1": 0, "s2": 0, "s3": 0, "s4": 0, "s5": 0, "s6": 0, "s7": 0}
+	var max_tech: int = 0
+	var steps: int = 0
+	var placed_count: int = givens.size()
+	for _outer in range(size * size * 2):
+		if placed_count >= size:
+			break
+		SolverTechniques._apply_elimination(board, size, regions)
+		profile["s1"] += 1
+		var s2 := SolverTechniques._try_single_candidate(board, size, regions)
+		if s2.get("found", false):
+			board[s2["cell"][0]][s2["cell"][1]] = CellModel.CellKind.CANDY
+			profile["s2"] += 1
+			max_tech = maxi(max_tech, Technique.SINGLE_CANDIDATE)
+			steps += 1
+			placed_count += 1
 			continue
-		var cands: Array = _candidates_in_zone(board, size, regions, z)
-		if cands.size() <= 1:
+		var s3 := SolverTechniques._try_lock_intersection(board, size, regions)
+		if s3.get("found", false):
+			for cell in (s3["eliminated"] as Array):
+				board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+			profile["s3"] += 1
+			max_tech = maxi(max_tech, Technique.LOCK_INTERSECTION)
 			continue
-		var r0: int = cands[0][0]
-		if cands.all(func(c: Array) -> bool: return c[0] == r0):
-			var elim: Array = []
-			for c in range(size):
-				if CandyRules.zone_of(regions, r0, c) != z and _is_candidate(board, size, regions, r0, c):
-					elim.append([r0, c])
-			if not elim.is_empty():
-				return {"found": true, "eliminated": elim, "mode": "zone_to_row", "target_type": "row", "target_id": r0}
-		var c0: int = cands[0][1]
-		if cands.all(func(c: Array) -> bool: return c[1] == c0):
-			var elim: Array = []
-			for r in range(size):
-				if CandyRules.zone_of(regions, r, c0) != z and _is_candidate(board, size, regions, r, c0):
-					elim.append([r, c0])
-			if not elim.is_empty():
-				return {"found": true, "eliminated": elim, "mode": "zone_to_col", "target_type": "col", "target_id": c0}
-
-	# Mode 3: Row -> Zone
-	for r in range(size):
-		if _has_candy(board, size, regions, "row", r):
+		var s4 := SolverTechniques._try_locked_subsets(board, size, regions, 6)
+		if s4.get("found", false):
+			for cell in (s4["eliminated"] as Array):
+				board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+			var tk: int = int(s4.get("technique", Technique.SUBSET_PAIR))
+			profile["s" + str(tk)] += 1
+			max_tech = maxi(max_tech, tk)
 			continue
-		var cands: Array = _candidates_in_row(board, size, regions, r)
-		if cands.size() <= 1:
+		var s7 := SolverTechniques._try_contradiction(board, size, regions, 2)
+		if s7.get("found", false):
+			for cell in (s7["eliminated"] as Array):
+				board[cell[0]][cell[1]] = CellModel.CellKind.MARK
+			profile["s7"] += 1
+			max_tech = maxi(max_tech, Technique.CONTRA_CHAIN)
 			continue
-		var tz: String = CandyRules.zone_of(regions, r, cands[0][1])
-		if cands.all(func(c: Array) -> bool: return CandyRules.zone_of(regions, r, c[1]) == tz):
-			var elim: Array = []
-			for cell in _candidates_in_zone(board, size, regions, tz):
-				if cell[0] != r:
-					elim.append(cell)
-			if not elim.is_empty():
-				return {"found": true, "eliminated": elim, "mode": "row_to_zone", "target_type": "zone", "target_id": tz}
-
-	# Mode 4: Col -> Zone
-	for c in range(size):
-		if _has_candy(board, size, regions, "col", c):
-			continue
-		var cands: Array = _candidates_in_col(board, size, regions, c)
-		if cands.size() <= 1:
-			continue
-		var tz: String = CandyRules.zone_of(regions, cands[0][0], c)
-		if cands.all(func(cell: Array) -> bool: return CandyRules.zone_of(regions, cell[0], c) == tz):
-			var elim: Array = []
-			for cell in _candidates_in_zone(board, size, regions, tz):
-				if cell[1] != c:
-					elim.append(cell)
-			if not elim.is_empty():
-				return {"found": true, "eliminated": elim, "mode": "col_to_zone", "target_type": "zone", "target_id": tz}
-
-	return {"found": false, "eliminated": [], "mode": ""}
+		break
+	return {"solved": placed_count >= size, "steps": steps, "profile": profile, "max_technique": max_tech}
 
 static func _build_work_board(board: Array, size: int, regions: Array) -> Array:
 	var work: Array = _empty_board(size)
@@ -229,56 +238,8 @@ static func _build_work_board(board: Array, size: int, regions: Array) -> Array:
 		for c in range(size):
 			if CellModel.is_placed(board[r][c]):
 				work[r][c] = board[r][c]
-	_apply_elimination(work, size, regions)
+	SolverTechniques._apply_elimination(work, size, regions)
 	return work
-
-static func _is_candidate(board: Array, _size: int, regions: Array, row: int, col: int) -> bool:
-	return CellModel.is_available(board[row][col]) and CandyRules.can_place(board, regions, row, col)
-
-static func _candidates_in_zone(board: Array, size: int, regions: Array, zone: String) -> Array:
-	var cands: Array = []
-	for r in range(size):
-		for c in range(size):
-			if CandyRules.zone_of(regions, r, c) == zone and _is_candidate(board, size, regions, r, c):
-				cands.append([r, c])
-	return cands
-
-static func _candidates_in_row(board: Array, size: int, regions: Array, row: int) -> Array:
-	var cands: Array = []
-	for c in range(size):
-		if _is_candidate(board, size, regions, row, c):
-			cands.append([row, c])
-	return cands
-
-static func _candidates_in_col(board: Array, size: int, regions: Array, col: int) -> Array:
-	var cands: Array = []
-	for r in range(size):
-		if _is_candidate(board, size, regions, r, col):
-			cands.append([r, col])
-	return cands
-
-static func _has_candy(board: Array, size: int, regions: Array, utype: String, uid: Variant) -> bool:
-	for cell in _unit_cells(size, regions, utype, uid):
-		if CellModel.is_placed(board[cell[0]][cell[1]]):
-			return true
-	return false
-
-static func _zones(regions: Array, size: int) -> Array:
-	var zlist: Array = []
-	for r in range(size):
-		for c in range(size):
-			var z: String = CandyRules.zone_of(regions, r, c)
-			if not z in zlist:
-				zlist.append(z)
-	return zlist
-
-static func _unit_cells(size: int, regions: Array, utype: String, uid: Variant) -> Array:
-	var cells: Array = []
-	for r in range(size):
-		for c in range(size):
-			if (utype == "row" and r == int(uid)) or (utype == "col" and c == int(uid)) or (utype == "zone" and CandyRules.zone_of(regions, r, c) == str(uid)):
-				cells.append([r, c])
-	return cells
 
 static func _empty_board(size: int) -> Array:
 	var b: Array = []
