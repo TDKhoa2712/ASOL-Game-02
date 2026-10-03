@@ -201,12 +201,15 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == 2 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and contrast row generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 3 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and wide rows generated")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
 	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 
 	options._on_toggle("audio", false)
 	_assert(not bool(config.get_option("audio")), "audio disabled via options screen")
+
+	options._on_toggle("colorblind", true)
+	_assert(bool(config.get_option("colorblind")), "colorblind enabled via options screen")
 
 	var back_box := [false]
 	options.back_pressed.connect(func(): back_box[0] = true)
