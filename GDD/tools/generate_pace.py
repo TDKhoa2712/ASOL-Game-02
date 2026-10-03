@@ -1,4 +1,11 @@
-"""Generate pace sidecar from bank file."""
+"""Generate pace sidecar from bank file.
+
+BREAKING CHANGE (2026-10-03): CLI args changed from positional to named.
+  Before: python generate_pace.py bank.json output.json
+  After:  python generate_pace.py --bank bank.json --output output.json
+Internal callers (build_playtest_bank.py) use the Python function directly
+and are unaffected.
+"""
 import argparse
 import json
 import sys
@@ -46,8 +53,8 @@ def generate_pace(bank_path: str, output_path: str) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("bank", type=str, help="Input bank JSON file")
-    parser.add_argument("output", type=str, help="Output pace JSON file")
+    parser.add_argument("--bank", type=str, required=True, help="Input bank JSON file")
+    parser.add_argument("--output", type=str, required=True, help="Output pace JSON file")
     args = parser.parse_args()
 
     generate_pace(args.bank, args.output)
