@@ -81,9 +81,17 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 - `bank_5x5.pace.json`: pace sidecar generated.
 - Campaign `demo_30.json` unchanged — pending product decision on 5×5 placement.
 
+### Last-Mile Task 4: XOR encode pipeline verified (đã merge vào `dev` 2026-10-03)
+
+- `bank_codec.gd` round-trip: BANK_CODEC_PASS (4 tests).
+- `tools/encode_banks.py --input/--output`: produces non-JSON encoded output, round-trip matches original.
+- `bank_reader.gd`: editor branch reads plaintext, release branch decodes XOR via `BankCodec.xor_transform()`.
+- Key consistency: `"candoku-2026-bank-key"` in cả Python và GDScript.
+- Pipeline sẵn sàng: chạy `python -B tools/encode_banks.py --input game/data/banks --output <export_dir>` trước khi export release. Không encode files trong repo — editor tests cần plaintext.
+
 ## Baseline
 
-- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + last-mile tasks 1–3
+- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + last-mile tasks 1–4
 - Reference: `extracted_reusable/` (~224 files)
 - Tag bảo toàn: `pre-reset-pipeline-2026-09-27`
 
