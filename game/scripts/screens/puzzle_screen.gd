@@ -91,9 +91,9 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
 			session = runtime.start_level(runtime.current_level_label())
 	_ensure_nodes()
 	if board != null and session != null:
-		board.configure(session)
 		if config != null:
 			board.set_colorblind(config.get_option("colorblind"))
+		board.configure(session)
 	_connect_session()
 	_connect_ui()
 	_update_hearts()
@@ -208,9 +208,9 @@ func _confirm_restart() -> void:
 	if runtime != null:
 		session = runtime.restart_level()
 		if board != null:
-			board.configure(session)
 			if config != null:
 				board.set_colorblind(config.get_option("colorblind"))
+			board.configure(session)
 		_connect_session()
 		_update_hearts()
 		if sfx != null:
