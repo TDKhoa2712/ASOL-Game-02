@@ -200,12 +200,26 @@ func _apply_setting(key: String, value: Variant) -> void:
 				bgm.set_muted(not bool(value))
 		"haptic":
 			Vibration.set_on(bool(value))
+		"colorblind":
+			_refresh_puzzle_colorblind()
+
+func _refresh_puzzle_colorblind() -> void:
+	if screen_host == null or config == null:
+		return
+	var enabled := bool(config.get_option("colorblind"))
+	for child in screen_host.get_children():
+		if child.has_method("set_colorblind_and_redraw"):
+			child.call("set_colorblind_and_redraw", enabled)
+		elif "board" in child and child.board != null and child.board.has_method("set_colorblind"):
+			child.board.set_colorblind(enabled)
+			child.board.redraw()
 
 func _apply_all_settings() -> void:
 	if config == null:
 		return
 	_apply_setting("audio", config.get_option("audio"))
 	_apply_setting("haptic", config.get_option("haptic"))
+	_apply_setting("colorblind", config.get_option("colorblind"))
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)

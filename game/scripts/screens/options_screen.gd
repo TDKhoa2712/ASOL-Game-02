@@ -14,10 +14,11 @@ const LABELS := {
 	"reduced_motion": "Giảm chuyển động",
 	"large_text": "Cỡ chữ lớn",
 	"high_contrast": "Độ tương phản cao",
+	"colorblind": "Hỗ trợ phân biệt màu",
 }
 
 const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
-const WIDE_KEY := "high_contrast"
+const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind"]
 
 var _config: Variant = null
 var _built: bool = false
@@ -154,7 +155,8 @@ func _build_rows() -> void:
 	for key in TILE_KEYS_GRID:
 		grid.add_child(_make_tile(key, true))
 
-	vbox.add_child(_make_tile(WIDE_KEY, false))
+	for key in WIDE_KEYS:
+		vbox.add_child(_make_tile(key, false))
 	_built = true
 
 func _make_tile(key: String, is_square: bool) -> PanelContainer:
