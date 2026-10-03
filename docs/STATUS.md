@@ -36,9 +36,37 @@ Wave 5: M09                 (đã merge)
 Wave 6: M10                 (đã merge)
 ```
 
+## System Upgrade (hoàn tất — merged vào `dev` 2026-10-03)
+
+7 modules nâng cấp từ nhánh `feat/solver-advanced` và 4 follow-up branches đã merge vào `dev`:
+
+| Module | Nội dung | Status |
+|--------|----------|--------|
+| ShapeFingerprint | Canonical region hash cho snapshot dedup | Merged |
+| ProgressManager | recentShapes tracking (tránh lặp) | Merged |
+| SessionStore | Snapshot lưu/phục hồi giữa session | Merged |
+| CampaignRuntime | Snapshot round-trip + pace_adjuster DDA | Merged |
+| BoardSolver S4-S7 | SUBSET_PAIR, SUBSET_TRIPLE, SUBSET_QUAD, CONTRA_CHAIN | Merged |
+| RegionPainter | assign_with_overlays(), overlay_tint(), colorblind support | Merged |
+| PaceAdjuster (DDA) | Dynamic difficulty, win/loss streaks | Merged |
+| BankCodec/BankReader | XOR encode/decode bank files | Merged |
+| snapshot_builder.gd | Extracted từ campaign_runtime (F1) | Merged |
+| Colorblind rendering | puzzle_board.gd + puzzle_screen.gd wired (F2) | Merged |
+| Solver S4+ test | 5×5 pentomino xác nhận SUBSET_PAIR (F3) | Merged |
+| Bank generation tooling | argparse + --size cho generate_levels/build_playtest/generate_pace (F4) | Merged |
+
+**Gate trước merge:** 12/12 Godot test suites PASS, clean-room 0 match, tất cả modules ≤ 300 dòng.
+
+**Việc còn mở (deferred):**
+- DDA `rank_offset` được tính nhưng chưa được campaign_runtime áp dụng khi chọn rank level
+- Colorblind overlay: ThemeDB.fallback_font có thể thiếu glyph unicode trên một số thiết bị (cần manual QA)
+- set_colorblind() mid-session (sau setup ban đầu) cần gọi thêm configure() hoặc queue_redraw()
+- Snapshot thiếu fields `rating`/`solve_profile` từ spec (chưa có consumer)
+- Chưa có bank 5×5/6×6 (tooling sẵn sàng; generation là bước riêng)
+
 ## Baseline
 
-- `dev` (`f54c4ab`): rebuild 10 modules và campaign 30 level 4×4
+- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + 4 follow-ups
 - Reference: `extracted_reusable/` (~224 files)
 - Tag bảo toàn: `pre-reset-pipeline-2026-09-27`
 
