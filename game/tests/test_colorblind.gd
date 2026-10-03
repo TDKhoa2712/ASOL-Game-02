@@ -9,6 +9,7 @@ func _init() -> void:
 	_test_assign_with_overlays_basic()
 	_test_dark_zones_get_overlay()
 	_test_no_adjacent_same_overlay()
+	_test_all_zones_unique_color()
 	_test_overlay_tint_dark()
 	_test_overlay_tint_light()
 	_test_luminance_range()
@@ -62,6 +63,27 @@ func _test_no_adjacent_same_overlay() -> void:
 						var o2: int = result.overlays[z2]
 						if o1 != RegionPainter.OverlayIcon.NONE and o2 != RegionPainter.OverlayIcon.NONE:
 							_assert(o1 != o2, "adjacent dark zones %s,%s must have different overlay" % [z1, z2])
+
+func _test_all_zones_unique_color() -> void:
+	var cases := [
+		["AABB", "ABBB", "CCBB", "CCDB"],
+		["AABBB", "AABCB", "DDCCB", "DDEEB", "DDEEB"],
+		["AABBCC", "AABBCC", "ADDBEC", "DDDBEE", "DFFBEE", "FFFBEE"],
+	]
+	for regions in cases:
+		var n: int = regions.size()
+		var result := RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
+		var seen: Array[Color] = []
+		for z in result:
+			var c: Color = result[z]
+			_assert(not seen.has(c), "N=%d zone %s color must be unique" % [n, z])
+			seen.append(c)
+		var result2 := RegionPainter.assign_with_overlays(n, regions, Palette.ZONE_COLORS)
+		var seen2: Array[Color] = []
+		for z in result2.colors:
+			var c: Color = result2.colors[z]
+			_assert(not seen2.has(c), "N=%d overlay zone %s color must be unique" % [n, z])
+			seen2.append(c)
 
 func _test_overlay_tint_dark() -> void:
 	var base := Color(0.2, 0.1, 0.3)

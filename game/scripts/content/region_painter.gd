@@ -27,6 +27,7 @@ static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dic
 	)
 
 	var assigned: Dictionary = {}
+	var used_colors: Array[Color] = []
 
 	for z in all_zones:
 		var neighbor_colors: Array[Color] = []
@@ -34,18 +35,20 @@ static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dic
 			if assigned.has(nbr):
 				neighbor_colors.append(assigned[nbr])
 
+		# Prefer colors not used by any zone yet, then fall back to neighbor-safe
 		var candidates: Array[Color] = []
 		for col in palette:
-			if not neighbor_colors.has(col):
+			if not neighbor_colors.has(col) and not used_colors.has(col):
 				candidates.append(col)
-
+		if candidates.is_empty():
+			for col in palette:
+				if not neighbor_colors.has(col):
+					candidates.append(col)
 		if candidates.is_empty():
 			candidates = palette.duplicate()
 
-		if neighbor_colors.is_empty():
-			assigned[z] = candidates[0]
-		else:
-			var best_col: Color = candidates[0]
+		var best_col: Color = candidates[0]
+		if not neighbor_colors.is_empty():
 			var max_min_dist: float = -1.0
 			for col in candidates:
 				var min_d: float = INF
@@ -56,7 +59,8 @@ static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dic
 				if min_d > max_min_dist:
 					max_min_dist = min_d
 					best_col = col
-			assigned[z] = best_col
+		assigned[z] = best_col
+		used_colors.append(best_col)
 
 	return assigned
 
@@ -88,6 +92,7 @@ static func assign_with_overlays(size: int, zones: Array, palette: Array[Color])
 	)
 	var colors: Dictionary = {}
 	var overlays: Dictionary = {}
+	var used_colors: Array[Color] = []
 	var dark_assigned: int = 0
 	var overlay_icons := [OverlayIcon.STAR, OverlayIcon.DIAMOND, OverlayIcon.HEART, OverlayIcon.TRIANGLE, OverlayIcon.CROSS, OverlayIcon.DOT]
 	for z in all_zones:
@@ -98,8 +103,12 @@ static func assign_with_overlays(size: int, zones: Array, palette: Array[Color])
 		var pool: Array[Color] = dark_pool if dark_assigned < n_pattern else light_pool
 		var candidates: Array[Color] = []
 		for col in pool:
-			if not neighbor_colors.has(col):
+			if not neighbor_colors.has(col) and not used_colors.has(col):
 				candidates.append(col)
+		if candidates.is_empty():
+			for col in pool:
+				if not neighbor_colors.has(col):
+					candidates.append(col)
 		if candidates.is_empty():
 			candidates = pool.duplicate()
 		var best_col: Color = candidates[0]
@@ -113,6 +122,7 @@ static func assign_with_overlays(size: int, zones: Array, palette: Array[Color])
 					max_min_dist = min_d
 					best_col = col
 		colors[z] = best_col
+		used_colors.append(best_col)
 		if dark_assigned < n_pattern:
 			var neighbor_overlays: Array = []
 			for nbr in adj.get(z, []):
