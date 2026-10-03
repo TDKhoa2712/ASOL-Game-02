@@ -26,6 +26,17 @@ func clear() -> void:
 func has_pending() -> bool:
 	return _store.read_json().ok
 
+func pending_snapshot(level_id: String) -> Dictionary:
+	var saved := _store.read_json()
+	if not saved.ok or not _valid_shape(saved.data) or saved.data.levelId != level_id:
+		return {}
+	var snapshot: Variant = saved.data.get("snapshot")
+	if not snapshot is Dictionary or snapshot.get("level_id") != level_id:
+		return {}
+	var pinned: Dictionary = snapshot.duplicate(true)
+	pinned["puzzle_hash"] = saved.data.puzzleHash
+	return pinned
+
 func new_session(level_id: String, puzzle_hash: String, board_size: int) -> Dictionary:
 	var cells: Array[String] = []
 	for unused in board_size * board_size:

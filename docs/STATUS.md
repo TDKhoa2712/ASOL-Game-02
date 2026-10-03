@@ -63,12 +63,22 @@ Wave 6: M10                 (đã merge)
 - Snapshot thiếu fields `rating`/`solve_profile` từ spec (chưa có consumer)
 - Chưa có bank 5×5/6×6 (tooling sẵn sàng; generation là bước riêng)
 
+### Last-Mile Task 1: DDA rank_offset wired into campaign (đã merge vào `dev` 2026-10-03)
+
+CampaignRuntime đã áp dụng DDA khi chọn rank từ bank và pace, fallback về rank playlist nếu rank/index điều chỉnh thiếu dữ liệu. Puzzle đang chơi được ghim bằng snapshot để restart và resume không đổi level khi streak đổi.
+
 ### Last-Mile Task 2: Colorblind toggle in options screen (đã merge vào `dev` 2026-10-03)
 
 - Thêm toggle "Hỗ trợ phân biệt màu" (`colorblind`) vào `options_screen.gd` thông qua `WIDE_KEYS`.
 - `app_shell.gd`: xử lý thiết lập `colorblind` trong `_apply_setting()`, tự động đồng bộ và vẽ lại bàn cờ qua `_refresh_puzzle_colorblind()`.
 - Flow options -> puzzle tạo lại màn hình mới và áp dụng `set_colorblind()` trước `configure()`.
 - Test suite: `test_screens.gd` (PASS), `test_colorblind.gd` (PASS), `test_config_store.gd` (PASS), `test_integration.gd` (PASS).
+
+### Last-Mile Task 3: Bank 5×5 generated (đã merge vào `dev` 2026-10-03)
+
+- `bank_5x5.json`: 30 levels (12 rank 1, 10 rank 2, 8 rank 3), validated by `validate_content.py`.
+- `bank_5x5.pace.json`: pace sidecar generated.
+- Campaign `demo_30.json` unchanged — pending product decision on 5×5 placement.
 
 ## Baseline
 

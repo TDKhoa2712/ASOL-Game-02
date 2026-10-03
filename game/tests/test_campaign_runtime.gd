@@ -24,6 +24,8 @@ func _init() -> void:
 	_test_snapshot_creation()
 	_test_restart_reuses_snapshot()
 	_test_dda_integration()
+	_test_dda_rank_adjustment()
+	_test_dda_keeps_started_puzzle()
 	for failure in failures:
 		printerr(failure)
 	if failures.is_empty():
@@ -233,3 +235,58 @@ func _test_dda_integration() -> void:
 	runtime.on_level_lost(label)
 	_check(int(runtime.progress.current.get("dda", {}).get("fail_streak", 0)) == 1, "loss persisted to dda")
 	_cleanup(runtime)
+
+func _test_dda_rank_adjustment() -> void:
+	var runtime := _runtime("dda_rank")
+	_check(runtime.boot().ok, "dda rank boot")
+	runtime.progress.current.currentLevelId = "L16"
+	for i in range(2):
+		runtime.pace_adjuster.apply_result(true, {"hints_used": 0, "mistakes": 0}, runtime.progress.current)
+	var promoted := runtime.current_level_data()
+	var rank_three := runtime.bank.get_level(4, 3, 3)
+	_check(promoted.get("regions") == rank_three.get("regions") and promoted.get("solution") == rank_three.get("solution"), "clean wins select higher-rank puzzle")
+	_check(runtime.current_pace() == runtime.pace.get_pace(4, 3, 3), "promoted puzzle uses matching pace")
+
+	runtime.pace_adjuster.from_dict({"clean_streak": 0, "fail_streak": 2, "retry_streak": 0})
+	var demoted := runtime.current_level_data()
+	var rank_one := runtime.bank.get_level(4, 1, 3)
+	_check(demoted.get("regions") == rank_one.get("regions") and demoted.get("solution") == rank_one.get("solution"), "losses select lower-rank puzzle")
+	_check(runtime.current_pace() == runtime.pace.get_pace(4, 1, 3), "demoted puzzle uses matching pace")
+
+	runtime.progress.current.currentLevelId = "L12"
+	runtime.pace_adjuster.from_dict({"clean_streak": 2, "fail_streak": 0, "retry_streak": 0})
+	var fallback := runtime.current_level_data()
+	var base := runtime.bank.get_level(4, 1, 11)
+	_check(fallback.get("regions") == base.get("regions") and fallback.get("solution") == base.get("solution"), "missing adjusted index falls back to base puzzle")
+	_check(runtime.current_pace() == runtime.pace.get_pace(4, 1, 11), "fallback puzzle uses base pace")
+	_cleanup(runtime)
+
+func _test_dda_keeps_started_puzzle() -> void:
+	var runtime := _runtime("dda_snapshot")
+	_check(runtime.boot().ok, "dda snapshot boot")
+	runtime.progress.current.currentLevelId = "L16"
+	for i in range(2):
+		runtime.pace_adjuster.apply_result(true, {"hints_used": 0, "mistakes": 0}, runtime.progress.current)
+	_check(runtime.progress.save(), "dda snapshot progress saved")
+	var started := runtime.start_level("L16")
+	_check(started != null, "dda snapshot level starts")
+	if started == null:
+		_cleanup(runtime)
+		return
+	_check(started.level.solution == runtime.bank.get_level(4, 3, 3).get("solution"), "snapshot starts with promoted rank")
+	var original_hash: String = started.level.hash
+	var original_solution: Array = started.level.solution.duplicate(true)
+	var original_pace := runtime.current_pace()
+	for i in range(2):
+		runtime.pace_adjuster.apply_result(false, {}, runtime.progress.current)
+	_check(runtime.progress.save(), "dda snapshot streak saved")
+	var restarted := runtime.restart_level()
+	_check(restarted != null and restarted.level.hash == original_hash and restarted.level.solution == original_solution, "restart keeps selected puzzle after streak changes")
+	_check(runtime.current_pace() == original_pace, "restart keeps selected pace")
+	var reopened := CampaignRuntime.new(BankReader.new(), PaceReader.new(), ProgressManager.new(runtime.progress._store._dir), SessionStore.new(runtime.progress._store._dir))
+	_check(reopened.boot().ok, "dda snapshot reboots")
+	_check(reopened.current_session != null and reopened.current_session.level.hash == original_hash and reopened.current_session.level.solution == original_solution, "reboot keeps selected puzzle")
+	_check(reopened.current_level_data().get("hash") == original_hash, "reboot exposes pinned puzzle")
+	_check(reopened.current_pace() == original_pace, "reboot keeps selected pace")
+	_cleanup(runtime)
+	_cleanup(reopened)

@@ -28,6 +28,8 @@ var _playlist: Array = []
 var _pending_win: Dictionary = {}
 var _current_snapshot: Dictionary = {}
 var pace_adjuster: PaceAdjuster = PaceAdjuster.new()
+var _rank_context: Dictionary = {}
+var _rank_selection: int = 0
 
 func _init(bank_reader: BankReader, pace_reader: PaceReader, progress_manager: ProgressManager, session_store: SessionStore) -> void:
 	bank = bank_reader
@@ -68,6 +70,7 @@ func boot() -> Dictionary:
 	if not playlist_order().has(progress.current.currentLevelId):
 		return _boot_error("progress level outside playlist")
 	if sessions.has_pending():
+		_current_snapshot = sessions.pending_snapshot(current_level_label())
 		resume_level()
 	return {"ok": true, "level": current_level_data(), "pace_entry": current_pace(), "error": ""}
 
@@ -85,7 +88,10 @@ func start_level(label: String) -> PlaySession:
 		restored["hash"] = level.hash
 		level = restored
 	else:
-		snapshot = SnapshotBuilder.build(label, level, _resolve_playlist_entry(label), Palette.ZONE_COLORS)
+		var selected_entry := _resolve_playlist_entry(label).duplicate(true)
+		selected_entry.rank = _dda_adjusted_rank(selected_entry)
+		snapshot = SnapshotBuilder.build(label, level, selected_entry, Palette.ZONE_COLORS)
+		snapshot["puzzle_hash"] = level.hash
 	_current_snapshot = snapshot
 	var session := PlaySession.new(level)
 	var save_data := session.to_save_data()
@@ -98,6 +104,8 @@ func start_level(label: String) -> PlaySession:
 	return session
 
 func resume_level() -> PlaySession:
+	if _current_snapshot.is_empty():
+		_current_snapshot = sessions.pending_snapshot(current_level_label())
 	var level := current_level_data()
 	if level.is_empty():
 		return null
@@ -108,6 +116,7 @@ func resume_level() -> PlaySession:
 		return null
 	if saved.data.has("snapshot") and saved.data.snapshot is Dictionary:
 		_current_snapshot = saved.data.snapshot.duplicate(true)
+		_current_snapshot["puzzle_hash"] = level.hash
 	current_session = PlaySession.from_save_data(saved.data, level)
 	if saved.data.get("status") == "won" and saved.data.get("pendingScoreData") is Dictionary:
 		_pending_win = {"label": current_level_label(), "score": saved.data.pendingScoreData.duplicate(true)}
@@ -174,6 +183,7 @@ func replay_campaign() -> void:
 		save_failed.emit("replay_progress")
 		return
 	current_session = null
+	_current_snapshot = {}
 	sessions.clear()
 
 func current_level_label() -> String:
@@ -183,7 +193,12 @@ func current_level_data() -> Dictionary:
 	var entry := _resolve_playlist_entry(current_level_label())
 	if entry.is_empty():
 		return {}
-	var level := _fetch_level(entry.size, entry.rank, entry.index, int(entry.get("transform", 0)))
+	if _current_snapshot.get("level_id") == entry.label:
+		var pinned := SnapshotBuilder.restore_level(_current_snapshot)
+		pinned.hash = str(_current_snapshot.get("puzzle_hash", progress.puzzle_fingerprint(pinned)))
+		return pinned
+	var rank := _dda_adjusted_rank(entry)
+	var level := _fetch_level(entry.size, rank, entry.index, int(entry.get("transform", 0)))
 	if level.is_empty():
 		return {}
 	level.id = current_level_label()
@@ -194,7 +209,21 @@ func current_pace() -> Dictionary:
 	var entry := _resolve_playlist_entry(current_level_label())
 	if entry.is_empty():
 		return {}
-	return pace.get_pace(entry.size, entry.rank, entry.index).duplicate(true)
+	if _current_snapshot.get("level_id") == entry.label:
+		return pace.get_pace(entry.size, int(_current_snapshot.get("rank", entry.rank)), int(_current_snapshot.get("bank_index", entry.index))).duplicate(true)
+	return pace.get_pace(entry.size, _dda_adjusted_rank(entry), entry.index).duplicate(true)
+
+func _dda_adjusted_rank(entry: Dictionary) -> int:
+	var context := {"label": entry.label, "size": entry.size, "rank": entry.rank, "index": entry.index, "dda": pace_adjuster.to_dict()}
+	if context == _rank_context:
+		return _rank_selection
+	var order := playlist_order().find(entry.label) + 1
+	var candidate: int = int(entry.rank) + pace_adjuster.rank_offset(order, int(entry.rank))
+	_rank_selection = int(entry.rank)
+	if candidate >= 1 and not bank.get_level(entry.size, candidate, entry.index).is_empty() and not pace.get_pace(entry.size, candidate, entry.index).is_empty():
+		_rank_selection = candidate
+	_rank_context = context
+	return _rank_selection
 
 func next_level_label(after: String) -> String:
 	var order := playlist_order()
