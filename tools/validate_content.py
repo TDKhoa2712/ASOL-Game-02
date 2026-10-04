@@ -231,7 +231,8 @@ def validate_playlist(playlist_data: dict, banks: dict[int, dict] | None = None)
     return errors
 
 
-def validate_file(target_path: Path, pace_path: Path | None = None, bank_path: Path | None = None) -> list[str]:
+def validate_file(target_path: Path, pace_path: Path | None = None,
+                  bank_path: Path | list[Path] | None = None) -> list[str]:
     """Validate file based on type and additional options."""
     if not target_path.exists():
         return [f"File not found: {target_path}"]
@@ -241,6 +242,13 @@ def validate_file(target_path: Path, pace_path: Path | None = None, bank_path: P
             data = json.load(f)
     except Exception as exc:
         return [f"Failed to read/parse {target_path}: {exc}"]
+
+    if bank_path is None:
+        bank_paths: list[Path] = []
+    elif isinstance(bank_path, Path):
+        bank_paths = [bank_path]
+    else:
+        bank_paths = list(bank_path)
 
     # Determine file type
     if "ranks" in data:
@@ -260,18 +268,18 @@ def validate_file(target_path: Path, pace_path: Path | None = None, bank_path: P
 
     elif "playlist" in data:
         # Campaign playlist
-        banks = {}
-        if bank_path:
-            if not bank_path.exists():
-                return [f"Bank file not found: {bank_path}"]
+        banks: dict[int, dict] = {}
+        for bp in bank_paths:
+            if not bp.exists():
+                return [f"Bank file not found: {bp}"]
             try:
-                with open(bank_path, "r", encoding="utf-8") as f:
+                with open(bp, "r", encoding="utf-8") as f:
                     bank_data = json.load(f)
                 banks[bank_data.get("size", 4)] = bank_data
             except Exception as exc:
-                return [f"Failed to read bank file {bank_path}: {exc}"]
+                return [f"Failed to read bank file {bp}: {exc}"]
 
-        return validate_playlist(data, banks=banks if bank_path else None)
+        return validate_playlist(data, banks=banks if banks else None)
 
     return [f"Unknown content file format in {target_path}"]
 
@@ -280,7 +288,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("target", type=Path, help="Target JSON file (bank or campaign playlist)")
     parser.add_argument("--pace", type=Path, help="Pace sidecar JSON to validate against bank")
-    parser.add_argument("--bank", type=Path, help="Bank JSON to validate playlist against")
+    parser.add_argument("--bank", type=Path, action="append", default=None,
+                        help="Bank JSON to validate playlist against (repeatable for multiple sizes)")
     args = parser.parse_args()
 
     errors = validate_file(args.target, pace_path=args.pace, bank_path=args.bank)

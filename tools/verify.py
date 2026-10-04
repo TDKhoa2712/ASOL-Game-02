@@ -25,8 +25,17 @@ def build_checks(root, godot):
                 "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"])]
     checks += [("content:bank_4x4", [sys.executable, "-B", "tools/validate_content.py",
                 "game/data/banks/bank_4x4.json", "--pace", "game/data/banks/bank_4x4.pace.json"])]
+    checks += [("content:bank_5x5", [sys.executable, "-B", "tools/validate_content.py",
+                "game/data/banks/bank_5x5.json", "--pace", "game/data/banks/bank_5x5.pace.json"])]
+    checks += [("content:bank_6x6", [sys.executable, "-B", "tools/validate_content.py",
+                "game/data/banks/bank_6x6.json", "--pace", "game/data/banks/bank_6x6.pace.json"])]
     checks += [("content:demo_30", [sys.executable, "-B", "tools/validate_content.py",
                 "game/data/campaigns/demo_30.json", "--bank", "game/data/banks/bank_4x4.json"])]
+    checks += [("content:demo_cross", [sys.executable, "-B", "tools/validate_content.py",
+                "game/data/campaigns/demo_cross.json",
+                "--bank", "game/data/banks/bank_4x4.json",
+                "--bank", "game/data/banks/bank_5x5.json",
+                "--bank", "game/data/banks/bank_6x6.json"])]
     checks += [("godot:" + path.stem, [godot, "--headless", "--path", "game",
                 "--script", "res://tests/" + path.name]) for path in suites]
     return checks

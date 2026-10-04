@@ -26,6 +26,7 @@ func _init() -> void:
 	_test_dda_integration()
 	_test_dda_rank_adjustment()
 	_test_dda_keeps_started_puzzle()
+	_test_dda_cross_size()
 	for failure in failures:
 		printerr(failure)
 	if failures.is_empty():
@@ -259,6 +260,34 @@ func _test_dda_rank_adjustment() -> void:
 	var base := runtime.bank.get_level(4, 1, 11)
 	_check(fallback.get("regions") == base.get("regions") and fallback.get("solution") == base.get("solution"), "missing adjusted index falls back to base puzzle")
 	_check(runtime.current_pace() == runtime.pace.get_pace(4, 1, 11), "fallback puzzle uses base pace")
+	_cleanup(runtime)
+
+func _test_dda_cross_size() -> void:
+	var runtime := _runtime("dda_cross")
+	runtime.playlist_path = "res://data/campaigns/demo_cross.json"
+	_check(runtime.boot().ok, "cross-size boot (demo_cross)")
+	_check(runtime.playlist_order().size() == 45, "cross playlist has 45 levels")
+	# L16 là level 5x5 đầu tiên (rank 1, index 0). Order = 16, max_rank = 3.
+	# 2 clean wins -> rank_offset = +1 -> rank 2 trong bank 5x5.
+	runtime.progress.current.currentLevelId = "L16"
+	for i in range(2):
+		runtime.pace_adjuster.apply_result(true, {"hints_used": 0, "mistakes": 0}, runtime.progress.current)
+	var promoted := runtime.current_level_data()
+	var rank_two_5x5 := runtime.bank.get_level(5, 2, 0)
+	_check(promoted.get("solution") == rank_two_5x5.get("solution"), "cross promotion stays in 5x5 bank (rank 2)")
+	_check(runtime.current_pace() == runtime.pace.get_pace(5, 2, 0), "cross promotion uses 5x5 pace")
+	# L24 là 5x5 rank 2 index 1 (medium). 2 fail streak -> rank_offset = -1 -> rank 1.
+	runtime.progress.current.currentLevelId = "L24"
+	runtime.pace_adjuster.from_dict({"clean_streak": 0, "fail_streak": 2, "retry_streak": 0})
+	var demoted := runtime.current_level_data()
+	var rank_one_5x5 := runtime.bank.get_level(5, 1, 1)
+	_check(demoted.get("solution") == rank_one_5x5.get("solution"), "cross demotion stays in 5x5 bank (rank 1)")
+	# L31 là 6x6 rank 1 index 0 (easy). Order=31, max_rank=4. 2 clean wins -> rank 2 trong bank 6x6.
+	runtime.progress.current.currentLevelId = "L31"
+	runtime.pace_adjuster.from_dict({"clean_streak": 2, "fail_streak": 0, "retry_streak": 0})
+	var promoted6 := runtime.current_level_data()
+	var rank_two_6x6 := runtime.bank.get_level(6, 2, 0)
+	_check(promoted6.get("solution") == rank_two_6x6.get("solution"), "cross promotion stays in 6x6 bank (rank 2)")
 	_cleanup(runtime)
 
 func _test_dda_keeps_started_puzzle() -> void:
