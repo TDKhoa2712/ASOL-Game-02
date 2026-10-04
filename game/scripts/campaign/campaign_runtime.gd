@@ -212,7 +212,7 @@ func current_pace() -> Dictionary:
 	if entry.is_empty():
 		return {}
 	if _current_snapshot.get("level_id") == entry.label:
-		return pace.get_pace(entry.size, int(_current_snapshot.get("rank", entry.rank)), int(_current_snapshot.get("bank_index", entry.index))).duplicate(true)
+		return pace.get_pace(int(_current_snapshot.get("size", entry.size)), int(_current_snapshot.get("rank", entry.rank)), int(_current_snapshot.get("bank_index", entry.index))).duplicate(true)
 	return pace.get_pace(entry.size, _dda_adjusted_rank(entry), entry.index).duplicate(true)
 
 func _dda_adjusted_rank(entry: Dictionary) -> int:

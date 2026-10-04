@@ -40,176 +40,176 @@
     {
       "label": "L06",
       "size": 4,
-      "rank": 1,
-      "index": 5,
-      "difficulty": "easy"
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
     },
     {
       "label": "L07",
       "size": 4,
-      "rank": 1,
-      "index": 6,
-      "difficulty": "easy"
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
     },
     {
       "label": "L08",
       "size": 4,
-      "rank": 1,
-      "index": 7,
-      "difficulty": "easy"
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
     },
     {
       "label": "L09",
       "size": 4,
-      "rank": 1,
-      "index": 8,
-      "difficulty": "easy"
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
     },
     {
       "label": "L10",
       "size": 4,
-      "rank": 1,
-      "index": 9,
-      "difficulty": "easy"
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
     },
     {
       "label": "L11",
-      "size": 4,
+      "size": 5,
       "rank": 1,
-      "index": 10,
+      "index": 0,
       "difficulty": "easy"
     },
     {
       "label": "L12",
-      "size": 4,
+      "size": 5,
       "rank": 1,
-      "index": 11,
+      "index": 1,
       "difficulty": "easy"
     },
     {
       "label": "L13",
-      "size": 4,
-      "rank": 2,
-      "index": 0,
-      "difficulty": "medium"
+      "size": 5,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
     },
     {
       "label": "L14",
-      "size": 4,
-      "rank": 2,
-      "index": 1,
-      "difficulty": "medium"
+      "size": 5,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
     },
     {
       "label": "L15",
-      "size": 4,
-      "rank": 2,
-      "index": 2,
-      "difficulty": "medium"
+      "size": 5,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
     },
     {
       "label": "L16",
-      "size": 4,
+      "size": 5,
       "rank": 2,
-      "index": 3,
+      "index": 0,
       "difficulty": "medium"
     },
     {
       "label": "L17",
-      "size": 4,
+      "size": 5,
       "rank": 2,
-      "index": 4,
+      "index": 1,
       "difficulty": "medium"
     },
     {
       "label": "L18",
-      "size": 4,
+      "size": 5,
       "rank": 2,
-      "index": 5,
+      "index": 2,
       "difficulty": "medium"
     },
     {
       "label": "L19",
-      "size": 4,
-      "rank": 2,
-      "index": 6,
-      "difficulty": "medium"
-    },
-    {
-      "label": "L20",
-      "size": 4,
-      "rank": 2,
-      "index": 7,
-      "difficulty": "medium"
-    },
-    {
-      "label": "L21",
-      "size": 4,
-      "rank": 2,
-      "index": 8,
-      "difficulty": "medium"
-    },
-    {
-      "label": "L22",
-      "size": 4,
-      "rank": 2,
-      "index": 9,
-      "difficulty": "medium"
-    },
-    {
-      "label": "L23",
-      "size": 4,
+      "size": 5,
       "rank": 3,
       "index": 0,
       "difficulty": "hard"
     },
     {
-      "label": "L24",
-      "size": 4,
+      "label": "L20",
+      "size": 5,
       "rank": 3,
       "index": 1,
       "difficulty": "hard"
     },
     {
-      "label": "L25",
-      "size": 4,
-      "rank": 3,
+      "label": "L21",
+      "size": 6,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L22",
+      "size": 6,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L23",
+      "size": 6,
+      "rank": 1,
       "index": 2,
-      "difficulty": "hard"
+      "difficulty": "easy"
+    },
+    {
+      "label": "L24",
+      "size": 6,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L25",
+      "size": 6,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
     },
     {
       "label": "L26",
-      "size": 4,
-      "rank": 3,
-      "index": 3,
-      "difficulty": "hard"
+      "size": 6,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
     },
     {
       "label": "L27",
-      "size": 4,
-      "rank": 3,
-      "index": 4,
-      "difficulty": "hard"
+      "size": 6,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
     },
     {
       "label": "L28",
-      "size": 4,
-      "rank": 3,
-      "index": 5,
-      "difficulty": "hard"
+      "size": 6,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
     },
     {
       "label": "L29",
-      "size": 4,
+      "size": 6,
       "rank": 3,
-      "index": 6,
+      "index": 0,
       "difficulty": "hard"
     },
     {
       "label": "L30",
-      "size": 4,
+      "size": 6,
       "rank": 3,
-      "index": 7,
+      "index": 1,
       "difficulty": "hard"
     }
   ]

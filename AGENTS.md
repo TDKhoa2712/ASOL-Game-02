@@ -2,14 +2,12 @@
 
 ## 1. Bối cảnh dự án
 
-CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã merge vào `dev` (PR #1–#10). Bank và playlist playtest hiện có **30 level 4×4**; N=4–6 là phạm vi thiết kế, chưa phải nội dung đã có cho mọi kích thước. Đây chưa phải bản phát hành hay nghiệm thu thiết bị. Nhánh `feat/gameplay-ui-realign` đang chỉnh gameplay và UI sau rebuild.
+CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã merge vào `dev` (PR #1–#10). Bank và playlist playtest hiện có **30 level 4×4, 5×5, 6×6**; gameplay/UI realignment và last-mile tasks 1–6 đã trong `dev`. Đây chưa phải bản phát hành hay nghiệm thu thiết bị.
 
 **Đọc trước khi làm:**
 1. [STATUS](docs/STATUS.md) — tiến độ thực tế và vấn đề còn mở
 2. [DECISIONS](docs/DECISIONS.md) và [GDD 02](GDD/02-luat-choi-va-trang-thai.md) — quyết định và luật chuẩn
-3. [Plan realignment](docs/superpowers/plans/2026-10-02-gameplay-ui-realign.md) — yêu cầu ban đầu; đối chiếu với code trước khi triển khai
-
-**Chênh lệch đang cần chốt:** RST-015/plan yêu cầu bỏ Undo, nhưng nhánh hiện vẫn có Undo giới hạn cho thao tác X. Không mô tả yêu cầu ban đầu như trạng thái đã triển khai.
+3. [Completion Plan](docs/superpowers/plans/2026-10-03-completion-plan.md) — Track D/E/F còn lại (assets, QA, release)
 
 ## 2. Nhận module và bắt đầu
 
