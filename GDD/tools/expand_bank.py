@@ -44,6 +44,18 @@ def _atomic_write(path, raw):
             os.unlink(temporary)
 
 
+def _write_outputs(bank_path, bank_output, pace_path, pace_output, bank_raw, pace_raw):
+    """Restore both original files if either replace fails normally."""
+    try:
+        _atomic_write(bank_path, bank_output)
+        _atomic_write(pace_path, pace_output)
+    except Exception:
+        for path, original in ((bank_path, bank_raw), (pace_path, pace_raw)):
+            if path.read_bytes() != original:
+                _atomic_write(path, original)
+        raise
+
+
 def _checkpoint_identity(size, seed, targets, bank_raw, pace_raw):
     return {'version': CHECKPOINT_VERSION, 'size': size, 'seed': seed,
             'targets': targets, 'bands': [list(part) for part in BANDS[size]],
@@ -155,8 +167,7 @@ def expand_bank(size: int, bank_path: Path, pace_path: Path,
         return report
     finished_bank, finished_pace, medians = _finish(size, bank, pace, accepted, targets)
     bank_output, pace_output = _json_bytes(finished_bank), _json_bytes(finished_pace)
-    _atomic_write(bank_path, bank_output)
-    _atomic_write(pace_path, pace_output)
+    _write_outputs(bank_path, bank_output, pace_path, pace_output, bank_raw, pace_raw)
     report.update(status='COMPLETE', medianRatings=medians,
                   bankHash=_hash(bank_output), paceHash=_hash(pace_output))
     return report

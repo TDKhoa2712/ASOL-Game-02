@@ -172,6 +172,7 @@ func _on_level_done(won: bool) -> void:
 		var score_data := {
 			"time_ms": elapsed,
 			"mistakes": sess.mistake_count if sess != null else 0,
+			"hints_used": sess.hints_used if sess != null else 0,
 		}
 		runtime.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)

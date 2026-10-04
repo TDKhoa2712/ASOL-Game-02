@@ -31,7 +31,9 @@ func _run() -> void:
 	_assert(not CampaignSelector.load_config(selector_path, profile).ok, "invalid JSON rejected")
 	DirAccess.remove_absolute(selector_path)
 	_assert(not CampaignSelector.load_config(selector_path, profile).ok, "missing selector rejected")
+	await _test_visible_boot_error(selector_path, profile)
 	await _test_mode_switch(selector_path, profile)
+	await _test_hint_win_does_not_promote(selector_path, profile.path_join("hint_case"))
 	if _failures.is_empty():
 		print("CAMPAIGN_SELECTOR_PASS")
 		quit(0)
@@ -86,6 +88,37 @@ func _test_mode_switch(selector_path: String, profile: String) -> void:
 	_assert(full_resume.runtime.current_session != null, "full active round resumes")
 	root.remove_child(full_resume)
 	full_resume.free()
+
+func _test_visible_boot_error(selector_path: String, profile: String) -> void:
+	Engine.print_error_messages = false
+	var shell: AppShell = load("res://scenes/main.tscn").instantiate()
+	shell.profile_dir = profile
+	shell.selector_path = selector_path
+	root.add_child(shell)
+	await process_frame
+	_assert(shell.runtime == null, "invalid selector stops boot")
+	_assert(shell.save_error_dialog != null and shell.save_error_dialog.visible, "boot error dialog visible")
+	_assert(shell.save_error_dialog.dialog_text.contains("campaign selector missing"), "boot error explains selector")
+	root.remove_child(shell)
+	shell.free()
+	Engine.print_error_messages = true
+
+func _test_hint_win_does_not_promote(selector_path: String, profile: String) -> void:
+	_write_selector(selector_path, "demo_30")
+	var shell: AppShell = load("res://scenes/main.tscn").instantiate()
+	shell.profile_dir = profile
+	shell.selector_path = selector_path
+	root.add_child(shell)
+	await process_frame
+	var session = shell.runtime.start_level("L01")
+	session.use_hint()
+	for row in range(session.level.solution.size()):
+		session.try_candy(row, int(session.level.solution[row]))
+	shell._on_level_done(true)
+	_assert(int(shell.runtime.progress.current.get("dda", {}).get("clean_streak", -1)) == 0,
+		"hint-assisted win does not count as clean DDA win")
+	root.remove_child(shell)
+	shell.free()
 
 func _write_selector(path: String, mode: String) -> void:
 	var file := FileAccess.open(path, FileAccess.WRITE)

@@ -5,11 +5,13 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
 
+import expand_bank as builder
 from expand_bank import expand_bank
 from validate_levels import canonical_regions
 from validate_full_content import validate_full_banks
@@ -92,6 +94,23 @@ class ExpandBankTests(unittest.TestCase):
                 for field in ('seed', 'regions', 'solution', 'givens', 'pidHash'):
                     self.assertEqual(old[field], new[field])
         self.assertEqual([], validate_full_banks({5: repaired}, {5: repaired_pace}, {5: targets}))
+
+    def test_failed_second_output_write_restores_both_files(self):
+        bank, pace, checkpoint = self.paths('write_failure')
+        before = (bank.read_bytes(), pace.read_bytes())
+        original_write = builder._atomic_write
+
+        def fail_pace(path, raw):
+            if Path(path) == pace:
+                raise OSError('pace write failed')
+            return original_write(path, raw)
+
+        with patch.object(builder, '_atomic_write', side_effect=fail_pace):
+            with self.assertRaises(OSError):
+                expand_bank(4, bank, pace, checkpoint, 'test-seed', 3000, self.targets)
+        self.assertEqual(before, (bank.read_bytes(), pace.read_bytes()))
+        self.assertEqual('COMPLETE', expand_bank(4, bank, pace, checkpoint,
+                                                'test-seed', 3000, self.targets)['status'])
 
 
 if __name__ == '__main__':
