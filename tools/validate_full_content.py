@@ -13,12 +13,21 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "GDD/tools"))
 
 from validate_levels import canonical_regions, validate_level  # noqa: E402
+from level_reasoning import puzzle_key  # noqa: E402
 from validate_content import validate_bank, validate_pace_against_bank, validate_playlist  # noqa: E402
 
 TARGET_COUNTS = {
     4: {"1": 12, "2": 10, "3": 8, "4": 3, "5": 3},
     5: {"1": 12, "2": 10, "3": 8, "4": 9, "5": 10},
     6: {"1": 199, "2": 196, "3": 193, "4": 167, "5": 158},
+}
+
+# Three exact repeats already occur among the preserved 30 original 5x5 entries.
+# No newly appended level may repeat any geometry, including these three.
+LEGACY_5X5_REPEATS = {
+    (('1', 10), ('2', 0)): '0e5be01fddaca2f2ce0d631966ebf42db5ce601b8888d1fb83a7c2af1e64e52e',
+    (('1', 11), ('2', 1)): 'b91701d0b70b5047cf7c35a196d0bafcd5cfe8e8c7336fb9489bbaa40ae2a1e7',
+    (('2', 9), ('3', 0)): 'eba79062f654c61ebdb4559a63fa0e838a3787a923cd2ab7a8c280bcbf65b2a0',
 }
 
 
@@ -52,7 +61,7 @@ def validate_full_banks(banks: dict[int, dict], paces: dict[int, dict],
         ranks, pacing = bank["ranks"], pace["pacing"]
         if set(ranks) != set(counts) or set(pacing) != set(counts):
             errors.append(f"Size {size}: rank keys differ from target {sorted(counts)}")
-        seen_geometry = set()
+        seen_geometry = {}
         for rank, target_count in counts.items():
             levels = ranks.get(rank, [])
             pace_entries = pacing.get(rank, [])
@@ -63,9 +72,14 @@ def validate_full_banks(banks: dict[int, dict], paces: dict[int, dict],
                 try:
                     proof = _proof_level(level, size, rank, index)
                     geometry = validate_level(proof)
-                    if geometry in seen_geometry:
-                        errors.append(f"{label}: duplicate geometry")
-                    seen_geometry.add(geometry)
+                    previous = seen_geometry.get(geometry)
+                    if previous is not None:
+                        exception = LEGACY_5X5_REPEATS.get((previous, (rank, index)))
+                        key = puzzle_key(level['regions'], level['givens'])
+                        if size != 5 or exception != key:
+                            errors.append(f"{label}: duplicate geometry")
+                    else:
+                        seen_geometry[geometry] = (rank, index)
                 except (KeyError, TypeError, ValueError) as error:
                     errors.append(f"{label}: {error}")
                     continue
