@@ -4,6 +4,14 @@
 
 ## Mục tiêu hiện tại: QA và chuẩn bị release
 
+### Demo 30 màn N=4–6 (đã triển khai trên `feat/demo-cross-size`, chưa merge)
+
+- Theo RST-018, playlist mặc định `demo_30.json` gồm L01–L10: 4×4, L11–L20: 5×5, L21–L30: 6×6. Mỗi kích thước dùng 5/3/2 màn Rank 1/2/3; L01/L02 giữ tutorial.
+- Snapshot của lượt đang chơi giữ puzzle và pace cũ khi cập nhật playlist; màn tiếp theo dùng nội dung mới. Bank/pace hiện có và playlist kiểm thử 45 màn `demo_cross.json` giữ nguyên.
+- TDD: kiểm thử xuyên 30 màn thất bại đúng ở kích thước L11–L30 trước khi đổi playlist; kiểm thử save cũ thất bại ở pace trước khi sửa `current_pace()`. Sau sửa, `DEMO_CAMPAIGN_PASS` và `CAMPAIGN_RUNTIME_PASS`.
+- Full gate phát hiện test cài đặt cũ còn chờ hai hàng wide dù toggle Undo X đã thêm hàng thứ ba; cập nhật kỳ vọng và kiểm tra toggle Undo X thực sự đổi cấu hình.
+- **Kiểm chứng:** `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` — **PASS**, 60 Python tests và 19 Godot suites. Nền revision `6644d31a2f10fc21111263236dbc618795af87c1` + working tree trên nhánh trên; SHA256 đầu vào và lệnh đầy đủ tại `scratch/verification/20261004T141351.055626Z.txt`. Clean-room và import `extracted_reusable`: 0 match. QA giao diện/gesture/thiết bị chưa chạy.
+
 ### Gameplay & UI Realignment (hoàn tất — đã trong `dev`)
 
 Các commit `8181021`–`9edafd4` đã đưa CellKind về 5 trạng thái, bỏ auto-lock, giữ ERROR vĩnh viễn, nối swipe để đánh/xóa X và dựng lại các màn hình. Những thay đổi này đã nằm trong `dev` từ khi system upgrade bắt đầu — nhánh `feat/gameplay-ui-realign` không có commit nào ngoài `dev` (đã xóa 2026-10-04).

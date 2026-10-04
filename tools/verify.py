@@ -30,7 +30,10 @@ def build_checks(root, godot):
     checks += [("content:bank_6x6", [sys.executable, "-B", "tools/validate_content.py",
                 "game/data/banks/bank_6x6.json", "--pace", "game/data/banks/bank_6x6.pace.json"])]
     checks += [("content:demo_30", [sys.executable, "-B", "tools/validate_content.py",
-                "game/data/campaigns/demo_30.json", "--bank", "game/data/banks/bank_4x4.json"])]
+                "game/data/campaigns/demo_30.json",
+                "--bank", "game/data/banks/bank_4x4.json",
+                "--bank", "game/data/banks/bank_5x5.json",
+                "--bank", "game/data/banks/bank_6x6.json"])]
     checks += [("content:demo_cross", [sys.executable, "-B", "tools/validate_content.py",
                 "game/data/campaigns/demo_cross.json",
                 "--bank", "game/data/banks/bank_4x4.json",

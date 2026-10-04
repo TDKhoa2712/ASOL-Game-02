@@ -244,22 +244,23 @@ func _test_dda_rank_adjustment() -> void:
 	for i in range(2):
 		runtime.pace_adjuster.apply_result(true, {"hints_used": 0, "mistakes": 0}, runtime.progress.current)
 	var promoted := runtime.current_level_data()
-	var rank_three := runtime.bank.get_level(4, 3, 3)
+	var rank_three := runtime.bank.get_level(5, 3, 0)
 	_check(promoted.get("regions") == rank_three.get("regions") and promoted.get("solution") == rank_three.get("solution"), "clean wins select higher-rank puzzle")
-	_check(runtime.current_pace() == runtime.pace.get_pace(4, 3, 3), "promoted puzzle uses matching pace")
+	_check(runtime.current_pace() == runtime.pace.get_pace(5, 3, 0), "promoted puzzle uses matching pace")
 
 	runtime.pace_adjuster.from_dict({"clean_streak": 0, "fail_streak": 2, "retry_streak": 0})
 	var demoted := runtime.current_level_data()
-	var rank_one := runtime.bank.get_level(4, 1, 3)
+	var rank_one := runtime.bank.get_level(5, 1, 0)
 	_check(demoted.get("regions") == rank_one.get("regions") and demoted.get("solution") == rank_one.get("solution"), "losses select lower-rank puzzle")
-	_check(runtime.current_pace() == runtime.pace.get_pace(4, 1, 3), "demoted puzzle uses matching pace")
+	_check(runtime.current_pace() == runtime.pace.get_pace(5, 1, 0), "demoted puzzle uses matching pace")
 
-	runtime.progress.current.currentLevelId = "L12"
+	runtime.progress.current.currentLevelId = "L15"
+	runtime._playlist[14].index = 11 # Rank 1 has this index; adjusted rank 2 does not.
 	runtime.pace_adjuster.from_dict({"clean_streak": 2, "fail_streak": 0, "retry_streak": 0})
 	var fallback := runtime.current_level_data()
-	var base := runtime.bank.get_level(4, 1, 11)
+	var base := runtime.bank.get_level(5, 1, 11)
 	_check(fallback.get("regions") == base.get("regions") and fallback.get("solution") == base.get("solution"), "missing adjusted index falls back to base puzzle")
-	_check(runtime.current_pace() == runtime.pace.get_pace(4, 1, 11), "fallback puzzle uses base pace")
+	_check(runtime.current_pace() == runtime.pace.get_pace(5, 1, 11), "fallback puzzle uses base pace")
 	_cleanup(runtime)
 
 func _test_dda_cross_size() -> void:
@@ -302,7 +303,7 @@ func _test_dda_keeps_started_puzzle() -> void:
 	if started == null:
 		_cleanup(runtime)
 		return
-	_check(started.level.solution == runtime.bank.get_level(4, 3, 3).get("solution"), "snapshot starts with promoted rank")
+	_check(started.level.solution == runtime.bank.get_level(5, 3, 0).get("solution"), "snapshot starts with promoted rank")
 	var original_hash: String = started.level.hash
 	var original_solution: Array = started.level.solution.duplicate(true)
 	var original_pace := runtime.current_pace()
