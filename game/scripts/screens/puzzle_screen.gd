@@ -93,6 +93,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
 	if board != null and session != null:
 		if config != null:
 			board.set_colorblind(config.get_option("colorblind"))
+			board.set_high_contrast(config.get_option("high_contrast"))
 		board.configure(session)
 	_connect_session()
 	_connect_ui()
@@ -220,6 +221,17 @@ func set_undo_visible(enabled: bool) -> void:
 	_ensure_nodes()
 	if undo_btn != null:
 		undo_btn.visible = enabled
+
+func set_high_contrast_and_redraw(enabled: bool) -> void:
+	_ensure_nodes()
+	if board != null:
+		board.set_high_contrast(enabled)
+		board.redraw()
+
+func set_large_text(enabled: bool) -> void:
+	_ensure_nodes()
+	if level_label != null:
+		level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
 
 func _on_undo() -> void:
 	if board != null:

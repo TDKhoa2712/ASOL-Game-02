@@ -28,3 +28,16 @@ const LOCK_FADE_MS := 120
 const INITIAL_HEARTS := 3
 const DOUBLE_TAP_MS := 350
 const MAX_UNDO_DEPTH := 100
+
+# Accessibility state (set by app_shell from config at startup and on change).
+static var motion_enabled: bool = true
+static var large_text_enabled: bool = false
+
+static func set_motion(on: bool) -> void:
+	motion_enabled = on
+
+static func set_large_text(on: bool) -> void:
+	large_text_enabled = on
+
+static func tile_font_size() -> int:
+	return 26 if large_text_enabled else 22
