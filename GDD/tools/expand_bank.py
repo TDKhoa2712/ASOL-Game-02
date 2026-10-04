@@ -46,7 +46,8 @@ def _atomic_write(path, raw):
 
 def _checkpoint_identity(size, seed, targets, bank_raw, pace_raw):
     return {'version': CHECKPOINT_VERSION, 'size': size, 'seed': seed,
-            'targets': targets, 'bankHash': _hash(bank_raw), 'paceHash': _hash(pace_raw)}
+            'targets': targets, 'bands': [list(part) for part in BANDS[size]],
+            'bankHash': _hash(bank_raw), 'paceHash': _hash(pace_raw)}
 
 
 def _checkpoint(path, identity, next_attempt, accepted, rejected):

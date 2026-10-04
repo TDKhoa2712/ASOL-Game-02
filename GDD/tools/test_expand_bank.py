@@ -22,6 +22,9 @@ class ExpandBankTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.original = json.loads((ROOT / 'game/data/banks/bank_4x4.json').read_text())
         self.original_pace = json.loads((ROOT / 'game/data/banks/bank_4x4.pace.json').read_text())
+        for rank, count in {'1': 12, '2': 10, '3': 8, '4': 0, '5': 0}.items():
+            self.original['ranks'][rank] = self.original['ranks'][rank][:count]
+            self.original_pace['pacing'][rank] = self.original_pace['pacing'][rank][:count]
         self.targets = {'1': 13, '2': 10, '3': 8, '4': 0, '5': 0}
 
     def paths(self, name):
@@ -73,6 +76,11 @@ class ExpandBankTests(unittest.TestCase):
         bank, pace, checkpoint = self.paths('five')
         original = json.loads((ROOT / 'game/data/banks/bank_5x5.json').read_text())
         original_pace = json.loads((ROOT / 'game/data/banks/bank_5x5.pace.json').read_text())
+        for rank, count in {'1': 12, '2': 10, '3': 8, '4': 0, '5': 0}.items():
+            original['ranks'][rank] = original['ranks'].get(rank, [])[:count]
+            original_pace['pacing'][rank] = original_pace['pacing'].get(rank, [])[:count]
+        original['ranks']['1'][0]['logicTrace'] = []
+        original_pace['pacing']['1'][0] = {'rSeq': [], 'hintCosts': []}
         bank.write_text(json.dumps(original), encoding='utf-8')
         pace.write_text(json.dumps(original_pace), encoding='utf-8')
         targets = {'1': 12, '2': 10, '3': 8, '4': 0, '5': 0}
