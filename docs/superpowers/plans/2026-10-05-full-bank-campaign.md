@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Targets: 4×4 `12/10/8/3/3`; 5×5 `12/10/8/9/10`; 6×6 `199/196/193/167/158`, totaling 998.
-- Preserve existing `(size, rank, index)` bank and pace entries byte for byte in parsed value, and preserve L01–L30 demo references.
+- Preserve existing `(size, rank, index)` positions, puzzle geometry, solutions and givens, and preserve L01–L30 demo references. Repair the invalid logic traces and derived pace for all 30 existing 5×5 levels, as approved by the user; preserve all other old entry values.
 - Generate original geometries; use the six reference files for counts and pacing context only. Keep N=4–6, S1–S3, bank v1, pace v1, and files at `game/data/banks/bank_NxN.json` plus sidecars.
 - No runtime generator, larger boards, additional rules, monetization, analytics, release claim, or player-facing campaign switch.
 - Keep modules at most 300 lines, use no autoloads, and commit only files in this task. Leave the user's uncommitted spec edits untouched.
@@ -59,10 +59,10 @@
 
 **Interfaces:** Uses Task 2 CLI and Task 1 full validator. Target counts are fixed in Global Constraints.
 
-- [ ] Capture SHA-256 and parsed values for all original rank 1–3 entries and pace entries before generation; place evidence in `scratch/verification/`.
+- [ ] Capture SHA-256 and parsed values for all original rank 1–3 entries and pace entries before generation; place evidence in `scratch/verification/`. Record the 5×5 trace failures separately.
 - [ ] Run the builder separately for 4×4, 5×5, and 6×6 with versioned seeds, finite budgets, and resumable checkpoints. If a budget is exhausted, inspect the rejection report and adjust only search heuristics or budget while preserving uniqueness and S1–S3 gates.
 - [ ] Run `rtk python -B tools/validate_full_content.py --banks game/data/banks`; expect 36/49/913 valid original levels, five ranks per size, matching pace, unique canonical geometry, and verified traces.
-- [ ] Recheck the saved original hashes and values; expect every old `(size, rank, index)` unchanged. Commit only the six bank and pace files as `feat(content): expand original banks to five ranks`.
+- [ ] Recheck saved original values: every old puzzle's `(size, rank, index)`, geometry, solution and givens remain unchanged; every old 4×4 and 6×6 entry remains fully unchanged; the 30 old 5×5 trace and pace entries match the independently checked solver trace. Commit only the six bank and pace files as `feat(content): expand original banks to five ranks`.
 
 ### Task 4: Build the 998-entry campaign
 
