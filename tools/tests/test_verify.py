@@ -68,6 +68,12 @@ class VerifyTests(unittest.TestCase):
             with self.subTest(target=target):
                 self.assertTrue((ROOT / target).is_file())
 
+    def test_full_campaign_proof_is_in_gate(self):
+        checks = dict(self.load_runner().build_checks(ROOT, "godot"))
+        command = checks.get("content:full_998", [])
+        self.assertIn("tools/validate_full_content.py", command)
+        self.assertIn("game/data/campaigns/full_998.json", command)
+
     def test_metadata_failure_after_checks_cannot_report_pass(self):
         runner = self.load_runner()
         with tempfile.TemporaryDirectory() as folder:

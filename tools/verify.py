@@ -39,6 +39,10 @@ def build_checks(root, godot):
                 "--bank", "game/data/banks/bank_4x4.json",
                 "--bank", "game/data/banks/bank_5x5.json",
                 "--bank", "game/data/banks/bank_6x6.json"])]
+    checks += [("content:full_998", [sys.executable, "-B", "tools/validate_full_content.py",
+                "--banks", "game/data/banks",
+                "--playlist", "game/data/campaigns/full_998.json",
+                "--demo", "game/data/campaigns/demo_30.json"])]
     checks += [("godot:" + path.stem, [godot, "--headless", "--path", "game",
                 "--script", "res://tests/" + path.name]) for path in suites]
     return checks
