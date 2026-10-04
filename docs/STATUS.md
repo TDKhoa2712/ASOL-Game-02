@@ -1,6 +1,17 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-04
+> Cập nhật: 2026-10-05
+
+## Bank đầy đủ và campaign 998 level (trên `feat/full-bank-campaign`, chưa merge)
+
+- Đã tạo 36/49/913 level gốc cho 4×4/5×5/6×6, năm rank mỗi kích thước; validator độc lập xác nhận nghiệm duy nhất, trace S2/S3, pace và phủ playlist 998 tham chiếu.
+- `full_998.json` giữ L01–L30 của `demo_30.json`; `active_campaign.json` mặc định `full_998`, có thể đổi thành `demo_30` trước khi chạy/export. Hai mode có progress/session riêng; Settings dùng chung.
+- Đã giữ vị trí và dữ liệu puzzle của 90 level gốc. Sửa trace/pace của 30 level 5×5 cũ theo quyết định chủ dự án. Ba cặp puzzle 5×5 cũ trùng hệt nhau còn trong cả hai campaign; đây là ngoại lệ cũ được ghi rõ, không mở cho level mới.
+- Bộ sinh offline xác định và có checkpoint. Lần tạo 6×6 dùng seed `candoku-full-bank-6-v1`, hoàn thành sau 47.715 lần thử; trung vị rating của rank 1–5 là 9/12/18/28/36. Log baseline và đối chiếu ở `scratch/verification/full_bank_baseline.json`.
+- Ngưỡng rating tối đa để xếp vào rank 1–4 khi sinh thêm: 4×4 `10/14/19/26`, 5×5 `10/14/28/34`, 6×6 `10/14/24/31`; điểm cao hơn cần S3 và vào rank 5. Trung vị rank 1–5 sau sinh: 4×4 `8/11/18,5/25/28`, 5×5 `17/25/28,5/32/37`, 6×6 `9/12/18/28/36`. Các ngưỡng này là chỉ báo máy, còn cần playtest mù.
+- **Full gate PASS** tại revision `155420b0cb1d3ddb229e64f2cf2f581998013aeb` cùng tài liệu đang sửa: `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` — 75 Python tests, 21 Godot suites và mọi content check. Bằng chứng: `scratch/verification/20261004T194303.062270Z.txt`, source SHA-256 `85057d76e73fe11a03ae7d33b73e48e1123c6f7b30dc4cbc5257a7920774eb02`. Clean-room và import `extracted_reusable`: 0 match; module đã sửa ≤300 dòng. QA giao diện/gesture/thiết bị chưa chạy, chưa phải nghiệm thu phát hành.
+
+**Cách đổi mode:** xem [Hướng dẫn campaign](../README.md).
 
 ## Mục tiêu hiện tại: QA và chuẩn bị release
 
