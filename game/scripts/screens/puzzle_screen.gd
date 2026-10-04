@@ -216,6 +216,11 @@ func _confirm_restart() -> void:
 		if sfx != null:
 			sfx.play(SfxCatalog.Effect.RESTART)
 
+func set_undo_visible(enabled: bool) -> void:
+	_ensure_nodes()
+	if undo_btn != null:
+		undo_btn.visible = enabled
+
 func _on_undo() -> void:
 	if board != null:
 		board.settle_input()

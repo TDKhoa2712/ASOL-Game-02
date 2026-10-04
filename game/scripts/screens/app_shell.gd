@@ -202,6 +202,15 @@ func _apply_setting(key: String, value: Variant) -> void:
 			Vibration.set_on(bool(value))
 		"colorblind":
 			_refresh_puzzle_colorblind()
+		"undo_x":
+			_refresh_undo_visible(bool(value))
+
+func _refresh_undo_visible(enabled: bool) -> void:
+	if screen_host == null:
+		return
+	for child in screen_host.get_children():
+		if child.has_method("set_undo_visible"):
+			child.call("set_undo_visible", enabled)
 
 func _refresh_puzzle_colorblind() -> void:
 	if screen_host == null or config == null:
@@ -220,6 +229,7 @@ func _apply_all_settings() -> void:
 	_apply_setting("audio", config.get_option("audio"))
 	_apply_setting("haptic", config.get_option("haptic"))
 	_apply_setting("colorblind", config.get_option("colorblind"))
+	_apply_setting("undo_x", config.get_option("undo_x"))
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)

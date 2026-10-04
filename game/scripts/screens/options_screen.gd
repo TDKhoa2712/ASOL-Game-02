@@ -15,10 +15,11 @@ const LABELS := {
 	"large_text": "Cỡ chữ lớn",
 	"high_contrast": "Độ tương phản cao",
 	"colorblind": "Hỗ trợ phân biệt màu",
+	"undo_x": "Hoàn tác X",
 }
 
 const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
-const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind"]
+const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind", "undo_x"]
 
 var _config: Variant = null
 var _built: bool = false
