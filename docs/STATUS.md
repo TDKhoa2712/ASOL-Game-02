@@ -1,8 +1,16 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-03
+> Cập nhật: 2026-10-04
 
 ## Mục tiêu hiện tại: Chỉnh lại gameplay và giao diện
+
+### Last-Mile Task 5: Bank 6×6 + cross-size campaign (2026-10-04, nhánh fix/doubletap-x-preview)
+
+Bank 6×6 (30 levels: 12 R1 + 10 R2 + 8 R3) đã sinh với max_givens=2 (6×6 cần givens để unique), validated bởi `validate_content.py`. Pace sidecar `bank_6x6.pace.json` khớp 100%. Campaign `demo_cross.json` (45 levels: 15×4×4 + 15×5×5 + 15×6×6) validated với cả 3 banks. DDA cross-size wired trong `campaign_runtime.gd` (override `playlist_path` cho test); `_test_dda_cross_size()` xác nhận promotion/demotion giữ đúng size bank. `validate_content.py` mở rộng nhận nhiều `--bank`. `tools/verify.py` thêm checks cho bank 5×5, 6×6, demo_cross. Clean-room: 0 match banned names, 0 import extracted_reusable. Commit: `47b152d` trên `fix/doubletap-x-preview`. Chưa chạy full Godot gate (cần Godot executable), chưa merge vào `dev`.
+
+**Plan đầy đủ:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — 6 tracks còn lại.
+
+**Việc cần chốt:** Undo X (Track C) — chủ dự án quyết định giữ hay bỏ theo RST-015.
 
 ### Sửa nháy X khi chạm đôi (2026-10-03)
 
