@@ -10,9 +10,9 @@ Bank 6×6 (30 levels: 12 R1 + 10 R2 + 8 R3) đã sinh với max_givens=2 (6×6 c
 
 **Plan đầy đủ:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — 6 tracks còn lại.
 
-### Last-Mile Task 6: Undo X toggle + demo_30 DDA restructure (2026-10-04, nhánh fix/doubletap-x-preview)
+### Last-Mile Task 6: Settings accessibility + merge vào dev (2026-10-04)
 
-Track C (Undo X) đã chốt theo RST-017: giữ Undo X nhưng có toggle bật/tắt. `config_store.gd` thêm `"undo_x": true`. `options_screen.gd` thêm tile "Hoàn tác X" vào WIDE_KEYS. `app_shell.gd` wire setting → `set_undo_visible()` trên puzzle screen. `puzzle_screen.gd` thêm `set_undo_visible(bool)`. `test_config_store.gd` phủ default và toggle. `demo_30.json` cấu trúc lại để DDA hoạt động đầy đủ: L03-L10 (R1 idx 2-9, DDA có thể promote R2), L11-L12 (R1 idx 10-11, stay R1), L13-L15 (R2 idx 0-2, max_rank=2), L16-L22 (R2 idx 3-9, DDA promote R3), L23-L30 (R3 idx 0-7, DDA demote R2). R3 đổi label thành "hard". Clean-room: 0 match. Commit: `be587b9`. Chưa chạy Godot gate đầy đủ; merge chờ gate pass.
+3 settings còn thiếu wire đã implement: `reduced_motion` → `LayoutTokens.set_motion()`; `high_contrast` → `puzzle_board._high_contrast` (dark X stroke, cell borders); `large_text` → `LayoutTokens.tile_font_size()` + options_screen rebuild + puzzle_screen level label resize. Toàn bộ 7 EDITABLE_KEYS nay đều có effect. `undo_x` toggle đã implement commit trước. Clean-room: 0 match. Commit: `8414752`. **Merge `fix/doubletap-x-preview` → `dev` thành công** (8 commits, 4449 insertions). Pending: full Godot gate với executable.
 
 ### Sửa nháy X khi chạm đôi (2026-10-03)
 
