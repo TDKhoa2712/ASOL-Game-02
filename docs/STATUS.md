@@ -2,44 +2,34 @@
 
 > Cập nhật: 2026-10-04
 
-## Mục tiêu hiện tại: Chỉnh lại gameplay và giao diện
+## Mục tiêu hiện tại: QA và chuẩn bị release
 
-### Last-Mile Task 5: Bank 6×6 + cross-size campaign (2026-10-04, nhánh fix/doubletap-x-preview)
+### Gameplay & UI Realignment (hoàn tất — đã trong `dev`)
 
-Bank 6×6 (30 levels: 12 R1 + 10 R2 + 8 R3) đã sinh với max_givens=2 (6×6 cần givens để unique), validated bởi `validate_content.py`. Pace sidecar `bank_6x6.pace.json` khớp 100%. Campaign `demo_cross.json` (45 levels: 15×4×4 + 15×5×5 + 15×6×6) validated với cả 3 banks. DDA cross-size wired trong `campaign_runtime.gd` (override `playlist_path` cho test); `_test_dda_cross_size()` xác nhận promotion/demotion giữ đúng size bank. `validate_content.py` mở rộng nhận nhiều `--bank`. `tools/verify.py` thêm checks cho bank 5×5, 6×6, demo_cross. Clean-room: 0 match banned names, 0 import extracted_reusable. Commit: `47b152d` trên `fix/doubletap-x-preview`. Chưa chạy full Godot gate (cần Godot executable), chưa merge vào `dev`.
+Các commit `8181021`–`9edafd4` đã đưa CellKind về 5 trạng thái, bỏ auto-lock, giữ ERROR vĩnh viễn, nối swipe để đánh/xóa X và dựng lại các màn hình. Những thay đổi này đã nằm trong `dev` từ khi system upgrade bắt đầu — nhánh `feat/gameplay-ui-realign` không có commit nào ngoài `dev` (đã xóa 2026-10-04).
 
-**Plan đầy đủ:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — 6 tracks còn lại.
-
-### Last-Mile Task 6: Settings accessibility + merge vào dev (2026-10-04)
-
-3 settings còn thiếu wire đã implement: `reduced_motion` → `LayoutTokens.set_motion()`; `high_contrast` → `puzzle_board._high_contrast` (dark X stroke, cell borders); `large_text` → `LayoutTokens.tile_font_size()` + options_screen rebuild + puzzle_screen level label resize. Toàn bộ 7 EDITABLE_KEYS nay đều có effect. `undo_x` toggle đã implement commit trước. Clean-room: 0 match. Commit: `8414752`. **Merge `fix/doubletap-x-preview` → `dev` thành công** (8 commits, 4449 insertions). Pending: full Godot gate với executable.
-
-### Sửa nháy X khi chạm đôi (2026-10-03)
-
-Nhánh `fix/doubletap-x-preview`, từ `fix/region-painter-unique-colors` tại `dd5f712`: bỏ preview X khi chạm xuống; preview chỉ bắt đầu khi kéo và vẫn gồm ô đầu. Chạm đơn commit đúng mốc 350 ms. GDD 02 đã đồng bộ theo RST-016.
-
-TDD: test decoder và màn hình fail tại preview khi chạm xuống trước sửa, pass sau sửa; kiểm thêm preview của chạm thứ hai chuyển thành kéo. Suite `touch_decoder`, `screens`, `colorblind`, `play_session` PASS; clean-room và kiểm import có 0 match. Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2>` PASS: 3 nhóm Python, validator GDD/bank/playlist và 18 suite Godot. Evidence: `scratch/verification/20261003T125135.722105Z.txt`, revision nền `dd5f712` với thay đổi task; SHA256 inputs có trong log.
-
-Gate chạy trên working tree có sửa dữ liệu và UID sẵn có, đã giữ nguyên bằng đối chiếu hash. Chưa QA giao diện/gesture trên thiết bị, chưa merge vào `dev`.
-
-**Quyết định:** RST-015 (gameplay/UI realignment)
-**Plan:** [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md)
-
-### Trạng thái trên nhánh `feat/gameplay-ui-realign`
-
-Các commit `8181021`–`9edafd4` đã đưa CellKind về 5 trạng thái, bỏ auto-lock, giữ ERROR vĩnh viễn, nối swipe để đánh/xóa X và dựng lại các màn hình. Gameplay UI hiện dùng `puzzle_layout.gd`; nhánh này **chưa merge vào `dev`**. Code còn Undo cho thao tác X gần nhất, trong khi RST-015 và plan yêu cầu bỏ Undo. Chênh lệch này cần quyết định sản phẩm trước khi nghiệm thu gameplay.
-
-### Tiến độ chỉnh sửa
+**Quyết định RST-017:** Giữ Undo X với toggle cài đặt (`undo_x`) — implemented tại `be587b9`. Toggle wired qua `config_store` → `options_screen` → `app_shell` → `puzzle_screen`.
 
 | Task | Nội dung | Status |
 |------|----------|--------|
-| T1–T2 | CellKind 5 trạng thái, bỏ auto-lock | Có trong code nhánh; cần gate cuối |
-| T3, T6 | PlaySession và handler | Một phần: vẫn có Undo X |
-| T4–T5 | Swipe và board rendering | Có trong code nhánh; cần QA gesture |
-| T7–T8 | Layout puzzle và palette | Có trong code nhánh; cần QA màn hình |
-| T9–T10 | Test và rà tham chiếu cũ | Chưa xác nhận full gate trên working tree hiện tại |
-| T11–T12 | Title và result screens | Có trong code nhánh; cần QA màn hình |
-| T13 | Final verification | Chưa xác nhận full gate/thiết bị |
+| T1–T2 | CellKind 5 trạng thái, bỏ auto-lock | Trong `dev` — `8181021` |
+| T3, T6 | PlaySession và handler | Trong `dev` — Undo X có toggle per RST-017 |
+| T4–T5 | Swipe và board rendering | Trong `dev` — cần QA gesture thiết bị |
+| T7–T8 | Layout puzzle và palette | Trong `dev` — cần QA màn hình thiết bị |
+| T9–T10 | Test và rà tham chiếu cũ | Full gate PASS `20261003T102902` trên `dev` |
+| T11–T12 | Title và result screens | Trong `dev` — cần QA màn hình thiết bị |
+| T13 | Final verification — thiết bị | Chưa làm (block Track E) |
+
+### Last-Mile Task 5–6: Content + Accessibility (hoàn tất — merged `d20c2f0`)
+
+- **Task 5:** Bank 6×6 (30 levels: 12/10/8 per rank), pace sidecar, campaign `demo_cross.json` (45 levels: 15×4×4 + 15×5×5 + 15×6×6), DDA cross-size wired trong `campaign_runtime.gd`. Commit `47b152d`.
+- **Task 6:** Wire 3 settings còn thiếu: `reduced_motion` → `LayoutTokens.set_motion()`; `high_contrast` → `puzzle_board._high_contrast`; `large_text` → `LayoutTokens.tile_font_size()`. Toàn bộ 7 EDITABLE_KEYS đều có effect. Commit `8414752`. Merge `fix/doubletap-x-preview` → `dev`: commit `d20c2f0` (8 commits, 4449 insertions).
+
+### Sửa nháy X khi chạm đôi (hoàn tất — merged `d20c2f0`)
+
+Bỏ preview X khi chạm xuống; preview chỉ bắt đầu khi kéo và vẫn gồm ô đầu. Chạm đơn commit đúng mốc 350 ms. GDD 02 đồng bộ theo RST-016. Full gate PASS: `scratch/verification/20261003T125135.722105Z.txt`.
+
+**Plan tham chiếu:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — Track D/E/F còn lại.
 
 ## Giai đoạn trước: Rebuild (hoàn tất)
 
@@ -109,12 +99,14 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 
 ## Baseline
 
-- `dev` (HEAD 2026-10-03): rebuild 10 modules + system upgrade 7 modules + last-mile tasks 1–4
+- `dev` (HEAD 2026-10-04): rebuild 10 modules + system upgrade 7 modules + last-mile tasks 1–6 + gameplay/UI realignment + accessibility settings
 - Reference: `extracted_reusable/` (~224 files)
 - Tag bảo toàn: `pre-reset-pipeline-2026-09-27`
+- Nhánh đã dọn (2026-10-04): `feat/gameplay-ui-realign`, `fix/doubletap-x-preview`, `fix/region-painter-unique-colors`, `feat/screens-colorblind-toggle`, `feat/campaign-dda-rank-selection`, và các nhánh rebuild `feat/m01`–`feat/m10`, `chore/rebuild-preparation`
 
 ## Việc cần chốt và kiểm chứng
 
-- **Undo X (đã chốt RST-017):** Giữ Undo X với toggle cài đặt — implemented tại `be587b9`. Toggle wired qua config_store → options_screen → app_shell → puzzle_screen. Cần Godot gate để xác nhận trước merge.
-- **Full gate:** trên `dev` với commit sửa runner `c577210`, `rtk python -B tools/verify.py --godot <Godot 4.7.2>` ngày 2026-10-03: **PASS**. Python suites, GDD sample, bank/playlist validators và 18 suite Godot đều pass. Runner đã bỏ tham chiếu tới `game/data/campaign_m1.json`; test fixture đã bỏ tham chiếu tới `game/data/t01.json`. Log: `scratch/verification/20261003T102902.224427Z.txt` (UTC, Git ignore). Working tree còn thay đổi dữ liệu và `.uid` ngoài commit, nên gate này chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
-- **QA UI/thiết bị:** chưa chạy trong lượt rà tài liệu. Người thực hiện nhánh kiểm gesture/UI từ entry scene và trên Android; chủ dự án duyệt kết quả playtest. Chỉ đánh dấu đạt khi có bằng chứng theo revision. iOS còn cần môi trường build/signing.
+- **Full gate Python:** trên `dev` tại `c577210`, ngày 2026-10-03: **PASS**. Log: `scratch/verification/20261003T102902.224427Z.txt`. Working tree còn uncommitted data + `.uid` — chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
+- **Full gate Godot** cho last-mile 5–6 (bank 6×6, accessibility): chưa chạy — cần Godot executable.
+- **QA UI/thiết bị (Track E):** chưa làm. Cần kiểm gesture (single tap, double tap, swipe), layout màn hình, colorblind mode trên Android. iOS cần môi trường build/signing riêng. Chỉ đánh dấu đạt khi có bằng chứng theo revision.
+- **Track D — Assets:** audio (10 SFX P0 + 1 BGM) và visual (font, logo, candy sprites) chưa có — cần sound designer/artist.
