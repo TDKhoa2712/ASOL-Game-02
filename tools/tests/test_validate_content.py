@@ -101,6 +101,22 @@ class ValidateContentTests(unittest.TestCase):
         errors = validate_playlist(bad_playlist)
         self.assertTrue(any("duplicate" in e.lower() for e in errors))
 
+    def test_playlist_duplicate_bank_reference(self):
+        playlist = dict(self.valid_playlist)
+        playlist["playlist"] = [
+            {"label": "L01", "size": 4, "rank": 1, "index": 0, "difficulty": "tutorial"},
+            {"label": "L02", "size": 4, "rank": 1, "index": 0, "difficulty": "easy"},
+        ]
+        errors = validate_playlist(playlist, banks={4: self.valid_bank})
+        self.assertTrue(any("duplicate" in error.lower() and "reference" in error.lower()
+                            for error in errors), errors)
+
+    def test_invalid_index_reports_error_with_bank(self):
+        playlist = dict(self.valid_playlist)
+        playlist["playlist"] = [dict(self.valid_playlist["playlist"][0], index=None)]
+        errors = validate_playlist(playlist, banks={4: self.valid_bank})
+        self.assertTrue(any("invalid index" in error.lower() for error in errors), errors)
+
     def test_playlist_against_bank(self):
         errors = validate_playlist(self.valid_playlist, banks={4: self.valid_bank})
         self.assertEqual(errors, [])

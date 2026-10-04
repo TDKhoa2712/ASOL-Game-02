@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-019 — Bank đầy đủ và campaign chọn bằng file phát triển
+
+Ngày 2026-10-05. Chủ dự án yêu cầu mở rộng theo quy mô tham khảo thành 998 level gốc, năm rank, đưa toàn bộ vào playlist và cho người phát triển đổi giữa chiến dịch đầy đủ với demo 30 màn qua file cấu hình.
+
+- Ba bank v1 có lần lượt 36 level 4×4 (`12/10/8/3/3`), 49 level 5×5 (`12/10/8/9/10`) và 913 level 6×6 (`199/196/193/167/158`). Dùng luật S1–S3 và hình vùng, nghiệm, trace do CanDoKu sinh/kiểm độc lập.
+- `full_998.json` giữ nguyên L01–L30 của `demo_30.json`, rồi phủ từng tham chiếu bank còn lại một lần. `active_campaign.json` có giá trị `full_998` mặc định hoặc `demo_30`; thay đổi có hiệu lực khi khởi động lại.
+- Demo tiếp tục lưu progress và session tại `user://profile`; full campaign lưu tại `user://profile/full_998`. Settings cùng dùng `user://profile/config.json`.
+- Giữ hình vùng, nghiệm, ô cho sẵn và index của 90 puzzle cũ. Theo quyết định bổ sung của chủ dự án, sửa trace và pace của 30 puzzle 5×5 cũ sau khi validator độc lập phát hiện trace không hợp lệ; điểm rating/profile dẫn xuất được tính lại. Ba cặp puzzle 5×5 cũ trùng hệt nhau được giữ vì yêu cầu giữ puzzle gốc; validator chỉ miễn trừ đúng ba cặp này và cấm mọi trùng lặp mới.
+- Điểm độ khó theo solver tăng theo trung vị qua năm rank ở từng kích thước; nhãn này chưa thay cho thử nghiệm với người chơi. Chưa nghiệm thu giao diện hoặc thiết bị.
+
 ## RST-018 — Demo 30 màn tăng từ 4×4 đến 6×6
 
 Ngày 2026-10-04. Chủ dự án chốt demo có 30 màn, chia đều ba kích thước:

@@ -13,6 +13,7 @@ func _init() -> void:
 	_test_demote_guard()
 	_test_rank_cap_low_level()
 	_test_rank_cap_high_level()
+	_test_rank_five_after_intro()
 	_test_round_trip()
 	if _fails.is_empty():
 		print("PACE_ADJUSTER_PASS")
@@ -72,6 +73,14 @@ func _test_rank_cap_high_level() -> void:
 	pa.record_result(true, 0, 0, false)
 	pa.record_result(true, 0, 0, false)
 	_assert(pa.rank_offset(25, 2) == 1, "level 25 max_rank 3, base_rank 2 → +1")
+
+func _test_rank_five_after_intro() -> void:
+	var pa := PaceAdjuster.new()
+	pa.record_result(true, 0, 0, false)
+	pa.record_result(true, 0, 0, false)
+	_assert(pa.rank_offset(30, 3) == 0, "level 30 keeps intro rank cap")
+	_assert(pa.rank_offset(31, 4) == 1, "after intro rank 4 promotes to rank 5")
+	_assert(pa.rank_offset(31, 5) == 0, "rank 5 cannot promote above bank")
 
 func _test_round_trip() -> void:
 	var pa := PaceAdjuster.new()

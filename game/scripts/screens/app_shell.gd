@@ -2,6 +2,7 @@
 extends Control
 
 const CampaignRuntime = preload("res://scripts/campaign/campaign_runtime.gd")
+const CampaignSelector = preload("res://scripts/campaign/campaign_selector.gd")
 const BankReader = preload("res://scripts/content/bank_reader.gd")
 const PaceReader = preload("res://scripts/content/pace_reader.gd")
 const ProgressManager = preload("res://scripts/state/progress_manager.gd")
@@ -27,6 +28,7 @@ var nav: NavController
 var sfx: SfxPlayer
 var bgm: BgmPlayer
 var profile_dir: String = "user://profile"
+var selector_path: String = "res://data/campaigns/active_campaign.json"
 var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
 var _last_won_elapsed: int = 0
@@ -36,6 +38,10 @@ var _last_won_is_last: bool = false
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
 
 func _ready() -> void:
+	var selection := CampaignSelector.load_config(selector_path, profile_dir)
+	if not selection.ok:
+		_on_boot_error(str(selection.error))
+		return
 	if config == null:
 		config = ConfigStore.new(profile_dir)
 		config.option_changed.connect(_apply_setting)
@@ -53,9 +59,10 @@ func _ready() -> void:
 	if runtime == null:
 		var bank := BankReader.new()
 		var pace := PaceReader.new()
-		var progress := ProgressManager.new(profile_dir)
-		var sessions := SessionStore.new(profile_dir)
+		var progress := ProgressManager.new(selection.progress_dir)
+		var sessions := SessionStore.new(selection.progress_dir)
 		runtime = CampaignRuntime.new(bank, pace, progress, sessions)
+		runtime.playlist_path = selection.playlist_path
 
 	if not runtime.save_failed.is_connected(_on_save_failed):
 		runtime.save_failed.connect(_on_save_failed)
@@ -165,6 +172,7 @@ func _on_level_done(won: bool) -> void:
 		var score_data := {
 			"time_ms": elapsed,
 			"mistakes": sess.mistake_count if sess != null else 0,
+			"hints_used": sess.hints_used if sess != null else 0,
 		}
 		runtime.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)

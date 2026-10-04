@@ -27,7 +27,7 @@ func apply_result(won: bool, score: Dictionary, store: Dictionary) -> void:
 	store["dda"] = to_dict()
 
 func rank_offset(level_order: int, base_rank: int) -> int:
-	var max_rank: int = 2 if level_order <= 15 else (3 if level_order <= 30 else 4)
+	var max_rank: int = 2 if level_order <= 15 else (3 if level_order <= 30 else 5)
 	if _clean_streak >= 2:
 		return maxi(0, mini(1, max_rank - base_rank))
 	if _fail_streak >= 2 and not _demoted_this_level:
