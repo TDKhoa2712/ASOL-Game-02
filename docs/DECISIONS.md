@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-017 — Giữ Undo X, thêm toggle trong cài đặt
+
+Ngày 2026-10-04. Chủ dự án chốt: giữ Undo X (hoàn tác X-mark cuối) nhưng có thể bật/tắt qua mục cài đặt:
+
+- `config_store.gd`: key `"undo_x"` mặc định `true`, lưu persistent cùng profile.
+- `options_screen.gd`: tile "Hoàn tác X" trong nhóm WIDE_KEYS — cùng dạng wide toggle với high_contrast và colorblind.
+- `app_shell.gd`: khi setting thay đổi, gọi `set_undo_visible(bool)` trên puzzle screen đang hiển thị.
+- `puzzle_screen.gd`: `set_undo_visible(bool)` ẩn/hiện `undo_btn`.
+- Thay yêu cầu "bỏ undo stack" trong RST-015; Undo X vẫn chỉ hoàn tác X-mark (không hoàn tác candy).
+
 ## RST-016 — Bỏ preview X khi chạm xuống
 
 Ngày 2026-10-03. Chủ dự án yêu cầu thực hiện plan `2026-10-03-fix-doubletap-x-preview.md` để sửa nháy X khi chạm đôi:

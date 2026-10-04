@@ -10,7 +10,9 @@ Bank 6×6 (30 levels: 12 R1 + 10 R2 + 8 R3) đã sinh với max_givens=2 (6×6 c
 
 **Plan đầy đủ:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — 6 tracks còn lại.
 
-**Việc cần chốt:** Undo X (Track C) — chủ dự án quyết định giữ hay bỏ theo RST-015.
+### Last-Mile Task 6: Undo X toggle + demo_30 DDA restructure (2026-10-04, nhánh fix/doubletap-x-preview)
+
+Track C (Undo X) đã chốt theo RST-017: giữ Undo X nhưng có toggle bật/tắt. `config_store.gd` thêm `"undo_x": true`. `options_screen.gd` thêm tile "Hoàn tác X" vào WIDE_KEYS. `app_shell.gd` wire setting → `set_undo_visible()` trên puzzle screen. `puzzle_screen.gd` thêm `set_undo_visible(bool)`. `test_config_store.gd` phủ default và toggle. `demo_30.json` cấu trúc lại để DDA hoạt động đầy đủ: L03-L10 (R1 idx 2-9, DDA có thể promote R2), L11-L12 (R1 idx 10-11, stay R1), L13-L15 (R2 idx 0-2, max_rank=2), L16-L22 (R2 idx 3-9, DDA promote R3), L23-L30 (R3 idx 0-7, DDA demote R2). R3 đổi label thành "hard". Clean-room: 0 match. Commit: `be587b9`. Chưa chạy Godot gate đầy đủ; merge chờ gate pass.
 
 ### Sửa nháy X khi chạm đôi (2026-10-03)
 
@@ -113,6 +115,6 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 
 ## Việc cần chốt và kiểm chứng
 
-- **Undo X so với RST-015:** ảnh hưởng hợp đồng gameplay và tài liệu. Chủ dự án chốt giữ Undo giới hạn hay bỏ; sau quyết định, đồng bộ code/test/docs và chạy gate lại. Thử lại nghiệm thu gameplay khi đã chốt.
+- **Undo X (đã chốt RST-017):** Giữ Undo X với toggle cài đặt — implemented tại `be587b9`. Toggle wired qua config_store → options_screen → app_shell → puzzle_screen. Cần Godot gate để xác nhận trước merge.
 - **Full gate:** trên `dev` với commit sửa runner `c577210`, `rtk python -B tools/verify.py --godot <Godot 4.7.2>` ngày 2026-10-03: **PASS**. Python suites, GDD sample, bank/playlist validators và 18 suite Godot đều pass. Runner đã bỏ tham chiếu tới `game/data/campaign_m1.json`; test fixture đã bỏ tham chiếu tới `game/data/t01.json`. Log: `scratch/verification/20261003T102902.224427Z.txt` (UTC, Git ignore). Working tree còn thay đổi dữ liệu và `.uid` ngoài commit, nên gate này chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
 - **QA UI/thiết bị:** chưa chạy trong lượt rà tài liệu. Người thực hiện nhánh kiểm gesture/UI từ entry scene và trên Android; chủ dự án duyệt kết quả playtest. Chỉ đánh dấu đạt khi có bằng chứng theo revision. iOS còn cần môi trường build/signing.
