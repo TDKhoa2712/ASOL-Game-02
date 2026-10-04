@@ -2411,6 +2411,833 @@
           }
         ]
       }
+    ],
+    "4": [
+      {
+        "seed": 16,
+        "regions": [
+          "AABB",
+          "AAAC",
+          "DDDC",
+          "DDDC"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          4,
+          2,
+          0
+        ],
+        "rating": 24,
+        "pidHash": "881aef1e",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "B"
+            },
+            "target": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 0
+                },
+                {
+                  "r": 0,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 33,
+        "regions": [
+          "AABB",
+          "AAAC",
+          "ADDC",
+          "DDDC"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          4,
+          2,
+          0
+        ],
+        "rating": 26,
+        "pidHash": "be38a5ee",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "B"
+            },
+            "target": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 0
+                },
+                {
+                  "r": 0,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 35,
+        "regions": [
+          "AAAA",
+          "AAAB",
+          "CCBB",
+          "CDDB"
+        ],
+        "solution": [
+          1,
+          3,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          4,
+          2,
+          0
+        ],
+        "rating": 25,
+        "pidHash": "5ae787b6",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "D"
+            },
+            "target": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 3,
+                  "c": 0
+                },
+                {
+                  "r": 3,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 2,
+                  "c": 2
+                },
+                {
+                  "r": 2,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 1
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      }
+    ],
+    "5": [
+      {
+        "seed": 8,
+        "regions": [
+          "AAAA",
+          "BBAC",
+          "BBAC",
+          "DDAC"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          4,
+          3,
+          0
+        ],
+        "rating": 28,
+        "pidHash": "57582bed",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "D"
+            },
+            "target": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 3,
+                  "c": 2
+                },
+                {
+                  "r": 3,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "column",
+              "id": 2
+            },
+            "target": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 0
+                },
+                {
+                  "r": 0,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 39,
+        "regions": [
+          "AABB",
+          "AAAB",
+          "AACC",
+          "ADDD"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          4,
+          3,
+          0
+        ],
+        "rating": 30,
+        "pidHash": "f6d103c7",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 2,
+                  "c": 0
+                },
+                {
+                  "r": 2,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "D"
+            },
+            "target": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 3,
+                  "c": 0
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "column",
+              "id": 0
+            },
+            "target": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 1
+                },
+                {
+                  "r": 1,
+                  "c": 1
+                },
+                {
+                  "r": 1,
+                  "c": 2
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 53,
+        "regions": [
+          "AABB",
+          "CAAD",
+          "CAAD",
+          "AAAD"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          4,
+          3,
+          0
+        ],
+        "rating": 28,
+        "pidHash": "80b760cd",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "column",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 0
+                },
+                {
+                  "r": 3,
+                  "c": 0
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "B"
+            },
+            "target": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "D"
+            },
+            "target": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 0,
+                  "c": 3
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      }
     ]
   }
 }
