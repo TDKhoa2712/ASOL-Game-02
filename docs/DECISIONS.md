@@ -1,5 +1,14 @@
 # Quyết định điều hành hiện hành
 
+## RST-018 — Demo 30 màn tăng từ 4×4 đến 6×6
+
+Ngày 2026-10-04. Chủ dự án chốt demo có 30 màn, chia đều ba kích thước:
+
+- Playlist mặc định `game/data/campaigns/demo_30.json`: L01–L10 là 4×4, L11–L20 là 5×5, L21–L30 là 6×6.
+- Mỗi nhóm gồm 5 màn Rank 1, 3 màn Rank 2, 2 màn Rank 3; giữ tutorial tại L01/L02. Khi tăng kích thước, bắt đầu lại ở Rank 1; DDA tiếp tục chọn rank trong bank cùng kích thước.
+- Dùng bank và pace gốc hiện có; playlist `demo_cross.json` 45 màn tiếp tục phục vụ kiểm thử riêng.
+- Tiến trình đã lưu giữ nguyên. Lượt đang chơi có snapshot giữ puzzle và pace cũ đến khi hoàn tất; màn tiếp theo dùng playlist mới. Đây là bản demo/playtest, chưa phải nghiệm thu phát hành.
+
 ## RST-017 — Giữ Undo X, thêm toggle trong cài đặt
 
 Ngày 2026-10-04. Chủ dự án chốt: giữ Undo X (hoàn tác X-mark cuối) nhưng có thể bật/tắt qua mục cài đặt:

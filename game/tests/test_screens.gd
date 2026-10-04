@@ -201,7 +201,7 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == 3 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and wide rows generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 4 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and three wide rows generated")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
 	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 
@@ -210,6 +210,9 @@ func _test_options_screen() -> void:
 
 	options._on_toggle("colorblind", true)
 	_assert(bool(config.get_option("colorblind")), "colorblind enabled via options screen")
+	var undo_toggle := options.vbox.get_child(3).get_child(0).get_child(1) as PillToggle
+	undo_toggle._on_toggled(false)
+	_assert(not bool(config.get_option("undo_x")), "undo disabled via its settings toggle")
 
 	var back_box := [false]
 	options.back_pressed.connect(func(): back_box[0] = true)

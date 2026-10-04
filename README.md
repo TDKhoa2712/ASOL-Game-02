@@ -6,7 +6,7 @@ CanDoKu là game puzzle 2D: mỗi hàng, cột và luống vườn đều giấu
 
 ## Hành trình trong vườn
 
-Vượt qua 30 màn chơi 4×4 theo thứ tự. Mỗi màn là một khu vườn với những luống có hình dạng khác nhau. Một vài viên kẹo có thể được hé lộ từ đầu; hãy dùng chúng cùng các dấu X để suy ra vị trí còn lại. Trò chơi lưu tiến trình để bạn tiếp tục màn đang chơi.
+Vượt qua 30 màn chơi theo thứ tự: L01–L10 dùng bàn 4×4, L11–L20 dùng bàn 5×5, L21–L30 dùng bàn 6×6. Mỗi màn là một khu vườn với những luống có hình dạng khác nhau. Một vài viên kẹo có thể được hé lộ từ đầu; hãy dùng chúng cùng các dấu X để suy ra vị trí còn lại. Trò chơi lưu tiến trình để bạn tiếp tục màn đang chơi.
 
 ## Cách chơi
 
