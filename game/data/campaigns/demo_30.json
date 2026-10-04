@@ -161,56 +161,56 @@
       "size": 4,
       "rank": 3,
       "index": 0,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L24",
       "size": 4,
       "rank": 3,
       "index": 1,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L25",
       "size": 4,
       "rank": 3,
       "index": 2,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L26",
       "size": 4,
       "rank": 3,
       "index": 3,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L27",
       "size": 4,
       "rank": 3,
       "index": 4,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L28",
       "size": 4,
       "rank": 3,
       "index": 5,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L29",
       "size": 4,
       "rank": 3,
       "index": 6,
-      "difficulty": "medium"
+      "difficulty": "hard"
     },
     {
       "label": "L30",
       "size": 4,
       "rank": 3,
       "index": 7,
-      "difficulty": "medium"
+      "difficulty": "hard"
     }
   ]
 }

@@ -1,8 +1,26 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-03
+> Cập nhật: 2026-10-04
 
 ## Mục tiêu hiện tại: Chỉnh lại gameplay và giao diện
+
+### Last-Mile Task 5: Bank 6×6 + cross-size campaign (2026-10-04, nhánh fix/doubletap-x-preview)
+
+Bank 6×6 (30 levels: 12 R1 + 10 R2 + 8 R3) đã sinh với max_givens=2 (6×6 cần givens để unique), validated bởi `validate_content.py`. Pace sidecar `bank_6x6.pace.json` khớp 100%. Campaign `demo_cross.json` (45 levels: 15×4×4 + 15×5×5 + 15×6×6) validated với cả 3 banks. DDA cross-size wired trong `campaign_runtime.gd` (override `playlist_path` cho test); `_test_dda_cross_size()` xác nhận promotion/demotion giữ đúng size bank. `validate_content.py` mở rộng nhận nhiều `--bank`. `tools/verify.py` thêm checks cho bank 5×5, 6×6, demo_cross. Clean-room: 0 match banned names, 0 import extracted_reusable. Commit: `47b152d` trên `fix/doubletap-x-preview`. Chưa chạy full Godot gate (cần Godot executable), chưa merge vào `dev`.
+
+**Plan đầy đủ:** [Completion Plan](superpowers/plans/2026-10-03-completion-plan.md) — 6 tracks còn lại.
+
+### Last-Mile Task 6: Undo X toggle + demo_30 DDA restructure (2026-10-04, nhánh fix/doubletap-x-preview)
+
+Track C (Undo X) đã chốt theo RST-017: giữ Undo X nhưng có toggle bật/tắt. `config_store.gd` thêm `"undo_x": true`. `options_screen.gd` thêm tile "Hoàn tác X" vào WIDE_KEYS. `app_shell.gd` wire setting → `set_undo_visible()` trên puzzle screen. `puzzle_screen.gd` thêm `set_undo_visible(bool)`. `test_config_store.gd` phủ default và toggle. `demo_30.json` cấu trúc lại để DDA hoạt động đầy đủ: L03-L10 (R1 idx 2-9, DDA có thể promote R2), L11-L12 (R1 idx 10-11, stay R1), L13-L15 (R2 idx 0-2, max_rank=2), L16-L22 (R2 idx 3-9, DDA promote R3), L23-L30 (R3 idx 0-7, DDA demote R2). R3 đổi label thành "hard". Clean-room: 0 match. Commit: `be587b9`. Chưa chạy Godot gate đầy đủ; merge chờ gate pass.
+
+### Sửa nháy X khi chạm đôi (2026-10-03)
+
+Nhánh `fix/doubletap-x-preview`, từ `fix/region-painter-unique-colors` tại `dd5f712`: bỏ preview X khi chạm xuống; preview chỉ bắt đầu khi kéo và vẫn gồm ô đầu. Chạm đơn commit đúng mốc 350 ms. GDD 02 đã đồng bộ theo RST-016.
+
+TDD: test decoder và màn hình fail tại preview khi chạm xuống trước sửa, pass sau sửa; kiểm thêm preview của chạm thứ hai chuyển thành kéo. Suite `touch_decoder`, `screens`, `colorblind`, `play_session` PASS; clean-room và kiểm import có 0 match. Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2>` PASS: 3 nhóm Python, validator GDD/bank/playlist và 18 suite Godot. Evidence: `scratch/verification/20261003T125135.722105Z.txt`, revision nền `dd5f712` với thay đổi task; SHA256 inputs có trong log.
+
+Gate chạy trên working tree có sửa dữ liệu và UID sẵn có, đã giữ nguyên bằng đối chiếu hash. Chưa QA giao diện/gesture trên thiết bị, chưa merge vào `dev`.
 
 **Quyết định:** RST-015 (gameplay/UI realignment)
 **Plan:** [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md)
@@ -97,6 +115,6 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 
 ## Việc cần chốt và kiểm chứng
 
-- **Undo X so với RST-015:** ảnh hưởng hợp đồng gameplay và tài liệu. Chủ dự án chốt giữ Undo giới hạn hay bỏ; sau quyết định, đồng bộ code/test/docs và chạy gate lại. Thử lại nghiệm thu gameplay khi đã chốt.
+- **Undo X (đã chốt RST-017):** Giữ Undo X với toggle cài đặt — implemented tại `be587b9`. Toggle wired qua config_store → options_screen → app_shell → puzzle_screen. Cần Godot gate để xác nhận trước merge.
 - **Full gate:** trên `dev` với commit sửa runner `c577210`, `rtk python -B tools/verify.py --godot <Godot 4.7.2>` ngày 2026-10-03: **PASS**. Python suites, GDD sample, bank/playlist validators và 18 suite Godot đều pass. Runner đã bỏ tham chiếu tới `game/data/campaign_m1.json`; test fixture đã bỏ tham chiếu tới `game/data/t01.json`. Log: `scratch/verification/20261003T102902.224427Z.txt` (UTC, Git ignore). Working tree còn thay đổi dữ liệu và `.uid` ngoài commit, nên gate này chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
 - **QA UI/thiết bị:** chưa chạy trong lượt rà tài liệu. Người thực hiện nhánh kiểm gesture/UI từ entry scene và trên Android; chủ dự án duyệt kết quả playtest. Chỉ đánh dấu đạt khi có bằng chứng theo revision. iOS còn cần môi trường build/signing.

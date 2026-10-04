@@ -7,6 +7,7 @@ signal restart_pressed()
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const PillToggle = preload("res://scripts/screens/pill_toggle.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 const LABELS := {
 	"audio": "Âm thanh",
@@ -15,10 +16,11 @@ const LABELS := {
 	"large_text": "Cỡ chữ lớn",
 	"high_contrast": "Độ tương phản cao",
 	"colorblind": "Hỗ trợ phân biệt màu",
+	"undo_x": "Hoàn tác X",
 }
 
 const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
-const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind"]
+const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind", "undo_x"]
 
 var _config: Variant = null
 var _built: bool = false
@@ -196,7 +198,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 
 	var lbl := Label.new()
 	lbl.text = LABELS.get(key, key)
-	lbl.add_theme_font_size_override("font_size", 22)
+	lbl.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
 	lbl.add_theme_color_override("font_color", Palette.INK)
 	if is_square:
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -214,6 +216,10 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 
 	tile.add_child(col)
 	return tile
+
+func set_large_text(_enabled: bool) -> void:
+	_built = false
+	_build_rows()
 
 func _on_toggle(key: String, on: bool) -> void:
 	if _config != null:

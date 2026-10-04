@@ -28,7 +28,6 @@ func begin(row: int, col: int, time_ms: int) -> void:
 
 	_swipe_trail = [[row, col]]
 	_last_swipe_cell = [row, col]
-	preview_changed.emit(_swipe_trail.duplicate())
 
 func move(row: int, col: int) -> void:
 	if not _pointer_active:
@@ -73,6 +72,7 @@ func finish(time_ms: int) -> void:
 		var tap_cell: Array = _swipe_trail[0]
 		_swipe_trail.clear()
 		_last_swipe_cell.clear()
+		preview_changed.emit([])
 		_has_pending_tap = true
 		_pending_tap_cell = tap_cell
 		_pending_tap_time = time_ms

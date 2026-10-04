@@ -1,0 +1,2979 @@
+{
+  "bankVersion": 1,
+  "size": 6,
+  "ranks": {
+    "1": [
+      {
+        "seed": 19,
+        "regions": [
+          "AABBBB",
+          "CCCBBB",
+          "CCCDBE",
+          "DDDDFE",
+          "DDDDFE",
+          "DFFFFF"
+        ],
+        "solution": [
+          1,
+          3,
+          0,
+          5,
+          2,
+          4
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 0
+          },
+          {
+            "r": 5,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "2ac206ff",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 2
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 46,
+        "regions": [
+          "AABBBB",
+          "AABCBB",
+          "ACCCBB",
+          "DDDCBE",
+          "DDFFEE",
+          "FFFFFF"
+        ],
+        "solution": [
+          0,
+          4,
+          2,
+          5,
+          1,
+          3
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 4
+          },
+          {
+            "r": 4,
+            "c": 1
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "af59a0c9",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 5
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 3
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 75,
+        "regions": [
+          "AABBBC",
+          "AADDDC",
+          "AAADDD",
+          "AAEEDD",
+          "FFEDDD",
+          "FFFFDD"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 3
+          },
+          {
+            "r": 4,
+            "c": 2
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "ced9217c",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 4
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 78,
+        "regions": [
+          "AAABBC",
+          "DAAAAC",
+          "DDAAAC",
+          "DDEEAA",
+          "DEEEEE",
+          "DFFEEE"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 5
+          },
+          {
+            "r": 4,
+            "c": 3
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "3fb88b88",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 297,
+        "regions": [
+          "AABBBB",
+          "ACBBBB",
+          "CCCBBB",
+          "CDCEEF",
+          "DDDEEF",
+          "DDDDFF"
+        ],
+        "solution": [
+          1,
+          3,
+          0,
+          4,
+          2,
+          5
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 0
+          },
+          {
+            "r": 3,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "a10c7858",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 303,
+        "regions": [
+          "AAABBB",
+          "CAAABB",
+          "CCDEBB",
+          "CCCEEF",
+          "CCCEEF",
+          "EEEEFF"
+        ],
+        "solution": [
+          1,
+          4,
+          2,
+          0,
+          3,
+          5
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 2
+          },
+          {
+            "r": 4,
+            "c": 3
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "5d08b275",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 5
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 4
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 307,
+        "regions": [
+          "ABBCCC",
+          "AABDCC",
+          "AABECE",
+          "BBBEEE",
+          "FFFFEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          5,
+          3,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 0
+          },
+          {
+            "r": 4,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "8cc1455c",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 2
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 330,
+        "regions": [
+          "AAAAAA",
+          "BACADD",
+          "BBBBDD",
+          "EBBDDD",
+          "EEBBDF",
+          "EEEFFF"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          3,
+          1,
+          5
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 0
+          },
+          {
+            "r": 5,
+            "c": 5
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "60b272e0",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 4
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 361,
+        "regions": [
+          "ABCCDD",
+          "ABCDDE",
+          "AACDDE",
+          "ACCCCE",
+          "ACCFEE",
+          "CCCFFE"
+        ],
+        "solution": [
+          1,
+          4,
+          2,
+          0,
+          5,
+          3
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 2
+          },
+          {
+            "r": 4,
+            "c": 5
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "0bfb5006",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 4
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 578,
+        "regions": [
+          "ABBBBB",
+          "AABBBC",
+          "DAABCC",
+          "DAABBE",
+          "DAAFEE",
+          "FFFFFE"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          0,
+          5,
+          2
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 1
+          },
+          {
+            "r": 4,
+            "c": 5
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "792af912",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 3
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 717,
+        "regions": [
+          "AAABBC",
+          "AAABBC",
+          "DAABBB",
+          "DAADEB",
+          "DDDDEE",
+          "FFDEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          2,
+          0,
+          4,
+          1
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 3
+          },
+          {
+            "r": 3,
+            "c": 0
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "e743a4b7",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 4
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 732,
+        "regions": [
+          "ABBCCC",
+          "AAACCD",
+          "AAEECD",
+          "EEEECD",
+          "EEFFCD",
+          "EEFFCC"
+        ],
+        "solution": [
+          2,
+          0,
+          4,
+          1,
+          5,
+          3
+        ],
+        "givens": [
+          {
+            "r": 3,
+            "c": 1
+          },
+          {
+            "r": 5,
+            "c": 3
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 10,
+        "pidHash": "e74c7fd0",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 4
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      }
+    ],
+    "2": [
+      {
+        "seed": 18,
+        "regions": [
+          "AABCCC",
+          "AABCCD",
+          "ABBCCD",
+          "BBBEDD",
+          "BBEEDD",
+          "BBFEEE"
+        ],
+        "solution": [
+          0,
+          4,
+          1,
+          3,
+          5,
+          2
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 4
+          },
+          {
+            "r": 2,
+            "c": 1
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 11,
+        "pidHash": "e57da2ed",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 86,
+        "regions": [
+          "AAABCC",
+          "ABBBCC",
+          "DBBBEC",
+          "DDBEEE",
+          "DDDDFF",
+          "DDDFFF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 4
+          },
+          {
+            "r": 5,
+            "c": 5
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 13,
+        "pidHash": "8662fe5e",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 111,
+        "regions": [
+          "ABBCCC",
+          "ABBCCC",
+          "BBDDCC",
+          "BBDEEC",
+          "BBDDEF",
+          "BBDDDF"
+        ],
+        "solution": [
+          0,
+          4,
+          1,
+          3,
+          5,
+          2
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 4
+          },
+          {
+            "r": 2,
+            "c": 1
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 13,
+        "pidHash": "847678cf",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 120,
+        "regions": [
+          "AABBBB",
+          "AAABBC",
+          "DAEFEC",
+          "DDEEEC",
+          "DDEEEE",
+          "DDEEEE"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 4
+          },
+          {
+            "r": 5,
+            "c": 0
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 12,
+        "pidHash": "072fbdd3",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 127,
+        "regions": [
+          "AAAAAB",
+          "ACAAAB",
+          "DCCCCB",
+          "DCCECB",
+          "DFCEEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 3
+          },
+          {
+            "r": 3,
+            "c": 2
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 12,
+        "pidHash": "fc4d4d2c",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 138,
+        "regions": [
+          "ABBBBC",
+          "DDBBBC",
+          "EDDBBC",
+          "EEEBBC",
+          "EEEFFC",
+          "EEEFFC"
+        ],
+        "solution": [
+          0,
+          3,
+          1,
+          5,
+          2,
+          4
+        ],
+        "givens": [
+          {
+            "r": 4,
+            "c": 2
+          }
+        ],
+        "steps": 5,
+        "profile": [
+          5,
+          0,
+          0
+        ],
+        "rating": 12,
+        "pidHash": "87837c46",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 149,
+        "regions": [
+          "AAAABC",
+          "DAAABB",
+          "DAEBBB",
+          "DFEBBB",
+          "DFEEBB",
+          "FFFFFF"
+        ],
+        "solution": [
+          5,
+          2,
+          4,
+          0,
+          3,
+          1
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 4
+          },
+          {
+            "r": 5,
+            "c": 1
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 11,
+        "pidHash": "d9e27ccc",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 3
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 175,
+        "regions": [
+          "AABBBB",
+          "AABCBB",
+          "CACCDB",
+          "CCCCCC",
+          "ECCCCC",
+          "EECFFC"
+        ],
+        "solution": [
+          5,
+          1,
+          4,
+          2,
+          0,
+          3
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 1
+          },
+          {
+            "r": 2,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 12,
+        "pidHash": "d940a723",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 227,
+        "regions": [
+          "ABBBCB",
+          "ABBBBB",
+          "AABBBB",
+          "DDDBEE",
+          "DDDBEE",
+          "FFFFEE"
+        ],
+        "solution": [
+          4,
+          0,
+          3,
+          1,
+          5,
+          2
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 3
+          },
+          {
+            "r": 4,
+            "c": 5
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 12,
+        "pidHash": "eec3f1fe",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 284,
+        "regions": [
+          "AABBBC",
+          "AAABCC",
+          "AABBCD",
+          "AAEEDD",
+          "AFEFDD",
+          "FFFFDD"
+        ],
+        "solution": [
+          5,
+          3,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 5
+          },
+          {
+            "r": 4,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 13,
+        "pidHash": "7fef8c3e",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      }
+    ],
+    "3": [
+      {
+        "seed": 7,
+        "regions": [
+          "ABBBCC",
+          "BBBBCC",
+          "BBDDCE",
+          "DDDDDE",
+          "DDFDFE",
+          "FFFFFF"
+        ],
+        "solution": [
+          0,
+          4,
+          1,
+          3,
+          5,
+          2
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 4
+          },
+          {
+            "r": 2,
+            "c": 1
+          }
+        ],
+        "steps": 6,
+        "profile": [
+          4,
+          2,
+          0
+        ],
+        "rating": 25,
+        "pidHash": "3e69d9c0",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "E"
+            },
+            "target": {
+              "type": "column",
+              "id": 5
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 5,
+                  "c": 5
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "row",
+              "id": 5
+            },
+            "target": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 4,
+                  "c": 2
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 52,
+        "regions": [
+          "AAAABB",
+          "AABBBB",
+          "CAABDD",
+          "CCEEED",
+          "FCEEED",
+          "FFFEED"
+        ],
+        "solution": [
+          0,
+          3,
+          5,
+          1,
+          4,
+          2
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 0
+          }
+        ],
+        "steps": 7,
+        "profile": [
+          5,
+          2,
+          0
+        ],
+        "rating": 31,
+        "pidHash": "31ef3cb7",
+        "logicTrace": [
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "F"
+            },
+            "target": {
+              "type": "row",
+              "id": 5
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 5,
+                  "c": 3
+                },
+                {
+                  "r": 5,
+                  "c": 4
+                },
+                {
+                  "r": 5,
+                  "c": 5
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "C"
+            },
+            "target": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 5,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 3
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 74,
+        "regions": [
+          "AABBBB",
+          "AAAACB",
+          "AAADCC",
+          "AECCCC",
+          "EEEEFC",
+          "EEEFFF"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          5,
+          1,
+          4
+        ],
+        "givens": [
+          {
+            "r": 3,
+            "c": 5
+          },
+          {
+            "r": 5,
+            "c": 4
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 16,
+        "pidHash": "8c5f5109",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 1
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 89,
+        "regions": [
+          "AABCCC",
+          "AABCCC",
+          "DBBCCE",
+          "DFFFCE",
+          "DDFFCC",
+          "DDFFFF"
+        ],
+        "solution": [
+          1,
+          4,
+          2,
+          5,
+          0,
+          3
+        ],
+        "givens": [
+          {
+            "r": 0,
+            "c": 1
+          },
+          {
+            "r": 5,
+            "c": 3
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 15,
+        "pidHash": "c1dbd002",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 2
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 4
+            },
+            "textKey": "hint.single.row"
+          }
+        ]
+      },
+      {
+        "seed": 107,
+        "regions": [
+          "AAAABB",
+          "AAAACC",
+          "ADAACC",
+          "DDAAAC",
+          "EDFFFC",
+          "EDFFFF"
+        ],
+        "solution": [
+          5,
+          2,
+          4,
+          1,
+          3,
+          0
+        ],
+        "givens": [
+          {
+            "r": 2,
+            "c": 4
+          }
+        ],
+        "steps": 7,
+        "profile": [
+          5,
+          2,
+          0
+        ],
+        "rating": 30,
+        "pidHash": "23ebc653",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "B"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "E"
+            },
+            "target": {
+              "type": "column",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 1,
+                  "c": 0
+                },
+                {
+                  "r": 3,
+                  "c": 0
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "D"
+            },
+            "target": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 1,
+                  "c": 1
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 1,
+              "c": 2
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 3
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 3
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 121,
+        "regions": [
+          "AAABCC",
+          "AABBCC",
+          "ABBBDC",
+          "AADDDC",
+          "DDDEEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          5,
+          3,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 3
+          },
+          {
+            "r": 2,
+            "c": 0
+          }
+        ],
+        "steps": 5,
+        "profile": [
+          4,
+          1,
+          0
+        ],
+        "rating": 21,
+        "pidHash": "5b0f7c61",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 0
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "region",
+              "id": "F"
+            },
+            "target": {
+              "type": "row",
+              "id": 5
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 5,
+                  "c": 4
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 1
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 1
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 2
+            },
+            "textKey": "hint.single.column"
+          }
+        ]
+      },
+      {
+        "seed": 131,
+        "regions": [
+          "ABBBBC",
+          "AABBBC",
+          "DABECC",
+          "DDEEEC",
+          "DDEEFC",
+          "FFFFFC"
+        ],
+        "solution": [
+          0,
+          2,
+          5,
+          3,
+          1,
+          4
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 2
+          }
+        ],
+        "steps": 7,
+        "profile": [
+          5,
+          2,
+          0
+        ],
+        "rating": 30,
+        "pidHash": "dbf88caa",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "column",
+              "id": 5
+            },
+            "target": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 2,
+                  "c": 4
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 5
+            },
+            "textKey": "hint.single.row"
+          },
+          {
+            "rule": "S3",
+            "source": {
+              "type": "row",
+              "id": 5
+            },
+            "target": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "eliminate",
+              "cells": [
+                {
+                  "r": 4,
+                  "c": 4
+                }
+              ]
+            },
+            "textKey": "hint.lock.intersection"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "column",
+              "id": 4
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 4
+            },
+            "textKey": "hint.single.column"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      },
+      {
+        "seed": 139,
+        "regions": [
+          "ABBCCD",
+          "ABBBCC",
+          "AABBCE",
+          "FAABCE",
+          "FFEEEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          5,
+          2,
+          4,
+          1,
+          3,
+          0
+        ],
+        "givens": [
+          {
+            "r": 1,
+            "c": 2
+          },
+          {
+            "r": 4,
+            "c": 3
+          }
+        ],
+        "steps": 4,
+        "profile": [
+          4,
+          0,
+          0
+        ],
+        "rating": 18,
+        "pidHash": "8d42a6c5",
+        "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "D"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 0,
+              "c": 5
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "A"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 3,
+              "c": 1
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "F"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 5,
+              "c": 0
+            },
+            "textKey": "hint.single.region"
+          }
+        ]
+      }
+    ]
+  }
+}

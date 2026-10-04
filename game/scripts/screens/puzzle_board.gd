@@ -18,6 +18,7 @@ var _zone_grid: Array = []
 var _zone_colors: Dictionary = {}
 var _zone_overlays: Dictionary = {}
 var _colorblind: bool = false
+var _high_contrast: bool = false
 var _decoder: TouchDecoder = null
 var _candy_tex: Texture2D = null
 var _highlight_cells: Array = []
@@ -52,6 +53,9 @@ func configure(session: Variant) -> void:
 
 func set_colorblind(enabled: bool) -> void:
 	_colorblind = enabled
+
+func set_high_contrast(enabled: bool) -> void:
+	_high_contrast = enabled
 
 func redraw() -> void:
 	queue_redraw()
@@ -210,6 +214,13 @@ func _draw() -> void:
 			sb.set_corner_radius_all(cr)
 			draw_style_box(sb, cell_rect)
 
+			if _high_contrast:
+				var hc_sb := StyleBoxFlat.new()
+				hc_sb.draw_center = false
+				hc_sb.border_color = Palette.MARK_STROKE
+				hc_sb.set_border_width_all(2)
+				hc_sb.set_corner_radius_all(cr)
+				draw_style_box(hc_sb, cell_rect)
 			var icon_val: int = _zone_overlays.get(zone, 0)
 			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
 				var is_dark := base_col.get_luminance() < 0.5
@@ -274,9 +285,9 @@ func _draw_candy_procedural(rect: Rect2) -> void:
 	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
 
 func _draw_cell_x(rect: Rect2, is_error: bool) -> void:
-	var stroke_col: Color = Palette.ERROR_RED if is_error else Palette.MARK_WHITE
+	var stroke_col: Color = Palette.ERROR_RED if is_error else (Palette.MARK_STROKE if _high_contrast else Palette.MARK_WHITE)
 	var pad := rect.size.x * 0.28
-	var w := maxf(4.0, rect.size.x * 0.09)
+	var w := maxf(4.0, rect.size.x * (0.12 if _high_contrast else 0.09))
 	var p1 := rect.position + Vector2(pad, pad)
 	var p2 := rect.end - Vector2(pad, pad)
 	var p3 := Vector2(rect.end.x - pad, rect.position.y + pad)

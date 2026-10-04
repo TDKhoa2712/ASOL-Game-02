@@ -7,6 +7,7 @@ var _fails: Array[String] = []
 func _init() -> void:
 	_test_single_tap()
 	_test_double_tap()
+	_test_double_tap_no_preview_leak()
 	_test_distinct_taps_without_wait()
 	_test_swipe()
 	_test_swipe_interpolation()
@@ -28,7 +29,9 @@ func _test_single_tap() -> void:
 	d.begin(1, 2, 1000)
 	d.finish(1000)
 	_assert(taps.is_empty(), "tap waits while a double tap remains possible")
-	d.tick(1351)
+	d.tick(1349)
+	_assert(taps.is_empty(), "single tap waits until 350ms")
+	d.tick(1350)
 	_assert(taps == [[1, 2]], "single tap commits after window")
 
 func _test_double_tap() -> void:
@@ -47,6 +50,19 @@ func _test_double_tap() -> void:
 	d.tick(1600)
 	_assert(taps.is_empty(), "double tap never commits a mark")
 
+func _test_double_tap_no_preview_leak() -> void:
+	var d := TouchDecoder.new()
+	var previews: Array = []
+	d.preview_changed.connect(func(cells): previews.append(cells.duplicate(true)))
+	d.begin(2, 3, 1000)
+	_assert(previews.is_empty(), "touch-down emits no preview")
+	d.finish(1010)
+	_assert(previews.is_empty() or previews.back().is_empty(), "pending tap has no preview")
+	d.begin(2, 3, 1200)
+	_assert(previews.is_empty() or previews.back().is_empty(), "second touch has no preview")
+	d.finish(1220)
+	_assert(previews.back().is_empty(), "preview stays clear after double tap completes")
+
 func _test_distinct_taps_without_wait() -> void:
 	var d := TouchDecoder.new()
 	var taps: Array = []
@@ -64,9 +80,9 @@ func _test_live_preview() -> void:
 	var previews: Array = []
 	d.preview_changed.connect(func(cells): previews.append(cells.duplicate(true)))
 	d.begin(0, 0, 1000)
-	_assert(previews.back() == [[0, 0]], "touch shows first cell immediately")
+	_assert(previews.is_empty(), "touch-down emits no preview")
 	d.move(0, 2)
-	_assert(previews.back() == [[0, 0], [0, 1], [0, 2]], "drag previews its path")
+	_assert(previews.back() == [[0, 0], [0, 1], [0, 2]], "drag previews full path including origin")
 	d.finish(1100)
 	_assert(previews.back().is_empty(), "committed swipe clears preview")
 
@@ -75,6 +91,8 @@ func _test_second_touch_drag() -> void:
 	var taps: Array = []
 	var swipes: Array = []
 	var doubles: Array = []
+	var previews: Array = []
+	d.preview_changed.connect(func(cells): previews.append(cells.duplicate(true)))
 	d.cell_tapped.connect(func(r, c): taps.append([r, c]))
 	d.cell_swiped.connect(func(cells): swipes.append(cells))
 	d.cell_double_tapped.connect(func(r, c): doubles.append([r, c]))
@@ -82,7 +100,9 @@ func _test_second_touch_drag() -> void:
 	d.finish(1010)
 	d.begin(0, 0, 1100)
 	d.move(0, 2)
+	_assert(previews.back() == [[0, 0], [0, 1], [0, 2]], "second touch drag previews full path")
 	d.finish(1200)
+	_assert(previews.back().is_empty(), "second touch drag clears preview")
 	_assert(taps == [[0, 0]], "second drag commits first tap")
 	_assert(swipes == [[[0, 0], [0, 1], [0, 2]]], "second drag emits stroke")
 	_assert(doubles.is_empty(), "second drag is not a double tap")

@@ -13,6 +13,8 @@ const SnapshotBuilder = preload("res://scripts/campaign/snapshot_builder.gd")
 const PLAYLIST_PATH := "res://data/campaigns/demo_30.json"
 const CAMPAIGN_VERSION := 1
 
+var playlist_path: String = PLAYLIST_PATH
+
 signal level_started(level_id: String)
 signal level_won(level_id: String, next_id: String)
 signal level_lost(level_id: String)
@@ -38,7 +40,7 @@ func _init(bank_reader: BankReader, pace_reader: PaceReader, progress_manager: P
 	sessions = session_store
 
 func boot() -> Dictionary:
-	var loaded := _load_playlist(PLAYLIST_PATH)
+	var loaded := _load_playlist(playlist_path)
 	if not loaded.ok:
 		return _boot_error(loaded.error)
 	_playlist = loaded.playlist

@@ -11,6 +11,7 @@ const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
@@ -200,8 +201,40 @@ func _apply_setting(key: String, value: Variant) -> void:
 				bgm.set_muted(not bool(value))
 		"haptic":
 			Vibration.set_on(bool(value))
+		"reduced_motion":
+			LayoutTokens.set_motion(not bool(value))
+		"high_contrast":
+			_refresh_puzzle_high_contrast()
+		"large_text":
+			LayoutTokens.set_large_text(bool(value))
+			_refresh_large_text()
 		"colorblind":
 			_refresh_puzzle_colorblind()
+		"undo_x":
+			_refresh_undo_visible(bool(value))
+
+func _refresh_undo_visible(enabled: bool) -> void:
+	if screen_host == null:
+		return
+	for child in screen_host.get_children():
+		if child.has_method("set_undo_visible"):
+			child.call("set_undo_visible", enabled)
+
+func _refresh_puzzle_high_contrast() -> void:
+	if screen_host == null or config == null:
+		return
+	var enabled := bool(config.get_option("high_contrast"))
+	for child in screen_host.get_children():
+		if child.has_method("set_high_contrast_and_redraw"):
+			child.call("set_high_contrast_and_redraw", enabled)
+
+func _refresh_large_text() -> void:
+	if screen_host == null or config == null:
+		return
+	var enabled := bool(config.get_option("large_text"))
+	for child in screen_host.get_children():
+		if child.has_method("set_large_text"):
+			child.call("set_large_text", enabled)
 
 func _refresh_puzzle_colorblind() -> void:
 	if screen_host == null or config == null:
@@ -219,7 +252,11 @@ func _apply_all_settings() -> void:
 		return
 	_apply_setting("audio", config.get_option("audio"))
 	_apply_setting("haptic", config.get_option("haptic"))
+	_apply_setting("reduced_motion", config.get_option("reduced_motion"))
+	_apply_setting("high_contrast", config.get_option("high_contrast"))
+	_apply_setting("large_text", config.get_option("large_text"))
 	_apply_setting("colorblind", config.get_option("colorblind"))
+	_apply_setting("undo_x", config.get_option("undo_x"))
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)

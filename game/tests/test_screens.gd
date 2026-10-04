@@ -111,7 +111,7 @@ func _test_puzzle_board() -> void:
 	var swipe_box: Array = []
 	board.cell_swiped.connect(func(cells: Array): swipe_box.append(cells))
 	board._decoder.begin(0, 0, 0)
-	_assert(board._preview_cells == [[0, 0]], "board previews touch immediately")
+	_assert(board._preview_cells.is_empty(), "board touch-down has no X preview")
 	board._decoder.move(0, 2)
 	_assert(board._preview_cells == [[0, 0], [0, 1], [0, 2]], "board previews drag")
 	board._decoder.finish(100)
