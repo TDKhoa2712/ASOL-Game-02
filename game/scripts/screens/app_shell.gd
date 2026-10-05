@@ -33,6 +33,7 @@ var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
 var _last_won_elapsed: int = 0
 var _last_won_is_last: bool = false
+var _debug_custom_level: Dictionary = {}
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
@@ -116,6 +117,8 @@ func _instantiate_screen(to_name: String) -> void:
 				screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("options_pressed"):
 				screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
+			if screen.has_signal("debug_level_selected"):
+				screen.connect("debug_level_selected", _on_debug_level_selected)
 			if screen.has_method("setup"):
 				screen.call("setup", runtime)
 		"puzzle":
@@ -126,7 +129,8 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("level_done"):
 				screen.connect("level_done", _on_level_done)
 			if screen.has_method("setup"):
-				screen.call("setup", runtime, sfx, config)
+				screen.call("setup", runtime, sfx, config, _debug_custom_level)
+				_debug_custom_level = {}
 		"win":
 			if screen.has_signal("next_pressed"):
 				screen.connect("next_pressed", _on_next_level)
@@ -155,6 +159,15 @@ func _instantiate_screen(to_name: String) -> void:
 
 	if screen_host != null:
 		screen_host.add_child(screen)
+
+func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
+	if runtime != null and runtime.playlist_order().has(label):
+		runtime.progress.current["currentLevelId"] = label
+		runtime.progress.save()
+		_debug_custom_level = {}
+	else:
+		_debug_custom_level = level_data
+	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_title_play() -> void:
 	if runtime != null and runtime.is_campaign_done():

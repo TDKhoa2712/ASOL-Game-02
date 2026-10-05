@@ -12,27 +12,16 @@ const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const PlaySession = preload("res://scripts/input/play_session.gd")
 
-var runtime: Variant = null
-var sfx: Variant = null
-var config: Variant = null
-var session: Variant = null
-var _hint_click_count: int = 0
+var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
+var session: Variant = null; var _hint_click_count: int = 0
 
-var board: PuzzleBoard
-var hearts_display: Control
-var hint_btn: Button
-var restart_btn: Button
-var home_btn: Button
-var timer_label: Label
-var level_label: Label
-var help_btn: Button
-var settings_btn: Button
-var region_display: HBoxContainer
-var rules_card: PanelContainer
-var undo_btn: Button
-var restart_confirm: ConfirmationDialog
-var hint_overlay: HintOverlay
+var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
+var restart_btn: Button; var home_btn: Button; var timer_label: Label
+var level_label: Label; var help_btn: Button; var settings_btn: Button
+var region_display: HBoxContainer; var rules_card: PanelContainer
+var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay
 
 func _ensure_nodes() -> void:
 	if board != null: return
@@ -65,12 +54,11 @@ func _connect_ui() -> void:
 		if not board.cell_swiped.is_connected(_on_board_swipe):
 			board.cell_swiped.connect(_on_board_swipe)
 
-func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
-	runtime = rt
-	sfx = sfx_player
-	config = cfg
-	_hint_click_count = 0
-	if runtime != null:
+func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Dictionary = {}) -> void:
+	runtime = rt; sfx = sfx_player; config = cfg; _hint_click_count = 0
+	if not custom_lvl.is_empty():
+		session = PlaySession.new(custom_lvl)
+	elif runtime != null:
 		session = runtime.current_session if runtime.current_session != null else (runtime.resume_level() if runtime.has_pending_session() else runtime.start_level(runtime.current_level_label()))
 	_ensure_nodes()
 	if board != null and session != null:
