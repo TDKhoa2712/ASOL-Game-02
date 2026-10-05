@@ -25,6 +25,18 @@ func _ready() -> void:
 			for frequency in preset.freqs: frequencies.append(float(frequency))
 			_streams[effect] = PcmSynth.generate_melody(frequencies, preset.note_dur,
 				preset.volume, preset.wave)
+	# Native lifecycle signals also catch buttons built by screen scripts.
+	get_tree().node_added.connect(_on_ui_node_added)
+	_bind_existing_buttons(get_parent())
+
+func _bind_existing_buttons(node: Node) -> void:
+	_on_ui_node_added(node)
+	for child in node.get_children(): _bind_existing_buttons(child)
+
+func _on_ui_node_added(node: Node) -> void:
+	if node is BaseButton and get_parent().is_ancestor_of(node):
+		var cue := play.bind(SfxCatalog.Effect.BTN_PRESS)
+		if not node.pressed.is_connected(cue): node.pressed.connect(cue)
 
 func play(effect: int) -> void:
 	if _muted or _pool.is_empty() or not _streams.has(effect):

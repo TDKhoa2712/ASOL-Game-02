@@ -2,6 +2,15 @@
 
 > Cập nhật: 2026-10-05
 
+## Procedural SFX (trên `feat/procedural-sfx`, chưa merge)
+
+- `pcm_synth.gd` sinh PCM mono 16-bit/22050 Hz: bốn waveform, pitch sweep, ADSR co theo thời lượng, noise và low-pass. Enum pitch là `PitchCurve` vì `Curve` trùng class Godot.
+- 9 effect có stream prewarm, gồm 7 âm đơn và 2 melody; pool 8 voice, pitch variation cho bốn effect, MARK giữ giới hạn 100 ms. Mute dừng mọi voice. Nút trong composition root phát BTN_PRESS qua signal native.
+- [SFX Tuner](../game/scenes/sfx_tuner.tscn): chạy F6, chọn preset, chỉnh slider/dropdown, Play hoặc Space, Copy Params ra clipboard/console. Melody giữ chuỗi nốt và `note_dur`; output được kiểm tra biên dịch như dictionary GDScript.
+- TDD: engine, player, tuner và dispatch gameplay có test tự động; test feedback cũ đã chuyển từ đường dẫn `.ogg`/mock sang playback thật. Tuner đã kiểm tra render Vulkan và clipboard Windows; ảnh tại `scratch/verification/sfx-tuner-mark.png` và `sfx-tuner-melody.png` trong worktree audio.
+- Full gate đầu tiên PASS: 76 Python tests, 32 Godot suites và content checks; evidence ở checkout gốc: `scratch/verification/20261005T083416.963296Z.txt`, revision `3c3d542` + working tree, source SHA256 `0fcf45bb3c23bd41a950c80871f48f5f406ca38f2123d8aa9cae0be56c8d39e8`. Còn lượt review độc lập và gate cuối trong worktree `D:/Work/Alpaca_Solution/ASOL-Game-02-sfx`.
+- BGM `main_theme.ogg` vẫn thiếu. QA nghe âm sắc/độ lớn/click-pop trên loa, tai nghe và thiết bị mục tiêu chưa thực hiện; chưa phải nghiệm thu phát hành.
+
 ## Bank đầy đủ và campaign 998 level (trên `feat/full-bank-campaign`, chưa merge)
 
 - Đã tạo 36/49/913 level gốc cho 4×4/5×5/6×6, năm rank mỗi kích thước; validator độc lập xác nhận nghiệm duy nhất, trace S2/S3, pace và phủ playlist 998 tham chiếu.
@@ -129,4 +138,4 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 - **Full gate Python:** trên `dev` tại `c577210`, ngày 2026-10-03: **PASS**. Log: `scratch/verification/20261003T102902.224427Z.txt`. Working tree còn uncommitted data + `.uid` — chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
 - **Full gate Godot** cho last-mile 5–6 (bank 6×6, accessibility): chưa chạy — cần Godot executable.
 - **QA UI/thiết bị (Track E):** chưa làm. Cần kiểm gesture (single tap, double tap, swipe), layout màn hình, colorblind mode trên Android. iOS cần môi trường build/signing riêng. Chỉ đánh dấu đạt khi có bằng chứng theo revision.
-- **Track D — Assets:** audio (10 SFX P0 + 1 BGM) và visual (font, logo, candy sprites) chưa có — cần sound designer/artist.
+- **Track D — Assets:** 9 SFX đã có bản procedural trên nhánh audio, còn QA nghe và tích hợp; BGM, font, logo và candy sprites vẫn cần sản xuất/duyệt.

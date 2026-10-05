@@ -3,19 +3,21 @@
 Danh sách audio cần sản xuất cho CanDoKu.
 Mọi âm thanh phải là bản thu/tổng hợp gốc — không sao chép từ reference.
 
+9 SFX hiện được tổng hợp PCM khi khởi động bằng [engine âm thanh](../game/scripts/feedback/pcm_synth.gd). BGM vẫn cần tài sản âm thanh riêng; các SFX bổ sung phía dưới là backlog, chưa triển khai.
+
 ## Chuẩn kỹ thuật chung
 
-- Định dạng: `.ogg` Vorbis, 48 kHz
-- SFX: mono, 16-bit, −10 dBFS peak, không fade dài, không reverb nặng
+- BGM/tài sản file: `.ogg` Vorbis, 48 kHz
+- SFX hiện hành: PCM mono 16-bit, 22050 Hz, sinh bằng `pcm_synth.gd`; sample clamp trước khi encode
 - BGM: stereo (44.1 kHz chấp nhận), −14 LUFS integrated, loop seamless (tail khớp head)
-- Đặt dưới `game/audio/bgm/` và `game/audio/sfx/`
-- SFX bắn liên tục (MARK, TAP, CANDY_YES) nên có 2–3 biến thể chống nhàm
+- BGM đặt dưới `game/audio/bgm/`; SFX lấy preset từ `game/scripts/feedback/sfx_catalog.gd`
+- MARK, CANDY_YES, CANDY_NO và BTN_PRESS có biến thiên pitch 0.94–1.06; MARK giữ giới hạn 100 ms
 
 ---
 
 ## A. BGM — nhạc nền (`game/audio/bgm/`)
 
-Code yêu cầu: `app_shell.gd:72` → `main_theme.ogg`
+Code yêu cầu: `app_shell.gd` → `main_theme.ogg`
 
 | # | File | Vai trò | Loop | Mood |
 |---|------|---------|------|------|
@@ -27,21 +29,25 @@ Code yêu cầu: `app_shell.gd:72` → `main_theme.ogg`
 
 ---
 
-## B. SFX bắt buộc — đã nối trong code (`game/audio/sfx/`)
+## B. SFX hiện hành — procedural PCM
 
-9 file khớp key trong `sfx_catalog.gd:17-25`. Thiếu file = im lặng khi chơi.
+7 preset một âm và 2 melody được prewarm tại `SfxPlayer._ready()`, phát qua pool 8 voice. Không cần các file `.ogg` SFX. Toggle audio tắt cả gameplay và tiếng nút trong composition root.
 
-| # | File | Sự kiện | Thời lượng | Mô tả âm sắc |
-|---|------|---------|------------|---------------|
-| 1 | `mark.ogg` | Đánh/bỏ dấu X một ô | 80–150 ms | tick ngắn, high-mid, không ngân |
-| 2 | `candy_found.ogg` | Đặt kẹo **đúng** | 150–300 ms | chord nhẹ đi lên, "pleasant" |
-| 3 | `candy_wrong.ogg` | Đặt kẹo **sai** / vi phạm luật | 150–300 ms | thud mềm/buzz ngắn, không gắt |
-| 4 | `hint.ogg` | Hiện gợi ý | 300–500 ms | shimmer/sparkle, 2 nốt lên |
-| 5 | `win.ogg` | Giải xong level | 1.2–2.0 s | fanfare ngắn, tươi sáng |
-| 6 | `fail.ogg` | Hết lượt/thua | 0.8–1.2 s | descending, không bi lụy |
-| 7 | `tap.ogg` | Nhấn nút UI chung | 60–120 ms | click nhẹ, neutral |
-| 8 | `enter.ogg` | Mở bàn chơi (vào puzzle) | 300–500 ms | whoosh + chime ngắn |
-| 9 | `restart.ogg` | Chơi lại từ đầu | 200–400 ms | rewind nhẹ, "reset" cảm giác |
+| Effect | Sự kiện | Thời lượng | Preset |
+|---|---|---|---|
+| `MARK` | Đánh/bỏ X | 60 ms | triangle sweep lên |
+| `CANDY_YES` | Kẹo đúng | 140 ms | sine sweep lên, noise nhẹ |
+| `CANDY_NO` | Kẹo sai | 180 ms | square sweep xuống, low-pass |
+| `HINT_SHOW` | Gợi ý | 200 ms | sine sweep lên |
+| `STAGE_CLEAR` | Thắng | 440 ms | 4 nốt đi lên |
+| `STAGE_FAIL` | Thua | 520 ms | 4 nốt đi xuống |
+| `BTN_PRESS` | Nút UI | 40 ms | triangle click |
+| `BOARD_OPEN` | Vào puzzle | 250 ms | triangle sweep lên |
+| `RESTART` | Chơi lại | 150 ms | triangle sweep xuống |
+
+**Chỉnh âm thanh:** mở `game/scenes/sfx_tuner.tscn` trong Godot, nhấn F6; chọn preset, chỉnh control rồi Play/Space. Copy Params ghi dictionary vào clipboard và console. Dán vào `PRESETS`; với thắng/thua, dán vào `MELODY_PRESETS` và giữ chuỗi `freqs`/`note_dur`. Enum pitch dùng `PcmSynth.PitchCurve` để tránh trùng class Godot.
+
+Các preset cần nghe thử trên loa/tai nghe và thiết bị mục tiêu để duyệt âm sắc, độ lớn, click/pop và cảm giác trong gameplay.
 
 ---
 
@@ -63,7 +69,7 @@ Backlog cho sprint polish.
 | 19 | `select_cell.ogg` | Chọn ô (feedback focus) | 50–100 ms | cực ngắn, rất nhẹ |
 | 20 | `conflict_pulse.ogg` | Highlight xung đột | 200–300 ms | wobble/low thud |
 
-**Biến thể chống nhàm:** làm 2–3 bản `mark_a/b/c.ogg`, `tap_a/b.ogg`, `candy_found_a/b.ogg`, `select_cell_a/b.ogg`. Cần mở rộng `sfx_player.gd` để random chọn biến thể.
+**Biến thể bổ sung:** pitch variation hiện đã áp dụng cho bốn effect. Nếu cần nhiều âm sắc, thêm preset tổng hợp hoặc thiết kế cơ chế biến thể trong một task polish riêng.
 
 ---
 
@@ -79,7 +85,7 @@ Backlog cho sprint polish.
 
 ---
 
-## E. Checklist bàn giao mỗi file audio
+## E. Checklist bàn giao BGM hoặc tài sản audio file bổ sung
 
 - [ ] Tên file đúng danh sách, snake_case
 - [ ] Không chứa trademark/giọng nói/âm mèo thương mại của reference

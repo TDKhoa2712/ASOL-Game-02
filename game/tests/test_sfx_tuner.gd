@@ -24,7 +24,7 @@ func _run() -> void:
 	_check(tuner._player.playing, "Space previews while dropdown has focus")
 	if OS.get_cmdline_user_args().has("--capture"):
 		tuner._on_copy_params()
-		_check(DisplayServer.clipboard_get() == tuner._params_literal(tuner._current_params()), "Copy button writes clipboard")
+		_check(DisplayServer.clipboard_get().replace("\r\n", "\n") == tuner._params_literal(tuner._current_params()), "Copy button writes clipboard")
 		await RenderingServer.frame_post_draw
 		root.get_texture().get_image().save_png(ProjectSettings.globalize_path("res://../scratch/verification/sfx-tuner-mark.png"))
 	for effect in SfxCatalog.Effect.values():
