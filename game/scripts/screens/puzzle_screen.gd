@@ -35,22 +35,13 @@ var restart_confirm: ConfirmationDialog
 var hint_overlay: HintOverlay
 
 func _ensure_nodes() -> void:
-	if board != null:
-		return
-	var nodes: Dictionary = PuzzleLayout.build(self)
-	board = nodes["board"]
-	hearts_display = nodes["lives"]
-	region_display = nodes["regions"]
-	hint_btn = nodes["hint"]
-	restart_btn = nodes["restart"]
-	home_btn = nodes["back"]
-	help_btn = nodes["help"]
-	settings_btn = nodes["settings"]
-	level_label = nodes["level"]
-	rules_card = nodes["rules"]
-	undo_btn = nodes["undo"]
-	restart_confirm = nodes["confirm"]
-	hint_overlay = nodes.get("hint_overlay")
+	if board != null: return
+	var n: Dictionary = PuzzleLayout.build(self)
+	board = n["board"]; hearts_display = n["lives"]; region_display = n["regions"]
+	hint_btn = n["hint"]; restart_btn = n["restart"]; home_btn = n["back"]
+	help_btn = n["help"]; settings_btn = n["settings"]; level_label = n["level"]
+	rules_card = n["rules"]; undo_btn = n["undo"]; restart_confirm = n["confirm"]
+	hint_overlay = n.get("hint_overlay")
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -258,15 +249,16 @@ func _on_home() -> void:
 	go_home.emit()
 
 func _on_help() -> void:
-	if rules_card != null:
-		rules_card.visible = not rules_card.visible
+	if rules_card != null: rules_card.visible = not rules_card.visible
 
 func _on_settings() -> void:
 	options_pressed.emit()
 
-func _on_candy_found(_row: int, _col: int, _region: String) -> void:
+func _on_candy_found(row: int, col: int, _region: String) -> void:
 	if hint_overlay != null and hint_overlay.is_showing():
 		hint_overlay.dismiss()
+	if board != null:
+		board.play_candy_pop(row, col)
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_YES)
 	Vibration.pulse(Vibration.Strength.NORMAL)
@@ -277,6 +269,8 @@ func _on_candy_found(_row: int, _col: int, _region: String) -> void:
 		board.redraw()
 
 func _on_mistake(_row: int, _col: int, _clash: String) -> void:
+	if board != null:
+		board.play_error_shake()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_NO)
 	Vibration.pulse(Vibration.Strength.FIRM)
@@ -285,13 +279,14 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 		board.redraw()
 
 func _on_level_won() -> void:
+	if board != null:
+		board.play_win_bounce()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	level_done.emit(true)
 
 func _on_level_failed() -> void:
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.STAGE_FAIL)
+	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	level_done.emit(false)
 
 static func _btn_conn(btn: Button, target: Callable) -> void:
