@@ -15,7 +15,7 @@ const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 
 var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
-var session: Variant = null; var _hint_click_count: int = 0
+var session: Variant = null; var _hint_click_count: int = 0; var _is_custom: bool = false
 
 var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
 var restart_btn: Button; var home_btn: Button; var timer_label: Label
@@ -56,10 +56,16 @@ func _connect_ui() -> void:
 
 func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Dictionary = {}) -> void:
 	runtime = rt; sfx = sfx_player; config = cfg; _hint_click_count = 0
-	if not custom_lvl.is_empty():
+	_is_custom = not custom_lvl.is_empty()
+	if _is_custom:
 		session = PlaySession.new(custom_lvl)
 	elif runtime != null:
-		session = runtime.current_session if runtime.current_session != null else (runtime.resume_level() if runtime.has_pending_session() else runtime.start_level(runtime.current_level_label()))
+		if runtime.current_session != null:
+			session = runtime.current_session
+		elif runtime.has_pending_session():
+			session = runtime.resume_level()
+		if session == null:
+			session = runtime.start_level(runtime.current_level_label())
 	_ensure_nodes()
 	if board != null and session != null:
 		if config != null:
@@ -89,7 +95,7 @@ static func _sig_conn(sig: Signal, target: Callable) -> void:
 		sig.connect(target)
 
 func _on_session_state_changed() -> void:
-	if runtime != null and session != null and runtime.sessions != null and session.phase == 0:
+	if not _is_custom and runtime != null and session != null and runtime.sessions != null and session.phase == 0:
 		runtime.sessions.save_session(session.to_save_data())
 
 func _process(delta: float) -> void:
@@ -192,16 +198,20 @@ func _confirm_restart() -> void:
 	if hint_overlay != null and hint_overlay.is_showing():
 		hint_overlay.dismiss()
 	_hint_click_count = 0
-	if runtime != null:
+	if _is_custom and session != null:
+		session = PlaySession.new(session.level)
+	elif runtime != null:
 		session = runtime.restart_level()
-		if board != null:
-			if config != null:
-				board.set_colorblind(config.get_option("colorblind"))
-			board.configure(session)
-		_connect_session()
-		_update_hearts()
-		if sfx != null:
-			sfx.play(SfxCatalog.Effect.RESTART)
+	if board != null and session != null:
+		if config != null:
+			board.set_colorblind(config.get_option("colorblind"))
+			board.set_high_contrast(config.get_option("high_contrast"))
+		board.configure(session)
+	_connect_session()
+	_update_hearts()
+	_update_timer(0.0)
+	if sfx != null:
+		sfx.play(SfxCatalog.Effect.RESTART)
 
 func set_undo_visible(enabled: bool) -> void:
 	_ensure_nodes()
@@ -232,7 +242,7 @@ func _on_home() -> void:
 		hint_overlay.dismiss()
 	if board != null:
 		board.settle_input()
-	if runtime != null and session != null and runtime.sessions != null:
+	if not _is_custom and runtime != null and session != null and runtime.sessions != null:
 		runtime.sessions.save_session(session.to_save_data())
 	go_home.emit()
 

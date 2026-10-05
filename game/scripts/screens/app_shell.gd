@@ -170,13 +170,17 @@ func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 			_debug_next = runtime._fetch_level(s, r, nxt_i, tr)
 			_debug_next_lbl = "Bank %dx%d R%d #%d" % [s, s, r, nxt_i]; _debug_next["id"] = _debug_next_lbl
 			_debug_next["_bank_meta"] = {"size": s, "rank": r, "index": nxt_i, "transform": tr}
-	nav.go_to(NavController.Screen.PUZZLE)
+	if nav.current() == NavController.Screen.PUZZLE:
+		_swap_screen("puzzle", "puzzle")
+	else:
+		nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_puzzle_home() -> void:
 	_debug_mode = false; _debug_lvl = {}; _debug_next = {}
 	nav.go_to(NavController.Screen.TITLE)
 
 func _on_title_play() -> void:
+	_debug_mode = false; _debug_lvl = {}; _debug_next = {}
 	if runtime != null and runtime.is_campaign_done():
 		runtime.replay_campaign()
 	nav.go_to(NavController.Screen.PUZZLE)
@@ -185,7 +189,7 @@ func _on_level_done(won: bool) -> void:
 	var label := _debug_label if _debug_mode else runtime.current_level_label()
 	_last_won_level = label
 	var cur_sc := screen_host.get_child(0) if screen_host != null and screen_host.get_child_count() > 0 else null
-	var sess = cur_sc.get("session") if cur_sc != null else (runtime.current_session if runtime != null else null)
+	var sess = cur_sc.get("session") if (cur_sc != null and cur_sc.get("session") != null) else (runtime.current_session if runtime != null else null)
 	var elapsed: int = sess.elapsed_ms if sess != null else 0
 	_last_won_elapsed = elapsed
 	if _debug_mode:
@@ -209,18 +213,30 @@ func _on_next_level() -> void:
 		else:
 			_debug_mode = false; nav.go_to(NavController.Screen.TITLE)
 		return
-	nav.go_to(NavController.Screen.PUZZLE)
+	if nav.current() == NavController.Screen.PUZZLE:
+		_swap_screen("puzzle", "puzzle")
+	else:
+		nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_retry_level() -> void:
 	if _debug_mode:
-		nav.go_to(NavController.Screen.PUZZLE)
+		if nav.current() == NavController.Screen.PUZZLE:
+			_swap_screen("puzzle", "puzzle")
+		else:
+			nav.go_to(NavController.Screen.PUZZLE)
 		return
 	if runtime != null: runtime.restart_level()
-	nav.go_to(NavController.Screen.PUZZLE)
+	if nav.current() == NavController.Screen.PUZZLE:
+		_swap_screen("puzzle", "puzzle")
+	else:
+		nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_replay_campaign() -> void:
 	runtime.replay_campaign()
-	nav.go_to(NavController.Screen.PUZZLE)
+	if nav.current() == NavController.Screen.PUZZLE:
+		_swap_screen("puzzle", "puzzle")
+	else:
+		nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_options_back() -> void:
 	nav.go_to(NavController.Screen.PUZZLE if _previous_screen_name == "puzzle" else NavController.Screen.TITLE)

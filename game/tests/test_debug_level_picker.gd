@@ -123,6 +123,15 @@ func _run_tests() -> void:
 	_assert(not app_shell._debug_mode, "Debug mode exited on return to home")
 	_assert(app_shell.runtime.current_level_label() == initial_main_level, "Main level untouched upon returning home")
 
+	# Test 10: Normal play mode enters successfully after debug mode
+	app_shell._on_title_play()
+	await process_frame
+	await process_frame
+	var normal_puzzle = app_shell.screen_host.get_child(0)
+	_assert(normal_puzzle != null and normal_puzzle.session != null, "Normal puzzle screen instantiated with active session after debug mode")
+	_assert(normal_puzzle.session != null and normal_puzzle.session.level.get("id") == initial_main_level, "Normal puzzle loaded correct campaign level %s" % initial_main_level)
+	_assert(not app_shell._debug_mode, "AppShell is not in debug mode during normal play")
+
 	app_shell.queue_free()
 	await process_frame
 

@@ -113,7 +113,7 @@ func resume_level() -> PlaySession:
 		return null
 	var saved := sessions.load_session(current_level_label(), level.hash)
 	if not saved.ok:
-		if saved.recreate:
+		if saved.recreate or saved.reason == "level_mismatch":
 			sessions.clear()
 		return null
 	if saved.data.has("snapshot") and saved.data.snapshot is Dictionary:
