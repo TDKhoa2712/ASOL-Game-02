@@ -6,6 +6,7 @@ const RuleIcon = preload("res://scripts/screens/rule_icon.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
+const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 
 static func build(root: Control) -> Dictionary:
 	var background := ColorRect.new()
@@ -98,6 +99,7 @@ static func build(root: Control) -> Dictionary:
 	var board_card := _panel("BoardCard", Palette.BOARD_CARD_CORNER, Palette.CARD_SHADOW)
 	board_card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	stack.add_child(board_card)
+
 	var center := CenterContainer.new()
 	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	board_card.add_child(center)
@@ -106,6 +108,13 @@ static func build(root: Control) -> Dictionary:
 	board.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	board.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	center.add_child(board)
+
+	var hint_overlay := HintOverlay.new()
+	hint_overlay.name = "HintOverlay"
+	hint_overlay.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	hint_overlay.size_flags_vertical = Control.SIZE_SHRINK_END
+	hint_overlay.custom_minimum_size = Vector2(500, 0)
+	board_card.add_child(hint_overlay)
 
 	var dock := HBoxContainer.new()
 	dock.name = "BottomDock"
@@ -125,7 +134,7 @@ static func build(root: Control) -> Dictionary:
 	root.add_child(confirm)
 	return {"board": board, "back": back, "help": help, "restart": restart,
 		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
-		"regions": region_row, "lives": lives_row, "rules": rules}
+		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay}
 
 static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer) -> void:
 	if session == null:

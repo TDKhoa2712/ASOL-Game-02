@@ -11,6 +11,7 @@ const BoardSolver = preload("res://scripts/core/board_solver.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
+const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 
 var runtime: Variant = null
 var sfx: Variant = null
@@ -31,23 +32,16 @@ var region_display: HBoxContainer
 var rules_card: PanelContainer
 var undo_btn: Button
 var restart_confirm: ConfirmationDialog
+var hint_overlay: HintOverlay
 
 func _ensure_nodes() -> void:
-	if board != null:
-		return
-	var nodes: Dictionary = PuzzleLayout.build(self)
-	board = nodes["board"]
-	hearts_display = nodes["lives"]
-	region_display = nodes["regions"]
-	hint_btn = nodes["hint"]
-	restart_btn = nodes["restart"]
-	home_btn = nodes["back"]
-	help_btn = nodes["help"]
-	settings_btn = nodes["settings"]
-	level_label = nodes["level"]
-	rules_card = nodes["rules"]
-	undo_btn = nodes["undo"]
-	restart_confirm = nodes["confirm"]
+	if board != null: return
+	var n: Dictionary = PuzzleLayout.build(self)
+	board = n["board"]; hearts_display = n["lives"]; region_display = n["regions"]
+	hint_btn = n["hint"]; restart_btn = n["restart"]; home_btn = n["back"]
+	help_btn = n["help"]; settings_btn = n["settings"]; level_label = n["level"]
+	rules_card = n["rules"]; undo_btn = n["undo"]; restart_confirm = n["confirm"]
+	hint_overlay = n.get("hint_overlay")
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -55,20 +49,14 @@ func _ready() -> void:
 
 func _connect_ui() -> void:
 	_ensure_nodes()
-	if hint_btn != null and not hint_btn.pressed.is_connected(_on_hint):
-		hint_btn.pressed.connect(_on_hint)
-	if restart_btn != null and not restart_btn.pressed.is_connected(_on_restart):
-		restart_btn.pressed.connect(_on_restart)
-	if undo_btn != null and not undo_btn.pressed.is_connected(_on_undo):
-		undo_btn.pressed.connect(_on_undo)
+	_btn_conn(hint_btn, _on_hint)
+	_btn_conn(restart_btn, _on_restart)
+	_btn_conn(undo_btn, _on_undo)
+	_btn_conn(home_btn, _on_home)
+	_btn_conn(help_btn, _on_help)
+	_btn_conn(settings_btn, _on_settings)
 	if restart_confirm != null and not restart_confirm.confirmed.is_connected(_confirm_restart):
 		restart_confirm.confirmed.connect(_confirm_restart)
-	if home_btn != null and not home_btn.pressed.is_connected(_on_home):
-		home_btn.pressed.connect(_on_home)
-	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
-		help_btn.pressed.connect(_on_help)
-	if settings_btn != null and not settings_btn.pressed.is_connected(_on_settings):
-		settings_btn.pressed.connect(_on_settings)
 	if board != null:
 		if not board.cell_tapped.is_connected(_on_board_tap):
 			board.cell_tapped.connect(_on_board_tap)
@@ -83,12 +71,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
 	config = cfg
 	_hint_click_count = 0
 	if runtime != null:
-		if runtime.current_session != null:
-			session = runtime.current_session
-		elif runtime.has_pending_session():
-			session = runtime.resume_level()
-		else:
-			session = runtime.start_level(runtime.current_level_label())
+		session = runtime.current_session if runtime.current_session != null else (runtime.resume_level() if runtime.has_pending_session() else runtime.start_level(runtime.current_level_label()))
 	_ensure_nodes()
 	if board != null and session != null:
 		if config != null:
@@ -107,16 +90,15 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null) -> void:
 func _connect_session() -> void:
 	if session == null:
 		return
-	if not session.candy_found.is_connected(_on_candy_found):
-		session.candy_found.connect(_on_candy_found)
-	if not session.mistake_made.is_connected(_on_mistake):
-		session.mistake_made.connect(_on_mistake)
-	if not session.level_won.is_connected(_on_level_won):
-		session.level_won.connect(_on_level_won)
-	if not session.level_failed.is_connected(_on_level_failed):
-		session.level_failed.connect(_on_level_failed)
-	if not session.state_changed.is_connected(_on_session_state_changed):
-		session.state_changed.connect(_on_session_state_changed)
+	_sig_conn(session.candy_found, _on_candy_found)
+	_sig_conn(session.mistake_made, _on_mistake)
+	_sig_conn(session.level_won, _on_level_won)
+	_sig_conn(session.level_failed, _on_level_failed)
+	_sig_conn(session.state_changed, _on_session_state_changed)
+
+static func _sig_conn(sig: Signal, target: Callable) -> void:
+	if not sig.is_connected(target):
+		sig.connect(target)
 
 func _on_session_state_changed() -> void:
 	if runtime != null and session != null and runtime.sessions != null and session.phase == 0:
@@ -178,15 +160,20 @@ func _on_board_swipe(cells: Array) -> void:
 func _on_hint() -> void:
 	if session == null or runtime == null:
 		return
+	if hint_overlay != null and hint_overlay.is_showing():
+		hint_overlay.dismiss()
+		if board != null:
+			board.clear_highlight()
+		return
 	var pace_data: Dictionary = runtime.current_pace()
 	var costs: Array = pace_data.get("hintCosts", [1])
 	var max_clicks: int = costs.size()
 	if _hint_click_count >= max_clicks:
 		return
-	var level: Dictionary = session.level
+	var lvl: Dictionary = session.level
 	var hint: Dictionary = BoardSolver.progressive_hint(
-		session.board, level["size"], level["regions"],
-		level["solution"], _hint_click_count + 1
+		session.board, lvl["size"], lvl["regions"],
+		lvl["solution"], _hint_click_count + 1
 	)
 	if not hint.get("found", true) or hint.get("stage") == "none":
 		return
@@ -195,6 +182,15 @@ func _on_hint() -> void:
 	var hl: Array = hint.get("highlight", [])
 	if board != null and not hl.is_empty():
 		board.highlight_cells(hl)
+	var explanation: String = str(hint.get("text", ""))
+	var stage: String = str(hint.get("stage", ""))
+	var unit_label: String = ""
+	if stage == "unit":
+		unit_label = "Xem kỹ khu vực này"
+	elif stage == "cell":
+		unit_label = "Đặt kẹo ở đây"
+	if hint_overlay != null and explanation != "":
+		hint_overlay.show_hint(explanation, unit_label)
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.HINT_SHOW)
 
@@ -205,6 +201,8 @@ func _on_restart() -> void:
 		restart_confirm.popup_centered(Vector2i(650, 260))
 
 func _confirm_restart() -> void:
+	if hint_overlay != null and hint_overlay.is_showing():
+		hint_overlay.dismiss()
 	_hint_click_count = 0
 	if runtime != null:
 		session = runtime.restart_level()
@@ -219,8 +217,7 @@ func _confirm_restart() -> void:
 
 func set_undo_visible(enabled: bool) -> void:
 	_ensure_nodes()
-	if undo_btn != null:
-		undo_btn.visible = enabled
+	if undo_btn != null: undo_btn.visible = enabled
 
 func set_high_contrast_and_redraw(enabled: bool) -> void:
 	_ensure_nodes()
@@ -230,10 +227,11 @@ func set_high_contrast_and_redraw(enabled: bool) -> void:
 
 func set_large_text(enabled: bool) -> void:
 	_ensure_nodes()
-	if level_label != null:
-		level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
+	if level_label != null: level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
 
 func _on_undo() -> void:
+	if hint_overlay != null and hint_overlay.is_showing():
+		hint_overlay.dismiss()
 	if board != null:
 		board.settle_input()
 	if session != null:
@@ -242,6 +240,8 @@ func _on_undo() -> void:
 			board.clear_highlight()
 
 func _on_home() -> void:
+	if hint_overlay != null and hint_overlay.is_showing():
+		hint_overlay.dismiss()
 	if board != null:
 		board.settle_input()
 	if runtime != null and session != null and runtime.sessions != null:
@@ -249,13 +249,16 @@ func _on_home() -> void:
 	go_home.emit()
 
 func _on_help() -> void:
-	if rules_card != null:
-		rules_card.visible = not rules_card.visible
+	if rules_card != null: rules_card.visible = not rules_card.visible
 
 func _on_settings() -> void:
 	options_pressed.emit()
 
-func _on_candy_found(_row: int, _col: int, _region: String) -> void:
+func _on_candy_found(row: int, col: int, _region: String) -> void:
+	if hint_overlay != null and hint_overlay.is_showing():
+		hint_overlay.dismiss()
+	if board != null:
+		board.play_candy_pop(row, col)
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_YES)
 	Vibration.pulse(Vibration.Strength.NORMAL)
@@ -266,6 +269,8 @@ func _on_candy_found(_row: int, _col: int, _region: String) -> void:
 		board.redraw()
 
 func _on_mistake(_row: int, _col: int, _clash: String) -> void:
+	if board != null:
+		board.play_error_shake()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_NO)
 	Vibration.pulse(Vibration.Strength.FIRM)
@@ -274,11 +279,16 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 		board.redraw()
 
 func _on_level_won() -> void:
+	if board != null:
+		board.play_win_bounce()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	level_done.emit(true)
 
 func _on_level_failed() -> void:
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.STAGE_FAIL)
+	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	level_done.emit(false)
+
+static func _btn_conn(btn: Button, target: Callable) -> void:
+	if btn != null and not btn.pressed.is_connected(target):
+		btn.pressed.connect(target)

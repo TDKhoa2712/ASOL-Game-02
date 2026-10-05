@@ -8,10 +8,14 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const TouchDecoder = preload("res://scripts/input/touch_decoder.gd")
 const TouchGuard = preload("res://scripts/input/touch_guard.gd")
 const BoardPointerRouter = preload("res://scripts/input/board_pointer_router.gd")
+const CellAnimator = preload("res://scripts/screens/cell_animator.gd")
 
 signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
 signal cell_swiped(cells: Array)
+signal candy_placed_anim(row: int, col: int)
+signal error_anim(row: int, col: int)
+signal win_anim()
 
 const OVERLAY_CHARS = ["", "★", "◆", "♥", "▲", "✕", "●"]
 
@@ -28,6 +32,7 @@ var _highlight_cells: Array = []
 var _highlight_unit: String = ""
 var _preview_cells: Array = []
 var _preview_mark: bool = true
+var _highlight_pulse_phase: float = 0.0
 var _touch_in_progress: bool = false
 
 func configure(session: Variant) -> void:
@@ -55,14 +60,9 @@ func configure(session: Variant) -> void:
 	_preview_cells = []
 	queue_redraw()
 
-func set_colorblind(enabled: bool) -> void:
-	_colorblind = enabled
-
-func set_high_contrast(enabled: bool) -> void:
-	_high_contrast = enabled
-
-func redraw() -> void:
-	queue_redraw()
+func set_colorblind(enabled: bool) -> void: _colorblind = enabled
+func set_high_contrast(enabled: bool) -> void: _high_contrast = enabled
+func redraw() -> void: queue_redraw()
 
 func settle_input() -> void:
 	if _guard != null:
@@ -72,9 +72,7 @@ func settle_input() -> void:
 		_decoder.cancel()
 
 func highlight_cell(row: int, col: int) -> void:
-	_highlight_cells = [[row, col]]
-	_highlight_unit = ""
-	queue_redraw()
+	highlight_cells([[row, col]])
 
 func highlight_cells(cells: Array) -> void:
 	_highlight_cells = cells.duplicate()
@@ -89,7 +87,20 @@ func highlight_unit(unit_type: String, unit_id: Variant) -> void:
 func clear_highlight() -> void:
 	_highlight_cells = []
 	_highlight_unit = ""
+	_highlight_pulse_phase = 0.0
 	queue_redraw()
+
+func play_candy_pop(row: int, col: int) -> void:
+	CellAnimator.play_candy_pop(self, _cell_rect(row, col))
+	candy_placed_anim.emit(row, col)
+
+func play_error_shake() -> void:
+	CellAnimator.play_error_shake(self)
+	error_anim.emit(0, 0)
+
+func play_win_bounce() -> void:
+	CellAnimator.play_win_bounce(self, _session, _cell_rect)
+	win_anim.emit()
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -120,6 +131,11 @@ func _on_preview_changed(cells: Array) -> void:
 func _process(_delta: float) -> void:
 	if _decoder != null:
 		_decoder.tick(Time.get_ticks_msec())
+	if not _highlight_cells.is_empty():
+		_highlight_pulse_phase += _delta * 4.8
+		if _highlight_pulse_phase > TAU:
+			_highlight_pulse_phase -= TAU
+		queue_redraw()
 
 func _gui_input(event: InputEvent) -> void:
 	if _session == null or _decoder == null or _guard == null or _session.phase != 0:
@@ -147,6 +163,18 @@ func _board_rect() -> Rect2:
 func _cell_gap(board_w: float) -> float:
 	return maxf(3.0, board_w * LayoutTokens.CELL_GAP_RATIO)
 
+func _cell_rect(row: int, col: int) -> Rect2:
+	if _session == null:
+		return Rect2()
+	var br := _board_rect()
+	var count := int(_session.level.get("size", 0))
+	if count <= 0:
+		return Rect2()
+	var gap := _cell_gap(br.size.x)
+	var cell_w := (br.size.x - gap * float(count - 1)) / float(count)
+	var pos := br.position + Vector2(float(col) * (cell_w + gap), float(row) * (cell_w + gap))
+	return Rect2(pos, Vector2(cell_w, cell_w))
+
 func _cell_at(pos: Vector2) -> Array:
 	if _session == null:
 		return []
@@ -157,14 +185,11 @@ func _cell_at(pos: Vector2) -> Array:
 	if count <= 0:
 		return []
 	var gap := _cell_gap(br.size.x)
-	var cell_size := (br.size.x - gap * float(count - 1)) / float(count)
-	var step := cell_size + gap
+	var step := (br.size.x - gap * float(count - 1)) / float(count) + gap
 	var rel := pos - br.position
 	var c := int(rel.x / step)
 	var r := int(rel.y / step)
-	if r < 0 or r >= count or c < 0 or c >= count:
-		return []
-	return [r, c]
+	return [r, c] if (r >= 0 and r < count and c >= 0 and c < count) else []
 
 func _cells_in_unit(unit_type: String, unit_id: Variant) -> Array:
 	if _session == null:
@@ -173,11 +198,7 @@ func _cells_in_unit(unit_type: String, unit_id: Variant) -> Array:
 	var cells: Array = []
 	for r in range(count):
 		for c in range(count):
-			if unit_type == "row" and r == int(unit_id):
-				cells.append([r, c])
-			elif unit_type == "col" and c == int(unit_id):
-				cells.append([r, c])
-			elif unit_type == "zone" and _zone_grid.size() > r and _zone_grid[r][c] == str(unit_id):
+			if (unit_type == "row" and r == int(unit_id)) or (unit_type == "col" and c == int(unit_id)) or (unit_type == "zone" and _zone_grid.size() > r and _zone_grid[r][c] == str(unit_id)):
 				cells.append([r, c])
 	return cells
 
@@ -188,8 +209,7 @@ func _draw() -> void:
 	var card_sb := StyleBoxFlat.new()
 	card_sb.bg_color = Palette.PILL_BG
 	card_sb.set_corner_radius_all(int(br.size.x * LayoutTokens.CARD_CORNER_RATIO))
-	var expanded_rect := br.grow(LayoutTokens.CARD_GROW)
-	draw_style_box(card_sb, expanded_rect)
+	draw_style_box(card_sb, br.grow(LayoutTokens.CARD_GROW))
 
 	var count := int(_session.level.get("size", 0))
 	if count <= 0:
@@ -200,8 +220,7 @@ func _draw() -> void:
 
 	for r in range(count):
 		for c in range(count):
-			var pos := br.position + Vector2(float(c) * (cell_w + gap), float(r) * (cell_w + gap))
-			var cell_rect := Rect2(pos, Vector2(cell_w, cell_w))
+			var cell_rect := _cell_rect(r, c)
 			var zone := str(_zone_grid[r][c]) if _zone_grid.size() > r and _zone_grid[r].size() > c else ""
 			var base_col: Color = _zone_colors.get(zone, Palette.BG_CREAM)
 			var sb := StyleBoxFlat.new()
@@ -210,12 +229,7 @@ func _draw() -> void:
 			draw_style_box(sb, cell_rect)
 
 			if _high_contrast:
-				var hc_sb := StyleBoxFlat.new()
-				hc_sb.draw_center = false
-				hc_sb.border_color = Palette.MARK_STROKE
-				hc_sb.set_border_width_all(2)
-				hc_sb.set_corner_radius_all(cr)
-				draw_style_box(hc_sb, cell_rect)
+				_draw_border(cell_rect, Palette.MARK_STROKE, 2, cr)
 			var icon_val: int = _zone_overlays.get(zone, 0)
 			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
 				var is_dark := base_col.get_luminance() < 0.5
@@ -237,45 +251,39 @@ func _draw() -> void:
 				draw_style_box(ov_sb, cell_rect)
 
 			match kind:
-				CellModel.CellKind.MARK:
-					_draw_cell_x(cell_rect, false)
-				CellModel.CellKind.CANDY:
-					_draw_cell_candy(cell_rect, false)
-				CellModel.CellKind.ERROR:
-					_draw_cell_x(cell_rect, true)
-				CellModel.CellKind.GIVEN:
-					_draw_cell_candy(cell_rect, true)
+				CellModel.CellKind.MARK: _draw_cell_x(cell_rect, false)
+				CellModel.CellKind.CANDY: _draw_cell_candy(cell_rect, false)
+				CellModel.CellKind.ERROR: _draw_cell_x(cell_rect, true)
+				CellModel.CellKind.GIVEN: _draw_cell_candy(cell_rect, true)
 
 			if _highlight_cells.has([r, c]):
-				var hl_sb := StyleBoxFlat.new()
-				hl_sb.draw_center = false
-				hl_sb.border_color = Palette.ACCENT_ORANGE
-				hl_sb.set_border_width_all(3)
-				hl_sb.set_corner_radius_all(cr)
-				draw_style_box(hl_sb, cell_rect)
+				var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(_highlight_pulse_phase))
+				_draw_border(cell_rect, Color(Palette.ACCENT_ORANGE, pulse_alpha), 3, cr)
+
+func _draw_border(rect: Rect2, color: Color, width: int, radius: int) -> void:
+	var sb := StyleBoxFlat.new()
+	sb.draw_center = false
+	sb.border_color = color
+	sb.set_border_width_all(width)
+	sb.set_corner_radius_all(radius)
+	draw_style_box(sb, rect)
 
 func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
 	if is_given:
 		draw_circle(rect.get_center(), rect.size.x * 0.38, Palette.GIVEN_HALO)
 	if _candy_tex != null:
 		var candy_size := rect.size * 0.74
-		var candy_rect := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
-		draw_texture_rect(_candy_tex, candy_rect, false)
+		draw_texture_rect(_candy_tex, Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size), false)
 	else:
 		_draw_candy_procedural(rect)
 
 func _draw_candy_procedural(rect: Rect2) -> void:
 	var center := rect.get_center()
 	var radius := rect.size.x * 0.25
-	var outline := Palette.CANDY_OUTLINE
-	for direction in [-1.0, 1.0]:
-		var wrapper := PackedVector2Array([
-			center + Vector2(direction * radius * 0.65, 0),
-			center + Vector2(direction * radius * 1.6, -radius * 0.65),
-			center + Vector2(direction * radius * 1.6, radius * 0.65),
-		])
-		draw_colored_polygon(wrapper, Palette.CANDY_LIGHT)
-		draw_polyline(wrapper, outline, 2.0, true)
+	for dir in [-1.0, 1.0]:
+		var poly := PackedVector2Array([center + Vector2(dir * radius * 0.65, 0), center + Vector2(dir * radius * 1.6, -radius * 0.65), center + Vector2(dir * radius * 1.6, radius * 0.65)])
+		draw_colored_polygon(poly, Palette.CANDY_LIGHT)
+		draw_polyline(poly, Palette.CANDY_OUTLINE, 2.0, true)
 	draw_circle(center, radius, Palette.CANDY_BROWN)
 	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
 
@@ -283,12 +291,8 @@ func _draw_cell_x(rect: Rect2, is_error: bool) -> void:
 	var stroke_col: Color = Palette.ERROR_RED if is_error else (Palette.MARK_STROKE if _high_contrast else Palette.MARK_WHITE)
 	var pad := rect.size.x * 0.28
 	var w := maxf(4.0, rect.size.x * (0.12 if _high_contrast else 0.09))
-	var p1 := rect.position + Vector2(pad, pad)
-	var p2 := rect.end - Vector2(pad, pad)
-	var p3 := Vector2(rect.end.x - pad, rect.position.y + pad)
-	var p4 := Vector2(rect.position.x + pad, rect.end.y - pad)
-	draw_line(p1, p2, stroke_col, w, true)
-	draw_line(p3, p4, stroke_col, w, true)
+	draw_line(rect.position + Vector2(pad, pad), rect.end - Vector2(pad, pad), stroke_col, w, true)
+	draw_line(Vector2(rect.end.x - pad, rect.position.y + pad), Vector2(rect.position.x + pad, rect.end.y - pad), stroke_col, w, true)
 	if is_error:
 		var badge_center := rect.position + rect.size * Vector2(0.78, 0.22)
 		draw_circle(badge_center, rect.size.x * 0.09, Palette.TEXT_ON_ACCENT)
