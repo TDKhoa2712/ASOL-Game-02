@@ -1,45 +1,62 @@
-# sfx_player.gd
 extends Node
 
+const PcmSynth = preload("res://scripts/feedback/pcm_synth.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
+const POOL_SIZE: int = 8
 
-var _streams: Dictionary = {}       # Effect -> AudioStream
-var _players: Dictionary = {}       # Effect -> AudioStreamPlayer
-var _last_play_ms: Dictionary = {}  # Effect -> int (last play timestamp)
+var _streams: Dictionary = {}
+var _pool: Array[AudioStreamPlayer] = []
+var _pool_idx: int = 0
+var _last_play_ms: Dictionary = {}
 var _muted: bool = false
 
 func _ready() -> void:
+	for index in range(POOL_SIZE):
+		var voice := AudioStreamPlayer.new()
+		voice.bus = &"Master"
+		add_child(voice)
+		_pool.append(voice)
 	for effect in SfxCatalog.Effect.values():
-		var path: String = SfxCatalog.FILE_MAP.get(effect, "")
-		if path != "" and (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
-			var stream := load(path) as AudioStream
-			if stream:
-				_streams[effect] = stream
-				var player := AudioStreamPlayer.new()
-				player.stream = stream
-				player.bus = &"Master"
-				add_child(player)
-				_players[effect] = player
+		if SfxCatalog.PRESETS.has(effect):
+			_streams[effect] = PcmSynth.generate(SfxCatalog.PRESETS[effect])
+		elif SfxCatalog.MELODY_PRESETS.has(effect):
+			var preset: Dictionary = SfxCatalog.MELODY_PRESETS[effect]
+			var frequencies: Array[float] = []
+			for frequency in preset.freqs: frequencies.append(float(frequency))
+			_streams[effect] = PcmSynth.generate_melody(frequencies, preset.note_dur,
+				preset.volume, preset.wave)
+	# Native lifecycle signals also catch buttons built by screen scripts.
+	get_tree().node_added.connect(_on_ui_node_added)
+	_bind_existing_buttons(get_parent())
+
+func _bind_existing_buttons(node: Node) -> void:
+	_on_ui_node_added(node)
+	for child in node.get_children(): _bind_existing_buttons(child)
+
+func _on_ui_node_added(node: Node) -> void:
+	if node is BaseButton and get_parent().is_ancestor_of(node):
+		var cue := play.bind(SfxCatalog.Effect.BTN_PRESS)
+		if not node.pressed.is_connected(cue): node.pressed.connect(cue)
 
 func play(effect: int) -> void:
-	if _muted:
+	if _muted or _pool.is_empty() or not _streams.has(effect):
 		return
 	var now := Time.get_ticks_msec()
-	if SfxCatalog.MIN_INTERVAL_MS.has(effect):
-		var last: int = _last_play_ms.get(effect, -100000)
-		if now - last < SfxCatalog.MIN_INTERVAL_MS[effect]:
-			return  # throttled
+	var interval: int = int(SfxCatalog.MIN_INTERVAL_MS.get(effect, 0))
+	if now - int(_last_play_ms.get(effect, -100000)) < interval:
+		return
 	_last_play_ms[effect] = now
-	var player: AudioStreamPlayer = _players.get(effect)
-	if player:
-		player.play()
+	var voice := _pool[_pool_idx]
+	_pool_idx = (_pool_idx + 1) % POOL_SIZE
+	voice.stop()
+	voice.stream = _streams[effect]
+	voice.pitch_scale = randf_range(0.94, 1.06) if SfxCatalog.PITCH_RANDOMIZE.get(effect, false) else 1.0
+	voice.play()
 
 func set_muted(on: bool) -> void:
 	_muted = on
 	if on:
-		for p in _players.values():
-			if p and p.playing:
-				p.stop()
+		for voice in _pool: voice.stop()
 
 func is_muted() -> bool:
 	return _muted

@@ -2,6 +2,20 @@
 
 > Cập nhật: 2026-10-05
 
+## Procedural SFX và normal play session (đã tích hợp vào `dev`)
+
+- `pcm_synth.gd` sinh PCM mono 16-bit/22050 Hz: bốn waveform, pitch sweep, ADSR fit theo thời lượng, noise và low-pass. Engine bảo toàn attack ≥5 ms/release ≥10 ms, ưu tiên ramp khi envelope quá dài; âm ngắn hơn 15 ms co hai ramp theo tỷ lệ. Mẫu đầu/cuối luôn về 0. Enum pitch là `PitchCurve` vì `Curve` trùng class Godot.
+- 9 effect có stream prewarm, gồm 7 âm đơn và 2 melody; pool 8 voice, pitch variation cho bốn effect, MARK giữ giới hạn 100 ms. Mute dừng mọi voice. Nút trong composition root phát BTN_PRESS qua signal native.
+- [SFX Tuner](../game/scenes/sfx_tuner.tscn): chạy F6, chọn preset, chỉnh slider/dropdown, Play hoặc Space, Copy Params ra clipboard/console. Melody giữ chuỗi nốt và `note_dur`; output được kiểm tra biên dịch như dictionary GDScript.
+- TDD: engine, player, tuner và dispatch gameplay có test tự động; test feedback cũ đã chuyển từ đường dẫn `.ogg`/mock sang playback thật. Tuner đã kiểm tra render Vulkan và clipboard Windows; ảnh tại `scratch/verification/sfx-tuner-mark.png` và `sfx-tuner-melody.png` trong worktree audio.
+- Review độc lập đã hoàn thành; sửa lỗi biên envelope gây click/pop bằng test RED→GREEN cho attack/release bằng 0, envelope quá dài, duration 20 ms và melody ngắn. Test cũng kiểm tra saturation đúng dấu/biên độ và exponential sweep với endpoint 0 khớp PCM linear.
+- Full gate sau sửa review PASS: 76 Python tests, 32 Godot suites và content checks. Lệnh: `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>`; evidence `scratch/verification/20261005T085734.476968Z.txt`, revision `7a7ac75881e2c703c97fba9d7dcfb0785d93363f`, không có thay đổi tracked; source SHA256 `209e9f7f741ae9f899ee8c216a3961c47ed23f5457480accb25e98e280a271aa`. Clean-room/import reference: 0 match; các module audio ≤300 dòng.
+- Tích hợp local: merge `fix/normal-play-session` (`fd2e393`) vào `feat/procedural-sfx` thành `4bbb145`, rồi merge kết quả vào `dev`. Cả hai lượt tự động, không có conflict nguồn; giữ nguyên lịch sử/tác giả của `c8202b5` và `fd2e393`. Chưa push.
+- Normal play session: khôi phục session thường, tách save debug, cho phép progress lệch quay lại màn non-final đã hoàn thành rồi advance; boot tự chọn màn chưa hoàn thành khi progress đang trỏ vào màn đã xong; session WON được khôi phục tiếp tục flow hoàn thành. Test progress xác nhận re-advance cập nhật điểm và chuyển màn.
+- Gate bản tích hợp trên checkout `dev` trước merge commit PASS: 76 Python tests, 32 Godot suites và content checks; evidence `scratch/verification/20261005T092313.722730Z.txt`, nền `cfbf1bc` + index merge từ `4bbb145`, source SHA256 `ce70798294e077880f6bed4ae5b98dce68e1a36d00f849cd1b01740857aa7259`. Clean-room/import reference: 0 match; các module đã sửa ≤300 dòng.
+- Checkout chính: `D:/Work/Alpaca_Solution/ASOL-Game-02`, nhánh `dev`. Worktree audio giữ nguyên. UID tuner sinh cục bộ khác bản tracked được bảo toàn tại `scratch/verification/test_sfx_tuner.pre-merge-fd2e393.gd.uid`; không ghi đè plan hay UID responsive-layout untracked.
+- BGM `main_theme.ogg` vẫn thiếu. QA nghe âm sắc/độ lớn/click-pop trên loa, tai nghe và thiết bị mục tiêu chưa thực hiện; chưa phải nghiệm thu phát hành.
+
 ## Bank đầy đủ và campaign 998 level (trên `feat/full-bank-campaign`, chưa merge)
 
 - Đã tạo 36/49/913 level gốc cho 4×4/5×5/6×6, năm rank mỗi kích thước; validator độc lập xác nhận nghiệm duy nhất, trace S2/S3, pace và phủ playlist 998 tham chiếu.
@@ -129,4 +143,4 @@ Commit triển khai: `192943b`; merge vào `dev`: `60dda20`. `test_campaign_runt
 - **Full gate Python:** trên `dev` tại `c577210`, ngày 2026-10-03: **PASS**. Log: `scratch/verification/20261003T102902.224427Z.txt`. Working tree còn uncommitted data + `.uid` — chưa thay thế kiểm chứng trên checkout sạch khi phát hành.
 - **Full gate Godot** cho last-mile 5–6 (bank 6×6, accessibility): chưa chạy — cần Godot executable.
 - **QA UI/thiết bị (Track E):** chưa làm. Cần kiểm gesture (single tap, double tap, swipe), layout màn hình, colorblind mode trên Android. iOS cần môi trường build/signing riêng. Chỉ đánh dấu đạt khi có bằng chứng theo revision.
-- **Track D — Assets:** audio (10 SFX P0 + 1 BGM) và visual (font, logo, candy sprites) chưa có — cần sound designer/artist.
+- **Track D — Assets:** 9 SFX procedural đã tích hợp local vào `dev`, còn QA nghe; BGM, font, logo và candy sprites vẫn cần sản xuất/duyệt.

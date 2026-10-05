@@ -8,6 +8,9 @@ const Vibration = preload("res://scripts/feedback/vibration.gd")
 var _fails: Array[String] = []
 
 func _init() -> void:
+	call_deferred("_run")
+
+func _run() -> void:
 	_test_catalog_complete()
 	_test_catalog_rate_limits()
 	_test_vibration_toggle()
@@ -18,6 +21,10 @@ func _init() -> void:
 	_test_sfx_player_rate_limit()
 	_test_sfx_player_stop_on_mute()
 	_test_bgm_player_mute_and_stop()
+	# Allow queued nodes and AudioServer's stopped playbacks to release.
+	var cleanup_ms := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - cleanup_ms < 100:
+		await process_frame
 
 	if _fails.is_empty():
 		print("FEEDBACK_PASS")
@@ -29,10 +36,7 @@ func _init() -> void:
 
 func _test_catalog_complete() -> void:
 	for val in SfxCatalog.Effect.values():
-		_assert(SfxCatalog.FILE_MAP.has(val), "path for effect %d" % val)
-		var p: String = SfxCatalog.FILE_MAP[val]
-		_assert(p.begins_with("res://audio/sfx/"), "valid sfx path prefix: %s" % p)
-	_assert(SfxCatalog.FILE_MAP.size() == 9, "9 effects mapped")
+		_assert(SfxCatalog.PRESETS.has(val) or SfxCatalog.MELODY_PRESETS.has(val), "preset for effect %d" % val)
 
 func _test_catalog_rate_limits() -> void:
 	_assert(SfxCatalog.MIN_INTERVAL_MS.has(SfxCatalog.Effect.MARK), "MARK has rate limit")
@@ -94,19 +98,14 @@ func _test_sfx_player_rate_limit() -> void:
 	_assert(player._last_play_ms.has(SfxCatalog.Effect.CANDY_YES), "CANDY_YES recorded timestamp")
 	player.queue_free()
 
-class MockAudioPlayer extends RefCounted:
-	var playing: bool = true
-	func stop() -> void:
-		playing = false
-
 func _test_sfx_player_stop_on_mute() -> void:
 	var player := SfxPlayer.new()
 	root.add_child(player)
-	var mock := MockAudioPlayer.new()
-	player._players[SfxCatalog.Effect.MARK] = mock
-	_assert(mock.playing, "mock player is playing")
+	player.play(SfxCatalog.Effect.MARK)
+	var voice := player.get_child(0) as AudioStreamPlayer
+	_assert(voice.playing, "real voice is playing")
 	player.set_muted(true)
-	_assert(not mock.playing, "mock player stopped when muted")
+	_assert(not voice.playing, "real voice stopped when muted")
 	player.queue_free()
 
 

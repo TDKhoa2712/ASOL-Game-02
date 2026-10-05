@@ -19,6 +19,11 @@ func _init() -> void:
 	check(manager.advance_level("L02", {}, ["L01", "L02"]).get("ok"), "finish campaign")
 	check(manager.current["completedLevelIds"] == ["L01", "L02"], "final completed")
 	check(not manager.advance_level("L02", {"score": 1}, ["L01", "L02"]).get("ok"), "final level cannot advance twice")
+	manager.current["currentLevelId"] = "L01"
+	var readvance := manager.advance_level("L01", {"score": 500}, ["L01", "L02", "L03"])
+	check(readvance.get("ok"), "re-advance non-final level ok")
+	check(manager.current["currentLevelId"] == "L02", "re-advance reaches next level")
+	check(manager.current["results"].get("L01", {}).get("score") == 500, "re-advance updates score")
 	check(manager.puzzle_fingerprint({"size": 4, "regions": ["A"], "solution": [0], "givens": []}) == manager.puzzle_fingerprint({"givens": [], "solution": [0], "regions": ["A"], "size": 4}), "fingerprint deterministic")
 	manager._store.remove_all()
 	DirAccess.remove_absolute(dir)

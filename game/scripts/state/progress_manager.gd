@@ -35,7 +35,8 @@ func new_progress(first_level_id: String) -> Dictionary:
 	return {"progressVersion": SCHEMA_VER, "currentLevelId": first_level_id, "completedLevelIds": [], "results": {}, "tutorialSeenIds": [], "recentShapes": []}
 
 func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary:
-	if not _validate(current) or current.currentLevelId != level_id or not level_order.has(level_id) or current.completedLevelIds.has(level_id):
+	var is_final := (level_order.find(level_id) == level_order.size() - 1)
+	if not _validate(current) or current.currentLevelId != level_id or not level_order.has(level_id) or (is_final and current.completedLevelIds.has(level_id)):
 		return {"ok": false, "data": current.duplicate(true), "reason": "invalid_level"}
 	var next := current.duplicate(true)
 	if not next.completedLevelIds.has(level_id):

@@ -71,6 +71,10 @@ func boot() -> Dictionary:
 	if progress.current.get("dda") is Dictionary: pace_adjuster.from_dict(progress.current.dda)
 	if not playlist_order().has(progress.current.currentLevelId):
 		return _boot_error("progress level outside playlist")
+	if not is_campaign_done() and progress.current.completedLevelIds.has(progress.current.currentLevelId):
+		for label in playlist_order():
+			if not progress.current.completedLevelIds.has(label):
+				progress.current.currentLevelId = label; progress.save(); break
 	if sessions.has_pending():
 		_current_snapshot = sessions.pending_snapshot(current_level_label())
 		resume_level()
@@ -113,7 +117,7 @@ func resume_level() -> PlaySession:
 		return null
 	var saved := sessions.load_session(current_level_label(), level.hash)
 	if not saved.ok:
-		if saved.recreate:
+		if saved.recreate or saved.reason == "level_mismatch":
 			sessions.clear()
 		return null
 	if saved.data.has("snapshot") and saved.data.snapshot is Dictionary:
@@ -240,15 +244,13 @@ func has_pending_session() -> bool:
 
 func playlist_order() -> Array[String]:
 	var order: Array[String] = []
-	for entry in _playlist:
-		order.append(entry.label)
+	for entry in _playlist: order.append(entry.label)
 	return order
 
 func completed_count() -> int:
 	var count := 0
 	for label in playlist_order():
-		if progress.current.get("completedLevelIds", []).has(label):
-			count += 1
+		if progress.current.get("completedLevelIds", []).has(label): count += 1
 	return count
 
 func advance(score_data: Dictionary) -> Dictionary:
@@ -258,8 +260,7 @@ func advance(score_data: Dictionary) -> Dictionary:
 
 func _resolve_playlist_entry(label: String) -> Dictionary:
 	for entry in _playlist:
-		if entry.label == label:
-			return entry
+		if entry.label == label: return entry
 	return {}
 
 func _fetch_level(size: int, rank: int, index: int, transform: int = 0) -> Dictionary:
