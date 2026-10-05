@@ -25,6 +25,7 @@ var _highlight_cells: Array = []
 var _highlight_unit: String = ""
 var _preview_cells: Array = []
 var _preview_mark: bool = true
+var _highlight_pulse_phase: float = 0.0
 var _touch_in_progress: bool = false
 
 func configure(session: Variant) -> void:
@@ -83,6 +84,7 @@ func highlight_unit(unit_type: String, unit_id: Variant) -> void:
 func clear_highlight() -> void:
 	_highlight_cells = []
 	_highlight_unit = ""
+	_highlight_pulse_phase = 0.0
 	queue_redraw()
 
 func _ready() -> void:
@@ -111,6 +113,11 @@ func _on_preview_changed(cells: Array) -> void:
 func _process(_delta: float) -> void:
 	if _decoder != null:
 		_decoder.tick(Time.get_ticks_msec())
+	if not _highlight_cells.is_empty():
+		_highlight_pulse_phase += _delta * 4.8
+		if _highlight_pulse_phase > TAU:
+			_highlight_pulse_phase -= TAU
+		queue_redraw()
 
 func _gui_input(event: InputEvent) -> void:
 	if _session == null or _decoder == null or _session.phase != 0:
@@ -252,9 +259,11 @@ func _draw() -> void:
 					_draw_cell_candy(cell_rect, true)
 
 			if _highlight_cells.has([r, c]):
+				var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(_highlight_pulse_phase))
+				var hl_col := Color(Palette.ACCENT_ORANGE, pulse_alpha)
 				var hl_sb := StyleBoxFlat.new()
 				hl_sb.draw_center = false
-				hl_sb.border_color = Palette.ACCENT_ORANGE
+				hl_sb.border_color = hl_col
 				hl_sb.set_border_width_all(3)
 				hl_sb.set_corner_radius_all(cr)
 				draw_style_box(hl_sb, cell_rect)
