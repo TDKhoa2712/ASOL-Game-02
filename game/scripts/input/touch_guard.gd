@@ -21,14 +21,14 @@ func start_touch(pos: Vector2, time_ms: int) -> void:
 
 func filter_move(pos: Vector2, time_ms: int) -> Dictionary:
 	if _is_speed_locked:
-		return {"allow": false, "reason": "speed_locked"}
+		return {"allow": false, "reason": "speed_locked", "position": pos}
 
 	var delta_time_s := float(time_ms - _last_time_ms) / 1000.0
 	if delta_time_s > 0.0:
 		var speed := _last_pos.distance_to(pos) / delta_time_s
 		if speed > VELOCITY_LIMIT_PX_PER_SEC:
 			_is_speed_locked = true
-			return {"allow": false, "reason": "too_fast"}
+			return {"allow": false, "reason": "too_fast", "position": pos}
 
 	_last_pos = pos
 	_last_time_ms = time_ms
@@ -43,9 +43,14 @@ func filter_move(pos: Vector2, time_ms: int) -> Dictionary:
 		elif dy > AXIS_LOCK_THRESHOLD_PX and dy > dx * AXIS_DOMINANCE_RATIO:
 			_axis_mode = AxisMode.VERTICAL
 		elif dx > AXIS_LOCK_THRESHOLD_PX and dy > AXIS_LOCK_THRESHOLD_PX:
-			return {"allow": false, "reason": "diagonal_ambiguity"}
+			return {"allow": false, "reason": "diagonal_ambiguity", "position": pos}
 
-	return {"allow": true, "reason": ""}
+	var filtered_pos := _start_pos if _axis_mode == AxisMode.NONE else pos
+	if _axis_mode == AxisMode.HORIZONTAL:
+		filtered_pos.y = _start_pos.y
+	elif _axis_mode == AxisMode.VERTICAL:
+		filtered_pos.x = _start_pos.x
+	return {"allow": true, "reason": "", "position": filtered_pos}
 
 func end_touch() -> void:
 	_axis_mode = AxisMode.NONE

@@ -7,6 +7,7 @@ const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const TouchDecoder = preload("res://scripts/input/touch_decoder.gd")
 const TouchGuard = preload("res://scripts/input/touch_guard.gd")
+const BoardPointerRouter = preload("res://scripts/input/board_pointer_router.gd")
 
 signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
@@ -125,40 +126,18 @@ func _gui_input(event: InputEvent) -> void:
 		return
 	if event is InputEventScreenTouch:
 		_touch_in_progress = event.pressed
-		if event.pressed:
-			var c := _cell_at(event.position)
-			if not c.is_empty():
-				_guard.start_touch(event.position, Time.get_ticks_msec())
-				_decoder.begin(c[0], c[1], Time.get_ticks_msec())
-		else:
-			_guard.end_touch()
-			_decoder.finish(Time.get_ticks_msec())
+		BoardPointerRouter.handle_button(event.pressed, event.position, _guard, _decoder, _cell_at)
 		accept_event()
 	elif event is InputEventScreenDrag:
-		var verdict := _guard.filter_move(event.position, Time.get_ticks_msec())
-		if verdict.allow:
-			var c := _cell_at(event.position)
-			if not c.is_empty():
-				_decoder.move(c[0], c[1])
+		BoardPointerRouter.handle_move(event.position, _guard, _decoder, _cell_at)
 		accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if _touch_in_progress:
 			return
-		if event.pressed:
-			var c := _cell_at(event.position)
-			if not c.is_empty():
-				_guard.start_touch(event.position, Time.get_ticks_msec())
-				_decoder.begin(c[0], c[1], Time.get_ticks_msec())
-		else:
-			_guard.end_touch()
-			_decoder.finish(Time.get_ticks_msec())
+		BoardPointerRouter.handle_button(event.pressed, event.position, _guard, _decoder, _cell_at)
 		accept_event()
 	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT):
-		var verdict := _guard.filter_move(event.position, Time.get_ticks_msec())
-		if verdict.allow:
-			var c := _cell_at(event.position)
-			if not c.is_empty():
-				_decoder.move(c[0], c[1])
+		BoardPointerRouter.handle_move(event.position, _guard, _decoder, _cell_at)
 		accept_event()
 
 func _board_rect() -> Rect2:

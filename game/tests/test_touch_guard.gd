@@ -10,6 +10,8 @@ func _init() -> void:
 	_test_velocity_gate_resets_on_new_gesture()
 	_test_axis_lock_horizontal()
 	_test_axis_lock_vertical()
+	_test_axis_lock_projects_cross_axis_drift()
+	_test_axis_waits_at_origin_before_lock()
 	_test_axis_lock_diagonal_rejected()
 	_test_axis_lock_resets_on_new_gesture()
 	_test_short_movement_no_lock()
@@ -68,6 +70,21 @@ func _test_axis_lock_vertical() -> void:
 	# Move 2px right, 25px down — clearly vertical
 	var result := g.filter_move(Vector2(102, 125), 1300)
 	_assert(result.allow == true, "vertical move allowed")
+
+func _test_axis_lock_projects_cross_axis_drift() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(125, 102), 1300)
+	var result := g.filter_move(Vector2(150, 130), 1800)
+	_assert(result.has("position"), "axis verdict includes filtered position")
+	if result.has("position"):
+		_assert(result.position == Vector2(150, 100), "horizontal lock projects drift to start axis")
+
+func _test_axis_waits_at_origin_before_lock() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	var result := g.filter_move(Vector2(105, 103), 1200)
+	_assert(result.position == Vector2(100, 100), "movement stays at origin before axis lock")
 
 func _test_axis_lock_diagonal_rejected() -> void:
 	var g := TouchGuard.new()
