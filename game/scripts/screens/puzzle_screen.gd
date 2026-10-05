@@ -78,7 +78,9 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 	if level_label != null and session != null:
 		level_label.text = str(session.level.get("id", runtime.current_level_label()))
 	_update_timer(0.0)
-	if sfx != null:
+	if session != null and session.phase == PlaySession.Phase.WON:
+		call_deferred("_on_level_won")
+	elif sfx != null:
 		sfx.play(SfxCatalog.Effect.BOARD_OPEN)
 
 func _connect_session() -> void:
