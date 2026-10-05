@@ -104,7 +104,7 @@ func play_win_bounce() -> void:
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	custom_minimum_size = Vector2(760, 760)
+	custom_minimum_size = Vector2(320, 320)
 	var candy_path := "res://assets/ui/board/candy.svg"
 	if ResourceLoader.exists(candy_path):
 		_candy_tex = load(candy_path) as Texture2D
