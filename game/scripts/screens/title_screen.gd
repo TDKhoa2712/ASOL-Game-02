@@ -3,8 +3,10 @@ extends Control
 
 signal play_pressed()
 signal options_pressed()
+signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
+const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 
 var runtime: Variant = null
 
@@ -12,7 +14,9 @@ var title_label: Label
 var play_btn: Button
 var options_btn: Button
 var help_btn: Button
+var debug_btn: Button
 var help_dialog: AcceptDialog
+var debug_picker: DebugLevelPicker
 
 func _ensure_nodes() -> void:
 	if title_label != null:
@@ -37,6 +41,12 @@ func _ensure_nodes() -> void:
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 16)
 	frame.add_child(top)
+	if OS.is_debug_build():
+		debug_btn = Button.new()
+		debug_btn.name = "DebugButton"
+		debug_btn.text = "🛠 Debug"
+		debug_btn.custom_minimum_size = Vector2(140, 56)
+		top.add_child(debug_btn)
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
@@ -115,6 +125,17 @@ func _ensure_nodes() -> void:
 	help_dialog.title = "Cách chơi"
 	help_dialog.dialog_text = "Mỗi hàng, cột và vùng có đúng một viên kẹo. Kẹo không chạm chéo nhau. Chạm một lần để đánh dấu X, chạm hai lần để thử đặt kẹo, kéo để đánh dấu nhiều ô."
 	add_child(help_dialog)
+	if OS.is_debug_build():
+		debug_picker = DebugLevelPicker.new()
+		debug_picker.name = "DebugPicker"
+		debug_picker.visible = false
+		debug_picker.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		debug_picker.level_selected.connect(func(lvl: Dictionary, lbl: String):
+			debug_picker.visible = false
+			debug_level_selected.emit(lvl, lbl)
+		)
+		debug_picker.close_requested.connect(func(): debug_picker.visible = false)
+		add_child(debug_picker)
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -124,7 +145,9 @@ func _ready() -> void:
 		options_btn.pressed.connect(_on_options)
 	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
 		help_btn.pressed.connect(_on_help)
-	for btn in [play_btn, options_btn, help_btn]:
+	if debug_btn != null and not debug_btn.pressed.is_connected(_on_debug_pressed):
+		debug_btn.pressed.connect(_on_debug_pressed)
+	for btn in [play_btn, options_btn, help_btn, debug_btn]:
 		if btn != null:
 			btn.pivot_offset = btn.size * 0.5
 			btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
@@ -135,6 +158,20 @@ func setup(rt: Variant) -> void:
 	runtime = rt
 	_ensure_nodes()
 	_update_ui()
+	if debug_picker != null and rt != null:
+		var pl: Array = rt._playlist if "_playlist" in rt else []
+		var b: Variant = rt.bank if "bank" in rt else null
+		debug_picker.setup(b, pl)
+
+func _on_debug_pressed() -> void:
+	if debug_picker != null:
+		debug_picker.visible = not debug_picker.visible
+
+func _unhandled_input(event: InputEvent) -> void:
+	if OS.is_debug_build() and event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_F1 or event.keycode == KEY_QUOTELEFT:
+			_on_debug_pressed()
+			get_viewport().set_input_as_handled()
 
 func _update_ui() -> void:
 	if runtime == null:
