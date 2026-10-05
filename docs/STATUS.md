@@ -4,11 +4,13 @@
 
 ## Procedural SFX (trên `feat/procedural-sfx`, chưa merge)
 
-- `pcm_synth.gd` sinh PCM mono 16-bit/22050 Hz: bốn waveform, pitch sweep, ADSR co theo thời lượng, noise và low-pass. Enum pitch là `PitchCurve` vì `Curve` trùng class Godot.
+- `pcm_synth.gd` sinh PCM mono 16-bit/22050 Hz: bốn waveform, pitch sweep, ADSR fit theo thời lượng, noise và low-pass. Engine bảo toàn attack ≥5 ms/release ≥10 ms, ưu tiên ramp khi envelope quá dài; âm ngắn hơn 15 ms co hai ramp theo tỷ lệ. Mẫu đầu/cuối luôn về 0. Enum pitch là `PitchCurve` vì `Curve` trùng class Godot.
 - 9 effect có stream prewarm, gồm 7 âm đơn và 2 melody; pool 8 voice, pitch variation cho bốn effect, MARK giữ giới hạn 100 ms. Mute dừng mọi voice. Nút trong composition root phát BTN_PRESS qua signal native.
 - [SFX Tuner](../game/scenes/sfx_tuner.tscn): chạy F6, chọn preset, chỉnh slider/dropdown, Play hoặc Space, Copy Params ra clipboard/console. Melody giữ chuỗi nốt và `note_dur`; output được kiểm tra biên dịch như dictionary GDScript.
 - TDD: engine, player, tuner và dispatch gameplay có test tự động; test feedback cũ đã chuyển từ đường dẫn `.ogg`/mock sang playback thật. Tuner đã kiểm tra render Vulkan và clipboard Windows; ảnh tại `scratch/verification/sfx-tuner-mark.png` và `sfx-tuner-melody.png` trong worktree audio.
-- Full gate đầu tiên PASS: 76 Python tests, 32 Godot suites và content checks; evidence ở checkout gốc: `scratch/verification/20261005T083416.963296Z.txt`, revision `3c3d542` + working tree, source SHA256 `0fcf45bb3c23bd41a950c80871f48f5f406ca38f2123d8aa9cae0be56c8d39e8`. Còn lượt review độc lập và gate cuối trong worktree `D:/Work/Alpaca_Solution/ASOL-Game-02-sfx`.
+- Review độc lập đã hoàn thành; sửa lỗi biên envelope gây click/pop bằng test RED→GREEN cho attack/release bằng 0, envelope quá dài, duration 20 ms và melody ngắn. Test cũng kiểm tra saturation đúng dấu/biên độ và exponential sweep với endpoint 0 khớp PCM linear.
+- Full gate sau sửa review PASS: 76 Python tests, 32 Godot suites và content checks. Lệnh: `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>`; evidence `scratch/verification/20261005T085320.072722Z.txt`, revision `69eee2a` + thay đổi review, source SHA256 `710d4b49ec390ddf31998e8b8e1068d65caa893f2f4ea60eefe808f7226def76`. Clean-room/import reference: 0 match; các module audio ≤300 dòng.
+- Worktree bàn giao: `D:/Work/Alpaca_Solution/ASOL-Game-02-sfx`, nhánh `feat/procedural-sfx`; chưa merge/push. Lịch sử giữ nguyên commit session/debug `c8202b5` do phiên khác thực hiện, không nhận là thay đổi audio.
 - BGM `main_theme.ogg` vẫn thiếu. QA nghe âm sắc/độ lớn/click-pop trên loa, tai nghe và thiết bị mục tiêu chưa thực hiện; chưa phải nghiệm thu phát hành.
 
 ## Bank đầy đủ và campaign 998 level (trên `feat/full-bank-campaign`, chưa merge)

@@ -5,6 +5,8 @@ enum Wave { SINE, SQUARE, TRIANGLE, SAWTOOTH }
 enum PitchCurve { LINEAR, EXPONENTIAL }
 
 const SAMPLE_RATE: int = 22050
+const MIN_ATTACK: float = 0.005
+const MIN_RELEASE: float = 0.01
 
 static func generate(params: Dictionary) -> AudioStreamWAV:
 	var frequency: float = maxf(0.0, float(params.get("freq", 440.0)))
@@ -21,12 +23,10 @@ static func generate(params: Dictionary) -> AudioStreamWAV:
 	var curve: int = int(params.get("pitch_curve", PitchCurve.LINEAR))
 	var low_pass: float = float(params.get("low_pass", -1.0))
 	var duty: float = clampf(float(params.get("duty_cycle", 0.5)), 0.0, 1.0)
-	var envelope_total := attack + decay + release
-	if envelope_total > duration and envelope_total > 0.0:
-		var scale := duration / envelope_total
-		attack *= scale
-		decay *= scale
-		release *= scale
+	var envelope := _fit_envelope(duration, attack, decay, release)
+	attack = envelope[0]
+	decay = envelope[1]
+	release = envelope[2]
 	var count := int(SAMPLE_RATE * duration)
 	var bytes := PackedByteArray()
 	bytes.resize(count * 2)
@@ -51,7 +51,8 @@ static func generate(params: Dictionary) -> AudioStreamWAV:
 		if low_pass > 0.0:
 			filtered += alpha * (sample - filtered)
 			sample = filtered
-		sample *= volume * _envelope(time, duration, attack, decay, release, sustain)
+		var edge_time := duration * index / (count - 1) if count > 1 else 0.0
+		sample *= volume * _envelope(edge_time, duration, attack, decay, release, sustain)
 		bytes.encode_s16(index * 2, int(clampf(sample, -1.0, 1.0) * 32767.0))
 	return _stream(bytes)
 
@@ -60,17 +61,33 @@ static func generate_melody(frequencies: Array[float], note_duration: float = 0.
 	var samples_per_note := int(SAMPLE_RATE * maxf(note_duration, 0.0))
 	var bytes := PackedByteArray()
 	bytes.resize(samples_per_note * frequencies.size() * 2)
+	var fitted := _fit_envelope(maxf(note_duration, 0.0), note_duration * 0.15,
+		0.0, note_duration * 0.2)
 	for note in range(frequencies.size()):
 		var phase := 0.0
 		for index in range(samples_per_note):
-			var time := float(index) / SAMPLE_RATE
 			phase = fposmod(phase + TAU * frequencies[note] / SAMPLE_RATE, TAU)
-			var envelope := _envelope(time, note_duration, note_duration * 0.15,
-				0.0, note_duration * 0.2, 1.0)
+			var edge_time := note_duration * index / (samples_per_note - 1) if samples_per_note > 1 else 0.0
+			var envelope := _envelope(edge_time, note_duration, fitted[0], fitted[1], fitted[2], 1.0)
 			var sample := _wave_sample(wave, phase, 0.5) * volume * envelope
 			bytes.encode_s16((note * samples_per_note + index) * 2,
 				int(clampf(sample, -1.0, 1.0) * 32767.0))
 	return _stream(bytes)
+
+static func _fit_envelope(duration: float, attack: float, decay: float,
+		release: float) -> PackedFloat64Array:
+	# Reserve edge ramps first. Only sub-15 ms sounds must shorten these minima.
+	var edge_scale := minf(1.0, duration / (MIN_ATTACK + MIN_RELEASE))
+	var attack_floor := MIN_ATTACK * edge_scale
+	var release_floor := MIN_RELEASE * edge_scale
+	var attack_extra := maxf(0.0, attack - attack_floor)
+	var release_extra := maxf(0.0, release - release_floor)
+	var decay_length := maxf(0.0, decay)
+	var extra_total := attack_extra + decay_length + release_extra
+	var remaining := maxf(0.0, duration - attack_floor - release_floor)
+	var extra_scale := minf(1.0, remaining / extra_total) if extra_total > 0.0 else 0.0
+	return PackedFloat64Array([attack_floor + attack_extra * extra_scale,
+		decay_length * extra_scale, release_floor + release_extra * extra_scale])
 
 static func _stream(bytes: PackedByteArray) -> AudioStreamWAV:
 	var stream := AudioStreamWAV.new()

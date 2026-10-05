@@ -13,13 +13,9 @@ func _run() -> void:
 	_check(stream.format == AudioStreamWAV.FORMAT_16_BITS, "16 bit")
 	_check(stream.mix_rate == 22050 and not stream.stereo, "22050 Hz mono")
 	_check(stream.data.size() == 4410, "duration matches sample count")
-	var loud := PcmSynth.generate({"freq": 440.0, "duration": 0.05, "volume": 2.0, "wave": PcmSynth.Wave.SQUARE})
-	for i in range(0, loud.data.size(), 2):
-		_check(abs(loud.data.decode_s16(i)) <= 32767, "clamped sample")
-	var short := PcmSynth.generate({"duration": 0.05, "attack": 0.1, "decay": 0.1, "release": 0.1})
-	_check(short.data.size() == 2204, "oversized envelope scales")
-	var zero := PcmSynth.generate({"freq": 440.0, "end_freq": 0.0, "duration": 0.05, "pitch_curve": PcmSynth.PitchCurve.EXPONENTIAL})
-	_check(zero.data.size() == 2204, "zero end frequency does not break sweep")
+	_test_clipping()
+	_test_edge_ramps()
+	_test_zero_endpoint_sweeps()
 	var melody := PcmSynth.generate_melody([440.0, 550.0, 660.0], 0.1, 0.3, PcmSynth.Wave.TRIANGLE)
 	_check(melody.data.size() == 13230, "melody concatenates three notes")
 	if failures.is_empty():
@@ -28,6 +24,52 @@ func _run() -> void:
 	else:
 		for failure in failures: printerr(failure)
 		quit(1)
+
+func _test_clipping() -> void:
+	var params := {"freq": 0.0, "duration": 0.05, "volume": 2.0,
+		"wave": PcmSynth.Wave.SQUARE, "attack": 0.005, "decay": 0.0,
+		"release": 0.01, "sustain": 1.0}
+	var positive := PcmSynth.generate(params)
+	_check(positive.data.decode_s16(440) == 32767, "positive overdrive saturates without wrapping")
+	params["duty_cycle"] = 0.0
+	var negative := PcmSynth.generate(params)
+	_check(negative.data.decode_s16(440) == -32767, "negative overdrive saturates without wrapping")
+
+func _test_edge_ramps() -> void:
+	var params := {"freq": 0.0, "duration": 0.05, "volume": 1.0,
+		"wave": PcmSynth.Wave.SQUARE, "attack": 0.0, "decay": 0.0,
+		"release": 0.0, "sustain": 1.0}
+	_check_ramps(PcmSynth.generate(params).data, "zero attack/release")
+	params.merge({"duration": 0.02, "attack": 0.005, "decay": 0.3, "release": 0.01}, true)
+	_check_ramps(PcmSynth.generate(params).data, "oversized shortest envelope")
+	params.merge({"duration": 0.02, "attack": 0.3, "decay": 0.3, "release": 0.3}, true)
+	_check_ramps(PcmSynth.generate(params).data, "all oversized envelope segments")
+	var melody := PcmSynth.generate_melody([0.0, 0.0], 0.02, 1.0, PcmSynth.Wave.SQUARE)
+	var note_bytes := 441 * 2
+	_check_ramps(melody.data.slice(0, note_bytes), "short melody first note")
+	_check_ramps(melody.data.slice(note_bytes), "short melody next note")
+	params["duration"] = 0.001
+	var tiny := PcmSynth.generate(params).data
+	_check(tiny.decode_s16(0) == 0 and tiny.decode_s16(tiny.size() - 2) == 0,
+		"sub-minimum duration still has silent endpoints")
+
+func _check_ramps(data: PackedByteArray, label: String) -> void:
+	_check(data.decode_s16(0) == 0, label + " begins at silence")
+	_check(data.decode_s16(data.size() - 2) == 0, label + " ends at silence")
+	# A constant positive square isolates the envelope from oscillator phase.
+	_check(data.decode_s16(44) > 0 and data.decode_s16(44) < 8000,
+		label + " preserves at least 5 ms attack")
+	_check(data.decode_s16(data.size() - 46) > 0 and data.decode_s16(data.size() - 46) < 4000,
+		label + " preserves at least 10 ms release")
+
+func _test_zero_endpoint_sweeps() -> void:
+	for endpoints in [[440.0, 0.0], [0.0, 440.0]]:
+		var params := {"freq": endpoints[0], "end_freq": endpoints[1], "duration": 0.05,
+			"pitch_curve": PcmSynth.PitchCurve.EXPONENTIAL}
+		var exponential := PcmSynth.generate(params)
+		params["pitch_curve"] = PcmSynth.PitchCurve.LINEAR
+		_check(exponential.data == PcmSynth.generate(params).data,
+			"zero endpoint exponential sweep falls back to linear PCM")
 
 func _check(ok: bool, label: String) -> void:
 	if not ok: failures.append("FAIL: " + label)

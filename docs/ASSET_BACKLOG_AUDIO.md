@@ -47,6 +47,8 @@ Code yêu cầu: `app_shell.gd` → `main_theme.ogg`
 
 **Chỉnh âm thanh:** mở `game/scenes/sfx_tuner.tscn` trong Godot, nhấn F6; chọn preset, chỉnh control rồi Play/Space. Copy Params ghi dictionary vào clipboard và console. Dán vào `PRESETS`; với thắng/thua, dán vào `MELODY_PRESETS` và giữ chuỗi `freqs`/`note_dur`. Enum pitch dùng `PcmSynth.PitchCurve` để tránh trùng class Godot.
 
+Engine tự giữ attack tối thiểu 5 ms và release tối thiểu 10 ms, kể cả khi slider đặt 0 hoặc tổng ADSR vượt duration. Âm dưới 15 ms co hai ramp theo tỷ lệ; mỗi âm/nốt có mẫu đầu/cuối bằng 0 để tránh bước nhảy từ/về silence. Các giá trị xuất ra vẫn là tham số bạn chọn, không phải envelope đã fit.
+
 Các preset cần nghe thử trên loa/tai nghe và thiết bị mục tiêu để duyệt âm sắc, độ lớn, click/pop và cảm giác trong gameplay.
 
 ---
