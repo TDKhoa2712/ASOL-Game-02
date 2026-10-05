@@ -100,14 +100,11 @@ static func build(root: Control) -> Dictionary:
 	board_card.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	stack.add_child(board_card)
 
-	var center := CenterContainer.new()
-	center.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	board_card.add_child(center)
 	var board := PuzzleBoard.new()
 	board.name = "Board"
 	board.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	board.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	center.add_child(board)
+	board_card.add_child(board)
 
 	var hint_overlay := HintOverlay.new()
 	hint_overlay.name = "HintOverlay"
@@ -152,10 +149,14 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 				found[CandyRules.zone_of(regions, row, col)] = true
 	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
 	var zone_colors: Dictionary = RegionPainter.assign_colors(size, regions, Palette.ZONE_COLORS)
+	var icon_size: float = clampf(340.0 / float(maxi(size, 6)), 22.0, 34.0)
+	var gap: int = int(clampf(48.0 / float(maxi(size, 6)), 3.0, 10.0))
+	regions_row.add_theme_constant_override("separation", gap)
 	for index in range(size):
 		var icon := TextureRect.new()
 		icon.texture = candy_texture
-		icon.custom_minimum_size = Vector2(34, 34)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.custom_minimum_size = Vector2(icon_size, icon_size)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		var zone_id: String = char(65 + index)
 		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Palette.ICON_MUTED
@@ -164,6 +165,7 @@ static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_r
 	for index in range(3):
 		var icon := TextureRect.new()
 		icon.texture = heart_texture
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.custom_minimum_size = Vector2(36, 30)
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.modulate = Palette.TEXT_ON_ACCENT if index < session.hearts else Palette.ICON_MUTED
