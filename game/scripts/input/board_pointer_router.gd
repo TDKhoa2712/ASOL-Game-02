@@ -22,10 +22,10 @@ static func handle_move(
 		decoder: Variant,
 		cell_at: Callable) -> void:
 	var verdict: Dictionary = guard.filter_move(pos, Time.get_ticks_msec())
-	if not verdict.allow:
-		decoder.flush_pending()
-		decoder.cancel()
+	if not bool(verdict.get("drag_started", false)):
 		return
+	if bool(verdict.get("drag_just_started", false)):
+		decoder.start_drag()
 	var cell: Array = cell_at.call(verdict.position)
 	if not cell.is_empty():
 		decoder.move(cell[0], cell[1])
