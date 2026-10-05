@@ -6,6 +6,7 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const TouchDecoder = preload("res://scripts/input/touch_decoder.gd")
+const TouchGuard = preload("res://scripts/input/touch_guard.gd")
 
 signal cell_tapped(row: int, col: int)
 signal cell_double_tapped(row: int, col: int)
@@ -20,6 +21,7 @@ var _zone_overlays: Dictionary = {}
 var _colorblind: bool = false
 var _high_contrast: bool = false
 var _decoder: TouchDecoder = null
+var _guard: TouchGuard = null
 var _candy_tex: Texture2D = null
 var _highlight_cells: Array = []
 var _highlight_unit: String = ""
@@ -42,6 +44,7 @@ func configure(session: Variant) -> void:
 		_zone_colors = RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS)
 		_zone_overlays = {}
 	_decoder = TouchDecoder.new()
+	_guard = TouchGuard.new()
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
 	_decoder.cell_swiped.connect(func(cells: Array): cell_swiped.emit(cells))
@@ -61,6 +64,8 @@ func redraw() -> void:
 	queue_redraw()
 
 func settle_input() -> void:
+	if _guard != null:
+		_guard.end_touch()
 	if _decoder != null:
 		_decoder.flush_pending()
 		_decoder.cancel()
@@ -93,9 +98,12 @@ func _ready() -> void:
 		_candy_tex = load(candy_path) as Texture2D
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_APPLICATION_FOCUS_OUT and _decoder != null:
-		_decoder.flush_pending()
-		_decoder.cancel()
+	if what == NOTIFICATION_APPLICATION_FOCUS_OUT:
+		if _guard != null:
+			_guard.end_touch()
+		if _decoder != null:
+			_decoder.flush_pending()
+			_decoder.cancel()
 
 func _on_preview_changed(cells: Array) -> void:
 	_preview_cells = cells.duplicate(true)
@@ -113,21 +121,25 @@ func _process(_delta: float) -> void:
 		_decoder.tick(Time.get_ticks_msec())
 
 func _gui_input(event: InputEvent) -> void:
-	if _session == null or _decoder == null or _session.phase != 0:
+	if _session == null or _decoder == null or _guard == null or _session.phase != 0:
 		return
 	if event is InputEventScreenTouch:
 		_touch_in_progress = event.pressed
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
+				_guard.start_touch(event.position, Time.get_ticks_msec())
 				_decoder.begin(c[0], c[1], Time.get_ticks_msec())
 		else:
+			_guard.end_touch()
 			_decoder.finish(Time.get_ticks_msec())
 		accept_event()
 	elif event is InputEventScreenDrag:
-		var c := _cell_at(event.position)
-		if not c.is_empty():
-			_decoder.move(c[0], c[1])
+		var verdict := _guard.filter_move(event.position, Time.get_ticks_msec())
+		if verdict.allow:
+			var c := _cell_at(event.position)
+			if not c.is_empty():
+				_decoder.move(c[0], c[1])
 		accept_event()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if _touch_in_progress:
@@ -135,14 +147,18 @@ func _gui_input(event: InputEvent) -> void:
 		if event.pressed:
 			var c := _cell_at(event.position)
 			if not c.is_empty():
+				_guard.start_touch(event.position, Time.get_ticks_msec())
 				_decoder.begin(c[0], c[1], Time.get_ticks_msec())
 		else:
+			_guard.end_touch()
 			_decoder.finish(Time.get_ticks_msec())
 		accept_event()
 	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT):
-		var c := _cell_at(event.position)
-		if not c.is_empty():
-			_decoder.move(c[0], c[1])
+		var verdict := _guard.filter_move(event.position, Time.get_ticks_msec())
+		if verdict.allow:
+			var c := _cell_at(event.position)
+			if not c.is_empty():
+				_decoder.move(c[0], c[1])
 		accept_event()
 
 func _board_rect() -> Rect2:
