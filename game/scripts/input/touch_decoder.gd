@@ -15,9 +15,11 @@ var _pointer_active: bool = false
 var _swipe_trail: Array = []
 var _last_swipe_cell: Array = []
 var _second_touch: bool = false
+var _dragging: bool = false
 
 func begin(row: int, col: int, time_ms: int) -> void:
 	_pointer_active = true
+	_dragging = false
 	if _has_pending_tap:
 		if _pending_tap_cell == [row, col] and (time_ms - _pending_tap_time) <= DOUBLE_TAP_WINDOW_MS and time_ms >= _pending_tap_time:
 			_second_touch = true
@@ -29,9 +31,19 @@ func begin(row: int, col: int, time_ms: int) -> void:
 	_swipe_trail = [[row, col]]
 	_last_swipe_cell = [row, col]
 
+func start_drag() -> void:
+	if not _pointer_active or _dragging:
+		return
+	_dragging = true
+	if _second_touch:
+		_second_touch = false
+		_commit_pending()
+	preview_changed.emit(_swipe_trail.duplicate())
+
 func move(row: int, col: int) -> void:
 	if not _pointer_active:
 		return
+	start_drag()
 	if _last_swipe_cell.is_empty():
 		_last_swipe_cell = [row, col]
 		_swipe_trail = [[row, col]]
@@ -44,9 +56,6 @@ func move(row: int, col: int) -> void:
 		if _swipe_trail.is_empty() or _swipe_trail[_swipe_trail.size() - 1] != c:
 			_swipe_trail.append(c)
 	_last_swipe_cell = [row, col]
-	if _second_touch and _swipe_trail.size() > 1:
-		_second_touch = false
-		_commit_pending()
 	preview_changed.emit(_swipe_trail.duplicate())
 
 func finish(time_ms: int) -> void:
@@ -62,12 +71,14 @@ func finish(time_ms: int) -> void:
 		preview_changed.emit([])
 		cell_double_tapped.emit(int(double_cell[0]), int(double_cell[1]))
 		return
-	if _swipe_trail.size() > 1:
+	if _dragging:
+		_dragging = false
 		var trail: Array = _swipe_trail.duplicate()
 		_swipe_trail.clear()
 		_last_swipe_cell.clear()
 		preview_changed.emit([])
-		cell_swiped.emit(trail)
+		if not trail.is_empty():
+			cell_swiped.emit(trail)
 	elif _swipe_trail.size() == 1:
 		var tap_cell: Array = _swipe_trail[0]
 		_swipe_trail.clear()
@@ -83,6 +94,7 @@ func finish(time_ms: int) -> void:
 func cancel() -> void:
 	_pointer_active = false
 	_second_touch = false
+	_dragging = false
 	_swipe_trail.clear()
 	_last_swipe_cell.clear()
 	_clear_pending_tap()
