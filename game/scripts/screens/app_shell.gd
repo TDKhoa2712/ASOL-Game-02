@@ -33,7 +33,8 @@ var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
 var _last_won_elapsed: int = 0
 var _last_won_is_last: bool = false
-var _debug_custom_level: Dictionary = {}
+var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label: String = ""
+var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
@@ -122,52 +123,58 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_method("setup"):
 				screen.call("setup", runtime)
 		"puzzle":
-			if screen.has_signal("go_home"):
-				screen.connect("go_home", func(): nav.go_to(NavController.Screen.TITLE))
-			if screen.has_signal("options_pressed"):
-				screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
-			if screen.has_signal("level_done"):
-				screen.connect("level_done", _on_level_done)
-			if screen.has_method("setup"):
-				screen.call("setup", runtime, sfx, config, _debug_custom_level)
-				_debug_custom_level = {}
+			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)
+			if screen.has_signal("options_pressed"): screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
+			if screen.has_signal("level_done"): screen.connect("level_done", _on_level_done)
+			if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
+			if screen.has_method("setup"): screen.call("setup", runtime, sfx, config, _debug_lvl if _debug_mode else {})
 		"win":
-			if screen.has_signal("next_pressed"):
-				screen.connect("next_pressed", _on_next_level)
-			if screen.has_signal("home_pressed"):
-				screen.connect("home_pressed", func(): nav.go_to(NavController.Screen.TITLE))
-			if screen.has_signal("replay_pressed"):
-				screen.connect("replay_pressed", _on_replay_campaign)
+			if screen.has_signal("next_pressed"): screen.connect("next_pressed", _on_next_level)
+			if screen.has_signal("home_pressed"): screen.connect("home_pressed", _on_puzzle_home)
+			if screen.has_signal("replay_pressed"): screen.connect("replay_pressed", _on_replay_campaign)
+			if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
 			var label: String = _last_won_level if _last_won_level != "" else runtime.current_level_label()
 			var elapsed: int = _last_won_elapsed
-			var is_last: bool = _last_won_is_last or runtime.is_campaign_done()
-			if screen.has_method("setup"):
-				screen.call("setup", true, elapsed, label, is_last)
+			var is_last: bool = _last_won_is_last or (runtime != null and runtime.is_campaign_done())
+			if screen.has_method("setup"): screen.call("setup", true, elapsed, label, is_last)
 		"fail":
-			if screen.has_signal("retry_pressed"):
-				screen.connect("retry_pressed", _on_retry_level)
-			if screen.has_signal("home_pressed"):
-				screen.connect("home_pressed", func(): nav.go_to(NavController.Screen.TITLE))
+			if screen.has_signal("retry_pressed"): screen.connect("retry_pressed", _on_retry_level)
+			if screen.has_signal("home_pressed"): screen.connect("home_pressed", _on_puzzle_home)
+			if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
 			var label: String = _last_won_level if _last_won_level != "" else runtime.current_level_label()
-			if screen.has_method("setup"):
-				screen.call("setup", false, 0, label, false)
+			if screen.has_method("setup"): screen.call("setup", false, 0, label, false)
 		"options":
-			if screen.has_signal("back_pressed"):
-				screen.connect("back_pressed", _on_options_back)
-			if screen.has_method("setup"):
-				screen.call("setup", config)
+			if screen.has_signal("back_pressed"): screen.connect("back_pressed", _on_options_back)
+			if screen.has_method("setup"): screen.call("setup", config)
 
 	if screen_host != null:
 		screen_host.add_child(screen)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
+	_debug_mode = true; _debug_lvl = level_data.duplicate(true); _debug_label = label
+	_debug_next = {}; _debug_next_lbl = ""
 	if runtime != null and runtime.playlist_order().has(label):
-		runtime.progress.current["currentLevelId"] = label
-		runtime.progress.save()
-		_debug_custom_level = {}
-	else:
-		_debug_custom_level = level_data
+		var order := runtime.playlist_order()
+		var idx := order.find(label)
+		if idx >= 0 and idx + 1 < order.size():
+			var nxt: String = order[idx + 1]; var ent: Dictionary = runtime._resolve_playlist_entry(nxt)
+			if not ent.is_empty():
+				_debug_next_lbl = nxt
+				_debug_next = runtime._fetch_level(ent.size, ent.rank, ent.index, int(ent.get("transform", 0)))
+				_debug_next["id"] = nxt; _debug_next["_playlist_label"] = nxt
+	elif level_data.has("_bank_meta") and runtime != null and runtime.bank != null:
+		var m: Dictionary = level_data._bank_meta
+		var s: int = int(m.get("size", 4)); var r: int = int(m.get("rank", 1))
+		var nxt_i: int = int(m.get("index", 0)) + 1; var tr: int = int(m.get("transform", 0))
+		if nxt_i < runtime.bank.level_count(s, r):
+			_debug_next = runtime._fetch_level(s, r, nxt_i, tr)
+			_debug_next_lbl = "Bank %dx%d R%d #%d" % [s, s, r, nxt_i]; _debug_next["id"] = _debug_next_lbl
+			_debug_next["_bank_meta"] = {"size": s, "rank": r, "index": nxt_i, "transform": tr}
 	nav.go_to(NavController.Screen.PUZZLE)
+
+func _on_puzzle_home() -> void:
+	_debug_mode = false; _debug_lvl = {}; _debug_next = {}
+	nav.go_to(NavController.Screen.TITLE)
 
 func _on_title_play() -> void:
 	if runtime != null and runtime.is_campaign_done():
@@ -175,32 +182,40 @@ func _on_title_play() -> void:
 	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_level_done(won: bool) -> void:
-	var label := runtime.current_level_label()
+	var label := _debug_label if _debug_mode else runtime.current_level_label()
 	_last_won_level = label
+	var cur_sc := screen_host.get_child(0) if screen_host != null and screen_host.get_child_count() > 0 else null
+	var sess = cur_sc.get("session") if cur_sc != null else (runtime.current_session if runtime != null else null)
+	var elapsed: int = sess.elapsed_ms if sess != null else 0
+	_last_won_elapsed = elapsed
+	if _debug_mode:
+		_last_won_is_last = _debug_next.is_empty()
+		nav.go_to(NavController.Screen.WIN if won else NavController.Screen.FAIL)
+		return
 	if won:
-		var sess = runtime.current_session
-		var elapsed: int = sess.elapsed_ms if sess != null else 0
-		_last_won_elapsed = elapsed
 		_last_won_is_last = (runtime.completed_count() + 1 >= runtime.playlist_order().size())
-		var score_data := {
-			"time_ms": elapsed,
-			"mistakes": sess.mistake_count if sess != null else 0,
-			"hints_used": sess.hints_used if sess != null else 0,
-		}
+		var score_data := {"time_ms": elapsed, "mistakes": sess.mistake_count if sess != null else 0, "hints_used": sess.hints_used if sess != null else 0}
 		runtime.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)
 	else:
-		_last_won_elapsed = 0
-		_last_won_is_last = false
+		_last_won_elapsed = 0; _last_won_is_last = false
 		runtime.on_level_lost(label)
 		nav.go_to(NavController.Screen.FAIL)
 
 func _on_next_level() -> void:
+	if _debug_mode:
+		if not _debug_next.is_empty():
+			_on_debug_level_selected(_debug_next, _debug_next_lbl)
+		else:
+			_debug_mode = false; nav.go_to(NavController.Screen.TITLE)
+		return
 	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_retry_level() -> void:
-	if runtime != null:
-		runtime.restart_level()
+	if _debug_mode:
+		nav.go_to(NavController.Screen.PUZZLE)
+		return
+	if runtime != null: runtime.restart_level()
 	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_replay_campaign() -> void:
@@ -208,64 +223,34 @@ func _on_replay_campaign() -> void:
 	nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_options_back() -> void:
-	if _previous_screen_name == "puzzle":
-		nav.go_to(NavController.Screen.PUZZLE)
-	else:
-		nav.go_to(NavController.Screen.TITLE)
+	nav.go_to(NavController.Screen.PUZZLE if _previous_screen_name == "puzzle" else NavController.Screen.TITLE)
 
 func _apply_setting(key: String, value: Variant) -> void:
 	match key:
 		"audio":
-			if sfx != null:
-				sfx.set_muted(not bool(value))
-			if bgm != null:
-				bgm.set_muted(not bool(value))
-		"haptic":
-			Vibration.set_on(bool(value))
-		"reduced_motion":
-			LayoutTokens.set_motion(not bool(value))
-		"high_contrast":
-			_refresh_puzzle_high_contrast()
+			if sfx != null: sfx.set_muted(not bool(value))
+			if bgm != null: bgm.set_muted(not bool(value))
+		"haptic": Vibration.set_on(bool(value))
+		"reduced_motion": LayoutTokens.set_motion(not bool(value))
+		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
 		"large_text":
 			LayoutTokens.set_large_text(bool(value))
-			_refresh_large_text()
-		"colorblind":
-			_refresh_puzzle_colorblind()
-		"undo_x":
-			_refresh_undo_visible(bool(value))
+			_refresh_screen("set_large_text", bool(value))
+		"colorblind": _refresh_puzzle_colorblind()
+		"undo_x": _refresh_screen("set_undo_visible", bool(value))
 
-func _refresh_undo_visible(enabled: bool) -> void:
-	if screen_host == null:
-		return
+func _refresh_screen(method: String, val: Variant) -> void:
+	if screen_host == null: return
 	for child in screen_host.get_children():
-		if child.has_method("set_undo_visible"):
-			child.call("set_undo_visible", enabled)
-
-func _refresh_puzzle_high_contrast() -> void:
-	if screen_host == null or config == null:
-		return
-	var enabled := bool(config.get_option("high_contrast"))
-	for child in screen_host.get_children():
-		if child.has_method("set_high_contrast_and_redraw"):
-			child.call("set_high_contrast_and_redraw", enabled)
-
-func _refresh_large_text() -> void:
-	if screen_host == null or config == null:
-		return
-	var enabled := bool(config.get_option("large_text"))
-	for child in screen_host.get_children():
-		if child.has_method("set_large_text"):
-			child.call("set_large_text", enabled)
+		if child.has_method(method): child.call(method, val)
 
 func _refresh_puzzle_colorblind() -> void:
-	if screen_host == null or config == null:
-		return
+	if screen_host == null or config == null: return
 	var enabled := bool(config.get_option("colorblind"))
 	for child in screen_host.get_children():
-		if child.has_method("set_colorblind_and_redraw"):
-			child.call("set_colorblind_and_redraw", enabled)
+		if child.has_method("set_colorblind_and_redraw"): child.call("set_colorblind_and_redraw", enabled)
 		elif "board" in child and child.board != null and child.board.has_method("set_colorblind"):
-			child.board.set_colorblind(enabled)
+			child.board.set_colorblind(enabled); child.board.redraw()
 			child.board.redraw()
 
 func _apply_all_settings() -> void:

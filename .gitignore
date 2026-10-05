@@ -26,3 +26,6 @@ extracted_reusable/
 *.tmp
 *.log
 scratch/
+
+# Local Rive authoring projects and generated artifacts
+/rive-assets/

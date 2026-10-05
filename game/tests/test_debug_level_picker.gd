@@ -87,6 +87,45 @@ func _run_tests() -> void:
 	title_scene.queue_free()
 	await process_frame
 
+	# Test 8: AppShell isolated debug session preserves main campaign progress
+	var app_shell_packed := load("res://scenes/main.tscn") as PackedScene
+	var app_shell = app_shell_packed.instantiate()
+	root.add_child(app_shell)
+	await process_frame
+	await process_frame
+
+	var initial_main_level: String = str(app_shell.runtime.current_level_label())
+	# Select a different level in debug mode (e.g. L02)
+	var sample_lvl := bank.get_level(4, 1, 1)
+	sample_lvl["id"] = "L02"
+	app_shell._on_debug_level_selected(sample_lvl, "L02")
+	await process_frame
+	await process_frame
+
+	_assert(app_shell._debug_mode, "Debug mode is active in AppShell")
+	_assert(app_shell.runtime.current_level_label() == initial_main_level, "Main campaign level label preserved (not overwritten)")
+	var puzzle_inst = app_shell.screen_host.get_child(0)
+	_assert(puzzle_inst != null and puzzle_inst.session != null, "Puzzle screen instantiated with active session")
+	_assert(puzzle_inst.session.level.get("id") == "L02", "Puzzle screen loaded selected debug level L02")
+
+	# Test 9: Completing debug level advances to next default level without corrupting campaign progress
+	_assert(app_shell._debug_next_lbl == "L03", "Next level for L02 is L03")
+	app_shell._on_next_level()
+	await process_frame
+	await process_frame
+	var puzzle_inst_2 = app_shell.screen_host.get_child(0)
+	_assert(puzzle_inst_2 != null and puzzle_inst_2.session.level.get("id") == "L03", "Advanced to next default level L03")
+	_assert(app_shell.runtime.current_level_label() == initial_main_level, "Main campaign level label still preserved after next level")
+
+	# Exit debug to home
+	app_shell._on_puzzle_home()
+	await process_frame
+	_assert(not app_shell._debug_mode, "Debug mode exited on return to home")
+	_assert(app_shell.runtime.current_level_label() == initial_main_level, "Main level untouched upon returning home")
+
+	app_shell.queue_free()
+	await process_frame
+
 	if _fails.is_empty():
 		print("DEBUG_LEVEL_PICKER_PASS")
 		quit(0)

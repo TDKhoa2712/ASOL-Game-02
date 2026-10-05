@@ -99,7 +99,7 @@ func select_playlist_entry(label: String) -> void:
 		_bank.load_bank(s)
 		var raw := _bank.get_level(s, r, idx)
 		_selected_level = BoardTransform.apply(raw, tr) if tr > 0 else raw.duplicate(true)
-	_selected_level["id"] = label; _selected_label = label
+	_selected_level["id"] = label; _selected_level["_playlist_label"] = label; _selected_label = label
 	_update_info_display(label, s, str(entry.get("difficulty", "normal")), r, _selected_level)
 
 func select_custom_bank_level(size: int, rank: int, index: int, transform: int = 0) -> void:
@@ -108,7 +108,8 @@ func select_custom_bank_level(size: int, rank: int, index: int, transform: int =
 		var raw := _bank.get_level(size, rank, index)
 		_selected_level = BoardTransform.apply(raw, transform) if transform > 0 else raw.duplicate(true)
 	var label := "Bank %dx%d R%d #%d" % [size, size, rank, index]
-	_selected_level["id"] = label; _selected_label = label
+	_selected_level["id"] = label; _selected_level["_bank_meta"] = {"size": size, "rank": rank, "index": index, "transform": transform}
+	_selected_label = label
 	_update_info_display(label, size, "custom", rank, _selected_level)
 
 func confirm_selection() -> void:
