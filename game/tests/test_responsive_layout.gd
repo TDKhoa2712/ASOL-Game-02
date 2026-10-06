@@ -3,6 +3,7 @@ extends SceneTree
 const PuzzleScreen = preload("res://scripts/screens/puzzle_screen.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
+const CandyRenderer = preload("res://scripts/core/candy_renderer.gd")
 
 var _fails: Array[String] = []
 
@@ -67,6 +68,24 @@ func _run_tests() -> void:
 		for icon in region_row.get_children():
 			if icon is TextureRect:
 				_assert(icon.expand_mode == TextureRect.EXPAND_IGNORE_SIZE, "Icon uses EXPAND_IGNORE_SIZE at N=%d" % n)
+				_assert(icon.stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED, "Icon uses STRETCH_KEEP_ASPECT_CENTERED at N=%d" % n)
+				if n <= 6:
+					_assert(icon.custom_minimum_size.x >= 46.0, "Icon width %f >= 46.0 at N=%d" % [icon.custom_minimum_size.x, n])
+					_assert(icon.custom_minimum_size.y >= 46.0, "Icon height %f >= 46.0 at N=%d" % [icon.custom_minimum_size.y, n])
+
+	# Test 1b: Verify candy texture dynamically adapts to level candy_type or level id
+	var custom_level := _create_level(5)
+	custom_level["candy_type"] = "lollipop"
+	var custom_session := PlaySession.new(custom_level)
+	screen.session = custom_session
+	board.configure(custom_session)
+	screen._update_hearts()
+	await process_frame
+	var custom_region_row: HBoxContainer = status_row.get_node_or_null("RegionProgressPill/RegionIcons") as HBoxContainer
+	if custom_region_row != null and custom_region_row.get_child_count() > 0:
+		var sample_icon: TextureRect = custom_region_row.get_child(0) as TextureRect
+		var want_tex: Texture2D = CandyRenderer.texture_for_type("lollipop")
+		_assert(sample_icon.texture == want_tex, "Candy icon dynamically adapts to level candy_type")
 
 	# Test 2: PuzzleBoard expands responsively inside BoardCard
 	_assert(board.size_flags_horizontal & Control.SIZE_EXPAND_FILL != 0, "Board has horizontal expand flag")

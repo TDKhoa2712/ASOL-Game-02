@@ -90,6 +90,8 @@ func _run_tests() -> void:
 	# Test 8: AppShell isolated debug session preserves main campaign progress
 	var app_shell_packed := load("res://scenes/main.tscn") as PackedScene
 	var app_shell = app_shell_packed.instantiate()
+	# Isolate the test from an actual player save, which can be failed.
+	app_shell.profile_dir = OS.get_user_data_dir().path_join("test_debug_picker_%d" % Time.get_ticks_usec())
 	root.add_child(app_shell)
 	await process_frame
 	await process_frame

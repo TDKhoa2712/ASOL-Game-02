@@ -11,6 +11,8 @@ const AppShell = preload("res://scripts/screens/app_shell.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const CellAnimator = preload("res://scripts/screens/cell_animator.gd")
 
 class MockRuntime extends RefCounted:
 	var label: String = "1-2"
@@ -109,14 +111,29 @@ func _test_puzzle_board() -> void:
 	_assert(board._highlight_cells.is_empty(), "clear_highlight clears cells")
 
 	var swipe_box: Array = []
+	var stroke_steps: Array = []
 	board.cell_swiped.connect(func(cells: Array): swipe_box.append(cells))
-	board._decoder.begin(0, 0, 0)
+	board.cell_stroke_step.connect(func(r: int, c: int, is_mark: bool): stroke_steps.append([r, c, is_mark]))
+	board._decoder.begin(2, 0, 0)
 	_assert(board._preview_cells.is_empty(), "board touch-down has no X preview")
-	board._decoder.move(0, 2)
-	_assert(board._preview_cells == [[0, 0], [0, 1], [0, 2]], "board previews drag")
+	board._decoder.move(2, 2)
+	_assert(board._preview_cells == [[2, 0], [2, 1], [2, 2]], "board previews drag")
+	_assert(stroke_steps.size() == 3, "stroke steps emitted for each cell during drag")
+	_assert(stroke_steps[0] == [2, 0, true] and stroke_steps[2] == [2, 2, true], "stroke step parameters match")
 	board._decoder.finish(100)
 	_assert(board._preview_cells.is_empty(), "board clears drag preview")
-	_assert(swipe_box.size() == 1 and swipe_box[0] == [[0, 0], [0, 1], [0, 2]], "board forwards swipe trail")
+	board.play_mark_anims([[0, 1], [0, 2]])
+	_assert(board.has_mark_anim(0, 1) and board.has_mark_anim(0, 2), "play_mark_anims registers multiple cells")
+	LayoutTokens.set_motion(false)
+	board.play_mark_anim(2, 3)
+	_assert(not board.has_mark_anim(2, 3), "reduced motion skips mark anim")
+	LayoutTokens.set_motion(true)
+	board.draw.connect(func():
+		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), false, false, 0.0)
+		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), false, false, 0.4)
+		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), true, true, 1.0)
+	)
+	board.notification(CanvasItem.NOTIFICATION_DRAW)
 
 	board.free()
 

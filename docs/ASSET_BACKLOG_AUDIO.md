@@ -1,23 +1,23 @@
 # Asset Backlog — Audio
 
-Danh sách audio cần sản xuất cho CanDoKu.
+Danh mục âm thanh và hướng chỉnh SFX hiện hành cho CanDoKu.
 Mọi âm thanh phải là bản thu/tổng hợp gốc — không sao chép từ reference.
 
-9 SFX hiện được tổng hợp PCM khi khởi động bằng [engine âm thanh](../game/scripts/feedback/pcm_synth.gd). BGM vẫn cần tài sản âm thanh riêng; các SFX bổ sung phía dưới là backlog, chưa triển khai.
+19 SFX hiện được tổng hợp PCM khi khởi động bằng [engine âm thanh](../game/scripts/feedback/pcm_synth.gd). Chủ dự án chọn tiếp tục dùng âm thanh bằng code để nghe và chỉnh qua tuner; không cần gen file SFX bên ngoài. BGM là hạng mục riêng.
 
 ## Chuẩn kỹ thuật chung
 
-- BGM/tài sản file: `.ogg` Vorbis, 48 kHz
+- BGM release: `.ogg` Vorbis, 48 kHz; bản WAV hiện có dùng để nghe thử trong game
 - SFX hiện hành: PCM mono 16-bit, 22050 Hz, sinh bằng `pcm_synth.gd`; sample clamp trước khi encode
 - BGM: stereo (44.1 kHz chấp nhận), −14 LUFS integrated, loop seamless (tail khớp head)
-- BGM đặt dưới `game/audio/bgm/`; SFX lấy preset từ `game/scripts/feedback/sfx_catalog.gd`
-- MARK, CANDY_YES, CANDY_NO và BTN_PRESS có biến thiên pitch 0.94–1.06; MARK giữ giới hạn 100 ms
+- BGM đặt dưới `game/assets/audio/bgm/`; SFX lấy preset từ `game/scripts/feedback/sfx_catalog.gd`
+- MARK, UNMARK, CANDY_YES và CANDY_NO có biến thiên pitch 0.94–1.06; tiếng bấm UI dùng cùng một pitch để giữ nhất quán. MARK giữ giới hạn 100 ms trừ bước vuốt phát theo từng ô
 
 ---
 
-## A. BGM — nhạc nền (`game/audio/bgm/`)
+## A. BGM — nhạc nền (`game/assets/audio/bgm/`)
 
-Code yêu cầu: `app_shell.gd` → `main_theme.ogg`
+Code hiện dùng `bgm-candoku-melody.wav` để nghe thử; bản `main_theme.ogg` theo chuẩn release vẫn cần hoàn thiện và nối vào app.
 
 | # | File | Vai trò | Loop | Mood |
 |---|------|---------|------|------|
@@ -31,21 +31,25 @@ Code yêu cầu: `app_shell.gd` → `main_theme.ogg`
 
 ## B. SFX hiện hành — procedural PCM
 
-7 preset một âm và 2 melody được prewarm tại `SfxPlayer._ready()`, phát qua pool 8 voice. Không cần các file `.ogg` SFX. Toggle audio tắt cả gameplay và tiếng nút trong composition root.
+15 preset tone, 2 melody, 1 preset pencil scratch và 1 tiếng quỵt Settings được prewarm tại `SfxPlayer._ready()`, phát qua pool 8 voice. `MARK` có cả preset tone cũ trong `PRESETS` nhưng runtime và tuner ưu tiên `PENCIL_PRESETS`; tổng cộng là **19 effect**. Không cần các file `.ogg` SFX. Toggle audio tắt cả gameplay và tiếng nút trong composition root.
 
 | Effect | Sự kiện | Thời lượng | Preset |
 |---|---|---|---|
-| `MARK` | Đánh/bỏ X | 60 ms | triangle sweep lên |
+| `MARK` | Đánh X | 176 ms trước speed | pencil scratch hai nét; preset tone 60 ms không dùng |
+| `UNMARK` | Xóa X | 55 ms | pop mềm đi lên |
 | `CANDY_YES` | Kẹo đúng | 140 ms | sine sweep lên, noise nhẹ |
 | `CANDY_NO` | Kẹo sai | 180 ms | square sweep xuống, low-pass |
-| `HINT_SHOW` | Gợi ý | 200 ms | sine sweep lên |
+| `HINT_SHOW` | Dùng gợi ý | 74 ms | tiếng bấm chung `UI_TICK` |
 | `STAGE_CLEAR` | Thắng | 440 ms | 4 nốt đi lên |
 | `STAGE_FAIL` | Thua | 520 ms | 4 nốt đi xuống |
-| `BTN_PRESS` | Nút UI | 40 ms | triangle click |
+| `BTN_PRESS` | Nút UI | 74 ms | tiếng gỗ ấm “tíc ky”: triangle trầm, chút noise đầu âm, low-pass |
 | `BOARD_OPEN` | Vào puzzle | 250 ms | triangle sweep lên |
-| `RESTART` | Chơi lại | 150 ms | triangle sweep xuống |
+| `RESTART`, `TAP_BACK`, `TOGGLE_ON` / `TOGGLE_OFF`, `DIALOG_OPEN` / `DIALOG_CLOSE`, `UNDO_X` | Chơi lại, Back/Home, cài đặt, dialog, Undo thành công | 74 ms | dùng chung `UI_TICK`; khi tắt Audio, mute có thể chặn cue tắt |
+| `SETTINGS_OPEN` | Mở Settings từ Home hoặc puzzle | 110 ms | tiếng gậy vụt nhanh qua không khí, kết bằng cú “tách” khô ngắn |
+| `PROGRESS_COMPLETE` | Đạt nửa số kẹo cần tự tìm, một lần mỗi màn | 260 ms | nốt thưởng nhỏ hơn thắng màn |
+| `LOCK_TICK` | Chỉ nghe trong tuner | 55 ms | dành cho auto-lock nếu cơ chế này được đưa trở lại; hiện không có trigger gameplay |
 
-**Chỉnh âm thanh:** mở `game/scenes/sfx_tuner.tscn` trong Godot, nhấn F6; chọn preset, chỉnh control rồi Play/Space. Copy Params ghi dictionary vào clipboard và console. Dán vào `PRESETS`; với thắng/thua, dán vào `MELODY_PRESETS` và giữ chuỗi `freqs`/`note_dur`. Enum pitch dùng `PcmSynth.PitchCurve` để tránh trùng class Godot.
+**Chỉnh âm thanh:** mở `game/scenes/sfx_tuner.tscn` trong Godot, nhấn F6; chọn một trong 19 effect, chỉnh control rồi Play/Space. Chọn `BTN_PRESS` để nghe tiếng bấm chung; chỉnh một lần tại `UI_TICK` trong `sfx_catalog.gd` sẽ áp dụng cho mọi hành động dùng chung. Chọn `SETTINGS_OPEN` để chỉnh riêng tiếng vụt gậy; `noise_mix` điều khiển phần gió, `snap_mix` điều khiển cú “tách” ngắn, `high_pass`/`low_pass` điều chỉnh độ sáng của tiếng vụt. Thanh `speed (pitch)` cho phép nghe ở 0,5–2,0×; đổi tốc độ phát cũng đổi cao độ và thời lượng nghe. `Copy Params` ghi dictionary, gồm `speed`, vào clipboard và console; tuner chỉ preview, **không tự lưu preset vào game**. Dán cấu hình nút vào `UI_TICK`, các âm khác vào `PRESETS`; riêng `MARK` dán vào `PENCIL_PRESETS`, thắng/thua dán vào `MELODY_PRESETS` và giữ chuỗi `freqs`/`note_dur`. Player dùng `speed` từ preset và nhân với biến thiên pitch nếu effect đó có random pitch. Enum pitch dùng `PcmSynth.PitchCurve` để tránh trùng class Godot.
 
 Engine tự giữ attack tối thiểu 5 ms và release tối thiểu 10 ms, kể cả khi slider đặt 0 hoặc tổng ADSR vượt duration. Âm dưới 15 ms co hai ramp theo tỷ lệ; mỗi âm/nốt có mẫu đầu/cuối bằng 0 để tránh bước nhảy từ/về silence. Các giá trị xuất ra vẫn là tham số bạn chọn, không phải envelope đã fit.
 
@@ -53,25 +57,17 @@ Các preset cần nghe thử trên loa/tai nghe và thiết bị mục tiêu đ�
 
 ---
 
-## C. SFX nên bổ sung — cần mở thêm enum trong `sfx_catalog.gd`
+## C. Ý tưởng SFX chưa dùng trong gameplay
 
-Backlog cho sprint polish.
+Các mục dưới đây là ý tưởng lịch sử, **không cần gen hoặc thêm effect** trong phạm vi hiện tại. Back, toggle, dialog và Undo đã có effect riêng ở mục B. `LOCK_TICK` có preset để nghe nhưng chưa phát trong game.
 
-| # | File | Trigger | Thời lượng | Ghi chú |
-|---|------|---------|------------|---------|
-| 10 | `tap_back.ogg` | Nhấn nút Back | 80–120 ms | pitch thấp hơn `tap` 1 bậc |
-| 11 | `toggle_on.ogg` | Bật switch Options | 100–150 ms | pitch lên |
-| 12 | `toggle_off.ogg` | Tắt switch Options | 100–150 ms | pitch xuống |
-| 13 | `dialog_open.ogg` | Mở dialog/popup | 200–350 ms | air swell nhẹ |
-| 14 | `dialog_close.ogg` | Đóng dialog | 150–250 ms | ngược lại #13 |
-| 15 | `toast_show.ogg` | Hiện toast/notification | 150–250 ms | soft pop |
-| 16 | `undo.ogg` | Hoàn tác (Undo X) | 150–250 ms | reverse swish ngắn |
-| 17 | `region_complete.ogg` | Giải xong một vùng | 300–500 ms | nhỏ hơn `win`, hint reward |
-| 18 | `row_complete.ogg` | Giải xong 1 hàng/cột | 250–400 ms | tương tự #17, pitch khác |
-| 19 | `select_cell.ogg` | Chọn ô (feedback focus) | 50–100 ms | cực ngắn, rất nhẹ |
-| 20 | `conflict_pulse.ogg` | Highlight xung đột | 200–300 ms | wobble/low thud |
+| Ý tưởng | Lý do chưa dùng |
+|---|---|
+| Toast riêng | Thông báo hiện tại chưa có cue/trigger riêng. |
+| Hoàn tất vùng hoặc hàng/cột | Mỗi kẹo đúng đã hoàn tất một hàng, cột, vùng; sẽ trùng `CANDY_YES`. Cue `PROGRESS_COMPLETE` dùng mốc nửa màn rõ hơn. |
+| Chọn ô hoặc pulse xung đột | Gameplay hiện không có trạng thái chọn ô riêng. |
 
-**Biến thể bổ sung:** pitch variation hiện đã áp dụng cho bốn effect. Nếu cần nhiều âm sắc, thêm preset tổng hợp hoặc thiết kế cơ chế biến thể trong một task polish riêng.
+**Biến thể bổ sung:** pitch variation hiện áp dụng cho năm effect. Nếu cần nhiều âm sắc, chỉnh preset hoặc mở rộng bộ tổng hợp trong một task polish riêng.
 
 ---
 
@@ -92,6 +88,6 @@ Backlog cho sprint polish.
 - [ ] Tên file đúng danh sách, snake_case
 - [ ] Không chứa trademark/giọng nói/âm mèo thương mại của reference
 - [ ] Peak không clip; SFX ≤ −10 dBFS, BGM đo LUFS meter
-- [ ] File `.ogg.import` được Godot tạo lại sau khi copy vào `game/audio/`
+- [ ] File `.ogg.import` được Godot tạo lại sau khi copy vào `game/assets/audio/bgm/`
 - [ ] Chạy thử: event tương ứng phát đúng, không delay > 50 ms
 - [ ] Credit/nguồn ghi trong `docs/CREDITS.md` (nếu dùng library royalty-free)

@@ -58,7 +58,7 @@ func _set_t(v: float) -> void:
 
 func _update_icon_tint(is_on_val: bool) -> void:
 	if icon_target != null:
-		icon_target.modulate = Palette.INK if is_on_val else Palette.ICON_OFF
+		icon_target.modulate = Color.WHITE if is_on_val else Color(0.75, 0.75, 0.75, 0.6)
 
 func _draw() -> void:
 	var r := Rect2((size - PILL_SIZE) * 0.5, PILL_SIZE)

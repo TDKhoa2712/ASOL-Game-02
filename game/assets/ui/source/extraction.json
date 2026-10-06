@@ -1,0 +1,146 @@
+﻿[
+    {
+        "file":  "button_audio_on.png",
+        "size":  "192x192",
+        "visible":  24009,
+        "antialias":  211,
+        "bounds":  [
+                       15,
+                       326,
+                       185,
+                       504
+                   ],
+        "offset":  [
+                       4,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_audio_off.png",
+        "size":  "192x192",
+        "visible":  24014,
+        "antialias":  241,
+        "bounds":  [
+                       184,
+                       326,
+                       354,
+                       504
+                   ],
+        "offset":  [
+                       173,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_music_on.png",
+        "size":  "192x192",
+        "visible":  23706,
+        "antialias":  219,
+        "bounds":  [
+                       354,
+                       326,
+                       521,
+                       504
+                   ],
+        "offset":  [
+                       342,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_music_off.png",
+        "size":  "192x192",
+        "visible":  24055,
+        "antialias":  194,
+        "bounds":  [
+                       520,
+                       326,
+                       689,
+                       504
+                   ],
+        "offset":  [
+                       509,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_haptic.png",
+        "size":  "192x192",
+        "visible":  23687,
+        "antialias":  204,
+        "bounds":  [
+                       687,
+                       326,
+                       855,
+                       504
+                   ],
+        "offset":  [
+                       675,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_reduced_motion.png",
+        "size":  "192x192",
+        "visible":  23823,
+        "antialias":  191,
+        "bounds":  [
+                       853,
+                       326,
+                       1021,
+                       504
+                   ],
+        "offset":  [
+                       841,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_large_text.png",
+        "size":  "192x192",
+        "visible":  24175,
+        "antialias":  204,
+        "bounds":  [
+                       1019,
+                       326,
+                       1189,
+                       504
+                   ],
+        "offset":  [
+                       1008,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_colorblind.png",
+        "size":  "192x192",
+        "visible":  24024,
+        "antialias":  195,
+        "bounds":  [
+                       1187,
+                       326,
+                       1357,
+                       504
+                   ],
+        "offset":  [
+                       1176,
+                       319
+                   ]
+    },
+    {
+        "file":  "button_undo_x.png",
+        "size":  "192x192",
+        "visible":  23745,
+        "antialias":  166,
+        "bounds":  [
+                       1354,
+                       326,
+                       1522,
+                       504
+                   ],
+        "offset":  [
+                       1342,
+                       319
+                   ]
+    }
+]

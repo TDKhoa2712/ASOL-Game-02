@@ -8,6 +8,9 @@ const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const HeartsDisplay = preload("res://scripts/screens/hearts_display.gd")
+const CandyRenderer = preload("res://scripts/core/candy_renderer.gd")
+const CandyCounterAnimator = preload("res://scripts/screens/candy_counter_animator.gd")
 
 static func build(root: Control) -> Dictionary:
 	var background := ColorRect.new()
@@ -35,7 +38,7 @@ static func build(root: Control) -> Dictionary:
 	top.custom_minimum_size.y = 96
 	top.add_theme_constant_override("separation", 12)
 	stack.add_child(top)
-	var back := _circle("BackBtn", "res://assets/ui/board/icon_back.png", 88)
+	var back := _circle("BackBtn", "res://assets/ui/board/button_back.png", 88)
 	top.add_child(back)
 	_add_spacer(top)
 	var stats := VBoxContainer.new()
@@ -53,9 +56,9 @@ static func build(root: Control) -> Dictionary:
 		level_value.add_theme_font_override("font", heading_font)
 	stats.add_child(level_value)
 	_add_spacer(top)
-	var help := _circle("HelpBtn", "res://assets/ui/board/icon_help.png", 88)
-	var restart := _circle("RestartBtn", "res://assets/ui/board/icon_restart.png", 88)
-	var settings := _circle("SettingsBtn", "res://assets/ui/board/icon_settings.png", 88)
+	var help := _circle("HelpBtn", "res://assets/ui/board/button_help.png", 88)
+	var restart := _circle("RestartBtn", "res://assets/ui/board/button_restart.png", 88)
+	var settings := _circle("SettingsBtn", "res://assets/ui/board/button_settings.png", 88)
 	top.add_child(help)
 	top.add_child(restart)
 	top.add_child(settings)
@@ -74,7 +77,7 @@ static func build(root: Control) -> Dictionary:
 	region_pill.add_child(region_row)
 	var lives_pill := _panel("LivesPill", Palette.PILL_RADIUS, Palette.SHADOW_SOFT)
 	status.add_child(lives_pill)
-	var lives_row := HBoxContainer.new()
+	var lives_row := HeartsDisplay.new()
 	lives_row.name = "LifeIcons"
 	lives_row.add_theme_constant_override("separation", 6)
 	lives_pill.add_child(lives_row)
@@ -85,7 +88,7 @@ static func build(root: Control) -> Dictionary:
 	rule_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	rule_row.add_theme_constant_override("separation", 20)
 	rules.add_child(rule_row)
-	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
+	var candy_texture := CandyRenderer.texture_for_type("bonbon")
 	var rule_data := [
 		[".X./XCX/.X.", root.tr("puzzle.rule_row")],
 		["XXX/XC./X..", root.tr("puzzle.rule_region")],
@@ -122,9 +125,9 @@ static func build(root: Control) -> Dictionary:
 	dock.alignment = BoxContainer.ALIGNMENT_CENTER
 	dock.add_theme_constant_override("separation", 52)
 	stack.add_child(dock)
-	var undo := _circle("UndoBtn", "res://assets/ui/board/icon_undo.png", 110)
+	var undo := _circle("UndoBtn", "res://assets/ui/board/button_undo.png", 110)
 	dock.add_child(undo)
-	var hint := _circle("HintBtn", "res://assets/ui/board/icon_hint.png", 110)
+	var hint := _circle("HintBtn", "res://assets/ui/board/button_hint.png", 110)
 	dock.add_child(hint)
 	var confirm := ConfirmationDialog.new()
 	confirm.name = "RestartConfirm"
@@ -137,43 +140,14 @@ static func build(root: Control) -> Dictionary:
 		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
 		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay}
 
-static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer) -> void:
+static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer, animate_loss: bool = false, found_region: String = "") -> void:
 	if session == null:
 		return
-	for container in [regions_row, lives_row]:
-		for child in container.get_children():
-			container.remove_child(child)
-			child.free()
-	var size: int = int(session.level.get("size", 0))
-	var regions: Array = session.level.get("regions", [])
-	var found: Dictionary = {}
-	for row in range(size):
-		for col in range(size):
-			if CellModel.is_placed(session.board[row][col]):
-				found[CandyRules.zone_of(regions, row, col)] = true
-	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
-	var zone_colors: Dictionary = RegionPainter.assign_colors(size, regions, Palette.ZONE_COLORS)
-	var icon_size: float = clampf(340.0 / float(maxi(size, 6)), 22.0, 34.0)
-	var gap: int = int(clampf(48.0 / float(maxi(size, 6)), 3.0, 10.0))
-	regions_row.add_theme_constant_override("separation", gap)
-	for index in range(size):
-		var icon := TextureRect.new()
-		icon.texture = candy_texture
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.custom_minimum_size = Vector2(icon_size, icon_size)
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		var zone_id: String = char(65 + index)
-		icon.modulate = zone_colors.get(zone_id, Palette.ZONE_COLORS[index]) if found.has(zone_id) else Palette.ICON_MUTED
-		regions_row.add_child(icon)
-	var heart_texture := load("res://assets/ui/board/heart.svg") as Texture2D
-	for index in range(3):
-		var icon := TextureRect.new()
-		icon.texture = heart_texture
-		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		icon.custom_minimum_size = Vector2(36, 30)
-		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.modulate = Palette.TEXT_ON_ACCENT if index < session.hearts else Palette.ICON_MUTED
-		lives_row.add_child(icon)
+	if not found_region.is_empty():
+		CandyCounterAnimator.play_candy_found(session, regions_row, found_region)
+	else:
+		CandyCounterAnimator.sync_status(session, regions_row)
+	lives_row.set_hearts(session.hearts, animate_loss)
 
 static func _panel(node_name: String, radius: int, shadow: Color) -> PanelContainer:
 	var panel := PanelContainer.new()
@@ -193,14 +167,9 @@ static func _circle(node_name: String, icon_path: String, diameter: float) -> Bu
 	button.name = node_name
 	button.custom_minimum_size = Vector2.ONE * diameter
 	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var empty_style := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "focus", "disabled"]:
-		var style := StyleBoxFlat.new()
-		style.bg_color = Palette.SURFACE_PRESSED if state == "pressed" else Palette.SURFACE_DISABLED if state == "disabled" else Palette.SURFACE_HOVER if state == "hover" else Palette.PILL_BG
-		style.set_corner_radius_all(999)
-		style.shadow_color = Palette.SHADOW_SOFT
-		style.shadow_size = 4 if state == "pressed" else 8
-		style.shadow_offset = Vector2(0, 2)
-		button.add_theme_stylebox_override(state, style)
+		button.add_theme_stylebox_override(state, empty_style)
 	var center := CenterContainer.new()
 	center.name = "IconCenter"
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -211,9 +180,11 @@ static func _circle(node_name: String, icon_path: String, diameter: float) -> Bu
 	icon.texture = load(icon_path) as Texture2D
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.custom_minimum_size = Vector2.ONE * diameter * 0.54
+	icon.custom_minimum_size = Vector2.ONE * (diameter - 6.0)
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	center.add_child(icon)
+	button.button_down.connect(func(): icon.modulate = Color(0.85, 0.85, 0.85))
+	button.button_up.connect(func(): icon.modulate = Color.WHITE)
 	return button
 
 static func _label(value: String, font_size: int, color: Color) -> Label:

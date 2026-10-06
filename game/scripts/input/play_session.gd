@@ -84,13 +84,14 @@ func mark_stroke(cells: Array, paint_mark: bool) -> void:
 		_undo_cells = before
 		state_changed.emit()
 
-func undo_mark() -> void:
+func undo_mark() -> bool:
 	if phase != Phase.ACTIVE or _undo_cells.is_empty():
-		return
+		return false
 	for cell in _undo_cells:
 		board[int(cell[0])][int(cell[1])] = int(cell[2])
 	_undo_cells = []
 	state_changed.emit()
+	return true
 
 func try_candy(row: int, col: int) -> void:
 	if phase != Phase.ACTIVE:

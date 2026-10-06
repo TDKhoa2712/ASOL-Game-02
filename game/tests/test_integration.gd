@@ -13,10 +13,8 @@ const PlaySession = preload("res://scripts/input/play_session.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 
 var _failures: Array[String] = []
-
 func _initialize() -> void:
 	call_deferred("_run")
-
 func _run() -> void:
 	await _test_app_shell_boot_and_wiring()
 	await _test_screen_flow_win_and_progression()
@@ -32,12 +30,10 @@ func _run() -> void:
 		for f in _failures:
 			printerr(f)
 		quit(1)
-
 func _create_test_profile(tag: String) -> String:
 	var path := OS.get_user_data_dir().path_join("test_integ_%s_%s" % [tag, Time.get_ticks_usec()])
 	DirAccess.make_dir_recursive_absolute(path)
 	return path
-
 func _clean_dir(path: String) -> void:
 	var da := DirAccess.open(path)
 	if da != null:
@@ -60,6 +56,10 @@ func _test_app_shell_boot_and_wiring() -> void:
 	_assert(shell.config != null, "config store initialized")
 	_assert(shell.sfx != null, "sfx player added")
 	_assert(shell.bgm != null, "bgm player added")
+	var bgm_track: String = str(shell.get_script().get_script_constant_map().get("BGM_TRACK", ""))
+	_assert(bgm_track != "" and ResourceLoader.exists(bgm_track), "configured BGM asset exists")
+	var icon_path: String = str(ProjectSettings.get_setting("application/config/icon", ""))
+	_assert(icon_path != "" and ResourceLoader.exists(icon_path), "project icon asset exists")
 	_assert(shell.runtime != null, "campaign runtime initialized")
 	_assert(shell.nav != null, "nav controller initialized")
 	_assert(shell.nav.current() == NavController.Screen.TITLE, "starts on title screen")
@@ -166,6 +166,10 @@ func _test_screen_flow_fail_and_retry() -> void:
 
 	_assert(session.phase == PlaySession.Phase.FAILED, "session is FAILED")
 	_assert(session.hearts == 0, "0 hearts remaining")
+	_assert(shell.nav.current() == NavController.Screen.PUZZLE, "final heart remains visible while falling")
+	var saved := shell.runtime.sessions.load_session(session.level.id, session.level.hash)
+	_assert(saved.ok and saved.data.status == "failed", "failure saved before final fall finishes")
+	await create_timer(1.0).timeout
 	_assert(shell.nav.current() == NavController.Screen.FAIL, "nav moved to FAIL screen")
 
 	var fail_screen = shell.screen_host.get_child(0)
