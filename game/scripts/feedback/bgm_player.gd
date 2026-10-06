@@ -11,6 +11,11 @@ func _ready() -> void:
 		_player.bus = &"Master"
 		add_child(_player)
 
+func _exit_tree() -> void:
+	if _player:
+		_player.stop()
+		_player.stream = null
+
 func play_track(path: String) -> void:
 	_current_track = path
 	if _muted:
@@ -22,7 +27,9 @@ func play_track(path: String) -> void:
 	if path != "" and (ResourceLoader.exists(path) or FileAccess.file_exists(path)):
 		var stream := load(path) as AudioStream
 		if stream:
-			if "loop" in stream:
+			if stream is AudioStreamWAV:
+				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
+			elif "loop" in stream:
 				stream.set("loop", true)
 			_player.stream = stream
 			_player.play()

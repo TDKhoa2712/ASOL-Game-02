@@ -35,11 +35,11 @@ func _test_stroke_undo() -> void:
 	var session := PlaySession.new(_make_level(), 3)
 	session.mark_stroke([[1, 0], [1, 1], [1, 2]], true)
 	_assert(session.cell_at(1, 0) == CellModel.CellKind.MARK and session.cell_at(1, 2) == CellModel.CellKind.MARK, "stroke paints cells")
-	session.undo_mark()
+	_assert(session.undo_mark() == true, "undo reports changed board")
 	_assert(session.cell_at(1, 0) == CellModel.CellKind.BLANK and session.cell_at(1, 2) == CellModel.CellKind.BLANK, "undo reverses whole stroke")
 	session.mark_x(2, 2)
 	session.try_candy(0, 1)
-	session.undo_mark()
+	_assert(session.undo_mark() == false, "undo after candy reports no change")
 	_assert(session.cell_at(2, 2) == CellModel.CellKind.MARK, "candy action clears undo")
 
 func _test_try_candy_correct() -> void:

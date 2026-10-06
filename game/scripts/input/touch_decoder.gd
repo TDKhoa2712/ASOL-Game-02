@@ -76,9 +76,10 @@ func finish(time_ms: int) -> void:
 		var trail: Array = _swipe_trail.duplicate()
 		_swipe_trail.clear()
 		_last_swipe_cell.clear()
-		preview_changed.emit([])
+		# Keep preview feedback history available while committing the stroke.
 		if not trail.is_empty():
 			cell_swiped.emit(trail)
+		preview_changed.emit([])
 	elif _swipe_trail.size() == 1:
 		var tap_cell: Array = _swipe_trail[0]
 		_swipe_trail.clear()

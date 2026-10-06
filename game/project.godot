@@ -15,7 +15,7 @@ run/main_scene="res://scenes/main.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/ASOL Game 02"
 config/features=PackedStringArray("4.7")
-config/icon="res://assets/ui/board/candy.svg"
+config/icon="res://assets/candy/candy_icon.png"
 config/custom_user_dir_name.linux="godot/app_userdata/ASOL Game 02"
 
 [display]

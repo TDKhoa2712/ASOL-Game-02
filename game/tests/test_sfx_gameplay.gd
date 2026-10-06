@@ -15,22 +15,41 @@ func _run() -> void:
 	await process_frame
 	var title = shell.screen_host.get_child(0)
 	title.options_btn.pressed.emit()
-	_expect_effect(shell.sfx, SfxCatalog.Effect.BTN_PRESS, "menu button")
+	_expect_effect(shell.sfx, SfxCatalog.Effect.SETTINGS_OPEN, "title settings opens")
 	var options = shell.screen_host.get_child(0)
 	options.back_btn.pressed.emit()
-	_expect_effect(shell.sfx, SfxCatalog.Effect.BTN_PRESS, "back button")
+	_expect_effect(shell.sfx, SfxCatalog.Effect.TAP_BACK, "settings closes with shared click")
 	shell._on_title_play()
 	var puzzle = shell.screen_host.get_child(0)
 	_expect_effect(shell.sfx, SfxCatalog.Effect.BOARD_OPEN, "board open")
+	puzzle.settings_btn.pressed.emit()
+	_expect_effect(shell.sfx, SfxCatalog.Effect.SETTINGS_OPEN, "puzzle settings opens")
+	options = shell.screen_host.get_child(0)
+	options.back_btn.pressed.emit()
+	_check(shell.sfx._last_play_ms.has(SfxCatalog.Effect.TAP_BACK),
+		"puzzle settings closes with shared click")
+	puzzle = shell.screen_host.get_child(0)
 	var blank := _wrong_cell(puzzle.session)
 	puzzle._on_board_tap(blank.x, blank.y)
 	_expect_effect(shell.sfx, SfxCatalog.Effect.MARK, "tap mark")
+	puzzle._on_undo()
+	_expect_effect(shell.sfx, SfxCatalog.Effect.UNDO_X, "successful undo")
+	puzzle._on_undo()
+	_check(shell.sfx._pool_idx == _observed_voice_index, "empty undo is silent")
 	var last_ms: int = shell.sfx._last_play_ms[SfxCatalog.Effect.MARK]
 	while Time.get_ticks_msec() - last_ms < 110: await process_frame
+	puzzle._on_board_tap(blank.x, blank.y)
+	_expect_effect(shell.sfx, SfxCatalog.Effect.MARK, "mark after undo")
+	last_ms = shell.sfx._last_play_ms[SfxCatalog.Effect.MARK]
+	while Time.get_ticks_msec() - last_ms < 110: await process_frame
 	puzzle._on_board_swipe([[blank.x, blank.y]])
-	_expect_effect(shell.sfx, SfxCatalog.Effect.MARK, "swipe mark")
+	_expect_effect(shell.sfx, SfxCatalog.Effect.UNMARK, "swipe removes mark")
 	puzzle._on_hint()
 	_expect_effect(shell.sfx, SfxCatalog.Effect.HINT_SHOW, "hint")
+	puzzle._on_restart()
+	_expect_effect(shell.sfx, SfxCatalog.Effect.DIALOG_OPEN, "restart confirmation opens")
+	puzzle.restart_confirm.hide()
+	_expect_effect(shell.sfx, SfxCatalog.Effect.DIALOG_CLOSE, "restart confirmation closes")
 	puzzle._confirm_restart()
 	_expect_effect(shell.sfx, SfxCatalog.Effect.RESTART, "restart")
 	var session = puzzle.session
@@ -38,7 +57,11 @@ func _run() -> void:
 		var col := int(session.level.solution[row])
 		if session.cell_at(row, col) == CellModel.CellKind.GIVEN: continue
 		puzzle._on_board_double_tap(row, col)
-		if session.phase == 0:
+		var total: int = int(session.level.size) - session.level.get("givens", []).size()
+		var found: int = total - session.remaining_candies()
+		if found == int((total + 1) / 2) and found < total:
+			_expect_effect(shell.sfx, SfxCatalog.Effect.PROGRESS_COMPLETE, "halfway progress")
+		elif session.phase == 0:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.CANDY_YES, "correct candy")
 	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_CLEAR, "win melody")
 	shell._on_next_level()
@@ -49,6 +72,7 @@ func _run() -> void:
 		if puzzle.session.phase == 0:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.CANDY_NO, "wrong candy")
 	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_FAIL, "failure melody")
+	if puzzle.hearts_display.is_animating(): await puzzle.hearts_display.loss_animation_finished
 	shell.config.set_option("audio", false)
 	var fail_screen = shell.screen_host.get_child(0)
 	fail_screen.home_btn.pressed.emit()

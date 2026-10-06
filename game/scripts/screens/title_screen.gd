@@ -54,51 +54,43 @@ func _ensure_nodes() -> void:
 	help_btn = Button.new()
 	help_btn.name = "HelpButton"
 	help_btn.custom_minimum_size = Vector2(88, 88)
-	_set_round_icon(help_btn, "res://assets/ui/home/icon_help.png", 46)
+	help_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_set_round_icon(help_btn, "res://assets/ui/home/button_help.png", 88)
 	help_btn.tooltip_text = tr("title.help_tooltip")
-	var help_style := StyleBoxFlat.new()
-	help_style.bg_color = Palette.PILL_BG
-	help_style.set_corner_radius_all(999)
-	help_style.shadow_color = Palette.SHADOW_SOFT
-	help_style.shadow_size = 6
+	var help_style := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "focus"]:
 		help_btn.add_theme_stylebox_override(state, help_style)
 	top.add_child(help_btn)
 	options_btn = Button.new()
 	options_btn.name = "OptionsButton"
 	options_btn.custom_minimum_size = Vector2(88, 88)
+	options_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	options_btn.flat = false
-	_set_round_icon(options_btn, "res://assets/ui/home/icon_settings.png", 46)
-	var option_style := StyleBoxFlat.new()
-	option_style.bg_color = Palette.PILL_BG
-	option_style.set_corner_radius_all(999)
-	option_style.shadow_color = Palette.SHADOW_SOFT
-	option_style.shadow_size = 6
+	_set_round_icon(options_btn, "res://assets/ui/home/button_settings.png", 88)
+	var option_style := StyleBoxEmpty.new()
 	for state in ["normal", "hover", "pressed", "focus"]:
 		options_btn.add_theme_stylebox_override(state, option_style)
 	top.add_child(options_btn)
 	var top_gap := Control.new()
-	top_gap.custom_minimum_size.y = 120
+	top_gap.custom_minimum_size.y = 60
 	frame.add_child(top_gap)
 	var hero := VBoxContainer.new()
 	hero.name = "HeroBlock"
-	hero.add_theme_constant_override("separation", 28)
+	hero.alignment = BoxContainer.ALIGNMENT_CENTER
+	hero.add_theme_constant_override("separation", 0)
 	frame.add_child(hero)
 	var logo := TextureRect.new()
 	logo.name = "CandyLogo"
-	logo.texture = load("res://assets/ui/board/candy.svg") as Texture2D
-	logo.custom_minimum_size = Vector2(480, 240)
+	logo.texture = load("res://assets/ui/home/logo_candoku.png") as Texture2D
+	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	logo.custom_minimum_size = Vector2(580, 275)
+	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	hero.add_child(logo)
 	title_label = Label.new()
 	title_label.name = "TitleLabel"
 	title_label.text = tr("title.name")
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.add_theme_font_size_override("font_size", 76)
-	title_label.add_theme_color_override("font_color", Palette.INK)
-	var heading_font := FontTokens.heading()
-	if heading_font != null:
-		title_label.add_theme_font_override("font", heading_font)
+	title_label.visible = false
 	hero.add_child(title_label)
 	var middle_space := Control.new()
 	middle_space.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -111,6 +103,7 @@ func _ensure_nodes() -> void:
 	play_btn.name = "PlayButton"
 	play_btn.custom_minimum_size = Vector2(560, 114)
 	play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	play_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	play_btn.add_theme_font_size_override("font_size", 42)
 	var btn_font := FontTokens.body_semibold()
 	if btn_font != null:
@@ -126,7 +119,7 @@ func _ensure_nodes() -> void:
 		play_btn.add_theme_stylebox_override(state, play_style)
 	actions.add_child(play_btn)
 	var bottom_spacer := Control.new()
-	bottom_spacer.custom_minimum_size.y = 120
+	bottom_spacer.custom_minimum_size.y = 80
 	frame.add_child(bottom_spacer)
 	help_dialog = AcceptDialog.new()
 	help_dialog.title = tr("help.title")
@@ -198,10 +191,12 @@ func _on_options() -> void:
 
 func _add_press_anim(button: Button) -> void:
 	button.button_down.connect(func():
+		button.pivot_offset = button.size * 0.5
 		var tw := button.create_tween()
-		tw.tween_property(button, "scale", Vector2(0.96, 0.96), 0.06)
+		tw.tween_property(button, "scale", Vector2(0.95, 0.95), 0.06)
 	)
 	button.button_up.connect(func():
+		button.pivot_offset = button.size * 0.5
 		var tw := button.create_tween()
 		tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 		tw.tween_property(button, "scale", Vector2.ONE, 0.15)

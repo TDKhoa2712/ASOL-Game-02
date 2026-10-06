@@ -16,16 +16,21 @@ func _run() -> void:
 	await process_frame
 	_check(player.get_child_count() == 8, "eight voices prewarmed")
 	for effect in SfxCatalog.Effect.values():
-		_check(SfxCatalog.PRESETS.has(effect) or SfxCatalog.MELODY_PRESETS.has(effect), "preset for %d" % effect)
+		_check(SfxCatalog.PRESETS.has(effect) or SfxCatalog.MELODY_PRESETS.has(effect)
+			or SfxCatalog.PENCIL_PRESETS.has(effect), "preset for %d" % effect)
 		player.play(effect)
 		var voice: AudioStreamPlayer = player.get_child((effect + 8) % 8) if player.get_child_count() == 8 else null
 		if voice != null:
 			_check(voice.playing, "effect %d starts playback" % effect)
 			_check(voice.stream is AudioStreamWAV and voice.stream.data.size() > 0, "effect %d has PCM" % effect)
 			_check(_has_audio(voice.stream), "effect %d is audible PCM" % effect)
-			_check(voice.pitch_scale >= 0.94 and voice.pitch_scale <= 1.06, "pitch range")
+			var preset: Dictionary = SfxCatalog.PENCIL_PRESETS.get(effect,
+				SfxCatalog.PRESETS.get(effect, SfxCatalog.MELODY_PRESETS.get(effect, {})))
+			var expected_speed := float(preset.get("speed", 1.0))
+			_check(voice.pitch_scale >= 0.94 * expected_speed and voice.pitch_scale <= 1.06 * expected_speed,
+				"pitch range follows preset speed")
 			if not SfxCatalog.PITCH_RANDOMIZE.get(effect, false):
-				_check(is_equal_approx(voice.pitch_scale, 1.0), "melody/fixed effect keeps pitch")
+				_check(is_equal_approx(voice.pitch_scale, expected_speed), "fixed effect uses preset speed")
 	player.set_muted(true)
 	_check(player.is_muted(), "mute state")
 	_check(_playing_count(player) == 0, "mute stops all voices")

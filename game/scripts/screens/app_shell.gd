@@ -13,6 +13,7 @@ const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.wav"
 
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
@@ -79,9 +80,8 @@ func _ready() -> void:
 		nav = NavController.new()
 		nav.screen_changed.connect(_swap_screen)
 
-	var bgm_path := "res://audio/bgm/main_theme.ogg"
-	if ResourceLoader.exists(bgm_path):
-		bgm.play_track(bgm_path)
+	if ResourceLoader.exists(BGM_TRACK) and DisplayServer.get_name() != "headless":
+		bgm.play_track(BGM_TRACK)
 
 	if screen_host == null:
 		screen_host = Control.new()
@@ -127,7 +127,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", func(): nav.go_to(NavController.Screen.OPTIONS))
 			if screen.has_signal("level_done"): screen.connect("level_done", _on_level_done)
 			if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
-			if screen.has_method("setup"): screen.call("setup", runtime, sfx, config, _debug_lvl if _debug_mode else {})
+			if screen.has_method("setup"): screen.call("setup", runtime, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
 		"win":
 			if screen.has_signal("next_pressed"): screen.connect("next_pressed", _on_next_level)
 			if screen.has_signal("home_pressed"): screen.connect("home_pressed", _on_puzzle_home)

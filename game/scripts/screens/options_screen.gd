@@ -188,18 +188,14 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	if is_square:
 		col.alignment = BoxContainer.ALIGNMENT_CENTER
 
-	var icon_path: String = {
-		"audio": "res://assets/ui/icons/icon_sound.svg",
-		"haptic": "res://assets/ui/icons/icon_haptic.svg",
-		"reduced_motion": "res://assets/ui/icons/icon_motion.svg",
-		"large_text": "res://assets/ui/icons/icon_text_size.svg",
-	}.get(key, "")
+	var is_on: bool = bool(_config.get_option(key))
+	var icon_path: String = _get_setting_icon(key, is_on) if is_square else ""
 
 	var icon_tex: TextureRect = null
 	if icon_path != "":
 		icon_tex = TextureRect.new()
 		icon_tex.texture = load(icon_path) as Texture2D
-		icon_tex.custom_minimum_size = Vector2(36, 36)
+		icon_tex.custom_minimum_size = Vector2(44, 44)
 		icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		col.add_child(icon_tex)
@@ -216,14 +212,31 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	col.add_child(lbl)
 
 	var toggle := PillToggle.new()
-	toggle.set_on(bool(_config.get_option(key)))
+	toggle.set_on(is_on)
 	if icon_tex != null:
 		toggle.icon_target = icon_tex
-	toggle.toggled_value.connect(func(on: bool): _on_toggle(key, on))
+	toggle.toggled_value.connect(func(on: bool):
+		if key == "audio" and icon_tex != null:
+			icon_tex.texture = load(_get_setting_icon(key, on)) as Texture2D
+		_on_toggle(key, on)
+	)
 	col.add_child(toggle)
 
 	tile.add_child(col)
 	return tile
+
+func _get_setting_icon(key: String, on: bool) -> String:
+	match key:
+		"audio":
+			return "res://assets/ui/settings/button_audio_on.png" if on else "res://assets/ui/settings/button_audio_off.png"
+		"haptic":
+			return "res://assets/ui/settings/button_haptic.png"
+		"reduced_motion":
+			return "res://assets/ui/settings/button_reduced_motion.png"
+		"large_text":
+			return "res://assets/ui/settings/button_large_text.png"
+		_:
+			return ""
 
 func _make_language_tile() -> PanelContainer:
 	var tile := PanelContainer.new()
