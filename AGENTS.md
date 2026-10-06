@@ -63,7 +63,7 @@ rtk python -B tools/verify.py --godot <executable>
 - **Không autoloads.** Composition root pattern — dependencies injected từ app_shell.
 - **Static cho pure logic.** cell_model, candy_rules, board_solver, board_transform — stateless, testable.
 - **Asset nguyên gốc.** Kiểm tra tài sản hiện có trước khi thêm; không sao chép giao diện hoặc tài sản thương mại.
-- **Phạm vi:** R1, 30 levels, N=4-6, S1-S3. Không tự mở R2-R4, Endless, IAP, ads, analytics.
+- **Phạm vi:** Hỗ trợ kích thước bàn N=4–12; bank chuẩn v1 phủ đầy đủ 100% các level hợp lệ từ nguồn tham khảo (`bank_4x4` đến `bank_12x12`), kèm fallback logic trace cho các bài kỹ thuật nâng cao. Campaign mặc định gồm 30 level playtest (4×4–6×6) và advanced campaign (7×7–12×12); hỗ trợ Endless level sequencing. Không tự mở IAP, ads, analytics.
 
 ## 5. Nhánh và tích hợp
 

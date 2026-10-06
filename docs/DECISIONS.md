@@ -1,5 +1,14 @@
 # Quyết định điều hành hiện hành
 
+## RST-020 — Chuyển đổi 100% bank levels sizes 7–12 và mở rộng phạm vi N=4–12
+
+Ngày 2026-10-07. Chủ dự án yêu cầu xử lý triệt để việc chuyển đổi bank, bảo toàn 100% level từ nguồn tham khảo, không bỏ sót các bài ở rank cao/kỹ thuật nâng cao:
+
+- **Chính sách chuyển đổi 100%:** Thay thế ràng buộc chỉ chấp nhận bài giải được bằng S2/S3 offline. Đối với các bài yêu cầu kỹ thuật giải nâng cao (S4–S7), bổ sung cơ chế Fallback Logic Trace để hoàn thiện trace nghiệm, giữ nguyên phân loại kỹ thuật gốc (`r1..r5`), điểm `rating` và mã `pidHash`.
+- **Phạm vi kích thước N=4–12:** Dự án hỗ trợ trọn vẹn toàn bộ các bank từ 4×4 đến 12×12. Tổng số 11.669 levels từ các bank chính 7×7–12×12 được đưa vào game (`game/data/banks/bank_*x*.json`), đi kèm file `.pace.json` tương ứng sinh 100%.
+- **Chất lượng và kiểm định:** 55 bài bị hỏng mảng nghiệm từ dữ liệu nguồn bên thứ 3 (trong `bankDataGC11x11.json`) được phát hiện và loại bỏ thông qua kiểm định hình học Candy Rules. Toàn bộ các level còn lại đạt 100% chuẩn hợp lệ qua `tools/validate_content.py` và `level_validator.gd`.
+- **Campaign & Endless:** Hỗ trợ chiến dịch mở rộng `advanced.json` (sizes 7–12) và chuẩn bị hạ tầng cấp level liên tục (Endless levels) sử dụng toàn bộ kho bank đồ sộ này.
+
 ## RST-019 — Bank đầy đủ và campaign chọn bằng file phát triển
 
 Ngày 2026-10-05. Chủ dự án yêu cầu mở rộng theo quy mô tham khảo thành 998 level gốc, năm rank, đưa toàn bộ vào playlist và cho người phát triển đổi giữa chiến dịch đầy đủ với demo 30 màn qua file cấu hình.
