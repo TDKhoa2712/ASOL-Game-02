@@ -1,0 +1,44 @@
+﻿key,vi,en
+title.name,CanDoKu,CanDoKu
+title.play,Level %s,Level %s
+title.replay,Chơi lại chiến dịch,Replay Campaign
+title.help_tooltip,Xem cách chơi,How to Play
+title.debug,🛠 Debug,🛠 Debug
+help.title,Cách chơi,How to Play
+help.body,"Mỗi hàng, cột và vùng có đúng một viên kẹo. Kẹo không chạm chéo nhau. Chạm một lần để đánh dấu X, chạm hai lần để thử đặt kẹo, kéo để đánh dấu nhiều ô.","Each row, column, and region contains exactly one candy. Candies cannot touch diagonally. Tap once to mark X, double-tap to place a candy, swipe to mark multiple cells."
+settings.title,CÀI ĐẶT,SETTINGS
+settings.audio,Âm thanh,Sound
+settings.haptic,Rung phản hồi,Haptic Feedback
+settings.reduced_motion,Giảm chuyển động,Reduce Motion
+settings.large_text,Cỡ chữ lớn,Large Text
+settings.high_contrast,Độ tương phản cao,High Contrast
+settings.colorblind,Hỗ trợ phân biệt màu,Colorblind Mode
+settings.undo_x,Hoàn tác X,Undo X
+settings.language,Ngôn ngữ,Language
+settings.language.vi,Tiếng Việt,Tiếng Việt
+settings.language.en,English,English
+settings.back,Quay lại,Back
+settings.restart,Bắt đầu lại,Restart
+puzzle.level_caption,Màn,Level
+puzzle.hint_unit,Xem kỹ khu vực này,Look at this area
+puzzle.hint_cell,Đặt kẹo ở đây,Place candy here
+puzzle.restart_title,Chơi lại màn này?,Restart this level?
+puzzle.restart_body,Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại.,Your marks and mistakes will be reset.
+puzzle.restart_ok,Chơi lại,Restart
+puzzle.restart_cancel,Tiếp tục,Continue
+puzzle.rule_row,1 kẹo mỗi hàng và cột,1 candy per row and column
+puzzle.rule_region,1 kẹo mỗi vùng,1 candy per region
+puzzle.rule_diagonal,Kẹo không chạm góc,Candies don't touch diagonally
+result.win.title,Hoan hô!,Hooray!
+result.win.title_campaign,Hoàn thành chiến dịch!,Campaign Complete!
+result.win.subtitle,Bạn đã tìm đủ kẹo!,You found all the candies!
+result.win.next,Tiếp tục,Continue
+result.win.replay,Chơi lại,Play Again
+result.win.home,Trang chủ,Home
+result.lose.title,Hết tim,Out of Hearts
+result.lose.subtitle,Bạn có thể thử lại màn này.,You can try this level again.
+result.lose.retry,Thử lại,Retry
+result.lose.home,Trang chủ,Home
+boot.error,Lỗi khởi động: %s,Boot error: %s
+boot.save_failed,Lưu dữ liệu thất bại: %s,Save failed: %s
+common.ok,OK,OK

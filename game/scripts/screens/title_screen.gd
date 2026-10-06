@@ -6,6 +6,7 @@ signal options_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
+const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 
 var runtime: Variant = null
@@ -44,7 +45,7 @@ func _ensure_nodes() -> void:
 	if OS.is_debug_build():
 		debug_btn = Button.new()
 		debug_btn.name = "DebugButton"
-		debug_btn.text = "🛠 Debug"
+		debug_btn.text = tr("title.debug")
 		debug_btn.custom_minimum_size = Vector2(140, 56)
 		top.add_child(debug_btn)
 	var spacer := Control.new()
@@ -54,7 +55,7 @@ func _ensure_nodes() -> void:
 	help_btn.name = "HelpButton"
 	help_btn.custom_minimum_size = Vector2(88, 88)
 	_set_round_icon(help_btn, "res://assets/ui/home/icon_help.png", 46)
-	help_btn.tooltip_text = "Xem cách chơi"
+	help_btn.tooltip_text = tr("title.help_tooltip")
 	var help_style := StyleBoxFlat.new()
 	help_style.bg_color = Palette.PILL_BG
 	help_style.set_corner_radius_all(999)
@@ -91,10 +92,13 @@ func _ensure_nodes() -> void:
 	hero.add_child(logo)
 	title_label = Label.new()
 	title_label.name = "TitleLabel"
-	title_label.text = "CanDoKu"
+	title_label.text = tr("title.name")
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.add_theme_font_size_override("font_size", 76)
 	title_label.add_theme_color_override("font_color", Palette.INK)
+	var heading_font := FontTokens.heading()
+	if heading_font != null:
+		title_label.add_theme_font_override("font", heading_font)
 	hero.add_child(title_label)
 	var middle_space := Control.new()
 	middle_space.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -108,6 +112,9 @@ func _ensure_nodes() -> void:
 	play_btn.custom_minimum_size = Vector2(560, 114)
 	play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	play_btn.add_theme_font_size_override("font_size", 42)
+	var btn_font := FontTokens.body_semibold()
+	if btn_font != null:
+		play_btn.add_theme_font_override("font", btn_font)
 	var play_style := StyleBoxFlat.new()
 	play_style.bg_color = Palette.PLAY_BUTTON
 	play_style.set_corner_radius_all(999)
@@ -122,8 +129,8 @@ func _ensure_nodes() -> void:
 	bottom_spacer.custom_minimum_size.y = 120
 	frame.add_child(bottom_spacer)
 	help_dialog = AcceptDialog.new()
-	help_dialog.title = "Cách chơi"
-	help_dialog.dialog_text = "Mỗi hàng, cột và vùng có đúng một viên kẹo. Kẹo không chạm chéo nhau. Chạm một lần để đánh dấu X, chạm hai lần để thử đặt kẹo, kéo để đánh dấu nhiều ô."
+	help_dialog.title = tr("help.title")
+	help_dialog.dialog_text = tr("help.body")
 	add_child(help_dialog)
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()
@@ -179,9 +186,9 @@ func _update_ui() -> void:
 	var label: String = runtime.current_level_label()
 	if play_btn != null:
 		if runtime.is_campaign_done():
-			play_btn.text = "Chơi lại chiến dịch"
+			play_btn.text = tr("title.replay")
 		else:
-			play_btn.text = "Level %s" % label.trim_prefix("L")
+			play_btn.text = tr("title.play") % label.trim_prefix("L")
 
 func _on_play() -> void:
 	play_pressed.emit()

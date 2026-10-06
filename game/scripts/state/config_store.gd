@@ -3,8 +3,9 @@ extends RefCounted
 signal option_changed(key: String, value: Variant)
 
 const VERSION := 1
-const DEFAULTS := {"audio": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "undo_x": true}
-const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "undo_x"]
+const DEFAULTS := {"audio": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "undo_x": true, "language": "vi"}
+const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "undo_x", "language"]
+const VALID_LANGUAGES: Array[String] = ["vi", "en"]
 
 var _path: String
 var _data: Dictionary = {}
@@ -24,8 +25,12 @@ func load_config() -> void:
 	if saved.get("version") != VERSION or not saved.get("options") is Dictionary:
 		return
 	for key in EDITABLE_KEYS:
-		if saved.options.get(key) is bool:
-			_data[key] = saved.options[key]
+		if key == "language":
+			if saved.options.get(key) is String and VALID_LANGUAGES.has(saved.options[key]):
+				_data[key] = saved.options[key]
+		else:
+			if saved.options.get(key) is bool:
+				_data[key] = saved.options[key]
 
 func save_config() -> void:
 	var directory := _path.get_base_dir()
@@ -49,7 +54,15 @@ func get_option(key: String) -> Variant:
 	return _data.get(key)
 
 func set_option(key: String, value: Variant) -> void:
-	if not EDITABLE_KEYS.has(key) or not value is bool or _data[key] == value:
+	if not EDITABLE_KEYS.has(key):
+		return
+	if key == "language":
+		if not value is String or not VALID_LANGUAGES.has(value):
+			return
+	else:
+		if not value is bool:
+			return
+	if _data[key] == value:
 		return
 	_data[key] = value
 	save_config()

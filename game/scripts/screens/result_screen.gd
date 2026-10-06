@@ -7,6 +7,7 @@ signal home_pressed()
 signal replay_pressed()
 
 const Palette = preload("res://scripts/theme/palette.gd")
+const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 
 var _is_win: bool = false
 var _score: int = 0
@@ -74,14 +75,22 @@ func _ensure_nodes() -> void:
 	score_label.add_theme_font_size_override("font_size", 30)
 	score_label.add_theme_color_override("font_color", Palette.TEXT_STAT)
 	stack.add_child(score_label)
-	next_btn = _make_button("NextBtn", "Tiếp tục")
+	next_btn = _make_button("NextBtn", tr("result.win.next"))
 	stack.add_child(next_btn)
-	retry_btn = _make_button("RetryBtn", "Thử lại")
+	retry_btn = _make_button("RetryBtn", tr("result.lose.retry"))
 	stack.add_child(retry_btn)
-	replay_btn = _make_button("ReplayBtn", "Chơi lại")
+	replay_btn = _make_button("ReplayBtn", tr("result.win.replay"))
 	stack.add_child(replay_btn)
-	home_btn = _make_button("HomeBtn", "Trang chủ", true)
+	home_btn = _make_button("HomeBtn", tr("result.win.home"), true)
 	stack.add_child(home_btn)
+
+	var heading_font := FontTokens.heading()
+	if heading_font != null:
+		message_label.add_theme_font_override("font", heading_font)
+	var body_font := FontTokens.body()
+	if body_font != null:
+		result_message.add_theme_font_override("font", body_font)
+		score_label.add_theme_font_override("font", body_font)
 
 func _make_button(node_name: String, caption: String, is_home: bool = false) -> Button:
 	var button := Button.new()
@@ -116,11 +125,11 @@ func _update_ui() -> void:
 		_background.color = Palette.RESULT_WIN_BG if _is_win else Palette.RESULT_FAIL_BG
 	if message_label != null:
 		if _is_win:
-			message_label.text = "Hoàn thành chiến dịch!" if _is_last_level else "Hoan hô!"
+			message_label.text = tr("result.win.title_campaign") if _is_last_level else tr("result.win.title")
 		else:
-			message_label.text = "Hết tim"
+			message_label.text = tr("result.lose.title")
 	if result_message != null:
-		result_message.text = "Bạn đã tìm đủ kẹo!" if _is_win else "Bạn có thể thử lại màn này."
+		result_message.text = tr("result.win.subtitle") if _is_win else tr("result.lose.subtitle")
 	if score_label != null:
 		if _is_win:
 			var sec: int = int(_score / 1000.0) if _score > 1000 else _score
