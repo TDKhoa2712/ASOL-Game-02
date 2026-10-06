@@ -143,12 +143,11 @@ static func generate_settings_swipe(params: Dictionary = {}) -> AudioStreamWAV:
 		var progress := time / duration
 		var noise := randf_range(-1.0, 1.0)
 		var hp_alpha := clampf(TAU * lerpf(high_pass * 0.25, high_pass, progress) / SAMPLE_RATE, 0.0, 1.0)
-		var lp_alpha := clampf(TAU * lerpf(low_pass * 0.28, low_pass, progress) / SAMPLE_RATE, 0.0, 1.0)
+		var sweep := sin(PI * progress)
+		var lp_alpha := clampf(TAU * lerpf(low_pass * 0.28, low_pass, sweep) / SAMPLE_RATE, 0.0, 1.0)
 		bass += hp_alpha * (noise - bass)
 		filtered += lp_alpha * (noise - bass - filtered)
-		var swish := 0.0
-		if progress < 0.78:
-			swish = sin(PI * progress / 0.78) * filtered * swish_mix
+		var swish := sweep * filtered * swish_mix
 		var snap_time := time - duration * 0.48
 		var snap := 0.0
 		if snap_time >= 0.0:
