@@ -28,12 +28,12 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
-[rendering]
-
-renderer/rendering_method="mobile"
-textures/vram_compression/import_etc2_astc=true
-
 [internationalization]
 
 locale/translations=PackedStringArray("res://locale/strings.vi.translation", "res://locale/strings.en.translation")
 locale/fallback="vi"
+
+[rendering]
+
+renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
