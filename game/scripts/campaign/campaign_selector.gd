@@ -3,6 +3,7 @@ extends RefCounted
 const CAMPAIGN_FILES := {
 	"demo_30": "demo_30.json",
 	"full_998": "full_998.json",
+	"advanced": "advanced.json",
 }
 
 static func load_config(path: String, base_profile_dir: String, campaign_dir: String = "res://data/campaigns") -> Dictionary:
