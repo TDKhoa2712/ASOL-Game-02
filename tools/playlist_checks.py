@@ -34,7 +34,7 @@ def validate_playlist(playlist_data: dict, banks: dict[int, dict] | None = None)
             seen_labels.add(label)
 
         size = entry.get("size")
-        if not isinstance(size, int) or size < 4 or size > 6:
+        if not isinstance(size, int) or size < 4 or size > 12:
             errors.append(f"Entry {idx} ({label}) invalid size {size}")
 
         rank = entry.get("rank")

@@ -656,11 +656,11 @@ Verify: only files under `game/data/banks/` and `tools/convert_extracted_bank.py
 2. **Create separate campaigns** per size range (e.g., `campaign_beginner.json` for 4–6, `campaign_advanced.json` for 7–9, `campaign_expert.json` for 10–12)
 3. **Leave campaigns as-is** and let bank browsing UI handle larger sizes
 
-- [ ] **Step 1: Decide campaign structure**
+- [x] **Step 1: Decide campaign structure**
 
-Check with project owner which approach to use. The bank files are ready regardless — campaigns just control the ordered playlist experience.
+Check with project owner which approach to use. The bank files are ready regardless — campaigns just control the ordered playlist experience. (Selected: Option 2 — create advanced.json for sizes 7–12).
 
-- [ ] **Step 2: If extending, create new campaign file**
+- [x] **Step 2: If extending, create new campaign file**
 
 (Implementation depends on Step 1 decision. Below is an example for a separate advanced campaign.)
 
@@ -691,13 +691,13 @@ with open("game/data/campaigns/advanced.json", "w") as f:
 print(f"Written {len(playlist)} levels")
 ```
 
-- [ ] **Step 3: Validate campaign**
+- [x] **Step 3: Validate campaign**
 
 ```bash
 python -B tools/validate_content.py game/data/campaigns/advanced.json --bank game/data/banks/bank_7x7.json
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add game/data/campaigns/advanced.json
