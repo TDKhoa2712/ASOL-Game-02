@@ -254,6 +254,14 @@ func _apply_setting(key: String, value: Variant) -> void:
 			_refresh_screen("set_large_text", bool(value))
 		"colorblind": _refresh_puzzle_colorblind()
 		"undo_x": _refresh_screen("set_undo_visible", bool(value))
+		"language":
+			if value is String:
+				TranslationServer.set_locale(str(value))
+				_rebuild_current_screen()
+
+func _rebuild_current_screen() -> void:
+	if nav != null:
+		_swap_screen("", nav.current_name())
 
 func _refresh_screen(method: String, val: Variant) -> void:
 	if screen_host == null: return
@@ -267,27 +275,20 @@ func _refresh_puzzle_colorblind() -> void:
 		if child.has_method("set_colorblind_and_redraw"): child.call("set_colorblind_and_redraw", enabled)
 		elif "board" in child and child.board != null and child.board.has_method("set_colorblind"):
 			child.board.set_colorblind(enabled); child.board.redraw()
-			child.board.redraw()
 
 func _apply_all_settings() -> void:
-	if config == null:
-		return
-	_apply_setting("audio", config.get_option("audio"))
-	_apply_setting("haptic", config.get_option("haptic"))
-	_apply_setting("reduced_motion", config.get_option("reduced_motion"))
-	_apply_setting("high_contrast", config.get_option("high_contrast"))
-	_apply_setting("large_text", config.get_option("large_text"))
-	_apply_setting("colorblind", config.get_option("colorblind"))
-	_apply_setting("undo_x", config.get_option("undo_x"))
+	if config == null: return
+	for key in ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "undo_x", "language"]:
+		_apply_setting(key, config.get_option(key))
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)
 	if save_error_dialog != null:
-		save_error_dialog.dialog_text = "Lỗi khởi động: " + err
+		save_error_dialog.dialog_text = tr("boot.error") % err
 		save_error_dialog.popup_centered()
 
 func _on_save_failed(reason: String) -> void:
 	push_warning("Save failed: " + reason)
 	if save_error_dialog != null:
-		save_error_dialog.dialog_text = "Lưu dữ liệu thất bại: " + reason
+		save_error_dialog.dialog_text = tr("boot.save_failed") % reason
 		save_error_dialog.popup_centered()
