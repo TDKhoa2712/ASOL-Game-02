@@ -4,14 +4,15 @@
 
 ## Chuyển đổi 100% bank sizes 7–12 và mở rộng phạm vi N=4–12 (RST-020)
 
-- Đã nâng cấp 	ools/convert_extracted_bank.py áp dụng fallback logic trace cho các bài kỹ thuật nâng cao (S4–S7) và bộ lọc luật Candy Rules độc lập.
-- Chuyển đổi thành công 100% các level hợp lệ từ nguồn tham khảo: 11.669 / 11.669 level across sizes 7×7 đến 12×12 (loại bỏ 55 bài hỏng nguồn từ file gốc bên thứ ba trong ankDataGC11x11.json). Toàn bộ pace sidecars đã được sinh đồng bộ 100%.
-- Kiểm tra toàn diện 	ools/validate_content.py trên 6 bank và 6 pace: PASS 0 errors. Bộ playlist dvanced.json PASS 0 errors. Cập nhật quyết định điều hành RST-020 trong DECISIONS.md và mở rộng scope N=4–12 trong AGENTS.md.
+- Đã nâng cấp tools/convert_extracted_bank.py áp dụng fallback logic trace cho các bài kỹ thuật nâng cao (S4–S7) và bộ lọc luật Candy Rules độc lập.
+- Chuyển đổi thành công 100% các level hợp lệ từ nguồn tham khảo: 11.669 / 11.669 level across sizes 7×7 đến 12×12 (loại bỏ 55 bài hỏng nguồn từ file gốc bên thứ ba trong bankDataGC11x11.json). Toàn bộ pace sidecars đã được sinh đồng bộ 100%.
+- Kiểm tra toàn diện tools/validate_content.py trên 6 bank và 6 pace: PASS 0 errors. Bộ playlist advanced.json PASS 0 errors. Cập nhật quyết định điều hành RST-020 trong DECISIONS.md và mở rộng scope N=4–12 trong AGENTS.md.
 
-## SFX mở Settings trong checkout chính (working tree 2026-10-07)
+## SFX mở Settings (nhánh `feat/audio-settings-whoosh`, 2026-10-07)
 
-- Checkout chính nhánh `feat/content-banks-7-to-12` đã nhận các file SFX từ commit `eb0f8a0` của nhánh `feat/audio-settings-whoosh`: nút Settings ở Home và puzzle phát `settings-whoosh.ogg` chuyển từ MP3 chủ dự án cung cấp. SFX Tuner preview cùng resource; mã tổng hợp whoosh cũ đã được bỏ. File MP3 gốc và các thay đổi level/import có sẵn được giữ nguyên.
-- Nền `638dbea` + working tree: TDD RED→GREEN tại `test_sfx_player_procedural.gd`; `test_sfx_tuner.gd`, `test_sfx_gameplay.gd` PASS. Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` PASS (Python, content, 42 Godot suites), log `scratch/verification/20261006T174254.352123Z.txt`. Chưa QA nghe trên thiết bị mục tiêu; thay đổi SFX trong checkout chính chưa commit/merge/push.
+- Chủ dự án nghe thử và không chọn bản PCM tổng hợp 300 ms. Cue `SETTINGS_OPEN` ở Home và puzzle nay dùng `game/assets/audio/sfx/settings-whoosh.ogg`, chuyển từ file `whoosh-sfx.mp3` chủ dự án cung cấp; giữ âm stereo và thời lượng nguồn khoảng 1 giây. SFX Tuner preview cùng resource với game, chỉ cho chỉnh speed. TDD RED→GREEN tại `test_sfx_player_procedural.gd` và `test_sfx_tuner.gd` xác nhận định dạng, thời lượng, playback và nguồn preview.
+- Nền `dev` + thay đổi trên nhánh: Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` PASS (Python, content, 42 Godot suites). OGG dài khoảng 0,97 giây khi giải mã; chuẩn bị PR về dev.
+
 
 ## Hiệu ứng vào level mới (working tree hiện tại 2026-10-06)
 

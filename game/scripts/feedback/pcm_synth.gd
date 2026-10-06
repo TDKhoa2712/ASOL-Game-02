@@ -11,8 +11,6 @@ const MIN_RELEASE: float = 0.01
 static func generate(params: Dictionary) -> AudioStreamWAV:
 	if params.get("type", "") == "pencil":
 		return generate_pencil_scratch(params)
-	if params.get("type", "") == "settings_swipe":
-		return generate_settings_swipe(params)
 	var frequency: float = maxf(0.0, float(params.get("freq", 440.0)))
 	var end_frequency: float = float(params.get("end_freq", frequency))
 	var duration: float = maxf(0.0, float(params.get("duration", 0.15)))
@@ -123,38 +121,6 @@ static func generate_pencil_scratch(params: Dictionary = {}) -> AudioStreamWAV:
 		elif index > count - 45:
 			env *= float(count - 1 - index) / 44.0
 		sample = clampf(sample * volume * env * 1.9, -1.0, 1.0)
-		bytes.encode_s16(index * 2, int(sample * 32767.0))
-	return _stream(bytes)
-
-static func generate_settings_swipe(params: Dictionary = {}) -> AudioStreamWAV:
-	var duration := maxf(0.04, float(params.get("duration", 0.11)))
-	var volume := clampf(float(params.get("volume", 0.3)), 0.0, 1.0)
-	var swish_mix := clampf(float(params.get("noise_mix", 0.85)), 0.0, 1.0)
-	var snap_mix := clampf(float(params.get("snap_mix", 0.65)), 0.0, 1.0)
-	var high_pass := maxf(0.0, float(params.get("high_pass", 1200.0)))
-	var low_pass := maxf(0.0, float(params.get("low_pass", 6200.0)))
-	var count := int(SAMPLE_RATE * duration)
-	var bytes := PackedByteArray()
-	bytes.resize(count * 2)
-	var bass := 0.0
-	var filtered := 0.0
-	for index in range(count):
-		var time := float(index) / SAMPLE_RATE
-		var progress := time / duration
-		var noise := randf_range(-1.0, 1.0)
-		var hp_alpha := clampf(TAU * lerpf(high_pass * 0.25, high_pass, progress) / SAMPLE_RATE, 0.0, 1.0)
-		var sweep := sin(PI * progress)
-		var lp_alpha := clampf(TAU * lerpf(low_pass * 0.28, low_pass, sweep) / SAMPLE_RATE, 0.0, 1.0)
-		bass += hp_alpha * (noise - bass)
-		filtered += lp_alpha * (noise - bass - filtered)
-		var swish := sweep * filtered * swish_mix
-		var snap_time := time - duration * 0.48
-		var snap := 0.0
-		if snap_time >= 0.0:
-			var rise := minf(1.0, snap_time / 0.001)
-			snap = (noise - bass) * rise * exp(-snap_time / (duration * 0.045)) * snap_mix
-		var sample := clampf((swish + snap) * volume, -1.0, 1.0)
-		if index == 0 or index == count - 1: sample = 0.0
 		bytes.encode_s16(index * 2, int(sample * 32767.0))
 	return _stream(bytes)
 

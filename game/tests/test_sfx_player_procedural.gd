@@ -22,8 +22,14 @@ func _run() -> void:
 		var voice: AudioStreamPlayer = player.get_child((effect + 8) % 8) if player.get_child_count() == 8 else null
 		if voice != null:
 			_check(voice.playing, "effect %d starts playback" % effect)
-			_check(voice.stream is AudioStreamWAV and voice.stream.data.size() > 0, "effect %d has PCM" % effect)
-			_check(_has_audio(voice.stream), "effect %d is audible PCM" % effect)
+			if effect == SfxCatalog.Effect.SETTINGS_OPEN:
+				_check(voice.stream is AudioStreamOggVorbis, "settings opens with source OGG")
+				_check(voice.stream.get_length() > 0.9 and voice.stream.get_length() < 1.1,
+					"settings keeps source audio duration")
+			else:
+				_check(voice.stream is AudioStreamWAV and voice.stream.data.size() > 0,
+					"effect %d has PCM" % effect)
+				_check(_has_audio(voice.stream), "effect %d is audible PCM" % effect)
 			var preset: Dictionary = SfxCatalog.PENCIL_PRESETS.get(effect,
 				SfxCatalog.PRESETS.get(effect, SfxCatalog.MELODY_PRESETS.get(effect, {})))
 			var expected_speed := float(preset.get("speed", 1.0))

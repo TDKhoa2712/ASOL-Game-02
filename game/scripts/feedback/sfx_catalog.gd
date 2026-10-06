@@ -22,7 +22,7 @@ enum Effect {
 	UNDO_X,         # successful undo
 	PROGRESS_COMPLETE, # halfway progress milestone
 	LOCK_TICK,     # reserved for system auto-mark
-	SETTINGS_OPEN, # short whoosh when settings opens
+	SETTINGS_OPEN, # source whoosh when settings opens
 }
 
 const UI_TICK := {
@@ -85,9 +85,8 @@ const PRESETS := {
 	Effect.DIALOG_CLOSE: UI_TICK,
 	Effect.UNDO_X: UI_TICK,
 	Effect.SETTINGS_OPEN: {
-		"type": "settings_swipe", "duration": 0.3, "volume": 0.3,
-		"noise_mix": 0.85, "snap_mix": 0.1,
-		"high_pass": 450.0, "low_pass": 5000.0,
+		"type": "file", "path": "res://assets/audio/sfx/settings-whoosh.ogg",
+		"speed": 1.0,
 	},
 	Effect.PROGRESS_COMPLETE: {
 		"freq": 660.0, "end_freq": 990.0, "duration": 0.26, "volume": 0.16,

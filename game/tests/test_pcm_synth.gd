@@ -1,7 +1,6 @@
 extends SceneTree
 
 const PcmSynth = preload("res://scripts/feedback/pcm_synth.gd")
-const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 
 var failures: Array[String] = []
 
@@ -20,8 +19,6 @@ func _run() -> void:
 	var melody := PcmSynth.generate_melody([440.0, 550.0, 660.0], 0.1, 0.3, PcmSynth.Wave.TRIANGLE)
 	_check(melody.data.size() == 13230, "melody concatenates three notes")
 	_test_pencil_scratch()
-	_test_settings_swipe()
-	_test_settings_whoosh_preset()
 	if failures.is_empty():
 		print("PCM_SYNTH_PASS")
 		quit(0)
@@ -38,50 +35,6 @@ func _test_pencil_scratch() -> void:
 	_check(pencil.data.decode_s16(pencil.data.size() - 2) == 0, "pencil scratch ends at silence")
 	var generated_via_preset := PcmSynth.generate({"type": "pencil", "duration": 0.12})
 	_check(generated_via_preset is AudioStreamWAV, "generate with type pencil works")
-
-func _test_settings_swipe() -> void:
-	var params := {"type": "settings_swipe", "duration": 0.11, "volume": 0.3,
-		"noise_mix": 0.85, "snap_mix": 0.65, "high_pass": 1200.0, "low_pass": 6200.0}
-	var swipe := PcmSynth.generate(params)
-	_check(swipe is AudioStreamWAV and swipe.data.size() == int(22050 * 0.11) * 2,
-		"settings swipe renders requested duration")
-	_check(swipe.data.decode_s16(0) == 0 and swipe.data.decode_s16(swipe.data.size() - 2) == 0,
-		"settings swipe has silent endpoints")
-	var early_energy := _window_energy(swipe.data, 0.02, 0.035)
-	var snap_energy := _window_energy(swipe.data, 0.055, 0.067)
-	var tail_energy := _window_energy(swipe.data, 0.09, 0.105)
-	_check(early_energy > 500.0 and snap_energy > 500.0 and tail_energy < snap_energy,
-		"fast stick whip has a rushing body, sharp snap, and brief tail")
-	params["noise_mix"] = 0.0
-	params["snap_mix"] = 0.0
-	var silent := PcmSynth.generate(params)
-	_check(_window_energy(silent.data, 0.02, 0.1) == 0.0,
-		"zero swish and snap mix silences both whip layers")
-	params["snap_mix"] = 1.0
-	var crack := PcmSynth.generate(params)
-	_check(_window_energy(crack.data, 0.02, 0.035) < 20.0
-		and _window_energy(crack.data, 0.055, 0.067) > 500.0,
-		"snap mix controls the dry crack separately")
-
-func _test_settings_whoosh_preset() -> void:
-	var stream := PcmSynth.generate(SfxCatalog.PRESETS[SfxCatalog.Effect.SETTINGS_OPEN])
-	_check(stream.data.size() == int(22050 * 0.3) * 2,
-		"settings button whoosh lasts 0.3 seconds")
-	if stream.data.size() < int(22050 * 0.3) * 2: return
-	_check(stream.data.decode_s16(0) == 0 and stream.data.decode_s16(stream.data.size() - 2) == 0,
-		"settings button whoosh has silent endpoints")
-	var body := _window_energy(stream.data, 0.12, 0.16)
-	var tail := _window_energy(stream.data, 0.25, 0.27)
-	_check(body > 400.0 and tail > 80.0 and tail < body,
-		"settings button whoosh swells then fades through an audible tail")
-
-func _window_energy(data: PackedByteArray, start: float, end: float) -> float:
-	var total := 0.0
-	var count := 0
-	for index in range(int(start * 22050), int(end * 22050)):
-		total += absf(float(data.decode_s16(index * 2)))
-		count += 1
-	return total / maxf(1.0, float(count))
 
 func _test_clipping() -> void:
 	var params := {"freq": 0.0, "duration": 0.05, "volume": 2.0,
