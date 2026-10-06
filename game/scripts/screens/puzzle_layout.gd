@@ -7,6 +7,7 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 
 static func build(root: Control) -> Dictionary:
 	var background := ColorRect.new()
@@ -41,12 +42,15 @@ static func build(root: Control) -> Dictionary:
 	stats.name = "StatCol"
 	stats.alignment = BoxContainer.ALIGNMENT_CENTER
 	top.add_child(stats)
-	var level_caption := _label("Màn", 24, Palette.TEXT_STAT)
+	var level_caption := _label(root.tr("puzzle.level_caption"), 24, Palette.TEXT_STAT)
 	level_caption.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	stats.add_child(level_caption)
 	var level_value := _label("1", 40, Palette.INK)
 	level_value.name = "LevelValue"
 	level_value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	var heading_font := FontTokens.heading_regular()
+	if heading_font != null:
+		level_value.add_theme_font_override("font", heading_font)
 	stats.add_child(level_value)
 	_add_spacer(top)
 	var help := _circle("HelpBtn", "res://assets/ui/board/icon_help.png", 88)
@@ -83,9 +87,9 @@ static func build(root: Control) -> Dictionary:
 	rules.add_child(rule_row)
 	var candy_texture := load("res://assets/ui/board/candy.svg") as Texture2D
 	var rule_data := [
-		[".X./XCX/.X.", "1 kẹo mỗi hàng và cột"],
-		["XXX/XC./X..", "1 kẹo mỗi vùng"],
-		["XXX/XCX/XXX", "Kẹo không chạm góc"],
+		[".X./XCX/.X.", root.tr("puzzle.rule_row")],
+		["XXX/XC./X..", root.tr("puzzle.rule_region")],
+		["XXX/XCX/XXX", root.tr("puzzle.rule_diagonal")],
 	]
 	for rule in rule_data:
 		var tile := HBoxContainer.new()
@@ -124,10 +128,10 @@ static func build(root: Control) -> Dictionary:
 	dock.add_child(hint)
 	var confirm := ConfirmationDialog.new()
 	confirm.name = "RestartConfirm"
-	confirm.title = "Chơi lại màn này?"
-	confirm.dialog_text = "Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại."
-	confirm.get_ok_button().text = "Chơi lại"
-	confirm.get_cancel_button().text = "Tiếp tục"
+	confirm.title = root.tr("puzzle.restart_title")
+	confirm.dialog_text = root.tr("puzzle.restart_body")
+	confirm.get_ok_button().text = root.tr("puzzle.restart_ok")
+	confirm.get_cancel_button().text = root.tr("puzzle.restart_cancel")
 	root.add_child(confirm)
 	return {"board": board, "back": back, "help": help, "restart": restart,
 		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,

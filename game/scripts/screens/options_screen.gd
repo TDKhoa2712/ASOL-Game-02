@@ -8,15 +8,16 @@ const ConfigStore = preload("res://scripts/state/config_store.gd")
 const PillToggle = preload("res://scripts/screens/pill_toggle.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 
-const LABELS := {
-	"audio": "Âm thanh",
-	"haptic": "Rung phản hồi",
-	"reduced_motion": "Giảm chuyển động",
-	"large_text": "Cỡ chữ lớn",
-	"high_contrast": "Độ tương phản cao",
-	"colorblind": "Hỗ trợ phân biệt màu",
-	"undo_x": "Hoàn tác X",
+const LABEL_KEYS := {
+	"audio": "settings.audio",
+	"haptic": "settings.haptic",
+	"reduced_motion": "settings.reduced_motion",
+	"large_text": "settings.large_text",
+	"high_contrast": "settings.high_contrast",
+	"colorblind": "settings.colorblind",
+	"undo_x": "settings.undo_x",
 }
 
 const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
@@ -75,7 +76,7 @@ func _ensure_nodes() -> void:
 	spacer_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_bar.add_child(spacer_l)
 	var title := Label.new()
-	title.text = "CÀI ĐẶT"
+	title.text = tr("settings.title")
 	title.add_theme_font_size_override("font_size", 36)
 	title.add_theme_color_override("font_color", Palette.INK)
 	title_bar.add_child(title)
@@ -95,7 +96,7 @@ func _ensure_nodes() -> void:
 
 	back_btn = Button.new()
 	back_btn.name = "BackBtn"
-	back_btn.text = "Quay lại"
+	back_btn.text = tr("settings.back")
 	back_btn.custom_minimum_size = Vector2(200, 56)
 	back_btn.add_theme_font_size_override("font_size", 24)
 	var back_style := StyleBoxFlat.new()
@@ -109,7 +110,7 @@ func _ensure_nodes() -> void:
 
 	restart_btn = Button.new()
 	restart_btn.name = "RestartBtn"
-	restart_btn.text = "Bắt đầu lại"
+	restart_btn.text = tr("settings.restart")
 	restart_btn.custom_minimum_size = Vector2(200, 56)
 	restart_btn.add_theme_font_size_override("font_size", 24)
 	restart_btn.visible = false
@@ -123,6 +124,12 @@ func _ensure_nodes() -> void:
 		restart_btn.add_theme_stylebox_override(state, restart_style)
 	restart_btn.add_theme_color_override("font_color", Palette.INK)
 	btn_row.add_child(restart_btn)
+
+	var body_font := FontTokens.body()
+	if body_font != null:
+		title.add_theme_font_override("font", FontTokens.body_semibold())
+		back_btn.add_theme_font_override("font", body_font)
+		restart_btn.add_theme_font_override("font", body_font)
 
 func _ready() -> void:
 	_ensure_nodes()
@@ -159,6 +166,7 @@ func _build_rows() -> void:
 
 	for key in WIDE_KEYS:
 		vbox.add_child(_make_tile(key, false))
+	vbox.add_child(_make_language_tile())
 	_built = true
 
 func _make_tile(key: String, is_square: bool) -> PanelContainer:
@@ -197,7 +205,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 		col.add_child(icon_tex)
 
 	var lbl := Label.new()
-	lbl.text = LABELS.get(key, key)
+	lbl.text = tr(LABEL_KEYS.get(key, key))
 	lbl.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
 	lbl.add_theme_color_override("font_color", Palette.INK)
 	if is_square:
@@ -215,6 +223,48 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	col.add_child(toggle)
 
 	tile.add_child(col)
+	return tile
+
+func _make_language_tile() -> PanelContainer:
+	var tile := PanelContainer.new()
+	var tile_style := StyleBoxFlat.new()
+	tile_style.bg_color = Palette.SURFACE_TILE
+	tile_style.set_corner_radius_all(20)
+	tile_style.set_content_margin_all(14)
+	tile.add_theme_stylebox_override("panel", tile_style)
+
+	var row := HBoxContainer.new()
+	row.add_theme_constant_override("separation", 10)
+
+	var lbl := Label.new()
+	lbl.text = tr("settings.language")
+	lbl.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
+	lbl.add_theme_color_override("font_color", Palette.INK)
+	lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	row.add_child(lbl)
+
+	var lang_btn := Button.new()
+	lang_btn.name = "LangBtn"
+	var current: String = str(_config.get_option("language")) if _config != null else "vi"
+	lang_btn.text = tr("settings.language.vi") if current == "vi" else tr("settings.language.en")
+	lang_btn.custom_minimum_size = Vector2(160, 44)
+	lang_btn.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
+	var btn_style := StyleBoxFlat.new()
+	btn_style.bg_color = Palette.SURFACE_HOVER
+	btn_style.set_corner_radius_all(12)
+	btn_style.set_content_margin_all(8)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		lang_btn.add_theme_stylebox_override(state, btn_style)
+	lang_btn.pressed.connect(func():
+		var cur: String = str(_config.get_option("language")) if _config != null else "vi"
+		var next: String = "en" if cur == "vi" else "vi"
+		if _config != null:
+			_config.set_option("language", next)
+	)
+	row.add_child(lang_btn)
+
+	tile.add_child(row)
 	return tile
 
 func set_large_text(_enabled: bool) -> void:

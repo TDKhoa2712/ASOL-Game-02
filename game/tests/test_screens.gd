@@ -201,7 +201,7 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == 4 and options.vbox.get_child(0).get_child_count() == 4, "settings grid and three wide rows generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 5 and options.vbox.get_child(0).get_child_count() == 4, "settings grid, three wide rows, and language row generated")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
 	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 

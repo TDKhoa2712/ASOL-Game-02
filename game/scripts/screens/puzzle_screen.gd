@@ -182,9 +182,9 @@ func _on_hint() -> void:
 	var stage: String = str(hint.get("stage", ""))
 	var unit_label: String = ""
 	if stage == "unit":
-		unit_label = "Xem kỹ khu vực này"
+		unit_label = tr("puzzle.hint_unit")
 	elif stage == "cell":
-		unit_label = "Đặt kẹo ở đây"
+		unit_label = tr("puzzle.hint_cell")
 	if hint_overlay != null and explanation != "":
 		hint_overlay.show_hint(explanation, unit_label)
 	if sfx != null:

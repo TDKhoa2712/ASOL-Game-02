@@ -50,7 +50,7 @@ func _setup_ui() -> void:
 	vbox.add_child(_label_text)
 
 	_close_btn = Button.new()
-	_close_btn.text = "OK"
+	_close_btn.text = tr("common.ok")
 	_close_btn.custom_minimum_size = Vector2(100, 40)
 	_close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_close_btn.pressed.connect(_on_close)
