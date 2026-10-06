@@ -9,7 +9,6 @@ const PARAM_DEFS := [
 	["volume", 0.0, 1.0, 0.3, 0.01],
 	["speed", 0.5, 2.0, 1.0, 0.01],
 	["noise_mix", 0.0, 1.0, 0.0, 0.01],
-	["snap_mix", 0.0, 1.0, 0.65, 0.01],
 	["noise_decay", 0.005, 0.5, 0.05, 0.005],
 	["attack", 0.0, 0.2, 0.01, 0.001],
 	["decay", 0.0, 0.3, 0.03, 0.001],
@@ -32,7 +31,8 @@ var _status: Label
 var _vbox: VBoxContainer
 var _melody := false
 var _pencil := false
-var _swipe := false
+var _file := false
+var _file_path := ""
 
 func _ready() -> void:
 	# This standalone desktop tool uses pixels, not the game's portrait scaling.
@@ -126,43 +126,43 @@ func _on_preset_selected(index: int) -> void:
 	_pencil = SfxCatalog.PENCIL_PRESETS.has(effect)
 	var preset: Dictionary = SfxCatalog.PENCIL_PRESETS[effect] if _pencil else (
 		SfxCatalog.MELODY_PRESETS[effect] if _melody else SfxCatalog.PRESETS[effect])
-	_swipe = preset.get("type", "") == "settings_swipe"
+	_file = preset.get("type", "") == "file"
+	_file_path = str(preset.get("path", ""))
 	for definition in PARAM_DEFS:
 		var key: String = definition[0]
 		_sliders[key].value = float(preset.get(key, definition[3]))
 		_labels[key].text = "%.3f" % _sliders[key].value
-		if _swipe:
-			_rows[key].visible = key in ["duration", "volume", "speed", "noise_mix",
-				"snap_mix", "high_pass", "low_pass"]
+		if _file:
+			_rows[key].visible = key == "speed"
 		elif _pencil:
 			_rows[key].visible = key in ["duration", "volume", "speed", "high_pass", "low_pass"]
 		elif _melody:
 			_rows[key].visible = key in ["note_dur", "volume", "speed"]
 		else:
-			_rows[key].visible = key != "note_dur" and key != "high_pass" and key != "snap_mix"
+			_rows[key].visible = key != "note_dur" and key != "high_pass"
 	_choices.wave.select(int(preset.get("wave", PcmSynth.Wave.TRIANGLE)))
 	_choices.pitch_curve.select(int(preset.get("pitch_curve", PcmSynth.PitchCurve.LINEAR)))
-	_rows.wave.visible = not _pencil and not _swipe
-	_rows.pitch_curve.visible = not _melody and not _pencil and not _swipe
+	_rows.wave.visible = not _pencil and not _file
+	_rows.pitch_curve.visible = not _melody and not _pencil and not _file
 	_rows.freqs.visible = _melody
 	if _melody:
 		var notes := PackedStringArray()
 		for frequency in preset.freqs: notes.append(str(frequency))
 		_notes.text = ", ".join(notes)
-	_status.text = "Adjust parameters, then Play. Speed also changes pitch."
+	_status.text = "Source file preview; speed also changes pitch." if _file \
+		else "Adjust parameters, then Play. Speed also changes pitch."
 
 func _current_params() -> Dictionary:
+	if _file:
+		return {"type": "file", "path": _file_path, "speed": float(_sliders.speed.value)}
 	var params := {}
 	for definition in PARAM_DEFS:
 		var key: String = definition[0]
 		if not _rows[key].visible: continue
-		if key == "low_pass" and not _pencil and not _swipe and _sliders[key].value <= 0.0: continue
+		if key == "low_pass" and not _pencil and _sliders[key].value <= 0.0: continue
 		params[key] = float(_sliders[key].value)
 	if _pencil:
 		params["type"] = "pencil"
-		return params
-	if _swipe:
-		params["type"] = "settings_swipe"
 		return params
 	params["wave"] = _choices.wave.selected
 	if _melody:
@@ -184,7 +184,12 @@ func _on_play() -> void:
 		_status.text = "Enter comma-separated note frequencies between 20 and 4000 Hz."
 		return
 	_player.stop()
-	if _melody:
+	if _file:
+		_player.stream = load(str(params.path)) as AudioStream
+		if _player.stream == null:
+			_status.text = "Source audio file could not be loaded."
+			return
+	elif _melody:
 		_player.stream = PcmSynth.generate_melody(params.freqs, params.note_dur, params.volume, params.wave)
 	else:
 		_player.stream = PcmSynth.generate(params)

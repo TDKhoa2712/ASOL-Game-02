@@ -23,7 +23,9 @@ func _ready() -> void:
 		elif SfxCatalog.PENCIL_PRESETS.has(effect):
 			_streams[effect] = PcmSynth.generate_pencil_scratch(SfxCatalog.PENCIL_PRESETS[effect])
 		elif SfxCatalog.PRESETS.has(effect):
-			_streams[effect] = PcmSynth.generate(SfxCatalog.PRESETS[effect])
+			var preset: Dictionary = SfxCatalog.PRESETS[effect]
+			_streams[effect] = load(str(preset.path)) if preset.get("type", "") == "file" \
+				else PcmSynth.generate(preset)
 		elif SfxCatalog.MELODY_PRESETS.has(effect):
 			var preset: Dictionary = SfxCatalog.MELODY_PRESETS[effect]
 			var frequencies: Array[float] = []
