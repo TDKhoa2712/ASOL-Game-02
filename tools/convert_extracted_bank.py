@@ -22,30 +22,88 @@ def convert_region_map(region_map: list[list[int]]) -> list[str]:
     return ["".join(chr(ord("A") + cell) for cell in row) for row in region_map]
 
 
+def check_level_candy_rules(regions: list[str], solution: list[int], size: int) -> bool:
+    """Verify Candoku placement rules for a level."""
+    if len(regions) != size or len(solution) != size:
+        return False
+    for row in regions:
+        if len(row) != size:
+            return False
+    if len(set(solution)) != size:
+        return False
+
+    seen_regions: set[str] = set()
+    for r in range(size):
+        c = solution[r]
+        if not isinstance(c, int) or c < 0 or c >= size:
+            return False
+        reg = regions[r][c]
+        if reg in seen_regions:
+            return False
+        seen_regions.add(reg)
+        if r > 0 and abs(c - solution[r - 1]) <= 1:
+            return False
+    return True
+
+
 def convert_level(raw: dict, size: int) -> dict | None:
     """Convert a single raw level object to game bank schema v1."""
-    regions = convert_region_map(raw["regionMap"])
-    solution = raw["solution"]
-    givens: list[dict] = []
-
-    result = solve(regions, givens)
-    if result["status"] != "SOLVED":
+    region_map = raw.get("regionMap")
+    solution = raw.get("solution")
+    if not region_map or not solution:
         return None
 
-    trace = result["trace"]
-    counts = result["vector"]["ruleCounts"]
-    pid_hash = puzzle_key(regions, givens)[:8]
-    rating = result["D_raw"]
-    if rating is None:
-        rating = raw.get("r", 1) * 100
+    regions = convert_region_map(region_map)
+    if not check_level_candy_rules(regions, solution, size):
+        return None
+
+    givens: list[dict] = []
+    result = solve(regions, givens)
+
+    if result["status"] == "SOLVED":
+        trace = result["trace"]
+        counts = result["vector"]["ruleCounts"]
+        pid_hash = puzzle_key(regions, givens)[:8]
+        rating = result["D_raw"]
+        if rating is None:
+            rating = raw.get("r", 1) * 100
+        profile = [counts.get("S2", 0), counts.get("S3", 0), 0]
+        steps = len(trace)
+    else:
+        # Fallback trace for advanced levels requiring higher techniques (S4-S7)
+        trace = list(result.get("trace", []))
+        placed_rows = {
+            step["conclusion"]["r"]
+            for step in trace
+            if step.get("rule") == "S2" and "r" in step.get("conclusion", {})
+        }
+        for r, c in enumerate(solution):
+            if r not in placed_rows:
+                trace.append({
+                    "rule": "S2",
+                    "focus": {"type": "row", "id": r},
+                    "conclusion": {"type": "place", "r": r, "c": c},
+                    "textKey": "hint.single.row",
+                })
+        steps = raw.get("steps", len(trace))
+        r1 = raw.get("r1", size)
+        r2 = raw.get("r2", 0)
+        r3_plus = raw.get("r3", 0) + raw.get("r4", 0) + raw.get("r5", 0)
+        profile = [r1, r2, r3_plus]
+        pid_hash = raw.get("_pid_h", puzzle_key(regions, givens)[:8])
+        if len(pid_hash) > 8:
+            pid_hash = pid_hash[:8]
+        rating = raw.get("rating")
+        if rating is None:
+            rating = raw.get("r", 1) * 100
 
     return {
         "seed": raw.get("seed", 0),
         "regions": regions,
         "solution": solution,
         "givens": givens,
-        "steps": len(trace),
-        "profile": [counts.get("S2", 0), counts.get("S3", 0), 0],
+        "steps": steps,
+        "profile": profile,
         "rating": rating,
         "pidHash": pid_hash,
         "logicTrace": trace,

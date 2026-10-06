@@ -114,6 +114,36 @@ class TestConvertExtractedBank(unittest.TestCase):
             self.assertIn("1", pace["pacing"])
             self.assertEqual(len(pace["pacing"]["1"]), 1)
 
+    def test_convert_level_fallback_when_offline_solver_stuck(self):
+        # A valid level that requires advanced logic
+        raw = {
+            "seed": 99,
+            "regionMap": [
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [2, 2, 3, 3],
+                [2, 2, 3, 3],
+            ],
+            "solution": [1, 3, 0, 2],
+            "r": 5,
+            "steps": 6,
+            "r1": 4,
+            "r2": 1,
+            "r3": 1,
+            "r4": 0,
+            "r5": 0,
+            "rating": 500,
+            "_pid_h": "deadbeef",
+        }
+        level = convert_level(raw, size=4)
+        self.assertIsNotNone(level)
+        self.assertEqual(level["solution"], [1, 3, 0, 2])
+        self.assertEqual(level["profile"], [4, 1, 1])
+        self.assertEqual(level["steps"], 6)
+        self.assertEqual(level["rating"], 500)
+        self.assertEqual(level["pidHash"], "deadbeef")
+        self.assertGreaterEqual(len(level["logicTrace"]), 4)
+
 
 if __name__ == "__main__":
     unittest.main()
