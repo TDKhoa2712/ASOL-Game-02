@@ -33,49 +33,21 @@
 - Chuyển đổi thành công 100% các level hợp lệ từ nguồn tham khảo: 11.669 / 11.669 level across sizes 7×7 đến 12×12 (loại bỏ 55 bài hỏng nguồn từ file gốc bên thứ ba trong bankDataGC11x11.json). Toàn bộ pace sidecars đã được sinh đồng bộ 100%.
 - Kiểm tra toàn diện tools/validate_content.py trên 6 bank và 6 pace: PASS 0 errors. Bộ playlist advanced.json PASS 0 errors. Cập nhật quyết định điều hành RST-020 trong DECISIONS.md và mở rộng scope N=4–12 trong AGENTS.md.
 
-## SFX mở Settings (nhánh `feat/audio-settings-whoosh`, 2026-10-07)
+## SFX mở Settings (đã tích hợp vào `dev`, 2026-10-07)
 
 - Chủ dự án nghe thử và không chọn bản PCM tổng hợp 300 ms. Cue `SETTINGS_OPEN` ở Home và puzzle nay dùng `game/assets/audio/sfx/settings-whoosh.ogg`, chuyển từ file `whoosh-sfx.mp3` chủ dự án cung cấp; giữ âm stereo và thời lượng nguồn khoảng 1 giây. SFX Tuner preview cùng resource với game, chỉ cho chỉnh speed. TDD RED→GREEN tại `test_sfx_player_procedural.gd` và `test_sfx_tuner.gd` xác nhận định dạng, thời lượng, playback và nguồn preview.
-- Nền `dev` + thay đổi trên nhánh: Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` PASS (Python, content, 42 Godot suites). OGG dài khoảng 0,97 giây khi giải mã; chuẩn bị PR về dev.
+- Full gate PASS. Đã merge vào `dev`.
 
 
-## Hiệu ứng vào level mới (working tree hiện tại 2026-10-06)
+## Hiệu ứng vào level mới, stroke feedback, vỡ tim & candy assets (đã tích hợp vào `dev`, commit `e62aec6`, 2026-10-06)
 
-- Mỗi ô của bàn chơi xuất hiện theo sóng bán kính từ góc dưới trái lên góc trên phải, gồm cả ô kẹo cho sẵn; thời lượng cố định cho mọi kích thước. Lượt mới sau khi thắng level trước có hiệu ứng. Home/Settings/khởi động lại để tiếp tục lượt chưa hoàn thành, và Restart/Retry cùng level, bỏ qua hiệu ứng. Tùy chọn giảm chuyển động hiện bàn ngay.
-- TDD RED→GREEN: `game/tests/test_board_entry.gd` kiểm luồng mở mới/tiếp tục, input, giảm chuyển động và bàn 4×4, 5×5, 6×6, 9×9. Ảnh render: `scratch/verification/entry-wave-preview.png`. Review độc lập không thấy lỗi chặn.
-- Đã áp dụng vào checkout chính nhánh `feat/candy-sprites`, revision nền `9bbdcc122c9e8c9ae818ffb0cca62f42661c7e67` + working tree đang có. Full gate **PASS**: 3 nhóm Python, content checks, 42 suite Godot; `rtk python -B tools/verify.py --godot <Godot 4.7.2 console executable>`. Evidence: `scratch/verification/20261006T151033.729217Z.txt`. Clean-room/import reference: 0 match. Cấu hình profile thực `reduced_motion=false`. Chưa QA gesture và thiết bị, chưa commit/merge/push.
-
-## Sửa phản hồi X lặp khi commit batch (working tree 2026-10-06)
-
-- Nguyên nhân: TouchDecoder xóa preview và lịch sử ô đã phản hồi trước khi phát swipe commit, khiến commit phát thêm SFX và chạy lại animation X. Giữ lịch sử preview đến hết commit; chỉ animate các ô chưa có phản hồi preview. Nét kéo bỏ qua phản hồi trên ô không đổi trạng thái, giữ preview tức thì và một transaction/Undo cho cả nhóm.
-- TDD RED→GREEN tại `game/tests/test_stroke_feedback.gd`: nét đánh/xóa, đi ngược, nhấc sau khi animation đã xong, nhấc khi animation đang chạy, ô X/error có sẵn, hủy nét, batch trực tiếp và reduced motion. Log `scratch/verification/stroke-feedback-red.log` và `stroke-feedback-green.log`. Suite input, screens và SFX gameplay PASS; clean-room/import reference 0 match; các file thuộc task ≤300 dòng.
-- **Full gate PASS** trên revision nền `9bbdcc122c9e8c9ae818ffb0cca62f42661c7e67` + working tree nhánh `feat/candy-sprites`: `rtk python -B tools/verify.py --godot <Godot 4.7.2 console executable>`. Evidence `scratch/verification/20261006T105646.785425Z.txt` có revision, lệnh, SHA256 và xác nhận source ổn định trong lượt chạy. Giữ nguyên các thay đổi sẵn có, chưa commit/merge/push; chưa QA nghe/render hoặc gesture trên thiết bị.
-
-## Hiệu ứng tim vỡ và rơi khi đặt sai kẹo (working tree 2026-10-06)
-
-- Dùng nguyên sprite `game/assets/ui/board/heart_sprite.png` do chủ dự án cung cấp: 8 frame nứt → vỡ → rơi, tổng 720 ms. Giữ 3 ô HUD ổn định, thay tim vừa mất bằng nền tim rỗng; refresh khi tìm đúng kẹo không ngắt animation. Reduced motion cập nhật tĩnh.
-- Chủ dự án báo không thấy hiệu ứng: xác nhận profile thực tế có `reduced_motion=true`. Đã tắt riêng tùy chọn này qua ConfigStore, giữ các tùy chọn còn lại; backup tại `scratch/verification/heart-motion-config-before.json`. Kiểm tra composition root đọc cấu hình thật, dùng campaign profile riêng và chạm đôi qua TouchDecoder: tim giảm 3→2, animation bắt đầu/kết thúc PASS (`scratch/verification/heart-motion-config-check.log`). Phiên game đã mở trước khi đổi config cần chạy lại để đọc tùy chọn mới; không thay đổi save/progress thật.
-- Lần sai cuối chuyển session sang FAILED và lưu ngay, đợi hiệu ứng kết thúc mới mở Result. Restart/rời màn hủy chuyển màn cũ; resume lượt FAILED mở lại Result mà không phát lại animation. Test debug picker dùng profile riêng để không phụ thuộc hoặc ghi vào save thật của người chơi.
-- TDD RED→GREEN cho mất tim, refresh giữa animation, tim cuối, restart/rời màn, reduced motion và resume FAILED. Test liên quan và clean-room/import reference PASS; mọi module trong task ≤300 dòng. Render OpenGL thực tế 540×960 đã kiểm tra 8 frame; GIF và contact sheet tại `scratch/verification/heart-feedback-preview/`. Chưa QA Android/iOS.
-- **Full gate PASS trên snapshot cố định** của revision nền `9bbdcc122c9e8c9ae818ffb0cca62f42661c7e67` + working tree; các source thuộc task khớp SHA256 với checkout sau gate. Lệnh `rtk python -B scratch/verification/verify_heart_snapshot.py <Godot 4.7.2 console executable>` chạy `tools/verify.py` trong bản sao, dùng Git index riêng. Evidence `scratch/verification/heart-feedback-frozen-gate.txt`; provenance tại `scratch/verification/heart-feedback-snapshot-20261006T101116Z/snapshot-provenance.json`. Lượt gate live `20261006T100901.166042Z.txt` có tất cả checks PASS nhưng kết quả chung FAIL vì source khác thay đổi trong khi chạy. Chưa commit/merge/push.
-
-## Bộ button Settings cắt từ ảnh chủ dự án (working tree 2026-10-06)
-
-- Đã tách 9 PNG RGBA 192×192 từ ảnh chủ dự án cung cấp vào `game/assets/ui/settings/`: audio on/off, music on/off, haptic, reduced motion, large text, colorblind, Undo X. Nền ngoài nút trong suốt; các pixel opaque giữ màu đúng ảnh nguồn. Options screen hiện dùng bộ ảnh này.
-- Kiểm tra trực quan trên nền caro và kiểm alpha/pixel nguồn PASS; evidence `scratch/verification/settings-buttons-preview.png` và `scratch/verification/settings-buttons-validation.json`. ZIP bàn giao tại `scratch/exports/candoku-settings-buttons.zip`.
-
-## Tinh chỉnh SFX nút và Settings (working tree 2026-10-06)
-
-- Các hành động bấm nút, Back/Home, Restart, toggle, mở/đóng dialog, dùng Hint và Undo X thành công dùng chung preset và một PCM stream `UI_TICK` 74 ms: triangle trầm, noise ngắn và lọc bớt âm cao để có cảm giác gỗ ấm. Nút mở Settings ở Home và puzzle có cue `SETTINGS_OPEN` riêng: tiếng gậy vụt nhanh 110 ms, phần gió sáng dần và cú “tách” khô ngắn. Tuner cho chỉnh phần gió (`noise_mix`), cú vụt (`snap_mix`), lọc và speed. Tổng cộng 19 effect.
-- Test `test_pcm_synth.gd`, `test_feedback.gd`, `test_sfx_tuner.gd`, `test_sfx_player_procedural.gd` PASS; `test_sfx_gameplay.gd` báo PASS cho kiểm cue nhưng Godot còn in lỗi asset candy thiếu. Full gate **FAIL** trên revision `9bbdcc1` cộng working tree: `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>`, evidence `scratch/verification/20261006T083927.696969Z.txt`. Các suite SFX qua gate; các failure khác cùng xuất phát từ sáu SVG candy thiếu trong task sprite song song. Cần task sprite hoàn thiện asset/path rồi chạy lại gate. QA nghe thực tế vẫn chờ chủ dự án.
-
-## SFX procedural mở rộng và tuner (working tree 2026-10-06)
-
-- Chủ dự án chọn giữ SFX tổng hợp bằng code. Catalog hiện có 18 effect; tuner cho chọn, preview và copy tham số của cả 18, gồm `MARK` pencil scratch đúng với runtime. `Copy Params` chưa tự lưu vào catalog.
-- Back/Home, toggle, hộp xác nhận, Help, Undo X thành công và mốc nửa số kẹo cần tự tìm đã có cue riêng. `LOCK_TICK` chỉ có để nghe trong tuner vì gameplay hiện không auto-lock. Không gen hoặc tích hợp file SFX bên ngoài.
-- TDD: test tuner phát hiện preview `MARK` khác runtime; test PlaySession xác nhận Undo có/không đổi board; test feedback và gameplay kiểm cue mở rộng. Full gate `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` **PASS** trên revision nền `9bbdcc1` cộng working tree, evidence `scratch/verification/20261006T065506.128594Z.txt`. QA nghe thực tế trên loa/tai nghe và thiết bị mục tiêu vẫn chưa làm.
-- Tuner có thanh `speed (pitch)` cho từng cue (0,5–2,0×); `Copy Params` xuất `speed` để player áp dụng trong game. Do dùng `AudioStreamPlayer.pitch_scale`, tốc độ và cao độ thay đổi cùng nhau. `STAGE_FAIL` đang đặt 0,9× làm giá trị khởi điểm. `test_sfx_tuner.gd` và `test_sfx_player_procedural.gd` PASS.
-- **Blocker full gate cho lần chỉnh Speed:** `rtk python -B tools/verify.py --godot <Godot 4.7.2 executable>` FAIL; evidence `scratch/verification/20261006T071449.287649Z.txt`. Tác động: chưa thể bàn giao dưới nhãn full gate PASS. Nguyên nhân trong working tree của task candy sprite: `candy_renderer.gd` gọi `bonbon.svg`, `lollipop.svg` và bốn SVG khác, nhưng `game/assets/candy/` hiện chỉ có `candy.png`. Người xử lý: task candy sprite. Hành động tiếp: hoàn thiện asset/path renderer theo task đó; chạy lại full gate khi sáu path được giải quyết.
+- **Hiệu ứng vào level mới:** Mỗi ô của bàn chơi xuất hiện theo sóng bán kính từ góc dưới trái lên góc trên phải, gồm cả ô kẹo cho sẵn; thời lượng cố định cho mọi kích thước. Lượt mới sau khi thắng level trước có hiệu ứng. Home/Settings/khởi động lại để tiếp tục lượt chưa hoàn thành, và Restart/Retry cùng level, bỏ qua hiệu ứng. Tùy chọn giảm chuyển động hiện bàn ngay. TDD RED→GREEN: `game/tests/test_board_entry.gd`.
+- **Sửa phản hồi X lặp khi commit batch:** TouchDecoder giữ lịch sử preview đến hết commit; chỉ animate các ô chưa có phản hồi preview. Nét kéo bỏ qua phản hồi trên ô không đổi trạng thái, giữ preview tức thì và một transaction/Undo cho cả nhóm. TDD RED→GREEN tại `game/tests/test_stroke_feedback.gd`.
+- **Hiệu ứng tim vỡ và rơi khi đặt sai kẹo:** Dùng sprite `game/assets/ui/board/heart_sprite.png`: 8 frame nứt → vỡ → rơi, tổng 720 ms. Giữ 3 ô HUD ổn định, thay tim vừa mất bằng nền tim rỗng; refresh khi tìm đúng kẹo không ngắt animation. Reduced motion cập nhật tĩnh. Lần sai cuối chuyển session sang FAILED và lưu ngay, đợi hiệu ứng kết thúc mới mở Result. TDD RED→GREEN: `game/tests/test_heart_feedback.gd`.
+- **Bộ button Settings từ ảnh nguồn:** Tách 9 PNG RGBA 192×192 vào `game/assets/ui/settings/`: audio on/off, music on/off, haptic, reduced motion, large text, colorblind, Undo X. Nền ngoài nút trong suốt. Options screen đã tích hợp và sử dụng.
+- **Candy sprites & candy palette:** Thay thế toàn bộ SVG cũ bằng bộ candy PNG chính thức (`bonbon.png`, `candy.png`, `candy_icon.png`, `cotton_puff.png`, `gummy_drop.png`, `hard_candy.png`, `lollipop.png`, `toffee.png`), render mượt mà trên mọi kích thước bàn.
+- **SFX procedural mở rộng và tuner:** Catalog mở rộng 19 effect với preset và PCM stream `UI_TICK` 74 ms; Tuner có thanh `speed (pitch)` cho từng cue. Toàn bộ blocker asset thiếu đã được giải quyết triệt để.
+- **Kiểm chứng:** Full gate PASS trên `dev`. Clean-room 0 match, module $\le 300$ dòng.
 
 ## Procedural SFX và normal play session (đã tích hợp vào `dev`)
 
@@ -91,7 +63,7 @@
 - Checkout chính: `D:/Work/Alpaca_Solution/ASOL-Game-02`, nhánh `dev`. Worktree audio giữ nguyên. UID tuner sinh cục bộ khác bản tracked được bảo toàn tại `scratch/verification/test_sfx_tuner.pre-merge-fd2e393.gd.uid`; không ghi đè plan hay UID responsive-layout untracked.
 - BGM WAV thử nghiệm hiện nằm tại `game/assets/audio/bgm/bgm-candoku-melody.wav`; bản OGG theo chuẩn release vẫn thiếu. QA nghe âm sắc/độ lớn/click-pop trên loa, tai nghe và thiết bị mục tiêu chưa thực hiện; chưa phải nghiệm thu phát hành.
 
-## Bank đầy đủ và campaign 998 level (trên `feat/full-bank-campaign`, chưa merge)
+## Bank đầy đủ và campaign 998 level (đã tích hợp vào `dev`, 2026-10-04)
 
 - Đã tạo 36/49/913 level gốc cho 4×4/5×5/6×6, năm rank mỗi kích thước; validator độc lập xác nhận nghiệm duy nhất, trace S2/S3, pace và phủ playlist 998 tham chiếu.
 - `full_998.json` giữ L01–L30 của `demo_30.json`; `active_campaign.json` mặc định `full_998`, có thể đổi thành `demo_30` trước khi chạy/export. Hai mode có progress/session riêng; Settings dùng chung.
@@ -105,7 +77,7 @@
 
 ## Mục tiêu hiện tại: QA và chuẩn bị release
 
-### Demo 30 màn N=4–6 (đã triển khai trên `feat/demo-cross-size`, chưa merge)
+### Demo 30 màn N=4–6 (đã tích hợp vào `dev`, 2026-10-04)
 
 - Theo RST-018, playlist mặc định `demo_30.json` gồm L01–L10: 4×4, L11–L20: 5×5, L21–L30: 6×6. Mỗi kích thước dùng 5/3/2 màn Rank 1/2/3; L01/L02 giữ tutorial.
 - Snapshot của lượt đang chơi giữ puzzle và pace cũ khi cập nhật playlist; màn tiếp theo dùng nội dung mới. Bank/pace hiện có và playlist kiểm thử 45 màn `demo_cross.json` giữ nguyên.
