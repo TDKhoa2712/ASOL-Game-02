@@ -11,7 +11,15 @@ if str(ROOT / "tools") not in sys.path:
 if str(ROOT / "GDD" / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "GDD" / "tools"))
 
-from convert_extracted_bank import convert_region_map, convert_level, convert_bank_file
+from convert_extracted_bank import (
+    convert_region_map,
+    convert_level,
+    convert_bank_file,
+    convert_level_fast,
+    convert_flat_bank,
+    BANK_REGISTRY,
+)
+
 
 
 class TestConvertExtractedBank(unittest.TestCase):
@@ -144,6 +152,94 @@ class TestConvertExtractedBank(unittest.TestCase):
         self.assertEqual(level["pidHash"], "deadbeef")
         self.assertGreaterEqual(len(level["logicTrace"]), 4)
 
+    def test_convert_level_fast(self):
+        raw = {
+            "seed": 42,
+            "regionMap": [
+                [0, 0, 1, 1],
+                [0, 0, 1, 1],
+                [2, 2, 3, 3],
+                [2, 2, 3, 3],
+            ],
+            "solution": [1, 3, 0, 2],
+            "r": 2,
+            "steps": 4,
+            "r1": 2,
+            "r2": 2,
+            "r3": 0,
+            "_pid_h": "abcdef123456",
+            "colorMap": {"A": 1},
+            "shapeCategory": 5,
+        }
+        level = convert_level_fast(raw, size=4, extra_fields=["colorMap", "shapeCategory"])
+        self.assertIsNotNone(level)
+        self.assertEqual(level["seed"], 42)
+        self.assertEqual(level["solution"], [1, 3, 0, 2])
+        self.assertEqual(level["regions"], ["AABB", "AABB", "CCDD", "CCDD"])
+        self.assertEqual(level["profile"], [2, 2, 0])
+        self.assertEqual(level["pidHash"], "abcdef12")
+        self.assertEqual(level["logicTrace"], [])
+        self.assertEqual(level["colorMap"], {"A": 1})
+        self.assertEqual(level["shapeCategory"], 5)
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_convert_flat_bank_schema_and_pace(self):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            source_levels = [
+                {
+                    "id": "SP_01",
+                    "size": 4,
+                    "regionMap": [
+                        [0, 0, 1, 1],
+                        [0, 0, 1, 1],
+                        [2, 2, 3, 3],
+                        [2, 2, 3, 3],
+                    ],
+                    "solution": [1, 3, 0, 2],
+                    "r": 1,
+                    "steps": 4,
+                    "r1": 4,
+                    "r2": 0,
+                    "_pid_h": "feedface1122",
+                    "shapeCategory": 2,
+                }
+            ]
+            source_path = tmp_path / "bankDataSP_test.json"
+            source_path.write_text(json.dumps({"levels": source_levels}))
+            out_bank = tmp_path / "bank_sp.json"
+            out_pace = tmp_path / "bank_sp.pace.json"
+
+            result = convert_flat_bank(
+                str(source_path),
+                bank_type="sp",
+                output=str(out_bank),
+                pace_output=str(out_pace),
+                extra_fields=["shapeCategory", "id"],
+                fast=True,
+            )
+            self.assertEqual(result["accepted"], 1)
+            self.assertEqual(result["skipped"], 0)
+
+            bank = json.loads(out_bank.read_text())
+            self.assertEqual(bank["bankVersion"], 1)
+            self.assertEqual(bank["type"], "sp")
+            self.assertEqual(len(bank["levels"]), 1)
+            self.assertEqual(bank["levels"][0]["size"], 4)
+            self.assertEqual(bank["levels"][0]["rank"], 1)
+            self.assertEqual(bank["levels"][0]["shapeCategory"], 2)
+            self.assertEqual(bank["levels"][0]["id"], "SP_01")
+
+            pace = json.loads(out_pace.read_text())
+            self.assertEqual(pace["bankVersion"], 1)
+            self.assertEqual(pace["type"], "sp")
+            self.assertEqual(len(pace["levels"]), 1)
+            self.assertEqual(len(pace["levels"][0]["rSeq"]), 4)
+            self.assertEqual(len(pace["levels"][0]["hintCosts"]), 4)
+
+    def test_bank_registry_completeness(self):
+        expected_types = {
+            "regular", "lkstyle", "gc", "onefish",
+            "sp", "lk", "lk_modified", "sp_tt", "single_region", "super_hard"
+        }
+        self.assertTrue(expected_types.issubset(set(BANK_REGISTRY.keys())))
+

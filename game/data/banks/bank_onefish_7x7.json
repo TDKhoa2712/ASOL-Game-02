@@ -1,0 +1,75 @@
+{
+  "bankVersion": 1,
+  "size": 7,
+  "ranks": {
+    "1": [],
+    "2": [],
+    "3": [
+      {
+        "seed": 93089562,
+        "regions": [
+          "AAAAABB",
+          "AAABABB",
+          "AACBBBB",
+          "EECDDDD",
+          "EGCFFFD",
+          "GGCCCFC",
+          "GGGCCCC"
+        ],
+        "solution": [
+          3,
+          6,
+          2,
+          4,
+          0,
+          5,
+          1
+        ],
+        "givens": [],
+        "steps": 9,
+        "profile": [
+          7,
+          1,
+          1
+        ],
+        "rating": 3002.67,
+        "pidHash": "462ea0fa",
+        "logicTrace": []
+      }
+    ],
+    "4": [
+      {
+        "seed": 93089129,
+        "regions": [
+          "AAAAAAA",
+          "ACCCBBB",
+          "AAECEDD",
+          "FFEEEDD",
+          "FFFEEDD",
+          "GFFFDDG",
+          "GGGGGGG"
+        ],
+        "solution": [
+          1,
+          5,
+          3,
+          6,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 10,
+        "profile": [
+          7,
+          2,
+          1
+        ],
+        "rating": 7032,
+        "pidHash": "2d0350a2",
+        "logicTrace": []
+      }
+    ],
+    "5": []
+  }
+}
