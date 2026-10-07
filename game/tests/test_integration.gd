@@ -59,6 +59,9 @@ func _test_app_shell_boot_and_wiring() -> void:
 	var bgm_track: String = str(shell.get_script().get_script_constant_map().get("BGM_TRACK", ""))
 	_assert(bgm_track != "" and ResourceLoader.exists(bgm_track), "configured BGM asset exists")
 	_assert(shell.bgm.is_playing(), "background music starts on boot")
+	await create_timer(0.5).timeout
+	_assert(shell.bgm.is_playing() and shell.bgm._player.stream.loop_end > 0,
+		"background music keeps playing with a valid loop end")
 	var icon_path: String = str(ProjectSettings.get_setting("application/config/icon", ""))
 	_assert(icon_path != "" and ResourceLoader.exists(icon_path), "project icon asset exists")
 	_assert(shell.runtime != null, "campaign runtime initialized")

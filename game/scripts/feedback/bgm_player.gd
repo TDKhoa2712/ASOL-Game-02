@@ -28,6 +28,7 @@ func play_track(path: String) -> void:
 		var stream := load(path) as AudioStream
 		if stream:
 			if stream is AudioStreamWAV:
+				stream.loop_end = roundi(stream.get_length() * stream.mix_rate)
 				stream.loop_mode = AudioStreamWAV.LOOP_FORWARD
 			elif "loop" in stream:
 				stream.set("loop", true)
