@@ -56,7 +56,7 @@ func _valid_shape(data: Dictionary) -> bool:
 	if data.get("sessionVersion") != SCHEMA_VER or not data.get("levelId") is String or not data.get("puzzleHash") is String:
 		return false
 	var size = data.get("boardSize")
-	if not _whole_number(size) or size < 4 or size > 6:
+	if not _whole_number(size) or size < 4 or size > 12:
 		return false
 	var cells = data.get("cells")
 	if not cells is Array or cells.size() != size * size:

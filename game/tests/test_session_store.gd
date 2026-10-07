@@ -19,6 +19,12 @@ func _init() -> void:
 	check(store.load_session("L01", "hash1").get("data", {}).get("cells", [])[0] == "error", "error cell restored")
 	data["cells"][0] = "given"
 	check(not store.save_session(data), "given cannot be persisted")
+	# Board sizes 4..12 are supported
+	var data12 := store.new_session("L12", "hash12", 12)
+	check(data12["cells"].size() == 144, "board size 12 cells count")
+	check(store.save_session(data12), "board size 12 valid session saved")
+	var data13 := store.new_session("L13", "hash13", 13)
+	check(not store.save_session(data13), "board size 13 rejected")
 	store.clear()
 	check(not store.has_pending(), "clear")
 	DirAccess.remove_absolute(dir)

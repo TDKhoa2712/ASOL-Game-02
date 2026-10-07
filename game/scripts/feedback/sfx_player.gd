@@ -1,6 +1,5 @@
 extends Node
 
-const PcmSynth = preload("res://scripts/feedback/pcm_synth.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const POOL_SIZE: int = 8
 

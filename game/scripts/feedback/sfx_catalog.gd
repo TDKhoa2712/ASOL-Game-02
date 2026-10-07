@@ -1,8 +1,6 @@
 # sfx_catalog.gd
 extends RefCounted
 
-const PcmSynth = preload("res://scripts/feedback/pcm_synth.gd")
-
 enum Effect {
 	MARK,           # đánh X
 	UNMARK,         # bỏ X (bubble pop)
