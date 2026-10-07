@@ -29,3 +29,6 @@ scratch/
 
 # Local Rive authoring projects and generated artifacts
 /rive-assets/
+
+# Build artifacts
+build/

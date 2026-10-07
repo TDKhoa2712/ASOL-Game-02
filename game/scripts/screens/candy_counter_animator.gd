@@ -19,8 +19,8 @@ static func resolve_candy_texture(session: Variant) -> Texture2D:
 	return CandyRenderer.texture_for_type(candy_type)
 
 static func calculate_sizing(size: int) -> Dictionary:
-	var icon_size: float = clampf(288.0 / float(maxi(size, 6)), 24.0, 48.0)
-	var gap: int = int(clampf(72.0 / float(maxi(size, 6)), 4.0, 12.0))
+	var icon_size: float = clampf(360.0 / float(maxi(size, 6)), 30.0, 58.0)
+	var gap: int = int(clampf(96.0 / float(maxi(size, 6)), 4.0, 12.0))
 	return {"icon_size": icon_size, "gap": gap}
 
 static func sync_status(session: Variant, regions_row: HBoxContainer) -> void:

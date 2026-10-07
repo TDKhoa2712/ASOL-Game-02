@@ -1,7 +1,7 @@
 extends RefCounted
 
 # Board.
-const BOARD_PADDING := 9
+const BOARD_PADDING := 18
 const CELL_GAP_RATIO := 0.008
 const CELL_CORNER_RATIO := 0.14
 const CARD_CORNER_RATIO := 0.04
@@ -28,6 +28,29 @@ const LOCK_FADE_MS := 120
 const INITIAL_HEARTS := 3
 const DOUBLE_TAP_MS := 350
 const MAX_UNDO_DEPTH := 100
+
+# Cell-internal sizing ratios (fraction of cell width).
+const X_PADDING_RATIO := 0.28
+const X_STROKE_RATIO := 0.09
+const X_STROKE_RATIO_HC := 0.12
+const X_MIN_STROKE := 4.0
+const X_BOW_RATIO := 0.022
+const CANDY_TEX_RATIO := 0.74
+const GIVEN_HALO_RATIO := 0.38
+const OVERLAY_ICON_RATIO := 0.35
+const SOLUTION_HINT_RATIO := 0.32
+const ERROR_BADGE_OUTER_RATIO := 0.09
+const ERROR_BADGE_INNER_RATIO := 0.07
+
+# Heart icon size (px).
+const HEART_SIZE := 48
+
+# Adaptive scale for large boards: boost cell-internal elements so they stay
+# readable on small physical cells.  Returns a multiplier >= 1.0.
+static func cell_content_scale(board_size: int) -> float:
+	if board_size <= 6:
+		return 1.0
+	return 1.0 + float(board_size - 6) * 0.06
 
 # Accessibility state (set by app_shell from config at startup and on change).
 static var motion_enabled: bool = true

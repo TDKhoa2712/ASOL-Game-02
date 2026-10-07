@@ -170,16 +170,14 @@ func _load_flat_file(filename: String) -> Array:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return []
-	var text: String
-	if OS.has_feature("editor"):
-		text = file.get_as_text()
-	else:
-		var raw := file.get_buffer(file.get_length())
-		var decoded := BankCodec.xor_transform(raw, _CODEC_KEY)
-		text = decoded.get_string_from_utf8()
+	var raw := file.get_buffer(file.get_length())
+	var text := raw.get_string_from_utf8()
 	var json := JSON.new()
 	if json.parse(text) != OK:
-		return []
+		var decoded := BankCodec.xor_transform(raw, _CODEC_KEY)
+		text = decoded.get_string_from_utf8()
+		if json.parse(text) != OK:
+			return []
 	var data: Variant = json.data
 	if data is Dictionary and data.has("levels") and data["levels"] is Array:
 		return data["levels"]

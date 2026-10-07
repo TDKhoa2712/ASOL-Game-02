@@ -168,15 +168,17 @@ func _parse_bank(path: String) -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return {"ok": false, "errors": ["Failed to open file: " + path] as Array[String], "data": {}}
-	var text: String
-	if OS.has_feature("editor"):
-		text = file.get_as_text()
-	else:
-		var raw := file.get_buffer(file.get_length())
-		var decoded := BankCodec.xor_transform(raw, _CODEC_KEY)
-		text = decoded.get_string_from_utf8()
+	var raw := file.get_buffer(file.get_length())
+	var text := raw.get_string_from_utf8()
 	var json := JSON.new()
 	var err := json.parse(text)
+	if err != OK:
+		var decoded := BankCodec.xor_transform(raw, _CODEC_KEY)
+		var decoded_text := decoded.get_string_from_utf8()
+		var decoded_err := json.parse(decoded_text)
+		if decoded_err == OK:
+			text = decoded_text
+			err = OK
 	if err != OK:
 		var err_msg := "JSON parse error in %s: %s (line %d)" % [path, json.get_error_message(), json.get_error_line()]
 		return {"ok": false, "errors": [err_msg] as Array[String], "data": {}}

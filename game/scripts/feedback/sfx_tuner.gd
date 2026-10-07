@@ -1,6 +1,5 @@
 extends Control
 
-const PcmSynth = preload("res://scripts/feedback/pcm_synth.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const PARAM_DEFS := [
 	["freq", 20.0, 4000.0, 440.0, 1.0],

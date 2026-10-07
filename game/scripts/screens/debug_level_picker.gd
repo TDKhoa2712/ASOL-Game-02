@@ -92,21 +92,21 @@ func select_playlist_entry(label: String) -> void:
 		if str(item.get("label", "")) == label: entry = item; break
 	if entry.is_empty(): return
 	var s: int = int(entry.get("size", 4)); var r: int = int(entry.get("rank", 1))
-	var idx: int = int(entry.get("index", 0)); var tr: int = int(entry.get("transform", 0))
+	var idx: int = int(entry.get("index", 0)); var tf_id: int = int(entry.get("transform", 0))
 	if _bank != null:
 		_bank.load_bank(s); var raw := _bank.get_level(s, r, idx)
-		_selected_level = BoardTransform.apply(raw, tr) if tr > 0 else raw.duplicate(true)
+		_selected_level = BoardTransform.apply(raw, tf_id) if tf_id > 0 else raw.duplicate(true)
 	_selected_level["id"] = label; _selected_level["_playlist_label"] = label; _selected_label = label
 	_update_info_display(label, s, str(entry.get("difficulty", "normal")), r, _selected_level)
 
-func select_custom_bank_level(size: int, rank: int, index: int, transform: int = 0) -> void:
+func select_custom_bank_level(board_size: int, rank: int, index: int, transform: int = 0) -> void:
 	if _bank != null:
-		_bank.load_bank(size); var raw := _bank.get_level(size, rank, index)
+		_bank.load_bank(board_size); var raw := _bank.get_level(board_size, rank, index)
 		_selected_level = BoardTransform.apply(raw, transform) if transform > 0 else raw.duplicate(true)
-	var label := "Bank %dx%d R%d #%d" % [size, size, rank, index]
-	_selected_level["id"] = label; _selected_level["_bank_meta"] = {"size": size, "rank": rank, "index": index, "transform": transform}
+	var label := "Bank %dx%d R%d #%d" % [board_size, board_size, rank, index]
+	_selected_level["id"] = label; _selected_level["_bank_meta"] = {"size": board_size, "rank": rank, "index": index, "transform": transform}
 	_selected_label = label
-	_update_info_display(label, size, "custom", rank, _selected_level)
+	_update_info_display(label, board_size, "custom", rank, _selected_level)
 
 func confirm_selection() -> void:
 	if not _selected_level.is_empty(): level_selected.emit(_selected_level, _selected_label)

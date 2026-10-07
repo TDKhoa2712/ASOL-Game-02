@@ -4,6 +4,7 @@ extends RefCounted
 const TweenFx = preload("res://scripts/feedback/tween_fx.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 static func play_candy_pop(board: Control, rect: Rect2) -> void:
 	if rect.size.x <= 0:
@@ -49,32 +50,34 @@ static func play_win_bounce(board: Control, session: Variant, cell_rect_fn: Call
 				tw.finished.connect(func(): dummy.queue_free())
 				delay += 0.08
 
-static func draw_hand_drawn_x(canvas: CanvasItem, rect: Rect2, is_error: bool, high_contrast: bool, progress: float = 1.0) -> void:
+static func draw_hand_drawn_x(canvas: CanvasItem, rect: Rect2, is_error: bool, high_contrast: bool, progress: float = 1.0, content_scale: float = 1.0) -> void:
 	if progress <= 0.0 or rect.size.x <= 0.0:
 		return
 	var stroke_col: Color = Palette.ERROR_RED if is_error else (Palette.MARK_STROKE if high_contrast else Palette.MARK_WHITE)
-	var pad := rect.size.x * 0.28
-	var w := maxf(4.0, rect.size.x * (0.12 if high_contrast else 0.09))
+	var pad := rect.size.x * LayoutTokens.X_PADDING_RATIO / content_scale
+	var stroke_ratio: float = LayoutTokens.X_STROKE_RATIO_HC if high_contrast else LayoutTokens.X_STROKE_RATIO
+	var w := maxf(LayoutTokens.X_MIN_STROKE, rect.size.x * stroke_ratio * content_scale)
 	var p1_start := rect.position + Vector2(pad, pad)
 	var p1_end := rect.end - Vector2(pad, pad)
 	var p2_start := Vector2(rect.end.x - pad, rect.position.y + pad)
 	var p2_end := Vector2(rect.position.x + pad, rect.end.y - pad)
 	var t1 := clampf(progress / 0.5, 0.0, 1.0)
 	var t2 := clampf((progress - 0.5) / 0.5, 0.0, 1.0)
-	var bow_mag := rect.size.x * 0.022
+	var bow_mag := rect.size.x * LayoutTokens.X_BOW_RATIO
+	var seg_count := 4 if rect.size.x < 36.0 else 8
 	if t1 > 0.0:
-		_draw_curved_stroke(canvas, p1_start, p1_end, t1, stroke_col, w, bow_mag)
+		_draw_curved_stroke(canvas, p1_start, p1_end, t1, stroke_col, w, bow_mag, seg_count)
 	if t2 > 0.0:
-		_draw_curved_stroke(canvas, p2_start, p2_end, t2, stroke_col, w, -bow_mag)
+		_draw_curved_stroke(canvas, p2_start, p2_end, t2, stroke_col, w, -bow_mag, seg_count)
 	if is_error and progress >= 0.8:
 		var badge_center := rect.position + rect.size * Vector2(0.78, 0.22)
-		canvas.draw_circle(badge_center, rect.size.x * 0.09, Palette.TEXT_ON_ACCENT)
-		canvas.draw_circle(badge_center, rect.size.x * 0.07, Palette.ERROR_RED)
+		canvas.draw_circle(badge_center, rect.size.x * LayoutTokens.ERROR_BADGE_OUTER_RATIO, Palette.TEXT_ON_ACCENT)
+		canvas.draw_circle(badge_center, rect.size.x * LayoutTokens.ERROR_BADGE_INNER_RATIO, Palette.ERROR_RED)
 
-static func _draw_curved_stroke(canvas: CanvasItem, start_pt: Vector2, end_pt: Vector2, t: float, color: Color, width: float, bow: float) -> void:
+static func _draw_curved_stroke(canvas: CanvasItem, start_pt: Vector2, end_pt: Vector2, t: float, color: Color, width: float, bow: float, max_segs: int = 8) -> void:
 	var delta := end_pt - start_pt
 	var normal := Vector2(-delta.y, delta.x).normalized()
-	var steps := maxi(2, int(ceil(t * 8.0)))
+	var steps := maxi(2, mini(max_segs, int(ceil(t * float(max_segs)))))
 	var pts := PackedVector2Array()
 	pts.resize(steps + 1)
 	for i in range(steps + 1):

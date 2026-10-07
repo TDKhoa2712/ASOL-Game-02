@@ -34,6 +34,10 @@ func _run() -> void:
 	await _test_visible_boot_error(selector_path, profile)
 	await _test_mode_switch(selector_path, profile)
 	await _test_hint_win_does_not_promote(selector_path, profile.path_join("hint_case"))
+	# Give AudioServer a mix cycle to release the BGM stopped by shell cleanup.
+	var cleanup_ms := Time.get_ticks_msec()
+	while Time.get_ticks_msec() - cleanup_ms < 100:
+		await process_frame
 	if _failures.is_empty():
 		print("CAMPAIGN_SELECTOR_PASS")
 		quit(0)
