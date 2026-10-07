@@ -42,6 +42,35 @@ func _init() -> void:
 	check(shape_pm.current.get("recentShapes", []).size() <= 50, "queue capped at 50")
 	shape_pm._store.remove_all()
 	DirAccess.remove_absolute(shape_dir)
+	# --- Endless block & migration tests ---
+	var endless_dir := OS.get_user_data_dir().path_join("m02_endless_%s" % Time.get_ticks_usec())
+	var endless_pm := Progress.new(endless_dir)
+	endless_pm.current = endless_pm.new_progress("L01")
+	check(endless_pm.current.get("progressVersion") == 3, "progress version 3")
+	check(endless_pm.current.get("endless") is Dictionary, "endless is dict")
+	check(endless_pm.get_endless_data().is_empty(), "endless initial empty")
+	endless_pm.set_endless_data({"level_num": 5, "streak": 2})
+	check(endless_pm.save(), "save with endless")
+	var loaded_endless = endless_pm.load()
+	check(loaded_endless.get("ok"), "load with endless ok")
+	check(endless_pm.get_endless_data().get("level_num") == 5, "endless level_num persisted")
+	# Migration from v2
+	var v2_data := {
+		"progressVersion": 2,
+		"currentLevelId": "L03",
+		"completedLevelIds": ["L01", "L02"],
+		"results": {"L01": {"score": 100}},
+		"tutorialSeenIds": ["T01"],
+		"recentShapes": ["shape_1"]
+	}
+	var migrated := endless_pm._migrate(v2_data)
+	check(migrated.get("progressVersion") == 3, "migrated to v3")
+	check(migrated.get("currentLevelId") == "L03", "preserved currentLevelId")
+	check(migrated.get("completedLevelIds") == ["L01", "L02"], "preserved completedLevelIds")
+	check(migrated.get("endless") is Dictionary, "migrated added endless")
+	check(endless_pm._validate(migrated), "migrated passes validation")
+	endless_pm._store.remove_all()
+	DirAccess.remove_absolute(endless_dir)
 	if failures.is_empty():
 		print("STATE_PROGRESS_PASS")
 		quit(0)

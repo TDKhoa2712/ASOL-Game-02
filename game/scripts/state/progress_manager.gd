@@ -1,7 +1,7 @@
 extends RefCounted
 
 const DualSlotStore = preload("res://scripts/state/dual_slot_store.gd")
-const SCHEMA_VER := 2
+const SCHEMA_VER := 3
 const RECENT_SHAPES_CAP := 50
 
 signal save_failed(reason: String)
@@ -32,7 +32,15 @@ func save() -> bool:
 	return true
 
 func new_progress(first_level_id: String) -> Dictionary:
-	return {"progressVersion": SCHEMA_VER, "currentLevelId": first_level_id, "completedLevelIds": [], "results": {}, "tutorialSeenIds": [], "recentShapes": []}
+	return {
+		"progressVersion": SCHEMA_VER,
+		"currentLevelId": first_level_id,
+		"completedLevelIds": [],
+		"results": {},
+		"tutorialSeenIds": [],
+		"recentShapes": [],
+		"endless": {},
+	}
 
 func advance_level(level_id: String, score_data: Dictionary, level_order: Array) -> Dictionary:
 	var is_final := (level_order.find(level_id) == level_order.size() - 1)
@@ -70,23 +78,35 @@ func has_recent_shape(shape_id: String) -> bool:
 	var shapes: Array = current.get("recentShapes", [])
 	return shapes.has(shape_id)
 
+func get_endless_data() -> Dictionary:
+	if current.has("endless") and current.endless is Dictionary:
+		return current.endless.duplicate(true)
+	return {}
+
+func set_endless_data(endless_dict: Dictionary) -> void:
+	current["endless"] = endless_dict.duplicate(true)
+
 func _validate(data: Dictionary) -> bool:
 	return data.get("progressVersion") == SCHEMA_VER \
 		and data.get("currentLevelId") is String \
 		and not data.currentLevelId.is_empty() \
 		and data.get("completedLevelIds") is Array \
 		and data.get("results") is Dictionary \
-		and data.get("tutorialSeenIds") is Array
+		and data.get("tutorialSeenIds") is Array \
+		and (not data.has("endless") or data.endless is Dictionary)
 
 func _migrate(data: Dictionary) -> Dictionary:
 	if data.get("progressVersion") == SCHEMA_VER:
 		if not data.has("recentShapes"):
 			data["recentShapes"] = []
+		if not data.has("endless") or not data.endless is Dictionary:
+			data["endless"] = {}
 		return data
-	if data.get("progressVersion") == 1 and data.get("currentLevelId") is String:
+	if (data.get("progressVersion") == 1 or data.get("progressVersion") == 2) and data.get("currentLevelId") is String:
 		var migrated := new_progress(data.currentLevelId)
-		for key in ["completedLevelIds", "results", "tutorialSeenIds"]:
+		for key in ["completedLevelIds", "results", "tutorialSeenIds", "recentShapes", "endless"]:
 			if data.has(key):
 				migrated[key] = data[key]
 		return migrated
 	return {}
+
