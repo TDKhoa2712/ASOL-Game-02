@@ -37,6 +37,8 @@ func _test_size_schedule() -> void:
 	_assert(SizeSchedule.get_size(20) == 12, "level 20 is 12")
 	_assert(SizeSchedule.get_size(21) == 8, "level 21 is 8")
 	_assert(SizeSchedule.get_size(22) == 10, "level 22 is 10")
+	_assert(SizeSchedule.get_size(23) == 11, "level 23 is 11")
+	_assert(SizeSchedule.get_size(26) == 12, "level 26 is 12")
 	_assert(SizeSchedule.get_size(31) == 8, "level 31 is 8 (cycle wrap)")
 
 func _test_strategy_modifier() -> void:

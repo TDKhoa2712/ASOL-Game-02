@@ -17,7 +17,7 @@ var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
 var restart_btn: Button; var home_btn: Button; var timer_label: Label
 var level_label: Label; var help_btn: Button; var settings_btn: Button
 var region_display: HBoxContainer; var rules_card: PanelContainer
-var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay
+var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay; var debug_bar: Variant = null
 func _ensure_nodes() -> void:
 	if board != null: return
 	var n: Dictionary = PuzzleLayout.build(self)
@@ -25,7 +25,7 @@ func _ensure_nodes() -> void:
 	hint_btn = n["hint"]; restart_btn = n["restart"]; home_btn = n["back"]
 	help_btn = n["help"]; settings_btn = n["settings"]; level_label = n["level"]
 	rules_card = n["rules"]; undo_btn = n["undo"]; restart_confirm = n["confirm"]
-	hint_overlay = n.get("hint_overlay")
+	hint_overlay = n.get("hint_overlay"); debug_bar = n.get("debug_bar")
 func _ready() -> void:
 	_ensure_nodes()
 	_connect_ui()
@@ -68,6 +68,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 		board.configure(session, new_level and session.phase == PlaySession.Phase.ACTIVE)
 	_connect_session()
 	_connect_ui()
+	if debug_bar != null: debug_bar.setup(self, session, board)
 	_update_hearts()
 	if level_label != null and session != null:
 		level_label.text = str(session.level.get("id", runtime.current_level_label()))
@@ -78,8 +79,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 		sfx.play(SfxCatalog.Effect.BOARD_OPEN)
 
 func _connect_session() -> void:
-	if session == null:
-		return
+	if session == null: return
 	_sig_conn(session.candy_found, _on_candy_found)
 	_sig_conn(session.mistake_made, _on_mistake)
 	_sig_conn(session.level_won, _on_level_won)
@@ -87,8 +87,7 @@ func _connect_session() -> void:
 	_sig_conn(session.state_changed, _on_session_state_changed)
 
 static func _sig_conn(sig: Signal, target: Callable) -> void:
-	if not sig.is_connected(target):
-		sig.connect(target)
+	if not sig.is_connected(target): sig.connect(target)
 
 func _on_session_state_changed() -> void:
 	if not _is_custom and runtime != null and session != null and runtime.sessions != null and session.phase == 0:
@@ -207,10 +206,10 @@ func _confirm_restart() -> void:
 			board.set_high_contrast(config.get_option("high_contrast"))
 		board.configure(session)
 	_connect_session()
+	if debug_bar != null: debug_bar.update_session(session)
 	_update_hearts()
 	_update_timer(0.0)
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.RESTART)
+	if sfx != null: sfx.play(SfxCatalog.Effect.RESTART)
 func set_undo_visible(enabled: bool) -> void:
 	_ensure_nodes()
 	if undo_btn != null: undo_btn.visible = enabled
@@ -293,5 +292,4 @@ func _on_level_failed() -> void:
 	level_done.emit(false)
 
 static func _btn_conn(btn: Button, target: Callable) -> void:
-	if btn != null and not btn.pressed.is_connected(target):
-		btn.pressed.connect(target)
+	if btn != null and not btn.pressed.is_connected(target): btn.pressed.connect(target)

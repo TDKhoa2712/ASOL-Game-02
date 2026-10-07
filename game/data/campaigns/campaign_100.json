@@ -1,0 +1,706 @@
+{
+  "campaignVersion": 1,
+  "id": "campaign-100",
+  "playlist": [
+    {
+      "label": "L01",
+      "size": 4,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "tutorial"
+    },
+    {
+      "label": "L02",
+      "size": 4,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "tutorial"
+    },
+    {
+      "label": "L03",
+      "size": 4,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "tutorial"
+    },
+    {
+      "label": "L04",
+      "size": 4,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "tutorial"
+    },
+    {
+      "label": "L05",
+      "size": 4,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "tutorial"
+    },
+    {
+      "label": "L06",
+      "size": 4,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L07",
+      "size": 4,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L08",
+      "size": 4,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L09",
+      "size": 4,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L10",
+      "size": 4,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L11",
+      "size": 5,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L12",
+      "size": 5,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L13",
+      "size": 5,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L14",
+      "size": 5,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L15",
+      "size": 5,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L16",
+      "size": 5,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L17",
+      "size": 5,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L18",
+      "size": 5,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L19",
+      "size": 5,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L20",
+      "size": 5,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L21",
+      "size": 5,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L22",
+      "size": 5,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L23",
+      "size": 6,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L24",
+      "size": 6,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L25",
+      "size": 6,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L26",
+      "size": 6,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L27",
+      "size": 6,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L28",
+      "size": 6,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L29",
+      "size": 6,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L30",
+      "size": 6,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L31",
+      "size": 6,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L32",
+      "size": 6,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L33",
+      "size": 6,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L34",
+      "size": 6,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L35",
+      "size": 7,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L36",
+      "size": 7,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L37",
+      "size": 7,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L38",
+      "size": 7,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L39",
+      "size": 7,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L40",
+      "size": 7,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L41",
+      "size": 7,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L42",
+      "size": 7,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L43",
+      "size": 7,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L44",
+      "size": 7,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L45",
+      "size": 7,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L46",
+      "size": 7,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L47",
+      "size": 8,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L48",
+      "size": 8,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L49",
+      "size": 8,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L50",
+      "size": 8,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L51",
+      "size": 8,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L52",
+      "size": 8,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L53",
+      "size": 8,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L54",
+      "size": 8,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L55",
+      "size": 8,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L56",
+      "size": 8,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L57",
+      "size": 8,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L58",
+      "size": 8,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L59",
+      "size": 9,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L60",
+      "size": 9,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L61",
+      "size": 9,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L62",
+      "size": 9,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L63",
+      "size": 9,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L64",
+      "size": 9,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L65",
+      "size": 9,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L66",
+      "size": 9,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L67",
+      "size": 9,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L68",
+      "size": 9,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L69",
+      "size": 9,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L70",
+      "size": 9,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L71",
+      "size": 10,
+      "rank": 1,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L72",
+      "size": 10,
+      "rank": 1,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L73",
+      "size": 10,
+      "rank": 1,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L74",
+      "size": 10,
+      "rank": 1,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L75",
+      "size": 10,
+      "rank": 1,
+      "index": 4,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L76",
+      "size": 10,
+      "rank": 1,
+      "index": 5,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L77",
+      "size": 10,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L78",
+      "size": 10,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L79",
+      "size": 10,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L80",
+      "size": 10,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L81",
+      "size": 10,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L82",
+      "size": 10,
+      "rank": 3,
+      "index": 2,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L83",
+      "size": 11,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L84",
+      "size": 11,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L85",
+      "size": 11,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L86",
+      "size": 11,
+      "rank": 2,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L87",
+      "size": 11,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L88",
+      "size": 11,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L89",
+      "size": 11,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L90",
+      "size": 11,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L91",
+      "size": 11,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L92",
+      "size": 12,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L93",
+      "size": 12,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L94",
+      "size": 12,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L95",
+      "size": 12,
+      "rank": 2,
+      "index": 3,
+      "difficulty": "easy"
+    },
+    {
+      "label": "L96",
+      "size": 12,
+      "rank": 2,
+      "index": 0,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L97",
+      "size": 12,
+      "rank": 2,
+      "index": 1,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L98",
+      "size": 12,
+      "rank": 2,
+      "index": 2,
+      "difficulty": "medium"
+    },
+    {
+      "label": "L99",
+      "size": 12,
+      "rank": 3,
+      "index": 0,
+      "difficulty": "hard"
+    },
+    {
+      "label": "L100",
+      "size": 12,
+      "rank": 3,
+      "index": 1,
+      "difficulty": "hard"
+    }
+  ]
+}

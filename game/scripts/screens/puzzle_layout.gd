@@ -129,6 +129,13 @@ static func build(root: Control) -> Dictionary:
 	dock.add_child(undo)
 	var hint := _circle("HintBtn", "res://assets/ui/board/button_hint.png", 110)
 	dock.add_child(hint)
+	var debug_bar = null
+	if OS.is_debug_build():
+		var dbg_cls = load("res://scripts/screens/puzzle_debug_bar.gd")
+		if dbg_cls != null:
+			debug_bar = dbg_cls.new()
+			debug_bar.name = "DebugBar"
+			stack.add_child(debug_bar)
 	var confirm := ConfirmationDialog.new()
 	confirm.name = "RestartConfirm"
 	confirm.title = root.tr("puzzle.restart_title")
@@ -138,7 +145,7 @@ static func build(root: Control) -> Dictionary:
 	root.add_child(confirm)
 	return {"board": board, "back": back, "help": help, "restart": restart,
 		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
-		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay}
+		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay, "debug_bar": debug_bar}
 
 static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer, animate_loss: bool = false, found_region: String = "") -> void:
 	if session == null:

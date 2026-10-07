@@ -2,6 +2,22 @@
 
 > Cập nhật: 2026-10-07
 
+## Nâng cấp Chế độ Debug & Chiến dịch 100 Levels (nhánh `feat/debug-and-campaign-100`, 2026-10-07)
+
+- **Debug Mode Enhancements:**
+  - **Endless Level Picker:** Bổ sung Tab 3 "Vô tận (Endless)" trong `DebugLevelPicker`, tích hợp `DebugEndlessPanel` cho phép chọn bất kỳ số level $N$ (1..2000), xem trước thông tin chi tiết (Size, Rank, Difficulty, Vùng, Kẹo cho sẵn), và vào chơi màn này ngay; tự động tính màn tiếp theo $N+1$.
+  - **Reset Progress:** Bổ sung `DebugResetBar` cho phép đặt lại tiến trình riêng cho Campaign (về level đầu tiên), riêng cho Endless (về Level 1), hoặc đặt lại cả hai cùng lúc; tự động cập nhật text nút trên Title Screen ngay lập tức.
+  - **In-Game Cheats Toolbar (`PuzzleDebugBar`):**
+    - **Hiện/Ẩn nghiệm:** Toggle hiển thị vị trí các kẹo nghiệm trên bàn cờ với halo và viền highlight xanh lá trực quan.
+    - **Thắng ngay (Force Win):** Chuyển session sang WON và kích hoạt màn thắng ngay lập tức.
+    - **Thua ngay (Force Fail):** Trừ hết tim và chuyển sang màn thua ngay lập tức.
+    - **Tự giải (Auto-solve):** Tự động điền đầy đủ các kẹo nghiệm vào bàn cờ và hoàn thành màn để chuyển tiếp level.
+- **Chiến dịch 100 Levels (`campaign_100.json`):**
+  - Mở rộng chiến dịch chính lên 100 level, phân bổ cân bằng từ kích thước $4\times 4$ đến $12\times 12$ và trải đủ các độ khó rank 1..3 tương thích 100% với các bank offline.
+  - Subtitle màn hình chính hiển thị động `1->100`.
+- **Kiểm chứng Full Gate:** 66/66 checks PASS trên `python -B tools/verify.py --godot <Godot console>`. 100% test GDScript pass (bao gồm `test_debug_features.gd` và `test_debug_level_picker.gd`). Mọi file mã nguồn đều strictly $\le 300$ dòng. Clean-room: 0 tên thương mại/cấm.
+
+
 ## Chế độ Endless Levels (Hoàn thành Phase 1–4, 2026-10-07)
 
 - Hoàn thành đầy đủ 4 phase của kế hoạch Endless Levels (`docs/superpowers/plans/2026-10-07-endless-levels-plan.md`):
