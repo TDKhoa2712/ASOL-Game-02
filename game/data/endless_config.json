@@ -1,0 +1,51 @@
+{
+  "configVersion": 1,
+  "tiers": {
+    "milestone": {
+      "enabled": true,
+      "comment": "Bài đặc biệt cho levels mốc (10, 20, 30...)"
+    },
+    "super_hard": {
+      "enabled": true,
+      "min_level": 35,
+      "phase": 5,
+      "period": 10,
+      "comment": "Bài cực khó mỗi 10 levels (đuôi 5)"
+    },
+    "single_region_supp": {
+      "enabled": true,
+      "comment": "Bài hỗ trợ DDA khi player gặp khó"
+    },
+    "sp_tt": {
+      "enabled": false,
+      "comment": "6 nhóm hình đối xứng — bật khi có content"
+    },
+    "onefish": {
+      "enabled": false,
+      "comment": "Chế độ Tử thần — bật khi có content và UI"
+    }
+  },
+  "pool_sources": {
+    "regular": {
+      "enabled": true,
+      "comment": "Bank chính"
+    },
+    "lkstyle": {
+      "enabled": true,
+      "comment": "Phong cách LK, size >= 7"
+    },
+    "gc": {
+      "enabled": true,
+      "comment": "Grid Connected, conditional"
+    },
+    "lk_modified": {
+      "enabled": true,
+      "inject_every": 4,
+      "comment": "Cross-size, inject mỗi 4 bài"
+    }
+  },
+  "difficulty": {
+    "initial_strategy": 3,
+    "comment": "Strategy mặc định (1-7). DDA sẽ điều chỉnh tự động"
+  }
+}
