@@ -4,7 +4,7 @@ extends RefCounted
 
 const SIZES_TUTORIAL: Array[int] = [4, 4, 4, 5, 5, 5, 6, 6, 6, 6]
 const SIZES_TRANSITION: Array[int] = [7, 7, 8, 8, 9, 9, 10, 10, 11, 12]
-const SIZES_CYCLE: Array[int] = [8, 10, 10, 9, 10, 10, 9, 10, 10, 10]
+const SIZES_CYCLE: Array[int] = [8, 10, 11, 9, 10, 12, 9, 10, 11, 12]
 
 
 static func get_size(level_num: int) -> int:
