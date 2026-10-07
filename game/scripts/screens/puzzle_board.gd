@@ -42,6 +42,9 @@ var _mark_anims: Dictionary = {}
 var _mark_tweens: Dictionary = {}
 var _stroke_visited: Array = []
 var _entry_elapsed: float = -1.0
+var _show_solution: bool = false
+func set_show_solution(enabled: bool) -> void: _show_solution = enabled; queue_redraw()
+func is_showing_solution() -> bool: return _show_solution
 
 func configure(session: Variant, animate_entry: bool = false) -> void:
 	_entry_elapsed = -1.0
@@ -251,3 +254,7 @@ func _draw_candy_procedural(rect: Rect2) -> void:
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
 	var prog: float = _mark_anims.get(Vector2i(r, c), 1.0) if (r >= 0 and c >= 0) else 1.0
 	CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog)
+
+func _draw_solution_hint(rect: Rect2) -> void:
+	draw_circle(rect.get_center(), rect.size.x * 0.32, Color(0.2, 0.85, 0.4, 0.45))
+	_draw_border(rect, Color(0.2, 0.85, 0.4, 0.9), 3, int(rect.size.x * LayoutTokens.CELL_CORNER_RATIO))

@@ -66,6 +66,11 @@ static func draw(board: Variant) -> void:
 				CellModel.CellKind.ERROR: board._draw_cell_x(cell_rect, true, r, c)
 				CellModel.CellKind.GIVEN: board._draw_cell_candy(cell_rect, true)
 
+			if board._show_solution and board._session != null:
+				var sol: Array = board._session.level.get("solution", [])
+				if r < sol.size() and int(sol[r]) == c and kind != CellModel.CellKind.CANDY and kind != CellModel.CellKind.GIVEN:
+					board._draw_solution_hint(cell_rect)
+
 			if board._highlight_cells.has([r, c]):
 				var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(board._highlight_pulse_phase))
 				board._draw_border(cell_rect, Color(Palette.ACCENT_ORANGE, pulse_alpha), 3, cr)

@@ -165,6 +165,14 @@ func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 		if nxt_i < runtime.bank.level_count(s, r):
 			_debug_next = runtime._fetch_level(s, r, nxt_i, tr); _debug_next_lbl = "Bank %dx%d R%d #%d" % [s, s, r, nxt_i]; _debug_next["id"] = _debug_next_lbl
 			_debug_next["_bank_meta"] = {"size": s, "rank": r, "index": nxt_i, "transform": tr}
+	elif level_data.has("_endless_level_num") and endless_runtime != null:
+		var nxt_n: int = int(level_data._endless_level_num) + 1
+		var p = load("res://scripts/endless/endless_progress.gd").new(); p.set_level_num(nxt_n)
+		var sel = load("res://scripts/endless/level_selector.gd").new(endless_runtime.bank, endless_runtime.config, p)
+		_debug_next = sel.select_next_level()
+		if not _debug_next.is_empty():
+			_debug_next_lbl = "Endless %d" % nxt_n
+			_debug_next["id"] = _debug_next_lbl; _debug_next["_endless_level_num"] = nxt_n
 	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
 	else: nav.go_to(NavController.Screen.PUZZLE)
 

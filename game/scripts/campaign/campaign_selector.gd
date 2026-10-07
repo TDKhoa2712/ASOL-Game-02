@@ -2,6 +2,7 @@ extends RefCounted
 
 const CAMPAIGN_FILES := {
 	"demo_30": "demo_30.json",
+	"campaign_100": "campaign_100.json",
 	"full_998": "full_998.json",
 	"advanced": "advanced.json",
 }

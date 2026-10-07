@@ -40,6 +40,12 @@ class MockRuntime extends RefCounted:
 	func restart_level():
 		return null
 
+	func playlist_order() -> Array[String]:
+		var res: Array[String] = []
+		for i in range(1, 31):
+			res.append("L%02d" % i)
+		return res
+
 var _fails: Array[String] = []
 
 func _init() -> void:

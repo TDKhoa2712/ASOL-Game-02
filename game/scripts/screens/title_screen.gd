@@ -181,6 +181,7 @@ func _ensure_nodes() -> void:
 			debug_level_selected.emit(lvl, lbl)
 		)
 		debug_picker.close_requested.connect(func(): debug_picker.visible = false)
+		debug_picker.progress_reset.connect(func(_m): _update_ui())
 		add_child(debug_picker)
 
 func _ready() -> void:
@@ -210,7 +211,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	if debug_picker != null and rt != null:
 		var pl: Array = rt._playlist if "_playlist" in rt else []
 		var b: Variant = rt.bank if "bank" in rt else null
-		debug_picker.setup(b, pl)
+		debug_picker.setup(b, pl, endless_rt, rt)
 
 func _on_debug_pressed() -> void:
 	if debug_picker != null:
@@ -230,6 +231,10 @@ func _update_ui() -> void:
 				play_btn.text = tr("title.replay")
 			else:
 				play_btn.text = tr("title.play") % label.trim_prefix("L")
+		if campaign_subtitle != null and runtime.has_method("playlist_order"):
+			var order: Array = runtime.playlist_order()
+			if not order.is_empty():
+				campaign_subtitle.text = "1->%d" % order.size()
 	if endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:

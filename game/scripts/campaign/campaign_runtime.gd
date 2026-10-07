@@ -286,7 +286,7 @@ func _load_playlist(path: String) -> Dictionary:
 			var value: Variant = entry.get(field)
 			if not (value is int or value is float) or not is_finite(float(value)) or float(value) != floor(float(value)):
 				return {"ok": false, "error": "invalid playlist reference"}
-		if entry.size < 4 or entry.size > 6 or entry.rank < 1 or entry.index < 0:
+		if entry.size < 4 or entry.size > 12 or entry.rank < 1 or entry.index < 0:
 			return {"ok": false, "error": "playlist reference out of range"}
 		if not entry.get("difficulty") is String:
 			return {"ok": false, "error": "missing difficulty"}
