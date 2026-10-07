@@ -10,7 +10,7 @@ extends RefCounted
 # - ENABLE_ENDLESS:  Bat che do Vo tan (36.000+ man choi vo han)
 # ==============================================================================
 const ENABLE_CAMPAIGN: bool = true
-const ENABLE_ENDLESS: bool = true
+const ENABLE_ENDLESS: bool = false
 
 static var _override_campaign: Variant = null
 static var _override_endless: Variant = null

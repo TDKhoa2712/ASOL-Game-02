@@ -35,8 +35,12 @@ func _init() -> void:
 
 func _test_default_features() -> void:
 	GameFeatures.reset_overrides()
-	_assert(GameFeatures.is_campaign_enabled(), "default campaign enabled")
-	_assert(GameFeatures.is_endless_enabled(), "default endless enabled")
+	var expected_c := GameFeatures.ENABLE_CAMPAIGN
+	var expected_e := GameFeatures.ENABLE_ENDLESS
+	if not expected_c and not expected_e:
+		expected_c = true # safety fallback
+	_assert(GameFeatures.is_campaign_enabled() == expected_c, "default campaign matches constant or fallback")
+	_assert(GameFeatures.is_endless_enabled() == expected_e, "default endless matches constant")
 
 func _test_feature_overrides() -> void:
 	GameFeatures.set_campaign_enabled(true)
@@ -56,7 +60,8 @@ func _test_safety_fallback() -> void:
 	_assert(GameFeatures.is_campaign_enabled(), "fallback enables campaign if both false")
 
 func _test_title_screen_both_modes() -> void:
-	GameFeatures.reset_overrides()
+	GameFeatures.set_campaign_enabled(true)
+	GameFeatures.set_endless_enabled(true)
 	var packed := load("res://scenes/title.tscn") as PackedScene
 	var title := packed.instantiate() as TitleScreen
 	var mock_rt := MockRuntime.new()

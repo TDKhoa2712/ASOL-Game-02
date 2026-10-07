@@ -9,7 +9,6 @@ signal debug_level_selected(level_data: Dictionary, label: String)
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
-const GameFeatures = preload("res://scripts/core/game_features.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -230,7 +229,7 @@ func _update_ui() -> void:
 	var endless_on: bool = GameFeatures.is_endless_enabled()
 	if campaign_box != null: campaign_box.visible = camp_on
 	if endless_btn != null: endless_btn.visible = endless_on
-	if camp_on and runtime != null:
+	if runtime != null:
 		var label: String = runtime.current_level_label()
 		if play_btn != null:
 			if runtime.is_campaign_done(): play_btn.text = tr("title.replay")
@@ -238,7 +237,7 @@ func _update_ui() -> void:
 		if campaign_subtitle != null and runtime.has_method("playlist_order"):
 			var order: Array = runtime.playlist_order()
 			if not order.is_empty(): campaign_subtitle.text = "1->%d" % order.size()
-	if endless_on and endless_btn != null:
+	if endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:
 			endless_num = endless_runtime.progress.get_level_num()

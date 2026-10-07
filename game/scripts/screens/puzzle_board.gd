@@ -114,6 +114,9 @@ func play_mark_anim(row: int, col: int) -> void: play_mark_anims([[row, col]])
 func play_mark_anims(cells: Array) -> void:
 	if not LayoutTokens.motion_enabled:
 		queue_redraw(); return
+	var n := int(_session.level.get("size", 4)) if _session != null else 4
+	var stagger := 0.01 if n >= 10 else (0.02 if n >= 7 else 0.03)
+	var dur := 0.10 if n >= 10 else 0.15
 	var delay := 0.0
 	for cell in cells:
 		if cell.size() < 2: continue
@@ -123,9 +126,9 @@ func play_mark_anims(cells: Array) -> void:
 		var tw := create_tween()
 		_mark_tweens[key] = tw
 		if delay > 0.0: tw.tween_interval(delay)
-		tw.tween_method(func(val: float): _mark_anims[key] = val; queue_redraw(), 0.0, 1.0, 0.15)
+		tw.tween_method(func(val: float): _mark_anims[key] = val; queue_redraw(), 0.0, 1.0, dur)
 		tw.finished.connect(func(): _mark_anims.erase(key); _mark_tweens.erase(key); queue_redraw())
-		delay += 0.03
+		delay += stagger
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP; custom_minimum_size = Vector2(320, 320)
@@ -233,11 +236,18 @@ func _draw_border(rect: Rect2, color: Color, width: int, radius: int) -> void:
 	sb.set_border_width_all(width); sb.set_corner_radius_all(radius)
 	draw_style_box(sb, rect)
 
+func _content_scale() -> float:
+	if _session == null: return 1.0
+	return LayoutTokens.cell_content_scale(int(_session.level.get("size", 0)))
+
 func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
+	var cs := _content_scale()
 	if is_given:
-		draw_circle(rect.get_center(), rect.size.x * 0.38, Color(CandyPalette.GIVEN_HALO, CandyPalette.GIVEN_HALO_OPACITY))
+		var halo_r := LayoutTokens.GIVEN_HALO_RATIO * cs
+		draw_circle(rect.get_center(), rect.size.x * minf(halo_r, 0.48), Color(CandyPalette.GIVEN_HALO, CandyPalette.GIVEN_HALO_OPACITY))
 	if _candy_tex != null:
-		var candy_size := rect.size * 0.74
+		var tex_ratio := minf(LayoutTokens.CANDY_TEX_RATIO * cs, 0.95)
+		var candy_size := rect.size * tex_ratio
 		draw_texture_rect(_candy_tex, Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size), false)
 	else:
 		_draw_candy_procedural(rect)
@@ -253,8 +263,9 @@ func _draw_candy_procedural(rect: Rect2) -> void:
 
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
 	var prog: float = _mark_anims.get(Vector2i(r, c), 1.0) if (r >= 0 and c >= 0) else 1.0
-	CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog)
+	CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog, _content_scale())
 
 func _draw_solution_hint(rect: Rect2) -> void:
-	draw_circle(rect.get_center(), rect.size.x * 0.32, Color(0.2, 0.85, 0.4, 0.45))
+	var cs := _content_scale()
+	draw_circle(rect.get_center(), rect.size.x * minf(LayoutTokens.SOLUTION_HINT_RATIO * cs, 0.48), Color(0.2, 0.85, 0.4, 0.45))
 	_draw_border(rect, Color(0.2, 0.85, 0.4, 0.9), 3, int(rect.size.x * LayoutTokens.CELL_CORNER_RATIO))

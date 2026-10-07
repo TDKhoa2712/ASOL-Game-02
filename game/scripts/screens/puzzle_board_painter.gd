@@ -6,13 +6,35 @@ const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const OVERLAY_CHARS = ["", "★", "◆", "♥", "▲", "✕", "●"]
 
+static var _sb_cache: Dictionary = {}
+static var _card_sb: StyleBoxFlat = null
+static var _card_cr: int = -1
+
+static func _get_cell_sb(bg: Color, cr: int) -> StyleBoxFlat:
+	var key := bg.to_html() + str(cr)
+	if _sb_cache.has(key):
+		return _sb_cache[key]
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = bg
+	sb.set_corner_radius_all(cr)
+	_sb_cache[key] = sb
+	return sb
+
+static func _get_card_sb(cr: int) -> StyleBoxFlat:
+	if _card_sb != null and _card_cr == cr:
+		return _card_sb
+	_card_sb = StyleBoxFlat.new()
+	_card_sb.bg_color = Palette.PILL_BG
+	_card_sb.set_corner_radius_all(cr)
+	_card_cr = cr
+	return _card_sb
+
 static func draw(board: Variant) -> void:
 	if board._session == null:
 		return
 	var br: Rect2 = board._board_rect()
-	var card_sb := StyleBoxFlat.new()
-	card_sb.bg_color = Palette.PILL_BG; card_sb.set_corner_radius_all(int(br.size.x * LayoutTokens.CARD_CORNER_RATIO))
-	board.draw_style_box(card_sb, br.grow(LayoutTokens.CARD_GROW))
+	var card_cr := int(br.size.x * LayoutTokens.CARD_CORNER_RATIO)
+	board.draw_style_box(_get_card_sb(card_cr), br.grow(LayoutTokens.CARD_GROW))
 
 	var count := int(board._session.level.get("size", 0))
 	if count <= 0:
@@ -29,9 +51,7 @@ static func draw(board: Variant) -> void:
 			board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
 			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
 			var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
-			var sb := StyleBoxFlat.new()
-			sb.bg_color = base_col; sb.set_corner_radius_all(cr)
-			board.draw_style_box(sb, cell_rect)
+			board.draw_style_box(_get_cell_sb(base_col, cr), cell_rect)
 
 			if board._high_contrast:
 				board._draw_border(cell_rect, Palette.MARK_STROKE, 2, cr)
@@ -39,7 +59,7 @@ static func draw(board: Variant) -> void:
 			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
 				var is_dark := base_col.get_luminance() < 0.5
 				var tint := RegionPainter.overlay_tint(base_col, is_dark)
-				var icon_size := int(cell_w * 0.35)
+				var icon_size := int(cell_w * LayoutTokens.OVERLAY_ICON_RATIO)
 				board.draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
 
 			var kind: int = board._session.board[r][c]
@@ -50,9 +70,7 @@ static func draw(board: Variant) -> void:
 					kind = CellModel.CellKind.BLANK
 			var ov: Color = Palette.cell_state_overlay(kind)
 			if ov.a > 0.0:
-				var ov_sb := StyleBoxFlat.new()
-				ov_sb.bg_color = ov; ov_sb.set_corner_radius_all(cr)
-				board.draw_style_box(ov_sb, cell_rect)
+				board.draw_style_box(_get_cell_sb(ov, cr), cell_rect)
 
 			if kind != CellModel.CellKind.MARK and kind != CellModel.CellKind.ERROR and board._mark_anims.has(Vector2i(r, c)):
 				var ck := Vector2i(r, c)

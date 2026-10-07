@@ -14,7 +14,8 @@ var _breaking := false
 var _elapsed := 0.0
 
 func _init() -> void:
-	custom_minimum_size = Vector2(36, 36)
+	var hs: int = LayoutTokens.HEART_SIZE
+	custom_minimum_size = Vector2(hs, hs)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	z_index = 10
 	set_process(false)
