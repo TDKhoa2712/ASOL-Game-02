@@ -6,6 +6,7 @@ const LevelValidator = preload("res://scripts/content/level_validator.gd")
 const BoardTransform = preload("res://scripts/content/board_transform.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
+const BankCodec = preload("res://scripts/content/bank_codec.gd")
 
 var _fails: Array[String] = []
 
@@ -27,6 +28,7 @@ func _init() -> void:
 	_test_lab_distance()
 	_test_extended_banks()
 	_test_flat_banks()
+	_test_parse_encoded_bank()
 	if _fails.is_empty():
 		print("CONTENT_PASS")
 		quit(0)
@@ -199,6 +201,21 @@ func _test_flat_banks() -> void:
 
 	var super_hard := reader.get_super_hard_levels()
 	_assert(super_hard.size() == 275, "super_hard has 275 levels")
+
+
+func _test_parse_encoded_bank() -> void:
+	var reader := BankReader.new()
+	var test_path := "user://test_encoded_bank.json"
+	var plain := '{"bankVersion": 1, "size": 4, "ranks": {}}'
+	var encoded: PackedByteArray = BankCodec.xor_transform(plain.to_utf8_buffer(), "candoku-2026-bank-key")
+	var file := FileAccess.open(test_path, FileAccess.WRITE)
+	if file != null:
+		file.store_buffer(encoded)
+		file.close()
+		var res: Dictionary = reader._parse_bank(test_path)
+		_assert(res.get("ok", false), "encoded bank parsed successfully")
+		_assert(res.get("data", {}).get("bankVersion") == 1, "encoded bank data matches")
+		DirAccess.remove_absolute(test_path)
 
 
 func _sample_bank_level() -> Dictionary:
