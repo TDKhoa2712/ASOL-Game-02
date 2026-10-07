@@ -20,30 +20,36 @@ func setup(campaign_rt: Variant, endless_rt: Variant) -> void:
 func _build_ui() -> void:
 	var title := Label.new()
 	title.text = "🔄 Đặt lại tiến trình chơi (Reset Progress):"
-	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_font_size_override("font_size", 26)
 	title.add_theme_color_override("font_color", Palette.INK)
 	add_child(title)
 
 	var row := HBoxContainer.new()
-	row.add_theme_constant_override("separation", 8)
+	row.add_theme_constant_override("separation", 12)
 	add_child(row)
 
-	var btn_camp := Button.new(); btn_camp.text = "Reset Campaign"
-	btn_camp.pressed.connect(reset_campaign)
+	var btn_camp := _create_btn("Reset Campaign", reset_campaign)
 	row.add_child(btn_camp)
 
-	var btn_end := Button.new(); btn_end.text = "Reset Endless"
-	btn_end.pressed.connect(reset_endless)
+	var btn_end := _create_btn("Reset Endless", reset_endless)
 	row.add_child(btn_end)
 
-	var btn_all := Button.new(); btn_all.text = "Reset Cả hai"
-	btn_all.pressed.connect(reset_all)
+	var btn_all := _create_btn("Reset Cả hai", reset_all)
 	row.add_child(btn_all)
 
 	_status_lbl = Label.new()
 	_status_lbl.text = ""
+	_status_lbl.add_theme_font_size_override("font_size", 24)
 	_status_lbl.add_theme_color_override("font_color", Color(0.1, 0.7, 0.3))
 	add_child(_status_lbl)
+
+func _create_btn(text: String, action: Callable) -> Button:
+	var btn := Button.new()
+	btn.text = text
+	btn.custom_minimum_size = Vector2(170, 58)
+	btn.add_theme_font_size_override("font_size", 24)
+	btn.pressed.connect(action)
+	return btn
 
 func reset_campaign() -> void:
 	if _campaign_rt != null and _campaign_rt.progress != null:

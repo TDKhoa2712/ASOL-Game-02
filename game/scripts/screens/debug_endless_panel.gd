@@ -36,36 +36,46 @@ func get_selected_label() -> String: return _selected_label
 func _build_ui() -> void:
 	var desc := Label.new()
 	desc.text = "Chọn màn chơi Chế độ Vô tận (Endless Mode):"
+	desc.add_theme_font_size_override("font_size", 28)
+	desc.add_theme_color_override("font_color", Color(0.18, 0.16, 0.14))
 	add_child(desc)
 
 	var spin_row := HBoxContainer.new()
-	spin_row.add_theme_constant_override("separation", 8)
+	spin_row.add_theme_constant_override("separation", 12)
 	add_child(spin_row)
 
 	var lbl := Label.new(); lbl.text = "Số level (Level #):"
+	lbl.add_theme_font_size_override("font_size", 26)
+	lbl.add_theme_color_override("font_color", Color(0.18, 0.16, 0.14))
 	spin_row.add_child(lbl)
 
 	_spin_level = SpinBox.new()
-	_spin_level.min_value = 1
-	_spin_level.max_value = 2000
-	_spin_level.value = 1
+	_spin_level.min_value = 1; _spin_level.max_value = 2000; _spin_level.value = 1
+	_spin_level.custom_minimum_size.y = 56; _spin_level.add_theme_font_size_override("font_size", 26)
 	_spin_level.value_changed.connect(func(_v): _update_selection())
 	spin_row.add_child(_spin_level)
 
 	var quick_row := HBoxContainer.new()
-	quick_row.add_theme_constant_override("separation", 6)
+	quick_row.add_theme_constant_override("separation", 8)
 	add_child(quick_row)
 	for step in [1, 5, 10, 50]:
 		var btn := Button.new(); btn.text = "+%d" % step
+		btn.custom_minimum_size = Vector2(90, 56); btn.add_theme_font_size_override("font_size", 26)
 		btn.pressed.connect(func(): _spin_level.value += step)
 		quick_row.add_child(btn)
 	var reset_btn := Button.new(); reset_btn.text = "Về Level 1"
+	reset_btn.custom_minimum_size = Vector2(160, 56); reset_btn.add_theme_font_size_override("font_size", 26)
 	reset_btn.pressed.connect(func(): _spin_level.value = 1)
 	quick_row.add_child(reset_btn)
 
 	var info_panel := PanelContainer.new()
+	var ip_style := StyleBoxFlat.new()
+	ip_style.bg_color = Color(0.9, 0.88, 0.84, 0.8); ip_style.set_corner_radius_all(14); ip_style.set_content_margin_all(14)
+	info_panel.add_theme_stylebox_override("panel", ip_style)
 	_info_label = Label.new()
 	_info_label.text = "Đang tải dữ liệu level..."
+	_info_label.add_theme_font_size_override("font_size", 26)
+	_info_label.add_theme_color_override("font_color", Color(0.18, 0.16, 0.14))
 	info_panel.add_child(_info_label)
 	add_child(info_panel)
 

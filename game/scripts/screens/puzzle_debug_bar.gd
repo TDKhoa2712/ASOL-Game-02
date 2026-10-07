@@ -17,7 +17,7 @@ var _fail_btn: Button
 var _solve_btn: Button
 
 func _init() -> void:
-	custom_minimum_size = Vector2(0, 48)
+	custom_minimum_size = Vector2(0, 68)
 	_build_ui()
 
 func setup(screen: Variant, session: Variant, board: Variant) -> void:
@@ -32,24 +32,25 @@ func update_session(session: Variant) -> void:
 
 func _build_ui() -> void:
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.12, 0.14, 0.18, 0.92)
-	sb.set_corner_radius_all(14)
-	sb.set_content_margin_all(8)
+	sb.bg_color = Color(0.12, 0.14, 0.18, 0.95)
+	sb.set_corner_radius_all(16)
+	sb.set_content_margin_all(10)
 	add_theme_stylebox_override("panel", sb)
 
 	var root_hbox := HBoxContainer.new()
-	root_hbox.add_theme_constant_override("separation", 8)
+	root_hbox.add_theme_constant_override("separation", 10)
 	root_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	add_child(root_hbox)
 
 	_toggle_btn = Button.new()
 	_toggle_btn.text = "🛠 Cheats"
-	_toggle_btn.custom_minimum_size = Vector2(100, 36)
+	_toggle_btn.custom_minimum_size = Vector2(140, 54)
+	_toggle_btn.add_theme_font_size_override("font_size", 26)
 	_toggle_btn.pressed.connect(_on_toggle_pressed)
 	root_hbox.add_child(_toggle_btn)
 
 	_tools_row = HBoxContainer.new()
-	_tools_row.add_theme_constant_override("separation", 8)
+	_tools_row.add_theme_constant_override("separation", 10)
 	_tools_row.visible = false
 	root_hbox.add_child(_tools_row)
 
@@ -68,7 +69,8 @@ func _build_ui() -> void:
 func _create_btn(text: String, action: Callable) -> Button:
 	var btn := Button.new()
 	btn.text = text
-	btn.custom_minimum_size = Vector2(90, 36)
+	btn.custom_minimum_size = Vector2(140, 54)
+	btn.add_theme_font_size_override("font_size", 24)
 	btn.pressed.connect(action)
 	return btn
 
