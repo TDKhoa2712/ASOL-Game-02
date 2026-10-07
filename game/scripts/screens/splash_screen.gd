@@ -6,8 +6,8 @@ signal finished()
 const DARK_PURPLE := Color("#3B2779")
 const MID_PURPLE := Color("#523D94")
 const YELLOW := Color("#FEB801")
-const BG_COLOR := Color("#0D0B1A")
-const TEXT_COLOR := Color("#F0EDF5")
+const BG_COLOR := Color("#FFFDF5")
+const TEXT_COLOR := Color("#3B2779")
 
 const SVG_SIZE := 1254.0
 const ANIM_DURATION := 3.2
@@ -67,7 +67,7 @@ func _build_scene() -> void:
 
 	var yellow_indices := [1, 2, 6]
 	for idx in yellow_indices:
-		var overlay := _make_polygon(PIECES[idx].pts, Color.WHITE)
+		var overlay := _make_polygon(PIECES[idx].pts, Color(1, 1, 1, 0.9))
 		var c := _centroid(PIECES[idx].pts)
 		overlay.position = c
 		overlay.offset = -c
@@ -194,7 +194,7 @@ func _play_animation() -> void:
 
 class GlowDraw extends Node2D:
 	var radius := 220.0
-	var color := Color(0.231, 0.153, 0.475, 0.12)
+	var color := Color(0.996, 0.722, 0.004, 0.08)
 	func _draw() -> void:
 		var steps := 24
 		for i in range(steps, 0, -1):
