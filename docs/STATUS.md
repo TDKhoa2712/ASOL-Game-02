@@ -2,6 +2,15 @@
 
 > Cập nhật: 2026-10-07
 
+## Chế độ Endless Levels (Hoàn thành Phase 1–4, 2026-10-07)
+
+- Hoàn thành đầy đủ 4 phase của kế hoạch Endless Levels (`docs/superpowers/plans/2026-10-07-endless-levels-plan.md`):
+  - **Phase 1 (Bank Conversion & Pace):** Mở rộng `tools/convert_extracted_bank.py` sang `BANK_REGISTRY` với 9 bank types và 31 file bank, sinh 100% file `.pace.json` sidecars, mở rộng `BankReader` hỗ trợ Variant B (Flat bank) và `FlatBankCache`. Tổng cộng 36.573 levels sẵn sàng offline.
+  - **Phase 2 (Core Selection Pipeline):** Kiến trúc 4-tier selection: Milestone (SP), Super Hard, DDA SingleRegion support, Main Pool relaxation (7 phase). Hệ thống con trỏ BankCursor, MainCursor, SuperHardCursor; PoolRegistry, PoolBuilder, PoolPicker; SettlementHandler và LevelSelector.
+  - **Phase 3 (Integration & UI):** Tách `EndlessRuntime` độc lập ($\le 300$ dòng), tích hợp nâng cấp ProgressManager Schema v3 (lưu khối `"endless"` không phá vỡ dữ liệu Campaign cũ), tích hợp Title Screen (nút Campaign có subtitle `1->30`, nút Endless hiển thị `Level %d`), tích hợp điều hướng AppShell và NavController cho 2 chế độ.
+  - **Phase 4 (QA & Gate):** Viết bộ test `test_endless_qa.gd` (kiểm tra 100 consecutive selects, feature toggles bật/tắt từng tier, DDA win/loss streaks), tool báo cáo độ phủ `tools/endless_coverage_report.py`.
+- **Kiểm chứng Full Gate:** 100% tests PASS (65/65 checks, thời gian ~103s). Clean-room check: 0 vi phạm tên thương mại/reference. Zero imports từ `extracted_reusable`. Mọi file mã nguồn $\le 300$ dòng.
+
 ## Chuyển đổi 100% bank sizes 7–12 và mở rộng phạm vi N=4–12 (RST-020)
 
 - Đã nâng cấp tools/convert_extracted_bank.py áp dụng fallback logic trace cho các bài kỹ thuật nâng cao (S4–S7) và bộ lọc luật Candy Rules độc lập.
