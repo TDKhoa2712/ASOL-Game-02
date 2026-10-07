@@ -16,6 +16,8 @@ const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.wav"
 
+const SplashScreen = preload("res://scripts/screens/splash_screen.gd")
+
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
 	"puzzle": "res://scenes/puzzle.tscn",
@@ -94,7 +96,20 @@ func _ready() -> void:
 		screen_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		add_child(screen_host)
 
-	_swap_screen("", nav.current_name())
+	_show_splash()
+
+func _show_splash() -> void:
+	if DisplayServer.get_name() == "headless":
+		_swap_screen("", nav.current_name())
+		return
+	var splash := SplashScreen.new()
+	splash.name = "SplashOverlay"
+	splash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(splash)
+	splash.finished.connect(func():
+		splash.queue_free()
+		_swap_screen("", nav.current_name())
+	)
 
 func _swap_screen(from_name: String, to_name: String) -> void:
 	if from_name != "":
