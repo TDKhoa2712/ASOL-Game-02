@@ -2,6 +2,12 @@
 
 > Cập nhật: 2026-10-07
 
+## Hiệu chỉnh BGM và cue mở Settings (nhánh `feat/core-game-features`, 2026-10-07)
+
+- BGM WAV 75 giây có dữ liệu âm thanh hợp lệ nhưng lời gọi phát ngay trong `AppShell._ready()` không bắt đầu playback. Chuyển lệnh phát sang deferred khi node đã vào cây; test tích hợp nay xác nhận BGM đang phát sau boot, kể cả trong headless.
+- Cue `settings-whoosh.ogg` có khoảng 230 ms đầu gần như im lặng. Đã cắt đoạn đầu, thêm fade-in 5 ms để tránh click; thời lượng còn khoảng 745 ms, vẫn giữ stereo và dùng chung resource với SFX Tuner.
+- TDD RED→GREEN tại `test_integration.gd` và `test_sfx_player_procedural.gd`; `test_campaign_selector.gd` chờ AudioServer nhả BGM trước khi thoát test. Clean-room/import tham chiếu: 0 match. Full gate PASS tại `scratch/verification/20261007T074145.459159Z.txt` trên working tree hiện tại. Chưa QA nghe trên loa/tai nghe hoặc thiết bị đích.
+
 ## Nâng cấp Chế độ Debug & Chiến dịch 100 Levels (nhánh `feat/debug-and-campaign-100`, 2026-10-07)
 
 - **Debug Mode Enhancements:**

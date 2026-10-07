@@ -14,6 +14,7 @@ const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const GameFeatures = preload("res://scripts/core/game_features.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.wav"
 
 const SCENE_MAP := {
@@ -72,7 +73,10 @@ func _ready() -> void:
 	if endless_runtime != null and not endless_runtime.save_failed.is_connected(_on_save_failed):
 		endless_runtime.save_failed.connect(_on_save_failed)
 
-	if runtime.playlist_order().is_empty():
+	if not GameFeatures.is_campaign_enabled() and GameFeatures.is_endless_enabled():
+		_mode = "endless"
+
+	if GameFeatures.is_campaign_enabled() and runtime.playlist_order().is_empty():
 		var boot_res := runtime.boot()
 		if not boot_res.get("ok", false):
 			_on_boot_error(str(boot_res.get("error", "Boot failed")))
@@ -82,8 +86,8 @@ func _ready() -> void:
 		nav = NavController.new()
 		nav.screen_changed.connect(_swap_screen)
 
-	if ResourceLoader.exists(BGM_TRACK) and DisplayServer.get_name() != "headless":
-		bgm.play_track(BGM_TRACK)
+	if ResourceLoader.exists(BGM_TRACK):
+		bgm.call_deferred("play_track", BGM_TRACK)
 
 	if screen_host == null:
 		screen_host = Control.new()

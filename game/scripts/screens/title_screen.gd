@@ -9,11 +9,13 @@ signal debug_level_selected(level_data: Dictionary, label: String)
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
+const GameFeatures = preload("res://scripts/core/game_features.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
 
 var title_label: Label
+var campaign_box: VBoxContainer
 var play_btn: Button
 var campaign_subtitle: Label
 var endless_btn: Button
@@ -106,7 +108,7 @@ func _ensure_nodes() -> void:
 	frame.add_child(actions)
 
 	# 1. Campaign button container
-	var campaign_box := VBoxContainer.new()
+	campaign_box = VBoxContainer.new()
 	campaign_box.name = "CampaignBox"
 	campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	campaign_box.add_theme_constant_override("separation", 4)
@@ -224,22 +226,35 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 func _update_ui() -> void:
-	if runtime != null:
+	var camp_on: bool = GameFeatures.is_campaign_enabled()
+	var endless_on: bool = GameFeatures.is_endless_enabled()
+	if campaign_box != null: campaign_box.visible = camp_on
+	if endless_btn != null: endless_btn.visible = endless_on
+	if camp_on and runtime != null:
 		var label: String = runtime.current_level_label()
 		if play_btn != null:
-			if runtime.is_campaign_done():
-				play_btn.text = tr("title.replay")
-			else:
-				play_btn.text = tr("title.play") % label.trim_prefix("L")
+			if runtime.is_campaign_done(): play_btn.text = tr("title.replay")
+			else: play_btn.text = tr("title.play") % label.trim_prefix("L")
 		if campaign_subtitle != null and runtime.has_method("playlist_order"):
 			var order: Array = runtime.playlist_order()
-			if not order.is_empty():
-				campaign_subtitle.text = "1->%d" % order.size()
-	if endless_btn != null:
+			if not order.is_empty(): campaign_subtitle.text = "1->%d" % order.size()
+	if endless_on and endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:
 			endless_num = endless_runtime.progress.get_level_num()
 		endless_btn.text = "Level %d" % endless_num
+		if not camp_on: _style_primary_endless()
+
+func _style_primary_endless() -> void:
+	if endless_btn == null: return
+	endless_btn.custom_minimum_size = Vector2(560, 100)
+	endless_btn.add_theme_font_size_override("font_size", 40)
+	var style := StyleBoxFlat.new()
+	style.bg_color = Palette.PLAY_BUTTON; style.set_corner_radius_all(999)
+	style.shadow_color = Palette.PLAY_GLOW; style.shadow_size = 12; style.shadow_offset = Vector2(0, 4)
+	style.set_content_margin_all(16)
+	for s in ["normal", "hover", "pressed", "focus"]: endless_btn.add_theme_stylebox_override(s, style)
+	endless_btn.add_theme_color_override("font_color", Color.WHITE)
 
 func _on_play() -> void:
 	play_pressed.emit()

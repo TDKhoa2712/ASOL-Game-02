@@ -24,8 +24,8 @@ func _run() -> void:
 			_check(voice.playing, "effect %d starts playback" % effect)
 			if effect == SfxCatalog.Effect.SETTINGS_OPEN:
 				_check(voice.stream is AudioStreamOggVorbis, "settings opens with source OGG")
-				_check(voice.stream.get_length() > 0.9 and voice.stream.get_length() < 1.1,
-					"settings keeps source audio duration")
+				_check(voice.stream.get_length() > 0.70 and voice.stream.get_length() < 0.82,
+					"settings cue starts without the quiet lead-in")
 			else:
 				_check(voice.stream is AudioStreamWAV and voice.stream.data.size() > 0,
 					"effect %d has PCM" % effect)
