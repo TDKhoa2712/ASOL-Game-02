@@ -25,6 +25,8 @@ func _init() -> void:
 	_test_transform_preserves_rules()
 	_test_region_painter_colors()
 	_test_lab_distance()
+	_test_extended_banks()
+	_test_flat_banks()
 	if _fails.is_empty():
 		print("CONTENT_PASS")
 		quit(0)
@@ -162,7 +164,45 @@ func _test_lab_distance() -> void:
 	var d2 := RegionPainter.lab_distance(Color.RED, Color.RED)
 	_assert(d2 < 0.01, "same color zero distance")
 
+func _test_extended_banks() -> void:
+	var reader := BankReader.new()
+	var lkstyle_7_2 := reader.get_lkstyle_levels(7, 2)
+	_assert(not lkstyle_7_2.is_empty(), "lkstyle 7x7 rank 2 has levels")
+
+	var gc_6_1 := reader.get_gc_levels(6, 1)
+	_assert(not gc_6_1.is_empty(), "gc 6x6 rank 1 has levels")
+
+	var onefish_8_3 := reader.get_onefish_levels(8, 3)
+	_assert(not onefish_8_3.is_empty(), "onefish 8x8 rank 3 has levels")
+
+
+func _test_flat_banks() -> void:
+	var reader := BankReader.new()
+
+	var sp_0 := reader.get_sp_level(0)
+	_assert(not sp_0.is_empty(), "sp level 0 exists")
+	_assert(sp_0.has("regions"), "sp level 0 has regions")
+
+	var lk_0 := reader.get_lk_level(0)
+	_assert(not lk_0.is_empty(), "lk level 0 exists")
+
+	var lk_mod_8_1 := reader.get_lk_mod_levels(8, 1, false)
+	_assert(not lk_mod_8_1.is_empty(), "lk_mod 8x8 rank 1 relaxed has levels")
+
+	var sp_tt := reader.get_sp_tt_levels(1, 8, 2)
+	# category 1-6
+	_assert(sp_tt is Array, "sp_tt returns array")
+
+	var single_reg := reader.get_single_region_levels(8, 3)
+	_assert(not single_reg.is_empty(), "single_region 8x8 rank 3 has levels")
+
+
+	var super_hard := reader.get_super_hard_levels()
+	_assert(super_hard.size() == 275, "super_hard has 275 levels")
+
+
 func _sample_bank_level() -> Dictionary:
+
 	return {
 		"seed": 1,
 		"regions": ["AABB", "ABBB", "CCBB", "CCDB"],

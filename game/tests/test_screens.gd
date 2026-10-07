@@ -147,8 +147,10 @@ func _test_title_screen() -> void:
 	_assert(title.find_child("SafeArea", true, false) != null, "title safe area present")
 	_assert(title.help_btn != null and title.help_dialog != null, "home help restored")
 	_assert(title.play_btn.text == "Level 1-2", "play button shows only current level")
+	_assert(title.campaign_subtitle != null and title.campaign_subtitle.text == "1->30", "campaign subtitle shows 1->30")
+	_assert(title.endless_btn != null and title.endless_btn.text == "Level 1", "endless button shows default level 1")
 	_assert(title.find_child("LevelLabel", true, false) == null, "progress count is absent from home")
-	_assert(title.title_label.get_parent().name == "HeroBlock" and title.play_btn.get_parent().name == "ActionBlock", "home separates top branding from bottom action")
+	_assert(title.title_label.get_parent().name == "HeroBlock", "home separates top branding")
 	mock_rt.pending = true
 	title._update_ui()
 	_assert(title.play_btn.text == "Level 1-2", "resume action keeps the same level label")
@@ -157,6 +159,11 @@ func _test_title_screen() -> void:
 	title.play_pressed.connect(func(): play_box[0] = true)
 	title._on_play()
 	_assert(play_box[0], "title play_pressed emitted")
+
+	var endless_box := [false]
+	title.endless_pressed.connect(func(): endless_box[0] = true)
+	title._on_endless()
+	_assert(endless_box[0], "title endless_pressed emitted")
 
 	var opt_box := [false]
 	title.options_pressed.connect(func(): opt_box[0] = true)

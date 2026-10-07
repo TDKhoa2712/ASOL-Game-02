@@ -1,4 +1,4 @@
-﻿key,vi,en
+key,vi,en
 title.name,CanDoKu,CanDoKu
 title.play,Level %s,Level %s
 title.replay,Chơi lại chiến dịch,Replay Campaign
@@ -42,3 +42,5 @@ result.lose.home,Trang chủ,Home
 boot.error,Lỗi khởi động: %s,Boot error: %s
 boot.save_failed,Lưu dữ liệu thất bại: %s,Save failed: %s
 common.ok,OK,OK
+title.endless,Vô tận: Màn %d,Endless: Level %d
+title.campaign,Chiến dịch: Màn %s,Campaign: Level %s

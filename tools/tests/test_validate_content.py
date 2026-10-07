@@ -9,7 +9,14 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
-from validate_content import validate_bank, validate_pace_against_bank, validate_playlist, validate_file
+from validate_content import (
+    validate_bank,
+    validate_flat_bank,
+    validate_pace_against_bank,
+    validate_playlist,
+    validate_file,
+)
+
 
 
 class ValidateContentTests(unittest.TestCase):
@@ -132,6 +139,57 @@ class ValidateContentTests(unittest.TestCase):
         errors = validate_playlist(bad_playlist, banks={4: self.valid_bank})
         self.assertTrue(any("index" in e.lower() for e in errors))
 
+    def test_valid_flat_bank(self):
+        flat_bank = {
+            "bankVersion": 1,
+            "type": "sp",
+            "levels": [
+                dict(self.valid_level, size=4, rank=1, id="SP_01", shapeCategory=2)
+            ]
+        }
+        errors = validate_flat_bank(flat_bank)
+        self.assertEqual(errors, [])
 
-if __name__ == "__main__":
-    unittest.main()
+    def test_flat_bank_invalid_type(self):
+        flat_bank = {
+            "bankVersion": 1,
+            "type": "",
+            "levels": []
+        }
+        errors = validate_flat_bank(flat_bank)
+        self.assertTrue(any("type" in e for e in errors))
+
+    def test_flat_pace_against_bank(self):
+        flat_bank = {
+            "bankVersion": 1,
+            "type": "sp",
+            "levels": [
+                dict(self.valid_level, size=4, rank=1)
+            ]
+        }
+        flat_pace = {
+            "bankVersion": 1,
+            "type": "sp",
+            "levels": [
+                {"rSeq": [1, 1, 1, 1], "hintCosts": [1, 1, 1, 1]}
+            ]
+        }
+        errors = validate_pace_against_bank(flat_pace, flat_bank)
+        self.assertEqual(errors, [])
+
+    def test_flat_pace_mismatched_count(self):
+        flat_bank = {
+            "bankVersion": 1,
+            "type": "sp",
+            "levels": [
+                dict(self.valid_level, size=4, rank=1)
+            ]
+        }
+        flat_pace = {
+            "bankVersion": 1,
+            "type": "sp",
+            "levels": []
+        }
+        errors = validate_pace_against_bank(flat_pace, flat_bank)
+        self.assertTrue(any("count" in e for e in errors))
+

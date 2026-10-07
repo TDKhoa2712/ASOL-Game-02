@@ -1,0 +1,2818 @@
+{
+  "bankVersion": 1,
+  "type": "sp",
+  "levels": [
+    {
+      "seed": 0,
+      "regions": [
+        "AAGGGGGGG",
+        "DAGGGGGGG",
+        "DAGBBBEFG",
+        "DAGGGBEFF",
+        "AAABBBCCC",
+        "HHHBIIIIC",
+        "HHHBBBICC",
+        "HHHHHHHHC",
+        "HHHHHHCCC"
+      ],
+      "solution": [
+        4,
+        0,
+        6,
+        8,
+        2,
+        5,
+        3,
+        1,
+        7
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        5,
+        4
+      ],
+      "rating": 7069.23,
+      "pidHash": "27c280e0",
+      "logicTrace": [],
+      "colorMap": [
+        11,
+        0,
+        9,
+        8,
+        5,
+        3,
+        6,
+        2,
+        4
+      ],
+      "pattern": "123",
+      "spRegion": [
+        1,
+        0,
+        2
+      ],
+      "id": 1,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AEAGGHHHH",
+        "AEAGGHHHH",
+        "AAABBBHHH",
+        "IIABHHHHH",
+        "IIABBBCCC",
+        "IIIIIBCFF",
+        "IIIBBBCCC",
+        "IIIIIICDC",
+        "IIIIIICCC"
+      ],
+      "solution": [
+        1,
+        3,
+        0,
+        4,
+        6,
+        8,
+        5,
+        7,
+        2
+      ],
+      "givens": [],
+      "steps": 15,
+      "profile": [
+        9,
+        5,
+        1
+      ],
+      "rating": 7064,
+      "pidHash": "71a31c4c",
+      "logicTrace": [],
+      "colorMap": [
+        11,
+        0,
+        9,
+        4,
+        3,
+        1,
+        6,
+        5,
+        2
+      ],
+      "pattern": "456",
+      "spRegion": [
+        0,
+        1,
+        2
+      ],
+      "id": 2,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "EEEEEEEEE",
+        "HHHHHEEEE",
+        "HHHAHHBEG",
+        "HHHAHBBBG",
+        "HAAAHHBGG",
+        "DACAHDBGG",
+        "DAAADDBBG",
+        "DDDDDDDII",
+        "DDDDDDFII"
+      ],
+      "solution": [
+        4,
+        1,
+        3,
+        5,
+        7,
+        2,
+        0,
+        8,
+        6
+      ],
+      "givens": [],
+      "steps": 11,
+      "profile": [
+        9,
+        0,
+        2
+      ],
+      "rating": 7032,
+      "pidHash": "d34b9d01",
+      "logicTrace": [],
+      "colorMap": [
+        3,
+        0,
+        8,
+        9,
+        6,
+        7,
+        1,
+        11,
+        5
+      ],
+      "pattern": "dt",
+      "id": 3,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "EEIIIDDDF",
+        "EIIIIDDDF",
+        "HHHADDBFF",
+        "HHHADBBBF",
+        "HAAADDBFF",
+        "HACADGBFF",
+        "HAAAGGBBF",
+        "HGGGGGGFF",
+        "HGGGGGGFF"
+      ],
+      "solution": [
+        1,
+        4,
+        8,
+        3,
+        5,
+        2,
+        7,
+        0,
+        6
+      ],
+      "givens": [],
+      "steps": 19,
+      "profile": [
+        9,
+        5,
+        5
+      ],
+      "rating": 15386,
+      "pidHash": "cd17cc72",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        3,
+        8,
+        9,
+        1,
+        10,
+        11,
+        6,
+        5
+      ],
+      "pattern": "dt",
+      "id": 4,
+      "size": 9,
+      "rank": 5
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GHBBJJJJJI",
+        "HHHBBAJJII",
+        "HHBBAAJIII",
+        "HHEAAAIIII",
+        "EEEEAAIIII",
+        "CCCCAAIFII",
+        "DCCCAAFFFF",
+        "DDCCAAFFFF",
+        "DDAAAAAAFF",
+        "DDDDDDFFFF"
+      ],
+      "solution": [
+        0,
+        4,
+        6,
+        1,
+        3,
+        8,
+        2,
+        9,
+        7,
+        5
+      ],
+      "givens": [],
+      "steps": 13,
+      "profile": [
+        10,
+        1,
+        2
+      ],
+      "rating": 7065.6,
+      "pidHash": "bfe421e8",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        9,
+        6,
+        5,
+        11,
+        8,
+        10,
+        3,
+        1,
+        4
+      ],
+      "pattern": "1",
+      "spRegion": [
+        0
+      ],
+      "id": 5,
+      "size": 10,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGGEEEFH",
+        "GGGGEEFFF",
+        "GAAAAAAAF",
+        "DDDABAFFF",
+        "DDDABABBI",
+        "DDDABABBI",
+        "CDDABAABI",
+        "CCCCBBBBI",
+        "CCCCCBBII"
+      ],
+      "solution": [
+        8,
+        5,
+        0,
+        6,
+        3,
+        1,
+        4,
+        2,
+        7
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        4,
+        3
+      ],
+      "rating": 7096,
+      "pidHash": "c998e6a2",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        11,
+        6,
+        5,
+        2,
+        9,
+        10,
+        4,
+        3
+      ],
+      "pattern": "\u03c0",
+      "spRegion": [
+        0
+      ],
+      "id": 6,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AABBCCDDF",
+        "ABBCCDDFF",
+        "BBCCDDFFG",
+        "BCCDDFFGG",
+        "CCDDFFGGH",
+        "CDDFFGGHH",
+        "EEFFGGHHI",
+        "EFFGGHHII",
+        "FFGGHHIII"
+      ],
+      "solution": [
+        3,
+        0,
+        5,
+        2,
+        7,
+        4,
+        1,
+        6,
+        8
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        1,
+        7
+      ],
+      "rating": 7078.15,
+      "pidHash": "93a973e3",
+      "logicTrace": [],
+      "colorMap": [
+        4,
+        6,
+        0,
+        9,
+        11,
+        3,
+        5,
+        8,
+        1
+      ],
+      "pattern": "wave",
+      "id": 7,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGGGGF",
+        "GGGGGEF",
+        "GGGGDEF",
+        "GGGCDEF",
+        "GABCDEF",
+        "GABCDEF",
+        "AABCDEF"
+      ],
+      "solution": [
+        6,
+        0,
+        5,
+        3,
+        1,
+        4,
+        2
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        7,
+        4,
+        7
+      ],
+      "rating": 7289.78,
+      "pidHash": "f2fcaf08",
+      "logicTrace": [],
+      "colorMap": [
+        2,
+        9,
+        11,
+        6,
+        5,
+        8,
+        0
+      ],
+      "pattern": "bar",
+      "id": 8,
+      "size": 7,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AAAAACCC",
+        "ABBACDDC",
+        "ABAACCDC",
+        "AAAACCCC",
+        "AEECCGGG",
+        "EFEEGGHG",
+        "EFFEGHHG",
+        "EEEEEGGG"
+      ],
+      "solution": [
+        0,
+        2,
+        6,
+        4,
+        7,
+        1,
+        5,
+        3
+      ],
+      "givens": [],
+      "steps": 13,
+      "profile": [
+        8,
+        1,
+        4
+      ],
+      "rating": 3013.2,
+      "pidHash": "e78b52bb",
+      "logicTrace": [],
+      "colorMap": [
+        11,
+        3,
+        0,
+        6,
+        9,
+        4,
+        5,
+        8
+      ],
+      "pattern": "window",
+      "spRegion": [
+        1,
+        3,
+        5,
+        7
+      ],
+      "id": 9,
+      "size": 8,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHIIIIIGG",
+        "EIIIIICGG",
+        "EIIAAACGG",
+        "EIIACCCGG",
+        "EIIAAAGGG",
+        "DDIABAGGG",
+        "DDDAAAGGF",
+        "DDDDFFFFF",
+        "DDDDDFFFF"
+      ],
+      "solution": [
+        1,
+        5,
+        3,
+        6,
+        0,
+        4,
+        7,
+        2,
+        8
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        3,
+        4
+      ],
+      "rating": 7136,
+      "pidHash": "a3dc02c7",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        2,
+        11,
+        3,
+        6,
+        5,
+        1,
+        9
+      ],
+      "pattern": "6",
+      "id": 10,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "IEEEEECCC",
+        "IIEEEECCC",
+        "IEEAAACCC",
+        "IGEABACCC",
+        "GGGAAACCC",
+        "GGGGGACCC",
+        "DGGAAAHCC",
+        "DDDDHHHHH",
+        "DDDDDHHFF"
+      ],
+      "solution": [
+        3,
+        1,
+        7,
+        4,
+        2,
+        5,
+        0,
+        6,
+        8
+      ],
+      "givens": [],
+      "steps": 13,
+      "profile": [
+        9,
+        1,
+        3
+      ],
+      "rating": 7034.67,
+      "pidHash": "b1d63db4",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        5,
+        4,
+        9,
+        10,
+        11,
+        6,
+        3
+      ],
+      "pattern": "9",
+      "id": 11,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HCCDDDDGG",
+        "HCDDDDDGG",
+        "HFFAAAGGG",
+        "FFFABAGGG",
+        "EEEABAGGG",
+        "EEEABAIIG",
+        "EEEAAAIII",
+        "EEEIIIIII",
+        "EEEEIIIII"
+      ],
+      "solution": [
+        1,
+        6,
+        0,
+        2,
+        4,
+        8,
+        5,
+        7,
+        3
+      ],
+      "givens": [],
+      "steps": 14,
+      "profile": [
+        9,
+        4,
+        1
+      ],
+      "rating": 3002.67,
+      "pidHash": "c0dc3302",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        3,
+        11,
+        5,
+        9,
+        6,
+        4,
+        1
+      ],
+      "pattern": "0",
+      "id": 12,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BBBBCCCCI",
+        "HEFFCCCII",
+        "EEFAAACII",
+        "EEFGGACII",
+        "EEFAAACCI",
+        "DDFFFACCI",
+        "DDDAAACCI",
+        "DDDDDDCII",
+        "DDDDDDDDI"
+      ],
+      "solution": [
+        3,
+        0,
+        2,
+        4,
+        1,
+        7,
+        5,
+        8,
+        6
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        6,
+        3
+      ],
+      "rating": 7065.78,
+      "pidHash": "557aaed6",
+      "logicTrace": [],
+      "colorMap": [
+        2,
+        5,
+        9,
+        11,
+        6,
+        0,
+        4,
+        3,
+        10
+      ],
+      "pattern": "3",
+      "id": 13,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "IIEEEEEEE",
+        "IIIEEEEEG",
+        "IIIAAACGG",
+        "IIIACCCCG",
+        "IIIAAACCC",
+        "IIIIIACCF",
+        "IHHAAACFF",
+        "HHHBBFFFF",
+        "HHBBBBDDD"
+      ],
+      "solution": [
+        2,
+        0,
+        7,
+        5,
+        3,
+        8,
+        1,
+        4,
+        6
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        6,
+        1
+      ],
+      "rating": 7064,
+      "pidHash": "38bccc46",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        9,
+        11,
+        4,
+        6,
+        2,
+        3,
+        5,
+        1
+      ],
+      "pattern": "5",
+      "id": 14,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "EEDDDDGGG",
+        "EDDDDDGGG",
+        "EDDAAAGGG",
+        "EEDCCAGGG",
+        "EEIAAAGGG",
+        "EIIAGGGGG",
+        "HHIAAAGGG",
+        "HHBBBBBGF",
+        "HHBBBBFFF"
+      ],
+      "solution": [
+        1,
+        4,
+        7,
+        3,
+        5,
+        2,
+        0,
+        6,
+        8
+      ],
+      "givens": [],
+      "steps": 24,
+      "profile": [
+        9,
+        4,
+        11
+      ],
+      "rating": 7186.53,
+      "pidHash": "2e14059e",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        9,
+        6,
+        11,
+        3,
+        1,
+        5,
+        4,
+        2
+      ],
+      "pattern": "2",
+      "id": 15,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GFFFFCIII",
+        "GFFFFCCDD",
+        "GGFAFADDD",
+        "GGGAFADDE",
+        "GGGAAAEEE",
+        "GHHHHAEEE",
+        "HHHHHABBE",
+        "HHHHHBBBB",
+        "HHHHBBBBB"
+      ],
+      "solution": [
+        7,
+        5,
+        2,
+        6,
+        3,
+        0,
+        8,
+        1,
+        4
+      ],
+      "givens": [],
+      "steps": 14,
+      "profile": [
+        9,
+        2,
+        3
+      ],
+      "rating": 3005.72,
+      "pidHash": "b0ef0cdc",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        6,
+        9,
+        11,
+        5,
+        2,
+        4,
+        1,
+        3
+      ],
+      "pattern": "4",
+      "id": 16,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BBBBBBDDD",
+        "BBBBBBBDD",
+        "FFFAAABDD",
+        "FFFFFABDD",
+        "HFFFFABDI",
+        "HCCCFAIII",
+        "HCCCCAIII",
+        "HHCCEEIII",
+        "HHHGGGIII"
+      ],
+      "solution": [
+        8,
+        6,
+        4,
+        2,
+        0,
+        7,
+        1,
+        5,
+        3
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        5,
+        4
+      ],
+      "rating": 7044.53,
+      "pidHash": "5be925ad",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        6,
+        9,
+        10,
+        2,
+        5,
+        3,
+        1,
+        11
+      ],
+      "pattern": "7",
+      "id": 17,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "DDDIIIEEG",
+        "DDDDAIIGG",
+        "DDDAAAICG",
+        "DDDABACCC",
+        "HHDAAACCC",
+        "HHHAFACCC",
+        "HHHAFACCC",
+        "FFFFFFCCC",
+        "FFFFFFFCC"
+      ],
+      "solution": [
+        7,
+        5,
+        8,
+        4,
+        2,
+        0,
+        3,
+        6,
+        1
+      ],
+      "givens": [],
+      "steps": 13,
+      "profile": [
+        9,
+        1,
+        3
+      ],
+      "rating": 3007.87,
+      "pidHash": "51154236",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        11,
+        5,
+        4,
+        6,
+        3,
+        1,
+        9
+      ],
+      "pattern": "A",
+      "id": 18,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HIIIIIDDD",
+        "HHIIIDDDG",
+        "HHHAAADGG",
+        "HHHAEEFFG",
+        "HHHAEEEFC",
+        "HHHAEEECC",
+        "HHBAAABCC",
+        "HBBBBBBBC",
+        "HHBBBBBBC"
+      ],
+      "solution": [
+        1,
+        5,
+        8,
+        6,
+        4,
+        7,
+        3,
+        0,
+        2
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        4,
+        4
+      ],
+      "rating": 7134.29,
+      "pidHash": "4f757c8b",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        9,
+        4,
+        11,
+        2,
+        3,
+        8,
+        5,
+        6
+      ],
+      "pattern": "C",
+      "id": 19,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "EEHBBBBBB",
+        "EEHHBBBBB",
+        "EHHABABGG",
+        "EHHABAGGG",
+        "FFHAAAGGG",
+        "FFFACAGGG",
+        "FFFACAGGG",
+        "IFFCCCDGG",
+        "IFFCCDDDD"
+      ],
+      "solution": [
+        1,
+        3,
+        6,
+        8,
+        5,
+        2,
+        4,
+        0,
+        7
+      ],
+      "givens": [],
+      "steps": 14,
+      "profile": [
+        9,
+        4,
+        1
+      ],
+      "rating": 3002.29,
+      "pidHash": "2ccbad4a",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        6,
+        5,
+        8,
+        3,
+        9,
+        1,
+        11,
+        4
+      ],
+      "pattern": "H",
+      "id": 20,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FFCCCHHGG",
+        "FFFCCHHGG",
+        "FFEAAAHGD",
+        "FEEEADDDD",
+        "EEEEAIIID",
+        "EEEEAIIII",
+        "EEEAAABBB",
+        "EEEEBBBBB",
+        "EEEEBBBBB"
+      ],
+      "solution": [
+        2,
+        5,
+        7,
+        0,
+        8,
+        6,
+        3,
+        1,
+        4
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        4,
+        3
+      ],
+      "rating": 7032.89,
+      "pidHash": "91f5bb19",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        6,
+        8,
+        9,
+        5,
+        3,
+        10,
+        11,
+        1
+      ],
+      "pattern": "I",
+      "id": 21,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HEEEIIIBB",
+        "HHEEIIBBB",
+        "HHFFFAGBB",
+        "HHFFDAGGG",
+        "HDDDDAGGG",
+        "HCCDAAGGG",
+        "CCCAAGGGG",
+        "CCCCCCGGG",
+        "CCCCCCCGG"
+      ],
+      "solution": [
+        1,
+        5,
+        7,
+        2,
+        4,
+        0,
+        3,
+        8,
+        6
+      ],
+      "givens": [],
+      "steps": 20,
+      "profile": [
+        9,
+        4,
+        7
+      ],
+      "rating": 7149.05,
+      "pidHash": "7711be59",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        10,
+        11,
+        2,
+        1,
+        9,
+        6,
+        3,
+        5
+      ],
+      "pattern": "J",
+      "id": 22,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "CCBBBBBBB",
+        "CCCGGBBBH",
+        "CCCADDHHH",
+        "CCCADHHHH",
+        "FFIADDHHH",
+        "IIIADHHHH",
+        "IIIAAAHHH",
+        "EEEEEEEEH",
+        "EEEEEEEEE"
+      ],
+      "solution": [
+        7,
+        3,
+        1,
+        4,
+        0,
+        2,
+        5,
+        8,
+        6
+      ],
+      "givens": [],
+      "steps": 19,
+      "profile": [
+        9,
+        6,
+        4
+      ],
+      "rating": 7088,
+      "pidHash": "7a5b670e",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        4,
+        9,
+        6,
+        8,
+        3,
+        11,
+        1,
+        5
+      ],
+      "pattern": "L",
+      "id": 23,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "IICCCCCCC",
+        "ICCCCCCCC",
+        "ICCCCCBBC",
+        "GCCACBBBB",
+        "GFFAAABBB",
+        "GFFADABBB",
+        "GGFADABBB",
+        "GGDDDHBBB",
+        "GGDDEEEEE"
+      ],
+      "solution": [
+        1,
+        8,
+        6,
+        3,
+        0,
+        4,
+        2,
+        5,
+        7
+      ],
+      "givens": [],
+      "steps": 14,
+      "profile": [
+        9,
+        2,
+        3
+      ],
+      "rating": 7043.2,
+      "pidHash": "4f40a368",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        5,
+        9,
+        11,
+        10,
+        2,
+        3,
+        6,
+        1
+      ],
+      "pattern": "n",
+      "id": 24,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FFFFFFFFI",
+        "FFFFFFFFI",
+        "DDFAAACII",
+        "DDDABACII",
+        "DDDAAACII",
+        "HHDACCCII",
+        "GHHACCCII",
+        "GGGEECCII",
+        "GGEEEEEEI"
+      ],
+      "solution": [
+        5,
+        8,
+        6,
+        4,
+        2,
+        0,
+        3,
+        1,
+        7
+      ],
+      "givens": [],
+      "steps": 21,
+      "profile": [
+        9,
+        5,
+        7
+      ],
+      "rating": 7137.62,
+      "pidHash": "b2f9d0f5",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        2,
+        9,
+        6,
+        11,
+        5,
+        8,
+        1,
+        3
+      ],
+      "pattern": "P",
+      "id": 25,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "IIEEEEEEE",
+        "IIIEEEEEG",
+        "IIIAAACGG",
+        "IIIACCCCG",
+        "IIIAAACCC",
+        "IIIIIACCF",
+        "IHHAAACFF",
+        "HHHBBFFFF",
+        "HHBBBBDDD"
+      ],
+      "solution": [
+        2,
+        0,
+        7,
+        5,
+        3,
+        8,
+        1,
+        4,
+        6
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        6,
+        1
+      ],
+      "rating": 7064,
+      "pidHash": "38bccc46",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        9,
+        11,
+        4,
+        6,
+        2,
+        3,
+        5,
+        1
+      ],
+      "pattern": "S",
+      "id": 26,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "CCCBBBBBB",
+        "CCCBBBBBB",
+        "CCAAAAABB",
+        "CCCCAHHBB",
+        "CCCCADHII",
+        "CCCCADDII",
+        "CCCCADDEE",
+        "CCFFGDEEE",
+        "FFFFGGEEE"
+      ],
+      "solution": [
+        3,
+        0,
+        2,
+        6,
+        8,
+        5,
+        7,
+        4,
+        1
+      ],
+      "givens": [],
+      "steps": 19,
+      "profile": [
+        9,
+        6,
+        4
+      ],
+      "rating": 7105.52,
+      "pidHash": "ea26b071",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        11,
+        6,
+        9,
+        1,
+        10,
+        5,
+        2,
+        3
+      ],
+      "pattern": "T",
+      "id": 27,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHBBIIIIC",
+        "HHBBBIIEC",
+        "FHBABAIEC",
+        "FFBABADDC",
+        "FFGABADDD",
+        "FGGABADDD",
+        "GGGAAADDD",
+        "GGGGGGDDD",
+        "GGGGGGGDD"
+      ],
+      "solution": [
+        5,
+        7,
+        1,
+        8,
+        4,
+        0,
+        3,
+        6,
+        2
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        6,
+        2
+      ],
+      "rating": 3009.33,
+      "pidHash": "924d8f8c",
+      "logicTrace": [],
+      "colorMap": [
+        5,
+        0,
+        3,
+        1,
+        10,
+        11,
+        8,
+        6,
+        9
+      ],
+      "pattern": "U",
+      "id": 28,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHHHHBBBB",
+        "HHHHBBBBB",
+        "HHAHHBABB",
+        "HGAHHBAIB",
+        "HGAAHAAII",
+        "GGFAAAIII",
+        "FFFEACCII",
+        "FFFECCCCC",
+        "DDDDCCCCC"
+      ],
+      "solution": [
+        4,
+        8,
+        6,
+        1,
+        7,
+        2,
+        5,
+        3,
+        0
+      ],
+      "givens": [],
+      "steps": 14,
+      "profile": [
+        9,
+        4,
+        1
+      ],
+      "rating": 3001.78,
+      "pidHash": "618436b1",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        9,
+        3,
+        11,
+        6,
+        5,
+        1,
+        4
+      ],
+      "pattern": "V",
+      "id": 29,
+      "size": 9,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGGGBBBB",
+        "GGGGGGBBB",
+        "IIAGGGABB",
+        "IIAGGGABB",
+        "IIAGAGACC",
+        "FFAAAAACC",
+        "FFFEECCCC",
+        "FFEEEEDDD",
+        "FEEEEEHHD"
+      ],
+      "solution": [
+        5,
+        3,
+        0,
+        2,
+        7,
+        1,
+        4,
+        8,
+        6
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        5,
+        4
+      ],
+      "rating": 7074.93,
+      "pidHash": "a460927c",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        6,
+        11,
+        3,
+        9,
+        5,
+        1,
+        4,
+        8
+      ],
+      "pattern": "W",
+      "id": 30,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHHHCCCEE",
+        "HHHHCCCCE",
+        "HHHACACCD",
+        "IHHAAABCD",
+        "IGHHABBBD",
+        "IIIHABFFD",
+        "IIIHAFFFF",
+        "IIIFFFFFF",
+        "IIIFFFFFF"
+      ],
+      "solution": [
+        7,
+        5,
+        2,
+        6,
+        1,
+        8,
+        4,
+        0,
+        3
+      ],
+      "givens": [],
+      "steps": 13,
+      "profile": [
+        9,
+        1,
+        3
+      ],
+      "rating": 7008.53,
+      "pidHash": "17bcbba9",
+      "logicTrace": [],
+      "colorMap": [
+        5,
+        8,
+        0,
+        4,
+        6,
+        1,
+        11,
+        9,
+        3
+      ],
+      "pattern": "Y",
+      "id": 31,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGFFFFDD",
+        "GGGFFFDDD",
+        "GAAAFBBBD",
+        "GEEAFBCBD",
+        "EEEAFBCBD",
+        "EEEAFBCBI",
+        "EEEAHBBBI",
+        "EEEEHHHHH",
+        "EEEEHHHHH"
+      ],
+      "solution": [
+        3,
+        7,
+        2,
+        0,
+        6,
+        8,
+        5,
+        1,
+        4
+      ],
+      "givens": [],
+      "steps": 19,
+      "profile": [
+        9,
+        7,
+        3
+      ],
+      "rating": 7072,
+      "pidHash": "f693edc1",
+      "logicTrace": [],
+      "colorMap": [
+        3,
+        0,
+        2,
+        5,
+        8,
+        9,
+        1,
+        11,
+        6
+      ],
+      "pattern": "70",
+      "spRegion": [
+        0,
+        1
+      ],
+      "id": 32,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FIIIHHHHH",
+        "FFIIHHHHH",
+        "FAAAHBBBE",
+        "FADAHBCBE",
+        "GAAAHBCBE",
+        "GGGAHBCBE",
+        "GAAAGBBBE",
+        "GGGGGEEEE",
+        "GGGGEEEEE"
+      ],
+      "solution": [
+        1,
+        5,
+        0,
+        2,
+        6,
+        3,
+        7,
+        4,
+        8
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        4,
+        4
+      ],
+      "rating": 7074.67,
+      "pidHash": "67670732",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        3,
+        8,
+        2,
+        10,
+        5,
+        9,
+        11,
+        6
+      ],
+      "pattern": "90",
+      "spRegion": [
+        0,
+        1
+      ],
+      "id": 33,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGGGGEEE",
+        "GGGGGIIII",
+        "GAAAGBBBI",
+        "HAGGGBCBI",
+        "HAAAFBCBI",
+        "HADAFBCBF",
+        "HAAAFBBBF",
+        "HHHHFFFFF",
+        "HHHHHFFFF"
+      ],
+      "solution": [
+        8,
+        5,
+        1,
+        3,
+        6,
+        2,
+        7,
+        4,
+        0
+      ],
+      "givens": [],
+      "steps": 15,
+      "profile": [
+        9,
+        4,
+        2
+      ],
+      "rating": 7069.33,
+      "pidHash": "a6326f2a",
+      "logicTrace": [],
+      "colorMap": [
+        11,
+        5,
+        8,
+        3,
+        10,
+        9,
+        0,
+        4,
+        2
+      ],
+      "pattern": "60",
+      "spRegion": [
+        0,
+        1
+      ],
+      "id": 34,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GGGGGFFFF",
+        "GGGGGHHHH",
+        "GAAAGBBBH",
+        "DDDAEBCBH",
+        "DDDAEBBBH",
+        "DDDAEEEBI",
+        "DDDAEBBBI",
+        "DDDIIIIII",
+        "DDDDIIIII"
+      ],
+      "solution": [
+        5,
+        0,
+        2,
+        6,
+        8,
+        4,
+        7,
+        3,
+        1
+      ],
+      "givens": [],
+      "steps": 16,
+      "profile": [
+        9,
+        4,
+        3
+      ],
+      "rating": 7035.74,
+      "pidHash": "ed59ffc0",
+      "logicTrace": [],
+      "colorMap": [
+        6,
+        9,
+        3,
+        1,
+        11,
+        5,
+        0,
+        2,
+        4
+      ],
+      "pattern": "79",
+      "id": 35,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FFFEEEEEE",
+        "FFDDDEEEE",
+        "GAAADBBBE",
+        "GGGADBCBE",
+        "GAAADBCBE",
+        "HHIADBCBE",
+        "HAAADBBBE",
+        "HHHHHHHHE",
+        "HHHHHHHHE"
+      ],
+      "solution": [
+        1,
+        4,
+        0,
+        3,
+        6,
+        2,
+        7,
+        5,
+        8
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        5,
+        4
+      ],
+      "rating": 7037.33,
+      "pidHash": "9d88f867",
+      "logicTrace": [],
+      "colorMap": [
+        9,
+        6,
+        4,
+        11,
+        5,
+        3,
+        2,
+        0,
+        1
+      ],
+      "pattern": "30",
+      "spRegion": [
+        0,
+        1
+      ],
+      "id": 36,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHEEEGGDD",
+        "HEEEGGGGG",
+        "HAAAGBBBG",
+        "FAGGGBCBG",
+        "FAAAGBCBG",
+        "FFFAGBCBG",
+        "IAAAIBBBG",
+        "IIIIIIIIG",
+        "IIIIIIIIG"
+      ],
+      "solution": [
+        7,
+        2,
+        0,
+        6,
+        3,
+        1,
+        5,
+        8,
+        4
+      ],
+      "givens": [],
+      "steps": 19,
+      "profile": [
+        9,
+        7,
+        3
+      ],
+      "rating": 7098,
+      "pidHash": "348a667c",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        3,
+        8,
+        4,
+        5,
+        6,
+        9,
+        1,
+        11
+      ],
+      "pattern": "50",
+      "spRegion": [
+        0,
+        1
+      ],
+      "id": 37,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHHHGGGGG",
+        "HHHHHGGGG",
+        "HAAAFBBBG",
+        "IDDAFBCBG",
+        "IAAAFBCBG",
+        "IAEEFBCBG",
+        "IAAAFBBBF",
+        "IFFFFFFFF",
+        "IFFFFFFFF"
+      ],
+      "solution": [
+        8,
+        4,
+        7,
+        2,
+        6,
+        3,
+        1,
+        5,
+        0
+      ],
+      "givens": [],
+      "steps": 18,
+      "profile": [
+        9,
+        4,
+        5
+      ],
+      "rating": 7100.53,
+      "pidHash": "14445fad",
+      "logicTrace": [],
+      "colorMap": [
+        9,
+        6,
+        3,
+        4,
+        1,
+        0,
+        5,
+        11,
+        2
+      ],
+      "pattern": "20",
+      "id": 38,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "DDDDHHHHH",
+        "DDDHHHHHH",
+        "DAAAIBBBH",
+        "DDDAIBCBH",
+        "DAAAIBBBH",
+        "DDDAIIIBE",
+        "DAAAIBBBE",
+        "GGGGGEEEE",
+        "GGGGGFFFF"
+      ],
+      "solution": [
+        0,
+        3,
+        1,
+        6,
+        4,
+        8,
+        5,
+        2,
+        7
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        4,
+        4
+      ],
+      "rating": 7077.45,
+      "pidHash": "8505fd0f",
+      "logicTrace": [],
+      "colorMap": [
+        9,
+        8,
+        11,
+        10,
+        5,
+        6,
+        0,
+        1,
+        4
+      ],
+      "pattern": "39",
+      "id": 39,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FFFFIIIHH",
+        "FFFFEEIHH",
+        "FAAAEBBBD",
+        "FAEEEBDDD",
+        "FAAAEBBBD",
+        "FFFAEBCBD",
+        "FAAAEBBBG",
+        "FFGGGGGGG",
+        "FGGGGGGGG"
+      ],
+      "solution": [
+        4,
+        7,
+        5,
+        2,
+        8,
+        6,
+        1,
+        3,
+        0
+      ],
+      "givens": [],
+      "steps": 17,
+      "profile": [
+        9,
+        6,
+        2
+      ],
+      "rating": 7130.67,
+      "pidHash": "30425375",
+      "logicTrace": [],
+      "colorMap": [
+        10,
+        0,
+        8,
+        6,
+        9,
+        3,
+        11,
+        1,
+        5
+      ],
+      "pattern": "56",
+      "id": 40,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "HHHEEEDDD",
+        "HHEEEDDDD",
+        "FAAAEBBBD",
+        "FFFAIIIBC",
+        "FFFAIBBBC",
+        "FFFAIBCCC",
+        "FFFAGBBBG",
+        "FFFGGGGGG",
+        "FFFGGGGGG"
+      ],
+      "solution": [
+        0,
+        2,
+        8,
+        6,
+        3,
+        7,
+        5,
+        1,
+        4
+      ],
+      "givens": [],
+      "steps": 21,
+      "profile": [
+        9,
+        4,
+        8
+      ],
+      "rating": 7105.07,
+      "pidHash": "f1b57f2b",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        1,
+        3,
+        10,
+        9,
+        11,
+        8,
+        2,
+        5
+      ],
+      "pattern": "72",
+      "id": 41,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "FCDDDDDDD",
+        "FCDDDDDDD",
+        "FCCAAADDD",
+        "FCCABADEE",
+        "FCCABAEEE",
+        "FCCAAAEEE",
+        "FCCCGAIII",
+        "FCCCGGIII",
+        "FCCGGGHHH"
+      ],
+      "solution": [
+        2,
+        0,
+        3,
+        1,
+        4,
+        6,
+        8,
+        5,
+        7
+      ],
+      "givens": [],
+      "steps": 20,
+      "profile": [
+        9,
+        7,
+        4
+      ],
+      "rating": 7132,
+      "pidHash": "b654a597",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        8,
+        9,
+        5,
+        1,
+        4,
+        11,
+        3,
+        6
+      ],
+      "pattern": "Q",
+      "id": 42,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BBAAAAAAA",
+        "BBBBBBBBB",
+        "BGGGDCCCB",
+        "BBGDDCECB",
+        "BBGDDCECB",
+        "BBGFDCCCB",
+        "BGGGDHHCC",
+        "BBBBBBHHH",
+        "BIIIIBBHH"
+      ],
+      "solution": [
+        5,
+        0,
+        7,
+        4,
+        6,
+        3,
+        1,
+        8,
+        2
+      ],
+      "givens": [],
+      "steps": 21,
+      "profile": [
+        9,
+        6,
+        6
+      ],
+      "rating": 7128,
+      "pidHash": "daff79e5",
+      "logicTrace": [],
+      "colorMap": [
+        11,
+        7,
+        2,
+        10,
+        9,
+        6,
+        1,
+        8,
+        4
+      ],
+      "pattern": "IQ",
+      "spRegion": [
+        6,
+        2
+      ],
+      "id": 43,
+      "size": 9,
+      "rank": 4
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BBAACDD",
+        "BEEACCD",
+        "BEEADDD",
+        "EEFAGGG",
+        "FFFAGGG",
+        "FFFAGGG",
+        "FFAAAGG"
+      ],
+      "solution": [
+        1,
+        4,
+        6,
+        0,
+        2,
+        5,
+        3
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "b5f7f77e",
+      "logicTrace": [],
+      "colorMap": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        0
+      ],
+      "pattern": "digit1",
+      "spRegion": [
+        0
+      ],
+      "id": 44,
+      "size": 7,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BDAAAAEE",
+        "BDCCCAEE",
+        "BDDCCAEE",
+        "BBAAAAEE",
+        "BFAEEEEE",
+        "FFAEEEEE",
+        "FFAAAAGG",
+        "FFHHHHGG"
+      ],
+      "solution": [
+        0,
+        4,
+        2,
+        5,
+        7,
+        1,
+        6,
+        3
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "ca03f8df",
+      "logicTrace": [],
+      "colorMap": [
+        1,
+        2,
+        3,
+        0,
+        4,
+        5,
+        6,
+        7
+      ],
+      "pattern": "digit2",
+      "spRegion": [
+        0
+      ],
+      "id": 45,
+      "size": 8,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "GFFFFFAH",
+        "GAAFFAAH",
+        "GAAAAAAH",
+        "GABEECAH",
+        "GABEECAH",
+        "GAAEAAAH",
+        "GAADDAHH",
+        "GGADDAHH"
+      ],
+      "solution": [
+        1,
+        6,
+        0,
+        2,
+        5,
+        3,
+        7,
+        4
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "f5a7e40f",
+      "logicTrace": [],
+      "colorMap": [
+        5,
+        0,
+        6,
+        1,
+        2,
+        4,
+        7,
+        3
+      ],
+      "pattern": "cat8",
+      "id": 46,
+      "size": 8,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AEEEEEEEJJ",
+        "AAEEEEEEJJ",
+        "AAAAFFJJJJ",
+        "AABBFFCCJJ",
+        "AABBFFCCJJ",
+        "AAGGFFIIJJ",
+        "AAGGHHIIJJ",
+        "AAGDDDDIJJ",
+        "AAGDDDDIIJ",
+        "AAAAAJJJJJ"
+      ],
+      "solution": [
+        1,
+        9,
+        5,
+        3,
+        7,
+        2,
+        4,
+        6,
+        8,
+        0
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "1fe8b906",
+      "logicTrace": [],
+      "colorMap": [
+        4,
+        9,
+        5,
+        1,
+        2,
+        6,
+        7,
+        3,
+        8,
+        0
+      ],
+      "pattern": "cat10",
+      "id": 47,
+      "size": 10,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BABBBBAA",
+        "AAABBAAA",
+        "AAACAAAA",
+        "AADCCEAA",
+        "AADCCEAA",
+        "AAAFFAAA",
+        "GAAFFAAH",
+        "GGAAAAHH"
+      ],
+      "solution": [
+        0,
+        6,
+        3,
+        5,
+        2,
+        4,
+        7,
+        1
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "2526b3b0",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        11,
+        9,
+        5,
+        2,
+        1,
+        6,
+        8
+      ],
+      "pattern": "catA",
+      "id": 48,
+      "size": 8,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AABBBBAB",
+        "AAABBAAA",
+        "AAACAAAA",
+        "AADCCEAA",
+        "AADCCEAA",
+        "AAAFFAAA",
+        "GAAFFAAH",
+        "GGAAAAHH"
+      ],
+      "solution": [
+        7,
+        1,
+        3,
+        5,
+        2,
+        4,
+        0,
+        6
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "ed347403",
+      "logicTrace": [],
+      "colorMap": [
+        0,
+        11,
+        9,
+        5,
+        2,
+        1,
+        6,
+        8
+      ],
+      "pattern": "catB",
+      "id": 49,
+      "size": 8,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "BBBBBBAD",
+        "AAABBAAD",
+        "CAAAAAAD",
+        "AAFEEGAA",
+        "AAFEEGAA",
+        "AAAEAAAA",
+        "AAHHHHAA",
+        "AAAHHAAA"
+      ],
+      "solution": [
+        1,
+        7,
+        0,
+        2,
+        5,
+        3,
+        6,
+        4
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "012b8afb",
+      "logicTrace": [],
+      "colorMap": [
+        6,
+        10,
+        3,
+        9,
+        7,
+        8,
+        5,
+        1
+      ],
+      "pattern": "catC",
+      "id": 50,
+      "size": 8,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "ABCB",
+        "ABBB",
+        "AADB",
+        "ADDB"
+      ],
+      "solution": [
+        2,
+        0,
+        3,
+        1
+      ],
+      "givens": [],
+      "steps": 4,
+      "profile": [
+        4,
+        0,
+        0
+      ],
+      "rating": 100,
+      "pidHash": "0d7ee4b5",
+      "logicTrace": [],
+      "colorMap": [
+        8,
+        4,
+        10,
+        1
+      ],
+      "pattern": "guide",
+      "id": 51,
+      "size": 4,
+      "rank": 1
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AABBBB",
+        "AABBBB",
+        "AAAFCC",
+        "AADCCC",
+        "DDDEEE",
+        "DDDEEE"
+      ],
+      "solution": [
+        2,
+        0,
+        3,
+        5,
+        1,
+        4
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "8c3c94bf",
+      "logicTrace": [],
+      "colorMap": [
+        2,
+        8,
+        5,
+        10,
+        7,
+        9
+      ],
+      "pattern": "\u6295\u653e\u7d20\u67501",
+      "id": 52,
+      "size": 6,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "ABDD",
+        "ABDC",
+        "AADD",
+        "AADD"
+      ],
+      "solution": [
+        1,
+        3,
+        0,
+        2
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 100,
+      "pidHash": "f60a800d",
+      "logicTrace": [],
+      "colorMap": [
+        10,
+        2,
+        7,
+        0
+      ],
+      "pattern": "\u6295\u653e\u7d20\u67502",
+      "id": 53,
+      "size": 4,
+      "rank": 1
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "ABCCCD",
+        "AACCDD",
+        "AADDDD",
+        "AAADDD",
+        "EEFFDD",
+        "FFFFFF"
+      ],
+      "solution": [
+        1,
+        3,
+        5,
+        2,
+        0,
+        4
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "7ac62807",
+      "logicTrace": [],
+      "colorMap": [
+        8,
+        2,
+        5,
+        1,
+        9,
+        0
+      ],
+      "pattern": "\u6295\u653e\u7d20\u67503",
+      "id": 54,
+      "size": 6,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AAAADBBB",
+        "AAAAACCB",
+        "AAACCCCC",
+        "AAAACCCC",
+        "AAAFEECC",
+        "GGGFEHHC",
+        "GGFFFHHC",
+        "GGGFFFHC"
+      ],
+      "solution": [
+        4,
+        7,
+        3,
+        1,
+        5,
+        0,
+        2,
+        6
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 3000,
+      "pidHash": "86f62957",
+      "logicTrace": [],
+      "colorMap": [
+        8,
+        7,
+        5,
+        1,
+        0,
+        10,
+        2,
+        9
+      ],
+      "pattern": "\u6295\u653e\u7d20\u67504",
+      "id": 55,
+      "size": 8,
+      "rank": 3
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AABBBD",
+        "AACBDD",
+        "EAABDD",
+        "EAAFDD",
+        "EEEFDD",
+        "EEEFDD"
+      ],
+      "solution": [
+        4,
+        2,
+        5,
+        1,
+        3,
+        0
+      ],
+      "givens": [],
+      "steps": 0,
+      "profile": [
+        0,
+        0,
+        0
+      ],
+      "rating": 200,
+      "pidHash": "2bfd460b",
+      "logicTrace": [],
+      "colorMap": [
+        5,
+        0,
+        2,
+        7,
+        10,
+        8
+      ],
+      "pattern": "\u6295\u653e\u7d20\u67505",
+      "id": 56,
+      "size": 6,
+      "rank": 2
+    },
+    {
+      "seed": 0,
+      "regions": [
+        "AACCDDD",
+        "ABBCGDD",
+        "BBBCDDD",
+        "FBBCDDE",
+        "BBBCDEE",
+        "BBBCDEE",
+        "BBCCCEE"
+      ],
+      "solution": [
+        1,
+        4,
+        6,
+        0,
+        2,
+        5,
+        3
+      ],
+      "givens": [],
+      "steps": 4,
+      "profile": [
+        4,
+        3,
+        0
+      ],
+      "rating": 3032,
+      "pidHash": "2b987420",
+      "logicTrace": [],
+      "colorMap": [
+        8,
+        0,
+        1,
+        7,
+        9,
+        3,
+        11
+      ],
+      "pattern": "digit1_2",
+      "id": 57,
+      "size": 7,
+      "rank": 3
+    }
+  ]
+}

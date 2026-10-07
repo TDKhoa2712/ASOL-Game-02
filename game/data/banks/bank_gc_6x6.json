@@ -1,0 +1,3524 @@
+{
+  "bankVersion": 1,
+  "size": 6,
+  "ranks": {
+    "1": [
+      {
+        "seed": 30977166,
+        "regions": [
+          "AAAABB",
+          "ADDBBB",
+          "ACDBBC",
+          "ACDDDC",
+          "ECCCCC",
+          "EEEEEF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "098b8df2",
+        "logicTrace": []
+      },
+      {
+        "seed": 31174424,
+        "regions": [
+          "AAABBB",
+          "AAABBB",
+          "ACDDDD",
+          "CCDDDC",
+          "ECCCCC",
+          "EEEEEF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "0b7001d5",
+        "logicTrace": []
+      },
+      {
+        "seed": 31250470,
+        "regions": [
+          "BBBBAA",
+          "BBBBAA",
+          "DDDDAC",
+          "FDEEAA",
+          "FFEEEA",
+          "FFEEEA"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          1,
+          3,
+          0
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "ca3aa4fe",
+        "logicTrace": []
+      },
+      {
+        "seed": 31727313,
+        "regions": [
+          "BBBBAA",
+          "BBBBAA",
+          "DDDDAC",
+          "DFEEAA",
+          "FFEEEA",
+          "FFEEEA"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "b1e91193",
+        "logicTrace": []
+      },
+      {
+        "seed": 33243854,
+        "regions": [
+          "BBBBAA",
+          "BBBDAA",
+          "BDDDAC",
+          "FDEEAA",
+          "FFEEEA",
+          "FFEEEA"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          1,
+          3,
+          0
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "ede7953c",
+        "logicTrace": []
+      },
+      {
+        "seed": 33364486,
+        "regions": [
+          "BBAAAA",
+          "BBBAAA",
+          "BBBCCC",
+          "EEEECD",
+          "EFFFCC",
+          "FFFCCC"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "9f1abd3c",
+        "logicTrace": []
+      },
+      {
+        "seed": 39340912,
+        "regions": [
+          "AAABBB",
+          "ADDBBB",
+          "ACDDBC",
+          "ACDDDC",
+          "ECCCCC",
+          "EEEEEF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "cec02993",
+        "logicTrace": []
+      },
+      {
+        "seed": 29767431,
+        "regions": [
+          "BBBAAA",
+          "BBBAAA",
+          "BBCCCA",
+          "EEEECD",
+          "EFFFCC",
+          "FFFCCC"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "98f2a896",
+        "logicTrace": []
+      },
+      {
+        "seed": 34993958,
+        "regions": [
+          "DCCCAA",
+          "DBBCCA",
+          "DDBCCA",
+          "DFBBBA",
+          "DFFFBE",
+          "DFFFBB"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          0,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "05ce2a06",
+        "logicTrace": []
+      },
+      {
+        "seed": 35684283,
+        "regions": [
+          "DDCCAA",
+          "DBBCCA",
+          "DDBCCA",
+          "DDBBCA",
+          "EEEBBA",
+          "EEEBBF"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          0,
+          2,
+          5
+        ],
+        "givens": [],
+        "steps": 6,
+        "profile": [
+          6,
+          0,
+          0
+        ],
+        "rating": 100,
+        "pidHash": "b673a0fa",
+        "logicTrace": []
+      }
+    ],
+    "2": [
+      {
+        "seed": 29508823,
+        "regions": [
+          "DAACBB",
+          "DACCBB",
+          "DAECBB",
+          "DAEEEB",
+          "FAAEEE",
+          "FFAAEE"
+        ],
+        "solution": [
+          2,
+          5,
+          3,
+          0,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          1,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "bb90b31d",
+        "logicTrace": []
+      },
+      {
+        "seed": 32140243,
+        "regions": [
+          "CCCAAA",
+          "BBCCAA",
+          "EBCCDD",
+          "EBBBDD",
+          "EEEBBB",
+          "EEEEFB"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          5,
+          1,
+          4
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          1,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "b7238458",
+        "logicTrace": []
+      },
+      {
+        "seed": 34054454,
+        "regions": [
+          "DEECAA",
+          "DBECCA",
+          "DBECCA",
+          "DBEECA",
+          "DBEBCF",
+          "DBBBBF"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          0,
+          2,
+          5
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          1,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "5ee32db8",
+        "logicTrace": []
+      },
+      {
+        "seed": 35968995,
+        "regions": [
+          "BBBBAA",
+          "DBBBAA",
+          "DDDDAC",
+          "DFFFAA",
+          "FFEEEA",
+          "FFEEEA"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          1,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "f0001ee1",
+        "logicTrace": []
+      },
+      {
+        "seed": 37159512,
+        "regions": [
+          "BBBBAA",
+          "BDDBAC",
+          "DDFCEC",
+          "DDFCEC",
+          "DFFCEC",
+          "FFFCCC"
+        ],
+        "solution": [
+          5,
+          0,
+          3,
+          1,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 9,
+        "profile": [
+          6,
+          3,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "d0af90d4",
+        "logicTrace": []
+      },
+      {
+        "seed": 42019012,
+        "regions": [
+          "BBBAAA",
+          "BCBBAA",
+          "CCCBDD",
+          "EEEBDD",
+          "EEEBBB",
+          "EEEEFB"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          5,
+          1,
+          4
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          1,
+          0
+        ],
+        "rating": 200,
+        "pidHash": "594c24da",
+        "logicTrace": []
+      }
+    ],
+    "3": [
+      {
+        "seed": 31106695,
+        "regions": [
+          "CCCAAA",
+          "BECCAA",
+          "BECCDD",
+          "BEEEDD",
+          "BEEEFF",
+          "BBBBBF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          0,
+          1
+        ],
+        "rating": 3003.2,
+        "pidHash": "7a9e6863",
+        "logicTrace": []
+      },
+      {
+        "seed": 33539085,
+        "regions": [
+          "AAAABB",
+          "AAACBB",
+          "DDCCEB",
+          "DDCCEE",
+          "DDCEEF",
+          "DCCCFF"
+        ],
+        "solution": [
+          1,
+          4,
+          2,
+          0,
+          3,
+          5
+        ],
+        "givens": [],
+        "steps": 7,
+        "profile": [
+          6,
+          0,
+          1
+        ],
+        "rating": 3004,
+        "pidHash": "7e26aefb",
+        "logicTrace": []
+      },
+      {
+        "seed": 34236071,
+        "regions": [
+          "EBBCAA",
+          "EBBCAA",
+          "EEBCCD",
+          "EEBBDD",
+          "FEEBBF",
+          "FFFFFF"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          4,
+          1
+        ],
+        "rating": 3004,
+        "pidHash": "c3eb233a",
+        "logicTrace": []
+      },
+      {
+        "seed": 37596885,
+        "regions": [
+          "CAAABB",
+          "CAABBB",
+          "CCCCEE",
+          "CDDCEE",
+          "CFFEEE",
+          "CFFEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 10,
+        "profile": [
+          6,
+          2,
+          2
+        ],
+        "rating": 3012,
+        "pidHash": "1b388cac",
+        "logicTrace": []
+      },
+      {
+        "seed": 39687951,
+        "regions": [
+          "BAAAAA",
+          "BBAACC",
+          "BBCCCC",
+          "BBCCDC",
+          "EEDDDF",
+          "EEDDFF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 8,
+        "profile": [
+          6,
+          0,
+          2
+        ],
+        "rating": 3003.2,
+        "pidHash": "ee3c7f13",
+        "logicTrace": []
+      }
+    ],
+    "4": [
+      {
+        "seed": 29059367,
+        "regions": [
+          "FFAAAB",
+          "FFABBB",
+          "FCEEDD",
+          "FCEDDD",
+          "FCEDCD",
+          "FCCCCC"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          3,
+          7
+        ],
+        "rating": 7432,
+        "pidHash": "9f1a031e",
+        "logicTrace": []
+      },
+      {
+        "seed": 29081336,
+        "regions": [
+          "AAAAAA",
+          "BBDAAA",
+          "BDDCCC",
+          "BBDDEE",
+          "FBBDDE",
+          "FBBBBB"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          2,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 14,
+        "profile": [
+          6,
+          5,
+          3
+        ],
+        "rating": 7288,
+        "pidHash": "9391c76e",
+        "logicTrace": []
+      },
+      {
+        "seed": 29074610,
+        "regions": [
+          "DDDAAA",
+          "DDBACC",
+          "DFBEEC",
+          "DFBEBB",
+          "DFBEBB",
+          "FFBBBB"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7304,
+        "pidHash": "c6874649",
+        "logicTrace": []
+      },
+      {
+        "seed": 29095732,
+        "regions": [
+          "AAABBB",
+          "CCABBB",
+          "CAAADB",
+          "CEEADD",
+          "CCEAAA",
+          "CEEFFA"
+        ],
+        "solution": [
+          1,
+          3,
+          0,
+          5,
+          2,
+          4
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          4,
+          7
+        ],
+        "rating": 7355.2,
+        "pidHash": "4a78eede",
+        "logicTrace": []
+      },
+      {
+        "seed": 29110954,
+        "regions": [
+          "BBBBAA",
+          "BBBBAA",
+          "DDDDAC",
+          "FDEDAA",
+          "FEEEAA",
+          "FFFEEE"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          1,
+          3,
+          0
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          3,
+          2
+        ],
+        "rating": 7200,
+        "pidHash": "c5d1978a",
+        "logicTrace": []
+      },
+      {
+        "seed": 29120312,
+        "regions": [
+          "AAAAAA",
+          "ABCCCD",
+          "ABCCDD",
+          "BBBBBD",
+          "FEEBDD",
+          "FFFBDD"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          5,
+          7
+        ],
+        "rating": 7176,
+        "pidHash": "cebaf9ef",
+        "logicTrace": []
+      },
+      {
+        "seed": 29145656,
+        "regions": [
+          "CCAAAA",
+          "CCCABB",
+          "CDAAAA",
+          "DDDEEE",
+          "FFDEEE",
+          "FFDEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          3,
+          7
+        ],
+        "rating": 7216,
+        "pidHash": "6e0608ce",
+        "logicTrace": []
+      },
+      {
+        "seed": 29155303,
+        "regions": [
+          "CCCAAA",
+          "CBBDDA",
+          "CCBDEE",
+          "CCBDDE",
+          "FFBBBE",
+          "FFBBBB"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          3,
+          5,
+          1
+        ],
+        "givens": [],
+        "steps": 23,
+        "profile": [
+          6,
+          4,
+          13
+        ],
+        "rating": 7707.2,
+        "pidHash": "5a4e3b30",
+        "logicTrace": []
+      },
+      {
+        "seed": 29156632,
+        "regions": [
+          "DBBBAA",
+          "DBBBAA",
+          "DDBBAC",
+          "DFEBAA",
+          "FFEEEA",
+          "FFEEEA"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          2,
+          3
+        ],
+        "rating": 7136,
+        "pidHash": "fe792d31",
+        "logicTrace": []
+      },
+      {
+        "seed": 29198480,
+        "regions": [
+          "AAAABB",
+          "CCCBBB",
+          "CDCCEE",
+          "CDDCEE",
+          "CFDEEE",
+          "CFDEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          5,
+          6
+        ],
+        "rating": 7101.33,
+        "pidHash": "e9683746",
+        "logicTrace": []
+      },
+      {
+        "seed": 29199849,
+        "regions": [
+          "AAAAAB",
+          "AADAAB",
+          "CDDDDD",
+          "CCCDDD",
+          "EECFFF",
+          "CCCCFF"
+        ],
+        "solution": [
+          2,
+          5,
+          0,
+          3,
+          1,
+          4
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          3,
+          7
+        ],
+        "rating": 7180,
+        "pidHash": "f3962011",
+        "logicTrace": []
+      },
+      {
+        "seed": 29214278,
+        "regions": [
+          "DABAAC",
+          "DABBAC",
+          "DABAAC",
+          "DAAAAE",
+          "DDEEEE",
+          "DDEFFF"
+        ],
+        "solution": [
+          1,
+          3,
+          5,
+          0,
+          2,
+          4
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          4,
+          5
+        ],
+        "rating": 7128,
+        "pidHash": "7a4ba5fb",
+        "logicTrace": []
+      },
+      {
+        "seed": 29217374,
+        "regions": [
+          "AAAAAB",
+          "AABBBB",
+          "ACDDDD",
+          "CCCCDD",
+          "EEECDD",
+          "EFFCCC"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7248,
+        "pidHash": "9cf522c8",
+        "logicTrace": []
+      },
+      {
+        "seed": 29238109,
+        "regions": [
+          "CCCCAA",
+          "CCBBAB",
+          "CCBBAB",
+          "CDDBBB",
+          "FFDEEE",
+          "FFDDEE"
+        ],
+        "solution": [
+          5,
+          3,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          1,
+          6
+        ],
+        "rating": 7298.67,
+        "pidHash": "9d36ba96",
+        "logicTrace": []
+      },
+      {
+        "seed": 29243953,
+        "regions": [
+          "BBBAAA",
+          "BBBAAA",
+          "BBBCCA",
+          "FEEECD",
+          "FEECCC",
+          "FFFCCC"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 9,
+        "profile": [
+          6,
+          2,
+          1
+        ],
+        "rating": 7032,
+        "pidHash": "e97cd248",
+        "logicTrace": []
+      },
+      {
+        "seed": 29247548,
+        "regions": [
+          "AAAAAA",
+          "CCADBB",
+          "CCADDB",
+          "EEAADD",
+          "EEEAAD",
+          "EFFDDD"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          2,
+          3
+        ],
+        "rating": 7069.33,
+        "pidHash": "c6392fcd",
+        "logicTrace": []
+      },
+      {
+        "seed": 29247649,
+        "regions": [
+          "AAAAAA",
+          "DABBBC",
+          "DACCCC",
+          "DAEEEE",
+          "DAAAEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          1,
+          3,
+          5,
+          0,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          5,
+          8
+        ],
+        "rating": 7373.33,
+        "pidHash": "c238f0a0",
+        "logicTrace": []
+      },
+      {
+        "seed": 29253689,
+        "regions": [
+          "AAAAAB",
+          "CCCBBB",
+          "CDCCEE",
+          "CDDCEE",
+          "CFDEEE",
+          "CFDEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          5,
+          7
+        ],
+        "rating": 7165.33,
+        "pidHash": "e6a06511",
+        "logicTrace": []
+      },
+      {
+        "seed": 29309613,
+        "regions": [
+          "FFAAAA",
+          "FBCCAD",
+          "FBECCD",
+          "FBEEED",
+          "FBEBBB",
+          "FBBBBB"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          4,
+          11
+        ],
+        "rating": 7437.33,
+        "pidHash": "d223f953",
+        "logicTrace": []
+      },
+      {
+        "seed": 29313048,
+        "regions": [
+          "CCCAAA",
+          "CBBDDA",
+          "CCBDEE",
+          "CCBDDE",
+          "CFBBBE",
+          "FFBBBB"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          3,
+          5,
+          1
+        ],
+        "givens": [],
+        "steps": 23,
+        "profile": [
+          6,
+          4,
+          13
+        ],
+        "rating": 7611.2,
+        "pidHash": "a93fb105",
+        "logicTrace": []
+      },
+      {
+        "seed": 29339415,
+        "regions": [
+          "AABBBB",
+          "CAAABB",
+          "CADAAB",
+          "CADDDE",
+          "CCFDEE",
+          "CCFDEE"
+        ],
+        "solution": [
+          1,
+          4,
+          0,
+          3,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          3,
+          4
+        ],
+        "rating": 7104,
+        "pidHash": "5c1598d7",
+        "logicTrace": []
+      },
+      {
+        "seed": 29368969,
+        "regions": [
+          "AAAAAA",
+          "CCCABB",
+          "DCCAAE",
+          "DDDEAE",
+          "DFFEEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          2,
+          0,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 14,
+        "profile": [
+          6,
+          4,
+          4
+        ],
+        "rating": 7101.33,
+        "pidHash": "77ee9a50",
+        "logicTrace": []
+      },
+      {
+        "seed": 29385082,
+        "regions": [
+          "BAAAAA",
+          "BCCCEE",
+          "BDDCEE",
+          "BDCCBE",
+          "BBBBBE",
+          "BFFFEE"
+        ],
+        "solution": [
+          4,
+          0,
+          3,
+          1,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7250.67,
+        "pidHash": "822828f9",
+        "logicTrace": []
+      },
+      {
+        "seed": 29395208,
+        "regions": [
+          "FFAAAA",
+          "FBCCCD",
+          "FBECDD",
+          "FBEEED",
+          "FBEBBB",
+          "FBBBBB"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          3,
+          10
+        ],
+        "rating": 7640,
+        "pidHash": "fcac6519",
+        "logicTrace": []
+      },
+      {
+        "seed": 29390063,
+        "regions": [
+          "BAAAAA",
+          "BBBAAA",
+          "BBCCCC",
+          "EEECDC",
+          "EEECDD",
+          "EECCFF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7272,
+        "pidHash": "4021364b",
+        "logicTrace": []
+      },
+      {
+        "seed": 29399897,
+        "regions": [
+          "DDDAAA",
+          "DDBEAC",
+          "DFBEAC",
+          "DFBEAA",
+          "DFBEBA",
+          "FFBBBB"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7320,
+        "pidHash": "5636aa9e",
+        "logicTrace": []
+      },
+      {
+        "seed": 29402430,
+        "regions": [
+          "BBBAAA",
+          "CCBBBA",
+          "CCCEAA",
+          "FCEEDD",
+          "FCCEEE",
+          "FFCCEE"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          5,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          2,
+          7
+        ],
+        "rating": 7149.33,
+        "pidHash": "652b24b9",
+        "logicTrace": []
+      },
+      {
+        "seed": 29425840,
+        "regions": [
+          "CCCCAA",
+          "CCEBAA",
+          "CCEBDA",
+          "EEEBDA",
+          "EEBBBA",
+          "EFFBBB"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 24,
+        "profile": [
+          6,
+          4,
+          14
+        ],
+        "rating": 7560,
+        "pidHash": "c584011c",
+        "logicTrace": []
+      },
+      {
+        "seed": 29442853,
+        "regions": [
+          "BBBAAA",
+          "CCBBBA",
+          "CCCEAA",
+          "FFCEDD",
+          "FFCEEE",
+          "FFCCEE"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          5,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          2,
+          7
+        ],
+        "rating": 7149.33,
+        "pidHash": "6aa444ad",
+        "logicTrace": []
+      },
+      {
+        "seed": 29475406,
+        "regions": [
+          "BAAAAA",
+          "BBBCCC",
+          "BDBCCC",
+          "BDDCCC",
+          "BEEEFF",
+          "BFFFFF"
+        ],
+        "solution": [
+          2,
+          0,
+          4,
+          1,
+          3,
+          5
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          5,
+          2
+        ],
+        "rating": 7096,
+        "pidHash": "b16b445d",
+        "logicTrace": []
+      },
+      {
+        "seed": 29473622,
+        "regions": [
+          "AABBBB",
+          "CABBBB",
+          "CAABBB",
+          "CAEDDD",
+          "CAEEFF",
+          "CAAAAF"
+        ],
+        "solution": [
+          1,
+          3,
+          0,
+          4,
+          2,
+          5
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          4,
+          1
+        ],
+        "rating": 7032,
+        "pidHash": "938822a2",
+        "logicTrace": []
+      },
+      {
+        "seed": 29482774,
+        "regions": [
+          "DDBBBA",
+          "DDBAAA",
+          "DFBCCC",
+          "DFBEEE",
+          "FFBEBE",
+          "FFBBBE"
+        ],
+        "solution": [
+          5,
+          2,
+          4,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          2,
+          5
+        ],
+        "rating": 7032,
+        "pidHash": "801d0964",
+        "logicTrace": []
+      },
+      {
+        "seed": 29494279,
+        "regions": [
+          "DDDAAA",
+          "DBBACC",
+          "DDBBCE",
+          "FDDBCE",
+          "FFFBEE",
+          "FFFBBB"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          2,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7105.33,
+        "pidHash": "8694ccd5",
+        "logicTrace": []
+      },
+      {
+        "seed": 29493758,
+        "regions": [
+          "AAAAAB",
+          "ADDDBB",
+          "ACDDBB",
+          "CCDDBB",
+          "ECCCCC",
+          "EEFFFC"
+        ],
+        "solution": [
+          2,
+          5,
+          1,
+          3,
+          0,
+          4
+        ],
+        "givens": [],
+        "steps": 11,
+        "profile": [
+          6,
+          4,
+          1
+        ],
+        "rating": 7064,
+        "pidHash": "4b6fcbbc",
+        "logicTrace": []
+      },
+      {
+        "seed": 29504968,
+        "regions": [
+          "CCCBAA",
+          "CCBBAB",
+          "CCBBBB",
+          "CCBDDB",
+          "FEEEDD",
+          "FFFEDD"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          2,
+          11
+        ],
+        "rating": 7345.33,
+        "pidHash": "f048d642",
+        "logicTrace": []
+      },
+      {
+        "seed": 29514322,
+        "regions": [
+          "AAAABB",
+          "DDDDBB",
+          "CCCDEE",
+          "FFCDEE",
+          "FFCCCE",
+          "FCCCCC"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          3,
+          4
+        ],
+        "rating": 7058.67,
+        "pidHash": "a17826f6",
+        "logicTrace": []
+      },
+      {
+        "seed": 29510340,
+        "regions": [
+          "BBBBAA",
+          "BBBAAA",
+          "BDCCCC",
+          "BDDDDE",
+          "BFFFDE",
+          "FFFFEE"
+        ],
+        "solution": [
+          4,
+          0,
+          3,
+          1,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 24,
+        "profile": [
+          6,
+          3,
+          15
+        ],
+        "rating": 7760,
+        "pidHash": "30086a14",
+        "logicTrace": []
+      },
+      {
+        "seed": 29519581,
+        "regions": [
+          "CCCCAA",
+          "CCEBAA",
+          "CCEBDB",
+          "EEEBDB",
+          "EFFBBB",
+          "FFFFFB"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7416,
+        "pidHash": "7119ae69",
+        "logicTrace": []
+      },
+      {
+        "seed": 29522021,
+        "regions": [
+          "BAAAAA",
+          "BBAACD",
+          "BBCCCD",
+          "BEECDD",
+          "EECCDF",
+          "EECCDF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7181.33,
+        "pidHash": "d22e6011",
+        "logicTrace": []
+      },
+      {
+        "seed": 29531780,
+        "regions": [
+          "FFAAAB",
+          "FFABBB",
+          "FCEDDD",
+          "FCEEDD",
+          "FCECCC",
+          "FCCCCC"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7312,
+        "pidHash": "a06a3ff6",
+        "logicTrace": []
+      },
+      {
+        "seed": 29551125,
+        "regions": [
+          "AAAABB",
+          "DDDDBB",
+          "CCCDFF",
+          "CEDDFF",
+          "CEEEEF",
+          "CCCCEF"
+        ],
+        "solution": [
+          2,
+          4,
+          0,
+          3,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          4,
+          5
+        ],
+        "rating": 7061.33,
+        "pidHash": "b8ff504c",
+        "logicTrace": []
+      },
+      {
+        "seed": 29553759,
+        "regions": [
+          "BAAAAA",
+          "BBADDD",
+          "BEACCD",
+          "EEADDD",
+          "EEAFFF",
+          "EEEFFF"
+        ],
+        "solution": [
+          2,
+          0,
+          3,
+          5,
+          1,
+          4
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          4,
+          7
+        ],
+        "rating": 7277.33,
+        "pidHash": "e8f46a7b",
+        "logicTrace": []
+      },
+      {
+        "seed": 29557403,
+        "regions": [
+          "AAAABB",
+          "ADDDDB",
+          "ECCCDD",
+          "EEECDD",
+          "FEECCC",
+          "FFFCCC"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          0,
+          9
+        ],
+        "rating": 7456,
+        "pidHash": "2006078a",
+        "logicTrace": []
+      },
+      {
+        "seed": 29574950,
+        "regions": [
+          "BBBBCA",
+          "DBDBCA",
+          "DDDBCC",
+          "EDDBBC",
+          "EEEFFC",
+          "EFFFFF"
+        ],
+        "solution": [
+          5,
+          1,
+          4,
+          2,
+          0,
+          3
+        ],
+        "givens": [],
+        "steps": 12,
+        "profile": [
+          6,
+          2,
+          4
+        ],
+        "rating": 7048,
+        "pidHash": "a1460232",
+        "logicTrace": []
+      },
+      {
+        "seed": 29603609,
+        "regions": [
+          "CCCAAA",
+          "CCCABB",
+          "CCAADB",
+          "EEEADD",
+          "EEEAAD",
+          "EFFDDD"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7168,
+        "pidHash": "0bf5f0d4",
+        "logicTrace": []
+      },
+      {
+        "seed": 29601485,
+        "regions": [
+          "BAAAAA",
+          "BBBBCA",
+          "BDDBCC",
+          "BDFBEC",
+          "DDFFEC",
+          "FFFFCC"
+        ],
+        "solution": [
+          3,
+          0,
+          5,
+          1,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          5,
+          8
+        ],
+        "rating": 7341.33,
+        "pidHash": "9c0b4944",
+        "logicTrace": []
+      },
+      {
+        "seed": 29611273,
+        "regions": [
+          "DDDAAA",
+          "DBBBCC",
+          "DBDBEC",
+          "DDDBEC",
+          "FFFBEE",
+          "FFBBBE"
+        ],
+        "solution": [
+          3,
+          1,
+          5,
+          2,
+          4,
+          0
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7346.67,
+        "pidHash": "aeee61b8",
+        "logicTrace": []
+      },
+      {
+        "seed": 29622124,
+        "regions": [
+          "BAAAAA",
+          "BCDDAA",
+          "BCCDAA",
+          "BEEDDF",
+          "BEDDFF",
+          "BBBBFF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          2,
+          7
+        ],
+        "rating": 7153.33,
+        "pidHash": "3887a6de",
+        "logicTrace": []
+      },
+      {
+        "seed": 29629641,
+        "regions": [
+          "BAAAAA",
+          "BBBBBA",
+          "BDDCCC",
+          "BFDCEE",
+          "BFDFFE",
+          "BFFFFE"
+        ],
+        "solution": [
+          3,
+          0,
+          4,
+          2,
+          5,
+          1
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          5,
+          7
+        ],
+        "rating": 7132,
+        "pidHash": "051bbe18",
+        "logicTrace": []
+      },
+      {
+        "seed": 29657500,
+        "regions": [
+          "DDDAAA",
+          "DFBACC",
+          "DFBEEC",
+          "DFBEEE",
+          "FFBEBE",
+          "FFBBBB"
+        ],
+        "solution": [
+          4,
+          2,
+          5,
+          0,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          4,
+          11
+        ],
+        "rating": 7528,
+        "pidHash": "f41dbd52",
+        "logicTrace": []
+      },
+      {
+        "seed": 29667033,
+        "regions": [
+          "CAAAAB",
+          "CABBBB",
+          "CCCCEE",
+          "CDDCEE",
+          "CFFEEE",
+          "CFFEEE"
+        ],
+        "solution": [
+          3,
+          5,
+          0,
+          2,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 12,
+        "profile": [
+          6,
+          3,
+          3
+        ],
+        "rating": 7044,
+        "pidHash": "be505f51",
+        "logicTrace": []
+      },
+      {
+        "seed": 29675036,
+        "regions": [
+          "BBBBAA",
+          "DBBBAC",
+          "DDFCAC",
+          "DDFCEC",
+          "DDFCEC",
+          "DFFCCC"
+        ],
+        "solution": [
+          5,
+          1,
+          3,
+          0,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          4,
+          5
+        ],
+        "rating": 7224,
+        "pidHash": "0b4eb3d3",
+        "logicTrace": []
+      },
+      {
+        "seed": 29745447,
+        "regions": [
+          "AAAAAA",
+          "BBBBAA",
+          "EBCCCC",
+          "EBBBDD",
+          "EEEBDD",
+          "FFEDDD"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7352,
+        "pidHash": "32040c8b",
+        "logicTrace": []
+      },
+      {
+        "seed": 29766786,
+        "regions": [
+          "AABBBB",
+          "CADBBB",
+          "CADEEB",
+          "CADDEE",
+          "CAAAEE",
+          "CCFAEE"
+        ],
+        "solution": [
+          1,
+          4,
+          0,
+          3,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 8,
+        "profile": [
+          6,
+          1,
+          1
+        ],
+        "rating": 7064,
+        "pidHash": "f23f7cc8",
+        "logicTrace": []
+      },
+      {
+        "seed": 29770970,
+        "regions": [
+          "BCCAAA",
+          "BECADD",
+          "BECCDD",
+          "BEBCDD",
+          "BEBCFF",
+          "BBBBBF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          4,
+          3
+        ],
+        "rating": 7021.33,
+        "pidHash": "4a1bef2c",
+        "logicTrace": []
+      },
+      {
+        "seed": 29800837,
+        "regions": [
+          "BBBAAA",
+          "CBBBBA",
+          "CCCAAA",
+          "FFCEDD",
+          "FFCEDC",
+          "FFCCCC"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          5,
+          3,
+          1
+        ],
+        "givens": [],
+        "steps": 13,
+        "profile": [
+          6,
+          2,
+          5
+        ],
+        "rating": 7114.29,
+        "pidHash": "06c782d4",
+        "logicTrace": []
+      },
+      {
+        "seed": 29825493,
+        "regions": [
+          "BBBAAA",
+          "BBDCCA",
+          "BDDCEE",
+          "BDDCFE",
+          "BDFFFE",
+          "BDFFFE"
+        ],
+        "solution": [
+          4,
+          0,
+          3,
+          1,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          4,
+          7
+        ],
+        "rating": 7192,
+        "pidHash": "47202aae",
+        "logicTrace": []
+      },
+      {
+        "seed": 29838596,
+        "regions": [
+          "BAAAAA",
+          "BBBBCA",
+          "BDDCCA",
+          "BFDEEE",
+          "BFDEEE",
+          "BFFEEE"
+        ],
+        "solution": [
+          3,
+          0,
+          4,
+          2,
+          5,
+          1
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          3,
+          7
+        ],
+        "rating": 7130.67,
+        "pidHash": "95c73984",
+        "logicTrace": []
+      },
+      {
+        "seed": 29847079,
+        "regions": [
+          "AABBBB",
+          "AAABBB",
+          "CCAAAA",
+          "CDDFEE",
+          "CFDFEE",
+          "CFFFEE"
+        ],
+        "solution": [
+          1,
+          4,
+          0,
+          2,
+          5,
+          3
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          4,
+          7
+        ],
+        "rating": 7062.67,
+        "pidHash": "279a48cd",
+        "logicTrace": []
+      },
+      {
+        "seed": 29870029,
+        "regions": [
+          "BBAAAA",
+          "BBBACA",
+          "DDBACA",
+          "DDBAFA",
+          "DEEAFA",
+          "DEEEFF"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          0,
+          2,
+          5
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          3,
+          7
+        ],
+        "rating": 7256,
+        "pidHash": "c0a40383",
+        "logicTrace": []
+      },
+      {
+        "seed": 29873160,
+        "regions": [
+          "BBAAAA",
+          "BBABCA",
+          "DBBBCC",
+          "DFBBEC",
+          "DFFEEC",
+          "DFFFCC"
+        ],
+        "solution": [
+          3,
+          1,
+          5,
+          0,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 15,
+        "profile": [
+          6,
+          4,
+          5
+        ],
+        "rating": 7341.33,
+        "pidHash": "859e970d",
+        "logicTrace": []
+      },
+      {
+        "seed": 29877203,
+        "regions": [
+          "DDAABB",
+          "DDAABB",
+          "DDACCC",
+          "DAAAEE",
+          "DFFAEE",
+          "FFAAEE"
+        ],
+        "solution": [
+          2,
+          5,
+          3,
+          0,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 12,
+        "profile": [
+          6,
+          2,
+          4
+        ],
+        "rating": 7104,
+        "pidHash": "6707820d",
+        "logicTrace": []
+      },
+      {
+        "seed": 29896168,
+        "regions": [
+          "AAAAAB",
+          "ACBBBB",
+          "ACDDDB",
+          "ACEEDD",
+          "FCECCC",
+          "FCCCCC"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          4,
+          7
+        ],
+        "rating": 7128,
+        "pidHash": "0ff392a3",
+        "logicTrace": []
+      },
+      {
+        "seed": 29902619,
+        "regions": [
+          "AAAABB",
+          "ADDDBB",
+          "ACCDDB",
+          "EECDBB",
+          "EECCCC",
+          "EEECCF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7512,
+        "pidHash": "51b27592",
+        "logicTrace": []
+      },
+      {
+        "seed": 29996897,
+        "regions": [
+          "AAAAAA",
+          "ABBBCC",
+          "EEDBBC",
+          "EEDDBC",
+          "EEFFBC",
+          "EEFBBC"
+        ],
+        "solution": [
+          4,
+          1,
+          5,
+          3,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          2,
+          11
+        ],
+        "rating": 7312,
+        "pidHash": "038e6a30",
+        "logicTrace": []
+      },
+      {
+        "seed": 30043502,
+        "regions": [
+          "AAAAAA",
+          "DABBBC",
+          "DACCCC",
+          "DAAEEE",
+          "DFAAEE",
+          "FFFEEE"
+        ],
+        "solution": [
+          1,
+          3,
+          5,
+          0,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          5,
+          8
+        ],
+        "rating": 7373.33,
+        "pidHash": "6e8a4054",
+        "logicTrace": []
+      },
+      {
+        "seed": 30237085,
+        "regions": [
+          "AAAAAA",
+          "BBBCCC",
+          "BDBBCC",
+          "DDDBCC",
+          "DEEBBC",
+          "DEEEEF"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          0,
+          2,
+          5
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7160,
+        "pidHash": "1a355321",
+        "logicTrace": []
+      },
+      {
+        "seed": 30296013,
+        "regions": [
+          "AAAAAA",
+          "BBBCCA",
+          "BBBCCD",
+          "EEBBCD",
+          "EEEBDD",
+          "FFEDDD"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          2,
+          13
+        ],
+        "rating": 7536,
+        "pidHash": "17a67aa4",
+        "logicTrace": []
+      },
+      {
+        "seed": 30485466,
+        "regions": [
+          "AAAAAA",
+          "BBACCE",
+          "BCCCCE",
+          "BDDDEE",
+          "BBBDEE",
+          "FBBDEE"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          2,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          1,
+          9
+        ],
+        "rating": 7042.67,
+        "pidHash": "3c026305",
+        "logicTrace": []
+      },
+      {
+        "seed": 30620245,
+        "regions": [
+          "EEAAAA",
+          "EBBBBB",
+          "EBCCCD",
+          "EBBDDD",
+          "EFBFFF",
+          "EFFFFF"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          4,
+          9
+        ],
+        "rating": 7309.33,
+        "pidHash": "939a0018",
+        "logicTrace": []
+      },
+      {
+        "seed": 30654021,
+        "regions": [
+          "AAAABB",
+          "ACCCCB",
+          "ACCDCC",
+          "EDDDCC",
+          "EDDFCC",
+          "EEEFFF"
+        ],
+        "solution": [
+          2,
+          5,
+          1,
+          3,
+          0,
+          4
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7368,
+        "pidHash": "aeea0e78",
+        "logicTrace": []
+      },
+      {
+        "seed": 30746089,
+        "regions": [
+          "AAAAAA",
+          "BBBBDA",
+          "BCCBDD",
+          "CCFBBD",
+          "EEFBDD",
+          "EEFFDD"
+        ],
+        "solution": [
+          4,
+          0,
+          2,
+          5,
+          1,
+          3
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          2,
+          9
+        ],
+        "rating": 7551.2,
+        "pidHash": "b51be495",
+        "logicTrace": []
+      },
+      {
+        "seed": 30771048,
+        "regions": [
+          "AAAAAA",
+          "ABCCCD",
+          "BBCCDD",
+          "BBBBBD",
+          "EEEBDD",
+          "FFEEED"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          5,
+          8
+        ],
+        "rating": 7192,
+        "pidHash": "fd1cd3af",
+        "logicTrace": []
+      },
+      {
+        "seed": 30803703,
+        "regions": [
+          "DDAAAA",
+          "DBBACA",
+          "DDBBCC",
+          "FDDBEC",
+          "FFFBEC",
+          "FFFBBB"
+        ],
+        "solution": [
+          3,
+          1,
+          5,
+          2,
+          4,
+          0
+        ],
+        "givens": [],
+        "steps": 17,
+        "profile": [
+          6,
+          3,
+          8
+        ],
+        "rating": 7192,
+        "pidHash": "b3880eb2",
+        "logicTrace": []
+      },
+      {
+        "seed": 30990681,
+        "regions": [
+          "AAAAAB",
+          "ACAABB",
+          "ACCCCC",
+          "EDDDCC",
+          "EDFDCC",
+          "EEFFFC"
+        ],
+        "solution": [
+          2,
+          5,
+          1,
+          3,
+          0,
+          4
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          4,
+          11
+        ],
+        "rating": 7515.2,
+        "pidHash": "a93fb105",
+        "logicTrace": []
+      },
+      {
+        "seed": 31015355,
+        "regions": [
+          "AAABBB",
+          "CCCCBB",
+          "CDCCDB",
+          "CDDDDD",
+          "CDEEEE",
+          "EEEFFF"
+        ],
+        "solution": [
+          1,
+          4,
+          0,
+          2,
+          5,
+          3
+        ],
+        "givens": [],
+        "steps": 22,
+        "profile": [
+          6,
+          5,
+          11
+        ],
+        "rating": 7704,
+        "pidHash": "c6ea9c6f",
+        "logicTrace": []
+      },
+      {
+        "seed": 31112871,
+        "regions": [
+          "BAAAAA",
+          "BBBBCC",
+          "BDDBBC",
+          "BDFECC",
+          "BDFEEE",
+          "BBFEEE"
+        ],
+        "solution": [
+          3,
+          0,
+          5,
+          1,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 24,
+        "profile": [
+          6,
+          5,
+          13
+        ],
+        "rating": 7565.33,
+        "pidHash": "e1564155",
+        "logicTrace": []
+      },
+      {
+        "seed": 31118886,
+        "regions": [
+          "FFBAAA",
+          "FFBBBA",
+          "FCEDDD",
+          "FCEEDD",
+          "FCECCC",
+          "FCCCCC"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          2,
+          10
+        ],
+        "rating": 7464,
+        "pidHash": "e0b5781f",
+        "logicTrace": []
+      },
+      {
+        "seed": 31143148,
+        "regions": [
+          "DDAABB",
+          "DDAABB",
+          "DDACCC",
+          "DAAEEC",
+          "DFAAEE",
+          "FFAAEE"
+        ],
+        "solution": [
+          2,
+          5,
+          3,
+          0,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          3,
+          12
+        ],
+        "rating": 7672,
+        "pidHash": "eb637811",
+        "logicTrace": []
+      },
+      {
+        "seed": 31259004,
+        "regions": [
+          "AAAABB",
+          "ACCCBB",
+          "ACCCDD",
+          "EEECDD",
+          "FFECCF",
+          "FFFFFF"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 22,
+        "profile": [
+          6,
+          1,
+          15
+        ],
+        "rating": 7901.33,
+        "pidHash": "15bfe1a2",
+        "logicTrace": []
+      },
+      {
+        "seed": 31278077,
+        "regions": [
+          "CCCCAA",
+          "CCBBAA",
+          "CCCBDD",
+          "EECBDB",
+          "FEEBBB",
+          "FFFBBB"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 24,
+        "profile": [
+          6,
+          3,
+          15
+        ],
+        "rating": 7707.2,
+        "pidHash": "1c2c6c6c",
+        "logicTrace": []
+      },
+      {
+        "seed": 31422556,
+        "regions": [
+          "AAABBB",
+          "ACAABB",
+          "ACADDE",
+          "FCDDEE",
+          "FCCCCE",
+          "FCCCCC"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          3,
+          12
+        ],
+        "rating": 7564,
+        "pidHash": "f32cf32d",
+        "logicTrace": []
+      },
+      {
+        "seed": 31442415,
+        "regions": [
+          "AAAAAB",
+          "AACCBB",
+          "ACCCDD",
+          "EEECDD",
+          "EFECCD",
+          "EFFCDD"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 25,
+        "profile": [
+          6,
+          4,
+          15
+        ],
+        "rating": 7856,
+        "pidHash": "ad94ea21",
+        "logicTrace": []
+      },
+      {
+        "seed": 31519776,
+        "regions": [
+          "BBAAAA",
+          "BBACCC",
+          "BBBBBC",
+          "DDDCCC",
+          "DEEEEF",
+          "DEEFFF"
+        ],
+        "solution": [
+          3,
+          1,
+          5,
+          0,
+          2,
+          4
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          2,
+          11
+        ],
+        "rating": 7493.33,
+        "pidHash": "899808e4",
+        "logicTrace": []
+      },
+      {
+        "seed": 31533228,
+        "regions": [
+          "CCCCAA",
+          "CCBBAA",
+          "CCCBBB",
+          "CEEDDB",
+          "FEEDBB",
+          "FFFBBB"
+        ],
+        "solution": [
+          5,
+          3,
+          1,
+          4,
+          2,
+          0
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          2,
+          10
+        ],
+        "rating": 7467.2,
+        "pidHash": "b4c0a75c",
+        "logicTrace": []
+      },
+      {
+        "seed": 31565994,
+        "regions": [
+          "AAABBB",
+          "ACABBB",
+          "ACADDE",
+          "FCCDDE",
+          "FFCCCE",
+          "FCCCCC"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          3,
+          10
+        ],
+        "rating": 7588,
+        "pidHash": "6ded9843",
+        "logicTrace": []
+      },
+      {
+        "seed": 31654297,
+        "regions": [
+          "AAAABB",
+          "ACABBB",
+          "ACCDDD",
+          "EECDDD",
+          "EECCCD",
+          "EEECCF"
+        ],
+        "solution": [
+          2,
+          4,
+          1,
+          3,
+          0,
+          5
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          2,
+          10
+        ],
+        "rating": 7440,
+        "pidHash": "08f66835",
+        "logicTrace": []
+      },
+      {
+        "seed": 31705766,
+        "regions": [
+          "AAAABB",
+          "ACAABB",
+          "ACCCCC",
+          "EDDDCC",
+          "EDFDCC",
+          "EEFFFC"
+        ],
+        "solution": [
+          2,
+          5,
+          1,
+          3,
+          0,
+          4
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          4,
+          11
+        ],
+        "rating": 7611.2,
+        "pidHash": "5a4e3b30",
+        "logicTrace": []
+      },
+      {
+        "seed": 31788082,
+        "regions": [
+          "BBBAAA",
+          "CCBBBA",
+          "CCCDDD",
+          "EECCCD",
+          "EEFCDD",
+          "EEFFFF"
+        ],
+        "solution": [
+          4,
+          2,
+          0,
+          5,
+          1,
+          3
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          2,
+          11
+        ],
+        "rating": 7434.67,
+        "pidHash": "4e4e459a",
+        "logicTrace": []
+      },
+      {
+        "seed": 31798034,
+        "regions": [
+          "DBAAAA",
+          "DBBBAA",
+          "DDDBEC",
+          "DFFBEC",
+          "DFFBEE",
+          "FFFBBE"
+        ],
+        "solution": [
+          3,
+          1,
+          5,
+          0,
+          4,
+          2
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          4,
+          8
+        ],
+        "rating": 7064,
+        "pidHash": "a732fa85",
+        "logicTrace": []
+      },
+      {
+        "seed": 31850550,
+        "regions": [
+          "EABBBB",
+          "EACBBB",
+          "EACCDD",
+          "EAAADA",
+          "EFFAAA",
+          "EEFFFF"
+        ],
+        "solution": [
+          1,
+          5,
+          2,
+          4,
+          0,
+          3
+        ],
+        "givens": [],
+        "steps": 16,
+        "profile": [
+          6,
+          2,
+          8
+        ],
+        "rating": 7138.67,
+        "pidHash": "274718ab",
+        "logicTrace": []
+      },
+      {
+        "seed": 31885608,
+        "regions": [
+          "CCCAAA",
+          "CBBDAA",
+          "CCBDDD",
+          "CEBDBB",
+          "EEBBBB",
+          "EEEFFB"
+        ],
+        "solution": [
+          5,
+          2,
+          0,
+          3,
+          1,
+          4
+        ],
+        "givens": [],
+        "steps": 21,
+        "profile": [
+          6,
+          4,
+          11
+        ],
+        "rating": 7451.2,
+        "pidHash": "4cef81df",
+        "logicTrace": []
+      },
+      {
+        "seed": 31905889,
+        "regions": [
+          "AAAAAA",
+          "DACBBB",
+          "DACCCB",
+          "DAEEFB",
+          "DAEFFF",
+          "DDFFFF"
+        ],
+        "solution": [
+          1,
+          5,
+          3,
+          0,
+          2,
+          4
+        ],
+        "givens": [],
+        "steps": 18,
+        "profile": [
+          6,
+          3,
+          9
+        ],
+        "rating": 7360,
+        "pidHash": "a77e1521",
+        "logicTrace": []
+      },
+      {
+        "seed": 31943952,
+        "regions": [
+          "DDDAAA",
+          "DBDACC",
+          "FBDACC",
+          "FBDEEE",
+          "FBBBBE",
+          "FFBBBB"
+        ],
+        "solution": [
+          3,
+          1,
+          4,
+          2,
+          5,
+          0
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          2,
+          11
+        ],
+        "rating": 7643.2,
+        "pidHash": "aee414a2",
+        "logicTrace": []
+      },
+      {
+        "seed": 32055139,
+        "regions": [
+          "AAAAAA",
+          "ABCACD",
+          "BBCCCD",
+          "BBBBDD",
+          "EEEBDD",
+          "EFFBDD"
+        ],
+        "solution": [
+          4,
+          1,
+          3,
+          5,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 22,
+        "profile": [
+          6,
+          3,
+          13
+        ],
+        "rating": 7181.33,
+        "pidHash": "c80ee49b",
+        "logicTrace": []
+      },
+      {
+        "seed": 32185615,
+        "regions": [
+          "BBAAAA",
+          "BBACAA",
+          "BCCCCC",
+          "BCECDC",
+          "EEEDDF",
+          "EEDDFF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 20,
+        "profile": [
+          6,
+          2,
+          12
+        ],
+        "rating": 7652,
+        "pidHash": "cd3729b6",
+        "logicTrace": []
+      },
+      {
+        "seed": 32364560,
+        "regions": [
+          "AAAAAB",
+          "AACCBB",
+          "ACCCDD",
+          "EEECDD",
+          "EFFCCD",
+          "FFFCCD"
+        ],
+        "solution": [
+          3,
+          5,
+          1,
+          4,
+          0,
+          2
+        ],
+        "givens": [],
+        "steps": 23,
+        "profile": [
+          6,
+          2,
+          15
+        ],
+        "rating": 7853.33,
+        "pidHash": "e182ee4c",
+        "logicTrace": []
+      },
+      {
+        "seed": 32612429,
+        "regions": [
+          "DDAABB",
+          "DAAABB",
+          "DDACCC",
+          "DFAEEE",
+          "FFAAEE",
+          "FFEEEE"
+        ],
+        "solution": [
+          2,
+          5,
+          3,
+          0,
+          4,
+          1
+        ],
+        "givens": [],
+        "steps": 19,
+        "profile": [
+          6,
+          3,
+          10
+        ],
+        "rating": 7437.33,
+        "pidHash": "1783a705",
+        "logicTrace": []
+      },
+      {
+        "seed": 32788762,
+        "regions": [
+          "BAAAAA",
+          "BBBBCC",
+          "BDDBCC",
+          "BDFCCE",
+          "BDFECE",
+          "BFFEEE"
+        ],
+        "solution": [
+          3,
+          0,
+          4,
+          1,
+          5,
+          2
+        ],
+        "givens": [],
+        "steps": 20,
+        "profile": [
+          6,
+          3,
+          11
+        ],
+        "rating": 7417.33,
+        "pidHash": "ddd0d021",
+        "logicTrace": []
+      },
+      {
+        "seed": 33365067,
+        "regions": [
+          "BAAAAA",
+          "BAADDA",
+          "BCCCDD",
+          "BEEDDF",
+          "BEEDFF",
+          "BBBBFF"
+        ],
+        "solution": [
+          3,
+          0,
+          2,
+          4,
+          1,
+          5
+        ],
+        "givens": [],
+        "steps": 22,
+        "profile": [
+          6,
+          4,
+          12
+        ],
+        "rating": 7549.33,
+        "pidHash": "1bdc71fc",
+        "logicTrace": []
+      }
+    ],
+    "5": []
+  }
+}

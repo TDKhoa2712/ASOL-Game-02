@@ -120,6 +120,39 @@ def validate_bank(bank: dict) -> list[str]:
     return errors
 
 
+def validate_flat_bank(bank: dict) -> list[str]:
+    """Validate a flat/mixed bank dictionary (Variant B)."""
+    errors = []
+    if not isinstance(bank, dict):
+        return ["Root JSON must be a dictionary"]
+
+    if bank.get("bankVersion") != BANK_VERSION:
+        errors.append(f"Expected bankVersion {BANK_VERSION}, got {bank.get('bankVersion')}")
+
+    bank_type = bank.get("type")
+    if not isinstance(bank_type, str) or not bank_type:
+        errors.append("Missing or invalid bank 'type'")
+
+    levels = bank.get("levels")
+    if not isinstance(levels, list):
+        errors.append("Missing or invalid 'levels' array")
+        return errors
+
+    for idx, lvl in enumerate(levels):
+        if not isinstance(lvl, dict):
+            errors.append(f"Level [{idx}] is not a dictionary")
+            continue
+        size = lvl.get("size")
+        if not isinstance(size, int) or size < 4 or size > 12:
+            errors.append(f"Level [{idx}] invalid size {size}")
+            continue
+        lvl_errors = validate_bank_level(lvl, size)
+        for err in lvl_errors:
+            errors.append(f"Level [{idx}]: {err}")
+
+    return errors
+
+
 def validate_pace_against_bank(pace: dict, bank: dict) -> list[str]:
     """Validate pace structure and verify consistency with bank data."""
     errors = []
@@ -129,6 +162,34 @@ def validate_pace_against_bank(pace: dict, bank: dict) -> list[str]:
     if pace.get("bankVersion") != PACE_VERSION:
         errors.append(f"Pace bankVersion expected {PACE_VERSION}, got {pace.get('bankVersion')}")
 
+    if "levels" in bank:
+        # Variant B Flat Bank Pace
+        if pace.get("type") != bank.get("type"):
+            errors.append(f"Pace type '{pace.get('type')}' does not match bank type '{bank.get('type')}'")
+        pace_levels = pace.get("levels")
+        if not isinstance(pace_levels, list):
+            errors.append("Missing or non-array 'levels' in pace")
+            return errors
+        bank_levels = bank.get("levels", [])
+        if len(pace_levels) != len(bank_levels):
+            errors.append(f"Pace level count {len(pace_levels)} does not match bank count {len(bank_levels)}")
+            return errors
+        for idx, entry in enumerate(pace_levels):
+            if not isinstance(entry, dict):
+                errors.append(f"Pace level [{idx}] is not a dictionary")
+                continue
+            r_seq = entry.get("rSeq")
+            hint_costs = entry.get("hintCosts")
+            if not isinstance(r_seq, list):
+                errors.append(f"Pace level [{idx}] missing 'rSeq' array")
+            if not isinstance(hint_costs, list):
+                errors.append(f"Pace level [{idx}] missing 'hintCosts' array")
+            if isinstance(r_seq, list) and isinstance(hint_costs, list):
+                if len(r_seq) != len(hint_costs):
+                    errors.append(f"Pace level [{idx}] rSeq length {len(r_seq)} != hintCosts {len(hint_costs)}")
+        return errors
+
+    # Variant A Ranked Bank Pace
     size = pace.get("size")
     if size != bank.get("size"):
         errors.append(f"Pace size {size} does not match bank size {bank.get('size')}")
@@ -169,6 +230,7 @@ def validate_pace_against_bank(pace: dict, bank: dict) -> list[str]:
     return errors
 
 
+
 def validate_file(target_path: Path, pace_path: Path | None = None,
                   bank_path: Path | list[Path] | None = None) -> list[str]:
     """Validate file based on type and additional options."""
@@ -190,7 +252,7 @@ def validate_file(target_path: Path, pace_path: Path | None = None,
 
     # Determine file type
     if "ranks" in data:
-        # Bank file
+        # Ranked Bank file (Variant A)
         errors = validate_bank(data)
         if pace_path:
             if not pace_path.exists():
@@ -204,7 +266,23 @@ def validate_file(target_path: Path, pace_path: Path | None = None,
                     errors.append(f"Failed to read pace file {pace_path}: {exc}")
         return errors
 
+    elif "levels" in data and "type" in data:
+        # Flat Bank file (Variant B)
+        errors = validate_flat_bank(data)
+        if pace_path:
+            if not pace_path.exists():
+                errors.append(f"Pace file not found: {pace_path}")
+            else:
+                try:
+                    with open(pace_path, "r", encoding="utf-8") as f:
+                        pace_data = json.load(f)
+                    errors.extend(validate_pace_against_bank(pace_data, data))
+                except Exception as exc:
+                    errors.append(f"Failed to read pace file {pace_path}: {exc}")
+        return errors
+
     elif "playlist" in data:
+
         # Campaign playlist
         banks: dict[int, dict] = {}
         for bp in bank_paths:

@@ -2,6 +2,7 @@
 extends Control
 
 signal play_pressed()
+signal endless_pressed()
 signal options_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
@@ -10,9 +11,12 @@ const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 
 var runtime: Variant = null
+var endless_runtime: Variant = null
 
 var title_label: Label
 var play_btn: Button
+var campaign_subtitle: Label
+var endless_btn: Button
 var options_btn: Button
 var help_btn: Button
 var debug_btn: Button
@@ -98,13 +102,22 @@ func _ensure_nodes() -> void:
 	var actions := VBoxContainer.new()
 	actions.name = "ActionBlock"
 	actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("separation", 16)
 	frame.add_child(actions)
+
+	# 1. Campaign button container
+	var campaign_box := VBoxContainer.new()
+	campaign_box.name = "CampaignBox"
+	campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	campaign_box.add_theme_constant_override("separation", 4)
+	actions.add_child(campaign_box)
+
 	play_btn = Button.new()
 	play_btn.name = "PlayButton"
-	play_btn.custom_minimum_size = Vector2(560, 114)
+	play_btn.custom_minimum_size = Vector2(560, 100)
 	play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	play_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	play_btn.add_theme_font_size_override("font_size", 42)
+	play_btn.add_theme_font_size_override("font_size", 40)
 	var btn_font := FontTokens.body_semibold()
 	if btn_font != null:
 		play_btn.add_theme_font_override("font", btn_font)
@@ -117,7 +130,40 @@ func _ensure_nodes() -> void:
 	play_style.set_content_margin_all(16)
 	for state in ["normal", "hover", "pressed", "focus"]:
 		play_btn.add_theme_stylebox_override(state, play_style)
-	actions.add_child(play_btn)
+	campaign_box.add_child(play_btn)
+
+	campaign_subtitle = Label.new()
+	campaign_subtitle.name = "CampaignSubtitle"
+	campaign_subtitle.text = "1->30"
+	campaign_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	campaign_subtitle.add_theme_font_size_override("font_size", 22)
+	campaign_subtitle.add_theme_color_override("font_color", Palette.INK_LIGHT)
+	var sub_font := FontTokens.body()
+	if sub_font != null:
+		campaign_subtitle.add_theme_font_override("font", sub_font)
+	campaign_box.add_child(campaign_subtitle)
+
+	# 2. Endless button
+	endless_btn = Button.new()
+	endless_btn.name = "EndlessButton"
+	endless_btn.custom_minimum_size = Vector2(560, 90)
+	endless_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	endless_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	endless_btn.add_theme_font_size_override("font_size", 36)
+	if btn_font != null:
+		endless_btn.add_theme_font_override("font", btn_font)
+	var endless_style := StyleBoxFlat.new()
+	endless_style.bg_color = Palette.PILL_BG
+	endless_style.set_corner_radius_all(999)
+	endless_style.shadow_color = Palette.CARD_SHADOW
+	endless_style.shadow_size = 8
+	endless_style.shadow_offset = Vector2(0, 3)
+	endless_style.set_content_margin_all(14)
+	for state in ["normal", "hover", "pressed", "focus"]:
+		endless_btn.add_theme_stylebox_override(state, endless_style)
+	endless_btn.add_theme_color_override("font_color", Palette.INK)
+	actions.add_child(endless_btn)
+
 	var bottom_spacer := Control.new()
 	bottom_spacer.custom_minimum_size.y = 80
 	frame.add_child(bottom_spacer)
@@ -141,21 +187,24 @@ func _ready() -> void:
 	_ensure_nodes()
 	if play_btn != null and not play_btn.pressed.is_connected(_on_play):
 		play_btn.pressed.connect(_on_play)
+	if endless_btn != null and not endless_btn.pressed.is_connected(_on_endless):
+		endless_btn.pressed.connect(_on_endless)
 	if options_btn != null and not options_btn.pressed.is_connected(_on_options):
 		options_btn.pressed.connect(_on_options)
 	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
 		help_btn.pressed.connect(_on_help)
 	if debug_btn != null and not debug_btn.pressed.is_connected(_on_debug_pressed):
 		debug_btn.pressed.connect(_on_debug_pressed)
-	for btn in [play_btn, options_btn, help_btn, debug_btn]:
+	for btn in [play_btn, endless_btn, options_btn, help_btn, debug_btn]:
 		if btn != null:
 			btn.pivot_offset = btn.size * 0.5
 			btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
 			_add_press_anim(btn)
 	_update_ui()
 
-func setup(rt: Variant) -> void:
+func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	runtime = rt
+	endless_runtime = endless_rt
 	_ensure_nodes()
 	_update_ui()
 	if debug_picker != null and rt != null:
@@ -174,17 +223,24 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 
 func _update_ui() -> void:
-	if runtime == null:
-		return
-	var label: String = runtime.current_level_label()
-	if play_btn != null:
-		if runtime.is_campaign_done():
-			play_btn.text = tr("title.replay")
-		else:
-			play_btn.text = tr("title.play") % label.trim_prefix("L")
+	if runtime != null:
+		var label: String = runtime.current_level_label()
+		if play_btn != null:
+			if runtime.is_campaign_done():
+				play_btn.text = tr("title.replay")
+			else:
+				play_btn.text = tr("title.play") % label.trim_prefix("L")
+	if endless_btn != null:
+		var endless_num: int = 1
+		if endless_runtime != null and endless_runtime.progress != null:
+			endless_num = endless_runtime.progress.get_level_num()
+		endless_btn.text = "Level %d" % endless_num
 
 func _on_play() -> void:
 	play_pressed.emit()
+
+func _on_endless() -> void:
+	endless_pressed.emit()
 
 func _on_options() -> void:
 	options_pressed.emit()
