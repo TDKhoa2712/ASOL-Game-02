@@ -20,7 +20,7 @@
 
 ## Chế độ Endless Levels (Hoàn thành Phase 1–4, 2026-10-07)
 
-- Hoàn thành đầy đủ 4 phase của kế hoạch Endless Levels (`docs/superpowers/plans/2026-10-07-endless-levels-plan.md`):
+- Hoàn thành đầy đủ 4 phase của kế hoạch Endless Levels:
   - **Phase 1 (Bank Conversion & Pace):** Mở rộng `tools/convert_extracted_bank.py` sang `BANK_REGISTRY` với 9 bank types và 31 file bank, sinh 100% file `.pace.json` sidecars, mở rộng `BankReader` hỗ trợ Variant B (Flat bank) và `FlatBankCache`. Tổng cộng 36.573 levels sẵn sàng offline.
   - **Phase 2 (Core Selection Pipeline):** Kiến trúc 4-tier selection: Milestone (SP), Super Hard, DDA SingleRegion support, Main Pool relaxation (7 phase). Hệ thống con trỏ BankCursor, MainCursor, SuperHardCursor; PoolRegistry, PoolBuilder, PoolPicker; SettlementHandler và LevelSelector.
   - **Phase 3 (Integration & UI):** Tách `EndlessRuntime` độc lập ($\le 300$ dòng), tích hợp nâng cấp ProgressManager Schema v3 (lưu khối `"endless"` không phá vỡ dữ liệu Campaign cũ), tích hợp Title Screen (nút Campaign có subtitle `1->30`, nút Endless hiển thị `Level %d`), tích hợp điều hướng AppShell và NavController cho 2 chế độ.
