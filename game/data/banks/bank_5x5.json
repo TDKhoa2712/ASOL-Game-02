@@ -4545,51 +4545,72 @@
         ]
       },
       {
-        "seed": 577,
+        "seed": 50,
         "regions": [
-          "AABBB",
-          "CABBB",
-          "CABBD",
-          "CAEDD",
-          "EEEEE"
+          "ABBBC",
+          "AADCC",
+          "DADCE",
+          "DDDCC",
+          "DDDCC"
         ],
         "solution": [
-          1,
-          3,
+          2,
           0,
           4,
-          2
+          1,
+          3
         ],
-        "givens": [
-          {
-            "r": 0,
-            "c": 1
-          }
-        ],
+        "givens": [],
         "steps": 7,
         "profile": [
-          4,
-          3,
+          5,
+          2,
           0
         ],
         "rating": 32,
-        "pidHash": "7589ec92",
+        "pidHash": "988d32ee",
         "logicTrace": [
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "E"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 4
+            },
+            "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "region",
+              "id": "C"
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 4,
+              "c": 3
+            },
+            "textKey": "hint.single.region"
+          },
           {
             "rule": "S3",
             "source": {
               "type": "region",
-              "id": "C"
+              "id": "B"
             },
             "target": {
-              "type": "column",
+              "type": "row",
               "id": 0
             },
             "conclusion": {
               "type": "eliminate",
               "cells": [
                 {
-                  "r": 4,
+                  "r": 0,
                   "c": 0
                 }
               ]
@@ -4599,44 +4620,19 @@
           {
             "rule": "S3",
             "source": {
-              "type": "row",
-              "id": 4
+              "type": "region",
+              "id": "A"
             },
             "target": {
-              "type": "region",
-              "id": "E"
-            },
-            "conclusion": {
-              "type": "eliminate",
-              "cells": [
-                {
-                  "r": 3,
-                  "c": 2
-                }
-              ]
-            },
-            "textKey": "hint.lock.intersection"
-          },
-          {
-            "rule": "S3",
-            "source": {
               "type": "row",
               "id": 1
             },
-            "target": {
-              "type": "region",
-              "id": "B"
-            },
             "conclusion": {
               "type": "eliminate",
               "cells": [
                 {
-                  "r": 2,
+                  "r": 1,
                   "c": 2
-                },
-                {
-                  "r": 2,
-                  "c": 3
                 }
               ]
             },
@@ -4650,7 +4646,7 @@
             },
             "conclusion": {
               "type": "place",
-              "r": 4,
+              "r": 0,
               "c": 2
             },
             "textKey": "hint.single.column"
@@ -4658,41 +4654,28 @@
           {
             "rule": "S2",
             "focus": {
-              "type": "column",
-              "id": 3
+              "type": "region",
+              "id": "A"
             },
             "conclusion": {
               "type": "place",
               "r": 1,
-              "c": 3
+              "c": 0
             },
-            "textKey": "hint.single.column"
+            "textKey": "hint.single.region"
           },
           {
             "rule": "S2",
             "focus": {
-              "type": "region",
-              "id": "D"
+              "type": "row",
+              "id": 3
             },
             "conclusion": {
               "type": "place",
               "r": 3,
-              "c": 4
+              "c": 1
             },
-            "textKey": "hint.single.region"
-          },
-          {
-            "rule": "S2",
-            "focus": {
-              "type": "region",
-              "id": "C"
-            },
-            "conclusion": {
-              "type": "place",
-              "r": 2,
-              "c": 0
-            },
-            "textKey": "hint.single.region"
+            "textKey": "hint.single.row"
           }
         ]
       },
