@@ -67,7 +67,7 @@ static func build(root: Control) -> Dictionary:
 	status.name = "StatusRow"
 	status.add_theme_constant_override("separation", 16)
 	stack.add_child(status)
-	var region_pill := _panel("RegionProgressPill", Palette.PILL_RADIUS, Palette.SHADOW_SOFT)
+	var region_pill := _panel("RegionProgressPill", Palette.CARD_CORNER, Palette.SHADOW_SOFT)
 	region_pill.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	status.add_child(region_pill)
 	var region_row := HBoxContainer.new()
@@ -75,11 +75,11 @@ static func build(root: Control) -> Dictionary:
 	region_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	region_row.add_theme_constant_override("separation", 10)
 	region_pill.add_child(region_row)
-	var lives_pill := _panel("LivesPill", Palette.PILL_RADIUS, Palette.SHADOW_SOFT)
+	var lives_pill := _panel("LivesPill", Palette.CARD_CORNER, Palette.SHADOW_SOFT)
 	status.add_child(lives_pill)
 	var lives_row := HeartsDisplay.new()
 	lives_row.name = "LifeIcons"
-	lives_row.add_theme_constant_override("separation", 6)
+	lives_row.add_theme_constant_override("separation", 8)
 	lives_pill.add_child(lives_row)
 
 	var rules := _panel("RuleCard", Palette.CARD_CORNER, Palette.SHADOW_SOFT)

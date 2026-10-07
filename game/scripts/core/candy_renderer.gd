@@ -21,7 +21,7 @@ static func texture_for_type(candy_type: String) -> Texture2D:
 static func type_for_level(level_index: int) -> String:
 	if level_index < 0 or level_index >= 30:
 		return "bonbon"
-	return CandyPalette.CANDY_TYPES[level_index / 5]
+	return CandyPalette.CANDY_TYPES[int(level_index / 5.0)]
 
 static func type_for_label(label: String) -> String:
 	if not label.begins_with("L") or not label.substr(1).is_valid_int():

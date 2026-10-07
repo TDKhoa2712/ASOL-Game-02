@@ -80,23 +80,24 @@ func boot() -> Dictionary:
 		resume_level()
 	return {"ok": true, "level": current_level_data(), "pace_entry": current_pace(), "error": ""}
 
-func start_level(label: String) -> PlaySession:
-	if label != current_level_label() or is_campaign_done():
+func start_level(label: String = "") -> PlaySession:
+	var target_label := label if label != "" else current_level_label()
+	if target_label != current_level_label() or is_campaign_done():
 		return null
 	pace_adjuster.on_level_start()
 	var level := current_level_data()
 	if level.is_empty():
 		return null
 	var snapshot: Dictionary
-	if not _current_snapshot.is_empty() and _current_snapshot.get("level_id") == label:
+	if not _current_snapshot.is_empty() and _current_snapshot.get("level_id") == target_label:
 		snapshot = _current_snapshot
 		var restored := SnapshotBuilder.restore_level(snapshot)
 		restored["hash"] = level.hash
 		level = restored
 	else:
-		var selected_entry := _resolve_playlist_entry(label).duplicate(true)
+		var selected_entry := _resolve_playlist_entry(target_label).duplicate(true)
 		selected_entry.rank = _dda_adjusted_rank(selected_entry)
-		snapshot = SnapshotBuilder.build(label, level, selected_entry, Palette.ZONE_COLORS)
+		snapshot = SnapshotBuilder.build(target_label, level, selected_entry, Palette.ZONE_COLORS)
 		snapshot["puzzle_hash"] = level.hash
 	_current_snapshot = snapshot
 	var session := PlaySession.new(level)
@@ -106,7 +107,7 @@ func start_level(label: String) -> PlaySession:
 		save_failed.emit("session_start")
 		return null
 	current_session = session
-	level_started.emit(label)
+	level_started.emit(target_label)
 	return session
 
 func resume_level() -> PlaySession:

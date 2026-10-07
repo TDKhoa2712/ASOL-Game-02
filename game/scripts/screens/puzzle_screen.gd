@@ -100,7 +100,7 @@ func _update_timer(_delta: float) -> void:
 	if timer_label == null or session == null:
 		return
 	var total_secs: int = int(session.elapsed_ms / 1000.0)
-	var mins: int = total_secs / 60
+	var mins: int = int(total_secs / 60.0)
 	var secs: int = total_secs % 60
 	timer_label.text = "%02d:%02d" % [mins, secs]
 

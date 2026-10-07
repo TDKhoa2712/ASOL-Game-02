@@ -183,7 +183,7 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 			ranks[r][sc] = 4
 	return ranks
 
-static func replay_solve(size: int, regions: Array, solution: Array, givens: Array) -> Dictionary:
+static func replay_solve(size: int, regions: Array, _solution: Array, givens: Array) -> Dictionary:
 	var board := _empty_board(size)
 	for g in givens:
 		var gr: int = int(g.get("r", g.get("row", -1))) if g is Dictionary else int(g[0])

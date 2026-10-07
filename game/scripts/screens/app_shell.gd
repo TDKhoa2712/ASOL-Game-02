@@ -72,7 +72,10 @@ func _ready() -> void:
 	if endless_runtime != null and not endless_runtime.save_failed.is_connected(_on_save_failed):
 		endless_runtime.save_failed.connect(_on_save_failed)
 
-	if runtime.playlist_order().is_empty():
+	if not GameFeatures.is_campaign_enabled() and GameFeatures.is_endless_enabled():
+		_mode = "endless"
+
+	if GameFeatures.is_campaign_enabled() and runtime.playlist_order().is_empty():
 		var boot_res := runtime.boot()
 		if not boot_res.get("ok", false):
 			_on_boot_error(str(boot_res.get("error", "Boot failed")))
@@ -82,8 +85,8 @@ func _ready() -> void:
 		nav = NavController.new()
 		nav.screen_changed.connect(_swap_screen)
 
-	if ResourceLoader.exists(BGM_TRACK) and DisplayServer.get_name() != "headless":
-		bgm.play_track(BGM_TRACK)
+	if ResourceLoader.exists(BGM_TRACK):
+		bgm.call_deferred("play_track", BGM_TRACK)
 
 	if screen_host == null:
 		screen_host = Control.new()
@@ -161,10 +164,10 @@ func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 				_debug_next["id"] = nxt; _debug_next["_playlist_label"] = nxt
 	elif level_data.has("_bank_meta") and runtime != null and runtime.bank != null:
 		var m: Dictionary = level_data._bank_meta; var s: int = int(m.get("size", 4)); var r: int = int(m.get("rank", 1))
-		var nxt_i: int = int(m.get("index", 0)) + 1; var tr: int = int(m.get("transform", 0))
+		var nxt_i: int = int(m.get("index", 0)) + 1; var tf_id: int = int(m.get("transform", 0))
 		if nxt_i < runtime.bank.level_count(s, r):
-			_debug_next = runtime._fetch_level(s, r, nxt_i, tr); _debug_next_lbl = "Bank %dx%d R%d #%d" % [s, s, r, nxt_i]; _debug_next["id"] = _debug_next_lbl
-			_debug_next["_bank_meta"] = {"size": s, "rank": r, "index": nxt_i, "transform": tr}
+			_debug_next = runtime._fetch_level(s, r, nxt_i, tf_id); _debug_next_lbl = "Bank %dx%d R%d #%d" % [s, s, r, nxt_i]; _debug_next["id"] = _debug_next_lbl
+			_debug_next["_bank_meta"] = {"size": s, "rank": r, "index": nxt_i, "transform": tf_id}
 	elif level_data.has("_endless_level_num") and endless_runtime != null:
 		var nxt_n: int = int(level_data._endless_level_num) + 1
 		var p = load("res://scripts/endless/endless_progress.gd").new(); p.set_level_num(nxt_n)
