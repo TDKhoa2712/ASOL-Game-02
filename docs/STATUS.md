@@ -1,6 +1,23 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-07
+> Cập nhật: 2026-10-08
+
+## Chuẩn hóa Repo, cố định Undo X & Full Gate PASS (nhánh `dev`, 2026-10-08)
+
+- **Cố định Undo X (RST-021):** Giữ Undo X luôn hoạt động bình thường trong gameplay (hoàn tác X-mark cuối), loại bỏ toggle bật/tắt trong màn hình Cài đặt (Options Screen) và cấu hình `config_store`. Các test suite `test_config_store.gd` và `test_screens.gd` được cập nhật đồng bộ.
+- **Khắc phục lỗi tích hợp và tương thích:**
+  - `app_shell.gd`: Bổ sung kiểm tra `is_inside_tree()` khi phát BGM khởi động để không gây lỗi khi chạy unit test / headless. Tái lập `_on_options_back()` để đồng bộ trạng thái khi đóng Options overlay. Tối ưu mã nguồn đưa file về 285 dòng (đạt chuẩn $\le 300$ dòng).
+  - `puzzle_board.gd` & `puzzle_screen.gd`: Thêm phương thức `skip_entry_wave()` giúp kết thúc ngay hiệu ứng sóng khi mở Cài đặt, bảo đảm `test_board_entry.gd` PASS.
+  - `test_sfx_gameplay.gd`: Hỗ trợ Options Overlay, hoàn thành kiểm thử SFX chỉ trong ~5 giây.
+  - `export_presets.cfg`: Khôi phục preset mẫu probe để `test_export_presets.py` PASS 100%.
+- **Dọn dẹp rác & Artifacts:**
+  - Xóa bỏ toàn bộ thư mục `rive-assets/` (dự án Rive studio logo bị thay thế bởi native Godot splash screen).
+  - Xóa các file build APK cục bộ (`build/android/` và `game/build/android/`), giải phóng ~85MB.
+  - Xóa thư mục lưu trữ tài nguyên cũ `game/assets/archive/` (30 file icon/SVG pre-rebuild không còn sử dụng).
+  - Dọn dẹp thư mục `scratch/`, xóa các log verification cũ và ảnh chụp test.
+  - Dọn dẹp các git branch local cũ (`feat/core-game-features`, `feat/studio-splash-animation`, `fix/audio-bgm-settings-timing`) và xóa sạch worktree phụ và git stashes.
+- **Kiểm chứng Full Gate:** 66/66 checks PASS 100% qua `python -B tools/verify.py --godot <executable>`. Toàn bộ module trong `game/scripts/` đều $\le 300$ dòng. Clean-room 0 match.
+
 
 ## Hiệu chỉnh BGM và cue mở Settings (nhánh `feat/core-game-features`, 2026-10-07)
 

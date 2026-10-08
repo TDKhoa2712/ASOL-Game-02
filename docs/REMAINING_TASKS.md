@@ -1,8 +1,8 @@
 # Danh mục Tiến độ và Các vấn đề Tồn đọng — CanDoKu
 
-> **Ngày cập nhật:** 05-10-2026  
-> **Nền tích hợp:** Nhánh `dev` (Commit `add0173`)  
-> **Mục tiêu hiện tại:** Hoàn thiện tài nguyên (Track D), Kiểm thử thực tế (Track E), và Chuẩn bị phát hành (Track F).
+> **Ngày cập nhật:** 08-10-2026  
+> **Nền tích hợp:** Nhánh `dev`  
+> **Mục tiêu hiện tại:** Kiểm thử thực tế (Track E), Phông chữ tiếng Việt (Track D2) và Chuẩn bị phát hành (Track F).
 
 ---
 
@@ -12,10 +12,10 @@
 |---|---|---|
 | **Rebuild 10 Modules (M01–M10)** | ✅ Hoàn thành 100% | Độc lập, không phụ thuộc code reference, signals native. |
 | **System Upgrade & Tooling** | ✅ Hoàn thành 100% | Solver S4–S7, DDA PaceAdjuster, ShapeFingerprint, XOR Codec. |
-| **Nội dung 998 Màn chơi** | ✅ Hoàn thành 100% | 4×4 (36), 5×5 (49), 6×6 (913), hỗ trợ cả `demo_30` và `full_998`. |
-| **Hệ thống Procedural SFX** | ✅ Hoàn thành 100% | Tự sinh 9 hiệu ứng âm thanh bằng PCM Synth, kèm bộ tinh chỉnh `sfx_tuner`. |
-| **Sửa lỗi Tiến trình & Normal Play** | ✅ Hoàn thành 100% | Khắc phục xung đột debug session, sửa lỗi không lưu tiến trình khi thắng. |
-| **Tài nguyên Mỹ thuật & Nhạc nền (Track D)** | ⚠️ **Tồn đọng** | Thiếu BGM, phông chữ tiếng Việt chính thức, Logo và bộ Sprite kẹo. |
+| **Kho nội dung 36.500+ Màn (N=4–12)** | ✅ Hoàn thành 100% | 31 bank offline, hỗ trợ Campaign 30, 100, 998 và Endless Mode. |
+| **Hệ thống Endless Levels (Phases 1–4)** | ✅ Hoàn thành 100% | 4-tier selection, EndlessRuntime, Title Screen integration. |
+| **Hệ thống Procedural SFX & Tuner** | ✅ Hoàn thành 100% | Tự sinh 19 hiệu ứng PCM Synth, công cụ `sfx_tuner.tscn`, whoosh SFX. |
+| **Tài nguyên Mỹ thuật & Nhận diện (Track D)** | ✅ Cơ bản hoàn thành | Đã có Logo, 6 Sprite kẹo chính thức, 9 nút Settings, Splash Screen, Heart Sprite. |
 | **Kiểm thử Trải nghiệm Thiết bị (Track E)** | ⚠️ **Tồn đọng** | Chưa chạy QA cử chỉ cảm ứng, Safe Area và playtest người dùng thật. |
 | **Đóng gói Phát hành (Track F)** | ⚠️ **Tồn đọng** | Cần cấu hình Keystore Android, mã hóa Bank khi build APK. |
 
@@ -28,47 +28,42 @@
    - Bỏ tự động khóa ô (auto-lock); giữ `ERROR` vĩnh viễn không tẩy xóa.
    - Hỗ trợ vuốt kéo (swipe drag) tô/xóa X qua nhiều ô.
    - Sửa triệt để lỗi chớp nháy X khi chạm đúp (RST-016).
-   - Giữ nút Undo X có toggle cấu hình trong Cài đặt (RST-017).
-   - Đầy đủ luồng màn hình: `TitleScreen` $\leftrightarrow$ `PuzzleScreen` $\leftrightarrow$ `WinScreen` / `FailScreen` $\leftrightarrow$ `OptionsScreen`.
+   - Undo X luôn hoạt động cố định trong gameplay (RST-021).
+   - Đầy đủ luồng màn hình: `SplashScreen` $\rightarrow$ `TitleScreen` $\leftrightarrow$ `PuzzleScreen` $\leftrightarrow$ `WinScreen` / `FailScreen`, Options Overlay.
 
 2. **Dữ liệu & Thuật toán sinh màn**:
-   - Sinh bộ dữ liệu 998 level gốc có nghiệm duy nhất và pace gợi ý đi kèm.
-   - Hỗ trợ hai chế độ playlist: `demo_30.json` (30 màn cross-size) và `full_998.json`.
+   - Sinh bộ dữ liệu 36.500+ level offline có nghiệm duy nhất và pace gợi ý đi kèm cho N=4–12.
+   - Hỗ trợ các chế độ: `demo_30.json`, `campaign_100.json`, `full_998.json`, `advanced.json`.
    - Thuật toán giải đố nâng cao S4–S7 (Subset Pairs, Triples, Quads, Contradiction chains).
    - Hệ thống điều chỉnh độ khó động DDA (`PaceAdjuster`) theo chuỗi thắng/thua.
+   - Chế độ Endless Levels với 4-tier selection pipeline và con trỏ cursor độc lập.
 
-3. **Âm thanh tự sinh (Procedural SFX Engine)**:
-   - Viết mới `pcm_synth.gd` sinh sóng âm thanh 16-bit PCM (Sine, Square, Triangle, Sawtooth, ADSR envelope, filter).
-   - 9 effect SFX định nghĩa sẵn trong code, không cần file `.ogg` ngoài.
-   - Pool 8 voice đa âm (polyphony), biến thiên cao độ (pitch variation), giới hạn tần suất đánh X.
+3. **Âm thanh & Hiệu ứng tương tác**:
+   - Viết mới `pcm_synth.gd` sinh sóng âm thanh 16-bit PCM (19 hiệu ứng SFX).
+   - BGM loop đã sửa (`bgm-candoku-melody.wav`), SFX whoosh mở Settings.
+   - Hiệu ứng vỡ tim rơi (`heart_sprite.png`) và hiệu ứng sóng vào bàn cờ (`board_entry`).
    - Bộ công cụ trực quan `sfx_tuner.tscn` (nhấn `F6` để thử nghiệm và sao chép cấu hình).
 
-4. **Sửa lỗi Chế độ chơi bình thường & Lưu tiến trình**:
-   - Cách ly hoàn toàn dữ liệu session khi chọn màn ở Debug Picker, không ghi đè vào file save chiến dịch.
-   - Sửa lỗi bàn cờ rỗng khi `resume_level()` trả về null (bổ sung fallback sang `start_level()`).
-   - Sửa hàm `advance_level()` trong `progress_manager.gd`: Cho phép chơi lại màn đã qua vẫn lưu điểm và tiến màn bình thường.
-   - Bổ sung cơ chế tự động khôi phục (`auto-recovery` khi `boot()`): Tự động phát hiện và đưa người chơi về màn đầu tiên chưa hoàn thành (Level 22) nếu file lưu bị lệch do debug.
+4. **Tài nguyên Mỹ thuật & Nhận diện**:
+   - Bộ Sprite kẹo PNG 2D hoàn chỉnh: `bonbon.png`, `cotton_puff.png`, `gummy_drop.png`, `hard_candy.png`, `lollipop.png`, `toffee.png`.
+   - Bộ 9 nút cài đặt RGBA PNG 192×192 trong `game/assets/ui/settings/`.
+   - Logo CanDoKu chính thức `logo_candoku.png`.
+   - Studio Logo Splash Screen native Godot (`splash_screen.gd`).
 
 ---
 
 ## 3. Danh mục các Hạng mục Còn Tồn đọng (Backlog)
 
-### 📌 Track D: Hoàn thiện Tài nguyên (Asset Production)
+### 📌 Track D: Hoàn thiện Tài nguyên Còn Thiếu
 
-> *Hiện tại game đang chạy bằng SFX tự sinh và tài nguyên tạm (placeholder).*
-
-- [ ] **D1. Nhạc nền chính — BGM `bgm/main_theme.ogg` (Độ ưu tiên: P0)**:
-  - Cần 1 bài nhạc nền loop 60–90 giây, phong cách nhẹ nhàng, thư giãn (cozy puzzle), định dạng OGG Vorbis 48kHz stereo, âm lượng chuẩn hóa khoảng -14 LUFS.
-  - Hiện tại code đang kiểm tra nếu không có file sẽ chạy ở chế độ im lặng.
+- [ ] **D1. Tối ưu định dạng BGM (Độ ưu tiên: P1)**:
+  - Hiện tại BGM đang chạy file WAV (`bgm-candoku-melody.wav`). Cần xuất/nén sang OGG Vorbis 48kHz để tối ưu dung lượng đóng gói bản xuất xưởng.
 - [ ] **D2. Phông chữ Tiếng Việt chính thức (Độ ưu tiên: P0)**:
-  - **Font chính giao diện**: Cần chọn và nhập font chuẩn (Inter, Nunito, hoặc Be Vietnam Pro) hỗ trợ tiếng Việt có dấu đầy đủ, tối ưu hiển thị trên màn hình di động (thay thế font mặc định của Godot).
+  - **Font chính giao diện**: Cần chọn và nhập font chuẩn (Inter, Nunito, hoặc Be Vietnam Pro) hỗ trợ tiếng Việt có dấu đầy đủ, tối ưu hiển thị trên màn hình di động.
   - **Font số HUD**: Cần font số cố định độ rộng (Monospace / Tabular figures) cho đồng hồ đếm giờ và bộ đếm để không bị giật bố cục khi số nhảy.
-- [ ] **D3. Mỹ thuật 2D & Nhận diện (Độ ưu tiên: P0 / P1)**:
-  - **Logo CanDoKu (P0)**: Thiết kế logo chính thức thay thế file vector tạm `candy.svg`.
-  - **Bộ Sprite Kẹo (4–6 loại kẹo) (P0)**: Vẽ bộ sprite kẹo kích thước 128×128 pixel bắt mắt, có nhận diện hình học rõ ràng để hỗ trợ người dùng bật chế độ Hỗ trợ mù màu (Colorblind mode).
+- [ ] **D3. App Icon & Banner Đồ họa (Độ ưu tiên: P1)**:
   - **App Icon (P1)**: Kích thước 1024×1024 PNG phục vụ đóng gói Android/iOS.
-  - **Splash Screen (P1)**: Màn hình chờ khởi động game (1080×1920 hoặc vector co giãn).
-  - **Banner Thắng / Thua (P1)**: Đồ họa trang trí cho màn hình kết quả (Win/Fail Screen) kèm hiệu ứng sao (Stars).
+  - **Banner Thắng / Thua (P2)**: Đồ họa trang trí cho màn hình kết quả (Win/Fail Screen) kèm hiệu ứng sao (Stars).
 
 ---
 
