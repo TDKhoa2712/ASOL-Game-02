@@ -1,5 +1,14 @@
 # Quyết định điều hành hiện hành
 
+## RST-022 — Tích hợp Swipe Guards 3 lớp bảo vệ cảm ứng (Velocity, Axis Lock, Neighbor Guard)
+
+Ngày 2026-10-08. Triển khai bộ bảo vệ cử chỉ vuốt 3 lớp vào `touch_guard.gd` và tích hợp qua `board_pointer_router.gd`:
+
+- **Layer 1 (Velocity Gate):** Chặn các cú vuốt/scroll vô ý quá nhanh vượt `MAX_VELOCITY_PX_PER_SEC = 2000.0 px/s`. Các thao tác kéo bình thường (kể cả kéo nhanh 1500 px/s ở 60Hz) vẫn được chấp nhận. Bỏ qua frame đầu tiên và frame cùng timestamp (dt=0).
+- **Layer 2 (Axis Lock Hysteresis):** Khi thao tác lệch rõ rệt theo một trục (tỉ lệ >= 1.5x), khóa cố định theo trục đó (Horizontal hoặc Vertical) cho đến khi nhấc ngón tay (`end_touch()`). Trò chơi cho phép vuốt chéo: nếu tỉ lệ < 1.5x, giữ nguyên cả hai trục (không ép về 0). Xử lý chính xác khi vuốt thẳng một trục (dx hoặc dy = 0) không bị deadlock.
+- **Layer 3 (Neighbor Guard):** Kiểm tra ô kề hợp lệ 8 hướng (kể cả ô chéo kề cạnh theo Chebyshev <= 1). Cho phép nội suy (`_interpolate_cells`) khi kéo nhanh qua các ô trên bàn cờ; chặn các bước nhảy bất thường vượt quá phạm vi bàn cờ.
+- **Tích hợp:** `board_pointer_router.gd` kiểm tra `verdict.allow`, áp dụng tọa độ đã snap trục, và kiểm tra ô cờ qua `filter_cell` trước khi chuyển tiếp sang `touch_decoder.gd`. Giữ nguyên tính độc lập của `touch_decoder.gd`.
+
 ## RST-021 — Giữ Undo X mặc định cố định, loại bỏ toggle cài đặt
 
 Ngày 2026-10-08. Chủ dự án chốt: Undo X vẫn hoạt động bình thường trong gameplay (hoàn tác thao tác đánh dấu X gần nhất), nhưng không còn là tùy chọn bật/tắt trong màn hình Cài đặt (Options Screen):
