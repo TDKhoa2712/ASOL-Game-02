@@ -2,6 +2,20 @@
 
 > Cập nhật: 2026-10-08
 
+## Tối ưu hóa hiệu năng đánh dấu X trên bàn cờ lớn (nhánh `perf/board-mark-x-optimization`, 2026-10-08)
+
+- **Triệu chứng & Nguyên nhân gốc:** Khi chơi trên điện thoại với kích thước bàn cờ lớn ($N=7 \to 12$, tối đa 144 ô), việc đánh dấu nhiều ô X gây giật lag do:
+  1. Mỗi ô X tĩnh được vẽ thủ công mỗi frame bằng `CellAnimator.draw_hand_drawn_x()`, thực hiện 2 `draw_polyline`, 4 `draw_circle` và tạo 2 heap array allocation (`PackedVector2Array`) cùng lượng giác `sin()`. Với 80 ô X = hơn 480 vector calls và 160 allocations mỗi frame, phá vỡ 2D batching của GPU.
+  2. Tra cứu mảng `_preview_cells.has([r, c])` và `_highlight_cells.has([r, c])` cấp phát 288 mảng tạm thời `[r, c]` trên heap mỗi frame = hơn 17.000 allocations rác/giây, gây nghẽn Garbage Collector trên thiết bị di động.
+- **Giải pháp triển khai:**
+  - `cell_animator.gd`: Bổ sung `CellAnimator.get_mark_texture(is_error, high_contrast) -> Texture2D`, sinh vector SVG texture bằng rasterizer ThorVG của Godot và cache vĩnh viễn trong bộ nhớ (`_tex_cache`).
+  - `puzzle_board.gd`: Chuyển đổi phương thức `_draw_cell_x()`. Nếu ô đang tween hoạt ảnh (`_mark_anims.has(cell)`), tiếp tục vẽ động progressive vector stroke để giữ trọn vẹn nét vẽ tay sống động. Các ô X tĩnh vẽ qua `draw_texture_rect()`, gom toàn bộ các ô X vào duy nhất 1 draw call thông qua 2D batcher của GPU.
+  - `puzzle_board.gd` & `puzzle_board_painter.gd`: Chuyển đổi tra cứu preview & highlight sang $O(1)$ Hash Set `_preview_set` và `_highlight_set` với khóa `Vector2i(r, c)`, xóa bỏ triệt để heap garbage allocations mỗi frame.
+- **Kiểm chứng Full Gate:**
+  - 100% tests PASS (66/66 checks qua `tools/verify.py` với thời gian ~159s).
+  - Clean-room check: 0 vi phạm tên thương mại/reference. Zero imports từ `extracted_reusable`. Mọi file mã nguồn $\le 300$ dòng (`puzzle_board.gd`: 295 dòng, `cell_animator.gd`: 114 dòng, `puzzle_board_painter.gd`: 96 dòng).
+  - Quyết định RST-023 được ghi nhận trong `docs/DECISIONS.md`.
+
 ## Chuẩn hóa Repo, cố định Undo X & Full Gate PASS (nhánh `dev`, 2026-10-08)
 
 - **Cố định Undo X (RST-021):** Giữ Undo X luôn hoạt động bình thường trong gameplay (hoàn tác X-mark cuối), loại bỏ toggle bật/tắt trong màn hình Cài đặt (Options Screen) và cấu hình `config_store`. Các test suite `test_config_store.gd` và `test_screens.gd` được cập nhật đồng bộ.

@@ -1,5 +1,14 @@
 # Quyết định điều hành hiện hành
 
+## RST-023 — Tối ưu hóa hiệu năng render và đánh dấu X trên bàn cờ lớn (Batched GPU Mark Texture & O(1) Sets)
+
+Ngày 2026-10-08. Khắc phục triệt để hiện tượng giật lag khi đánh dấu X trên thiết bị di động ở các bàn cờ kích thước lớn ($N=7 \to 12$, lên tới 144 ô):
+
+- **Pre-baked Vector Texture:** Tạo và lưu cache vĩnh viễn các texture X mark (`normal`, `high_contrast`, `error`) bằng ThorVG SVG rasterizer ngay trong bộ nhớ (`CellAnimator.get_mark_texture()`).
+- **Batched 2D Rendering:** Các ô X tĩnh trên bàn cờ được vẽ thông qua `draw_texture_rect()`, cho phép 2D Canvas Batcher của Godot gom toàn bộ hàng chục tới hàng trăm ô X vào 1 Draw Call duy nhất, giảm $99\%$ số lượng vector draw calls (`draw_polyline`, `draw_circle`) và triệt tiêu hàng nghìn heap allocations mỗi giây.
+- **Bảo toàn hoạt ảnh vẽ tay sống động:** Các ô X đang trong quá trình chuyển động (`_mark_anims.has(cell)`) vẫn duy trì hoạt ảnh vẽ tay uốn lượn progressive bằng `CellAnimator.draw_hand_drawn_x()`. Khi tween kết thúc, ô tự động chuyển sang chế độ batched texture.
+- **O(1) Hash Set tra cứu:** Chuyển đổi tra cứu mảng tạm `_preview_cells.has([r, c])` và `_highlight_cells.has([r, c])` sang tra cứu từ điển `_preview_set.has(Vector2i(r, c))` và `_highlight_set.has(Vector2i(r, c))`, loại bỏ hoàn toàn việc cấp phát 288 mảng tạm thời trên heap mỗi frame.
+
 ## RST-022 — Tích hợp Swipe Guards 3 lớp bảo vệ cảm ứng (Velocity, Multi-Axis Freedom, Neighbor Guard)
 
 Ngày 2026-10-08. Triển khai bộ bảo vệ cử chỉ vuốt 3 lớp vào `touch_guard.gd` và tích hợp qua `board_pointer_router.gd`:
