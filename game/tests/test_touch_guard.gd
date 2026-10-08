@@ -16,6 +16,16 @@ func _init() -> void:
 	_test_axis_lock_pure_vertical()
 	_test_axis_lock_diagonal_allowed()
 	_test_axis_lock_reset_on_end()
+	_test_neighbor_guard_adjacent_orthogonal_pass()
+	_test_neighbor_guard_adjacent_diagonal_pass()
+	_test_neighbor_guard_same_cell_pass()
+	_test_neighbor_guard_first_cell_pass()
+	_test_neighbor_guard_interpolatable_jump_pass()
+	_test_neighbor_guard_huge_jump_reject()
+	_test_neighbor_guard_skip_when_no_cell()
+	_test_neighbor_guard_filter_cell_method()
+	_test_pipeline_velocity_no_state_corruption()
+	_test_full_guard_end_to_end()
 	_test_diagonal_drag_is_allowed()
 	_test_new_gesture_resets_drag_state()
 	_test_zero_delta_time_is_allowed()
@@ -147,6 +157,94 @@ func _test_axis_lock_reset_on_end() -> void:
 	var r := g.filter_move(Vector2(110, 200), 2100)
 	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
 	_assert(delta.x == 0.0, "axis lock resets between gestures")
+
+func _test_neighbor_guard_adjacent_orthogonal_pass() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	var r := g.filter_move(Vector2(120, 100), 1200, Vector2i(0, 1))
+	_assert(bool(r.allow), "adjacent orthogonal cell passes neighbor guard")
+
+func _test_neighbor_guard_adjacent_diagonal_pass() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	# Chebyshev distance = 1 → diagonal adjacent cell passes
+	var r := g.filter_move(Vector2(120, 120), 1200, Vector2i(1, 1))
+	_assert(bool(r.allow), "adjacent diagonal cell passes neighbor guard")
+
+func _test_neighbor_guard_same_cell_pass() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(2, 3))
+	var r := g.filter_move(Vector2(115, 100), 1200, Vector2i(2, 3))
+	_assert(bool(r.allow), "same cell passes neighbor guard")
+
+func _test_neighbor_guard_first_cell_pass() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	# First cell in gesture always passes regardless of position
+	var r := g.filter_move(Vector2(110, 100), 1100, Vector2i(5, 5))
+	_assert(bool(r.allow), "first cell always passes neighbor guard")
+
+func _test_neighbor_guard_interpolatable_jump_pass() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	# Normal swipe jumping 2 cells on board (e.g. 0,0 to 2,2) allowed for interpolation
+	var r := g.filter_move(Vector2(130, 130), 1200, Vector2i(2, 2))
+	_assert(bool(r.allow), "interpolatable cell jump passes neighbor guard")
+
+func _test_neighbor_guard_huge_jump_reject() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	# Normal physical speed (20px in 100ms = 200 px/s) but huge jump across 50 cells rejected
+	var r := g.filter_move(Vector2(130, 100), 1200, Vector2i(0, 50))
+	_assert(not bool(r.allow), "huge jump rejected by neighbor guard")
+	_assert(str(r.get("reason", "")) == "neighbor", "reason is neighbor")
+
+func _test_neighbor_guard_skip_when_no_cell() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	# Default cell (-1, -1) skips neighbor guard
+	var r := g.filter_move(Vector2(130, 130), 1200)
+	_assert(bool(r.allow), "neighbor guard skipped when cell not provided")
+
+func _test_neighbor_guard_filter_cell_method() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	var r1 := g.filter_cell(Vector2i(1, 1))
+	_assert(bool(r1.allow), "filter_cell allows first cell")
+	var r2 := g.filter_cell(Vector2i(1, 2))
+	_assert(bool(r2.allow), "filter_cell allows adjacent cell")
+	var r_bad := g.filter_cell(Vector2i(-1, -1))
+	_assert(not bool(r_bad.allow), "filter_cell rejects negative cell")
+
+func _test_pipeline_velocity_no_state_corruption() -> void:
+	# Verify that a velocity rejection does not update axis or neighbor state
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(110, 100), 1100, Vector2i(0, 0))
+	# Fast move → velocity reject (>2000 px/s) → should NOT update _prev_cell
+	var r := g.filter_move(Vector2(5000, 100), 1101, Vector2i(0, 5))
+	_assert(not bool(r.allow), "velocity rejects fast move")
+	# Slow move to adjacent cell → should pass (prev_cell still 0,0)
+	var r2 := g.filter_move(Vector2(120, 100), 1200, Vector2i(0, 1))
+	_assert(bool(r2.allow), "adjacent cell after velocity reject passes")
+
+func _test_full_guard_end_to_end() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(50, 50), 1000)
+	# Slow, horizontal, adjacent → all 3 layers pass
+	var r1 := g.filter_move(Vector2(100, 55), 1100, Vector2i(0, 0))
+	_assert(bool(r1.allow), "first cell passes all guards")
+	var r2 := g.filter_move(Vector2(150, 58), 1200, Vector2i(0, 1))
+	_assert(bool(r2.allow), "adjacent horizontal cell passes")
+	var r3 := g.filter_move(Vector2(200, 60), 1300, Vector2i(0, 2))
+	_assert(bool(r3.allow), "next adjacent cell passes")
+	g.end_touch()
 
 func _test_diagonal_drag_is_allowed() -> void:
 	var guard := TouchGuard.new()

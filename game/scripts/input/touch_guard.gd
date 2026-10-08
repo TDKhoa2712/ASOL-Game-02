@@ -3,6 +3,7 @@ extends RefCounted
 const DRAG_THRESHOLD_PX := 12.0
 const MAX_VELOCITY_PX_PER_SEC := 2000.0
 const AXIS_LOCK_RATIO := 1.5
+const MAX_INTERPOLATE_SPAN := 12
 
 enum AxisLock { NONE, HORIZONTAL, VERTICAL }
 
@@ -20,6 +21,9 @@ var _cumulative_dx: float = 0.0
 var _cumulative_dy: float = 0.0
 var _current_pos: Vector2
 
+# Neighbor guard state
+var _prev_cell: Vector2i = Vector2i(-1, -1)
+
 func start_touch(pos: Vector2, time_ms: int) -> void:
 	_start_pos = pos
 	_drag_started = false
@@ -30,8 +34,21 @@ func start_touch(pos: Vector2, time_ms: int) -> void:
 	_cumulative_dx = 0.0
 	_cumulative_dy = 0.0
 	_current_pos = pos
+	_prev_cell = Vector2i(-1, -1)
 
-func filter_move(pos: Vector2, time_ms: int) -> Dictionary:
+func filter_cell(cell: Vector2i) -> Dictionary:
+	if cell.x < 0 or cell.y < 0:
+		return {"allow": false, "reason": "invalid_cell"}
+	if _prev_cell == Vector2i(-1, -1) or cell == _prev_cell:
+		_prev_cell = cell
+		return {"allow": true, "reason": ""}
+	var span := maxi(absi(cell.x - _prev_cell.x), absi(cell.y - _prev_cell.y))
+	if span > MAX_INTERPOLATE_SPAN:
+		return {"allow": false, "reason": "neighbor"}
+	_prev_cell = cell
+	return {"allow": true, "reason": ""}
+
+func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) -> Dictionary:
 	var just_started := false
 	if not _drag_started and _start_pos.distance_to(pos) > DRAG_THRESHOLD_PX:
 		_drag_started = true
@@ -72,6 +89,30 @@ func filter_move(pos: Vector2, time_ms: int) -> Dictionary:
 		_:
 			snapped_delta = delta
 
+	# Layer 3: Neighbor Guard (if cell provided)
+	if cell != Vector2i(-1, -1):
+		if cell.x < 0 or cell.y < 0:
+			return {
+				"allow": false,
+				"reason": "neighbor",
+				"position": _current_pos,
+				"drag_started": _drag_started,
+				"drag_just_started": just_started,
+				"axis_snapped_delta": snapped_delta,
+			}
+		if _prev_cell != Vector2i(-1, -1) and cell != _prev_cell:
+			var span := maxi(absi(cell.x - _prev_cell.x), absi(cell.y - _prev_cell.y))
+			if span > MAX_INTERPOLATE_SPAN:
+				return {
+					"allow": false,
+					"reason": "neighbor",
+					"position": _current_pos,
+					"drag_started": _drag_started,
+					"drag_just_started": just_started,
+					"axis_snapped_delta": snapped_delta,
+				}
+		_prev_cell = cell
+
 	_current_pos += snapped_delta
 	_prev_pos = pos
 	_prev_time_ms = time_ms
@@ -92,3 +133,4 @@ func end_touch() -> void:
 	_axis_lock = AxisLock.NONE
 	_cumulative_dx = 0.0
 	_cumulative_dy = 0.0
+	_prev_cell = Vector2i(-1, -1)
