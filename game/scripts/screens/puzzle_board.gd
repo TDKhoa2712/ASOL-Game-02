@@ -33,8 +33,10 @@ var _decoder: TouchDecoder = null
 var _guard: TouchGuard = null
 var _candy_tex: Texture2D = null
 var _highlight_cells: Array = []
+var _highlight_set: Dictionary = {}
 var _highlight_unit: String = ""
 var _preview_cells: Array = []
+var _preview_set: Dictionary = {}
 var _preview_mark: bool = true
 var _highlight_pulse_phase: float = 0.0
 var _touch_in_progress: bool = false
@@ -64,7 +66,7 @@ func configure(session: Variant, animate_entry: bool = false) -> void:
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
 	_decoder.cell_swiped.connect(func(cells: Array): cell_swiped.emit(cells))
 	_decoder.preview_changed.connect(_on_preview_changed)
-	_highlight_cells = []; _highlight_unit = ""; _preview_cells = []; _stroke_visited.clear()
+	_highlight_cells = []; _highlight_set.clear(); _highlight_unit = ""; _preview_cells = []; _preview_set.clear(); _stroke_visited.clear()
 	for tw in _mark_tweens.values():
 		if is_instance_valid(tw): tw.kill()
 	_mark_tweens.clear(); _mark_anims.clear(); queue_redraw()
@@ -95,13 +97,18 @@ func settle_input() -> void:
 
 func highlight_cell(row: int, col: int) -> void: highlight_cells([[row, col]])
 func highlight_cells(cells: Array) -> void:
-	_highlight_cells = cells.duplicate(); _highlight_unit = ""; queue_redraw()
+	_highlight_cells = cells.duplicate(); _highlight_unit = ""; _update_highlight_set(); queue_redraw()
 
 func highlight_unit(unit_type: String, unit_id: Variant) -> void:
-	_highlight_unit = unit_type; _highlight_cells = _cells_in_unit(unit_type, unit_id); queue_redraw()
+	_highlight_unit = unit_type; _highlight_cells = _cells_in_unit(unit_type, unit_id); _update_highlight_set(); queue_redraw()
 
 func clear_highlight() -> void:
-	_highlight_cells = []; _highlight_unit = ""; _highlight_pulse_phase = 0.0; queue_redraw()
+	_highlight_cells = []; _highlight_set.clear(); _highlight_unit = ""; _highlight_pulse_phase = 0.0; queue_redraw()
+
+func _update_highlight_set() -> void:
+	_highlight_set.clear()
+	for c in _highlight_cells:
+		if c.size() >= 2: _highlight_set[Vector2i(int(c[0]), int(c[1]))] = true
 
 func play_candy_pop(row: int, col: int) -> void:
 	CellAnimator.play_candy_pop(self, _cell_rect(row, col)); candy_placed_anim.emit(row, col)
@@ -142,6 +149,7 @@ func _notification(what: int) -> void:
 
 func _on_preview_changed(cells: Array) -> void:
 	_preview_cells = cells.duplicate(true)
+	_preview_set.clear()
 	if cells.is_empty():
 		_stroke_visited.clear()
 	elif _session != null:
@@ -152,13 +160,15 @@ func _on_preview_changed(cells: Array) -> void:
 		else:
 			_preview_mark = first_kind == CellModel.CellKind.BLANK
 			for c in cells:
-				if c.size() >= 2 and not _stroke_visited.has(c):
-					_stroke_visited.append(c)
-					var r: int = int(c[0]); var col: int = int(c[1])
-					var kind: int = _session.cell_at(r, col)
-					if kind == (CellModel.CellKind.BLANK if _preview_mark else CellModel.CellKind.MARK):
-						cell_stroke_step.emit(r, col, _preview_mark)
-						if _preview_mark: play_mark_anim(r, col)
+				if c.size() >= 2:
+					_preview_set[Vector2i(int(c[0]), int(c[1]))] = true
+					if not _stroke_visited.has(c):
+						_stroke_visited.append(c)
+						var r: int = int(c[0]); var col: int = int(c[1])
+						var kind: int = _session.cell_at(r, col)
+						if kind == (CellModel.CellKind.BLANK if _preview_mark else CellModel.CellKind.MARK):
+							cell_stroke_step.emit(r, col, _preview_mark)
+							if _preview_mark: play_mark_anim(r, col)
 	queue_redraw()
 
 func _process(_delta: float) -> void:

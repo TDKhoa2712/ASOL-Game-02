@@ -63,7 +63,8 @@ static func draw(board: Variant) -> void:
 				board.draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
 
 			var kind: int = board._session.board[r][c]
-			if board._preview_cells.has([r, c]):
+			var cell_coord := Vector2i(r, c)
+			if board._preview_set.has(cell_coord):
 				if board._preview_mark and kind == CellModel.CellKind.BLANK:
 					kind = CellModel.CellKind.MARK
 				elif not board._preview_mark and kind == CellModel.CellKind.MARK:
@@ -72,11 +73,10 @@ static func draw(board: Variant) -> void:
 			if ov.a > 0.0:
 				board.draw_style_box(_get_cell_sb(ov, cr), cell_rect)
 
-			if kind != CellModel.CellKind.MARK and kind != CellModel.CellKind.ERROR and board._mark_anims.has(Vector2i(r, c)):
-				var ck := Vector2i(r, c)
-				board._mark_anims.erase(ck)
-				if board._mark_tweens.has(ck) and is_instance_valid(board._mark_tweens[ck]): board._mark_tweens[ck].kill()
-				board._mark_tweens.erase(ck)
+			if kind != CellModel.CellKind.MARK and kind != CellModel.CellKind.ERROR and board._mark_anims.has(cell_coord):
+				board._mark_anims.erase(cell_coord)
+				if board._mark_tweens.has(cell_coord) and is_instance_valid(board._mark_tweens[cell_coord]): board._mark_tweens[cell_coord].kill()
+				board._mark_tweens.erase(cell_coord)
 
 			match kind:
 				CellModel.CellKind.MARK: board._draw_cell_x(cell_rect, false, r, c)
@@ -89,7 +89,7 @@ static func draw(board: Variant) -> void:
 				if r < sol.size() and int(sol[r]) == c and kind != CellModel.CellKind.CANDY and kind != CellModel.CellKind.GIVEN:
 					board._draw_solution_hint(cell_rect)
 
-			if board._highlight_cells.has([r, c]):
+			if board._highlight_set.has(cell_coord):
 				var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(board._highlight_pulse_phase))
 				board._draw_border(cell_rect, Color(Palette.ACCENT_ORANGE, pulse_alpha), 3, cr)
 

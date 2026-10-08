@@ -109,12 +109,15 @@ func _test_puzzle_board() -> void:
 
 	board.highlight_cell(1, 2)
 	_assert(board._highlight_cells == [[1, 2]], "highlight_cell sets cell")
+	_assert(board._highlight_set.has(Vector2i(1, 2)), "highlight_set contains (1, 2)")
 
 	board.highlight_unit("row", 2)
 	_assert(board._highlight_cells.size() == 4, "highlight_unit row 2 sets 4 cells")
+	_assert(board._highlight_set.size() == 4, "highlight_set has 4 cells")
 
 	board.clear_highlight()
 	_assert(board._highlight_cells.is_empty(), "clear_highlight clears cells")
+	_assert(board._highlight_set.is_empty(), "clear_highlight clears highlight_set")
 
 	var swipe_box: Array = []
 	var stroke_steps: Array = []
@@ -122,12 +125,15 @@ func _test_puzzle_board() -> void:
 	board.cell_stroke_step.connect(func(r: int, c: int, is_mark: bool): stroke_steps.append([r, c, is_mark]))
 	board._decoder.begin(2, 0, 0)
 	_assert(board._preview_cells.is_empty(), "board touch-down has no X preview")
+	_assert(board._preview_set.is_empty(), "board touch-down preview_set is empty")
 	board._decoder.move(2, 2)
 	_assert(board._preview_cells == [[2, 0], [2, 1], [2, 2]], "board previews drag")
+	_assert(board._preview_set.has(Vector2i(2, 0)) and board._preview_set.has(Vector2i(2, 2)), "preview_set tracked")
 	_assert(stroke_steps.size() == 3, "stroke steps emitted for each cell during drag")
 	_assert(stroke_steps[0] == [2, 0, true] and stroke_steps[2] == [2, 2, true], "stroke step parameters match")
 	board._decoder.finish(100)
 	_assert(board._preview_cells.is_empty(), "board clears drag preview")
+	_assert(board._preview_set.is_empty(), "board clears drag preview_set")
 	board.play_mark_anims([[0, 1], [0, 2]])
 	_assert(board.has_mark_anim(0, 1) and board.has_mark_anim(0, 2), "play_mark_anims registers multiple cells")
 	LayoutTokens.set_motion(false)
