@@ -10,17 +10,17 @@ const BG_COLOR := Color("#FFFDF5")
 const TEXT_COLOR := Color("#3B2779")
 
 const SVG_SIZE := 1254.0
-const ANIM_DURATION := 3.2
+const ANIM_DURATION := 2.0
 
 const PIECES := [
-	{ "pts": [Vector2(570,25), Vector2(769,140), Vector2(766,362)],                          "color": "dark",   "t": 0.30, "dur": 0.40, "rot": -0.15 },
-	{ "pts": [Vector2(681,221), Vector2(410,287), Vector2(341,403)],                         "color": "yellow", "t": 0.40, "dur": 0.40, "rot":  0.18 },
-	{ "pts": [Vector2(681,221), Vector2(766,362), Vector2(670,526)],                         "color": "yellow", "t": 0.50, "dur": 0.40, "rot": -0.12 },
-	{ "pts": [Vector2(681,221), Vector2(577,433), Vector2(484,487), Vector2(341,403)],       "color": "dark",   "t": 0.58, "dur": 0.40, "rot":  0.20 },
-	{ "pts": [Vector2(681,221), Vector2(670,526), Vector2(577,433)],                         "color": "mid",    "t": 0.66, "dur": 0.40, "rot": -0.12 },
-	{ "pts": [Vector2(766,362), Vector2(936,661), Vector2(670,526)],                         "color": "mid",    "t": 0.74, "dur": 0.40, "rot":  0.15 },
-	{ "pts": [Vector2(670,526), Vector2(936,661), Vector2(503,817)],                         "color": "yellow", "t": 0.90, "dur": 0.50, "rot": -0.20 },
-	{ "pts": [Vector2(936,661), Vector2(503,817), Vector2(612,1226)],                        "color": "mid",    "t": 1.10, "dur": 0.40, "rot":  0.18 },
+	{ "pts": [Vector2(570,25), Vector2(769,140), Vector2(766,362)],                          "color": "dark",   "t": 0.15, "dur": 0.28, "rot": -0.15 },
+	{ "pts": [Vector2(681,221), Vector2(410,287), Vector2(341,403)],                         "color": "yellow", "t": 0.22, "dur": 0.28, "rot":  0.18 },
+	{ "pts": [Vector2(681,221), Vector2(766,362), Vector2(670,526)],                         "color": "yellow", "t": 0.30, "dur": 0.28, "rot": -0.12 },
+	{ "pts": [Vector2(681,221), Vector2(577,433), Vector2(484,487), Vector2(341,403)],       "color": "dark",   "t": 0.36, "dur": 0.28, "rot":  0.20 },
+	{ "pts": [Vector2(681,221), Vector2(670,526), Vector2(577,433)],                         "color": "mid",    "t": 0.42, "dur": 0.28, "rot": -0.12 },
+	{ "pts": [Vector2(766,362), Vector2(936,661), Vector2(670,526)],                         "color": "mid",    "t": 0.48, "dur": 0.28, "rot":  0.15 },
+	{ "pts": [Vector2(670,526), Vector2(936,661), Vector2(503,817)],                         "color": "yellow", "t": 0.56, "dur": 0.32, "rot": -0.20 },
+	{ "pts": [Vector2(936,661), Vector2(503,817), Vector2(612,1226)],                        "color": "mid",    "t": 0.68, "dur": 0.28, "rot":  0.18 },
 ]
 
 var _logo_container: Control
@@ -137,8 +137,8 @@ func _play_animation() -> void:
 	_tween = create_tween()
 	_tween.set_parallel(true)
 
-	# Phase 1: Ambient glow fade in (0.0 – 0.4s)
-	_tween.tween_property(_glow_circle, "modulate:a", 1.0, 0.5) \
+	# Phase 1: Ambient glow fade in
+	_tween.tween_property(_glow_circle, "modulate:a", 1.0, 0.3) \
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 
 	# Phase 2: Triangle unfold cascade
@@ -160,31 +160,31 @@ func _play_animation() -> void:
 			.set_delay(t0) \
 			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
-	# Phase 3: Glow pulse on yellow pieces (staggered)
-	var glow_start := 1.85
+	# Phase 3: Glow pulse on yellow pieces
+	var glow_start := 1.1
 	for i in _glow_overlays.size():
 		var overlay: Polygon2D = _glow_overlays[i]
-		var gt: float = glow_start + i * 0.12
-		_tween.tween_property(overlay, "modulate:a", 0.3, 0.20) \
+		var gt: float = glow_start + i * 0.08
+		_tween.tween_property(overlay, "modulate:a", 0.3, 0.15) \
 			.set_delay(gt) \
 			.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
-		_tween.tween_property(overlay, "modulate:a", 0.0, 0.25) \
-			.set_delay(gt + 0.20) \
+		_tween.tween_property(overlay, "modulate:a", 0.0, 0.18) \
+			.set_delay(gt + 0.15) \
 			.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
 
 	# Ambient glow fade out
-	_tween.tween_property(_glow_circle, "modulate:a", 0.0, 0.8) \
-		.set_delay(1.85) \
+	_tween.tween_property(_glow_circle, "modulate:a", 0.0, 0.5) \
+		.set_delay(1.1) \
 		.set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_SINE)
 
-	# Phase 4: Text reveal (2.3 – 3.0s)
+	# Phase 4: Text reveal
 	var text_final_y: float = _studio_label.position.y
-	_studio_label.position.y = text_final_y + 12.0
-	_tween.tween_property(_studio_label, "modulate:a", 1.0, 0.5) \
-		.set_delay(2.3) \
+	_studio_label.position.y = text_final_y + 10.0
+	_tween.tween_property(_studio_label, "modulate:a", 1.0, 0.35) \
+		.set_delay(1.35) \
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_SINE)
-	_tween.tween_property(_studio_label, "position:y", text_final_y, 0.6) \
-		.set_delay(2.3) \
+	_tween.tween_property(_studio_label, "position:y", text_final_y, 0.4) \
+		.set_delay(1.35) \
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
 	# Emit finished after full animation

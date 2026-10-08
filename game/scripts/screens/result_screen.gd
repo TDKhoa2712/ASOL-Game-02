@@ -115,7 +115,7 @@ func _ready() -> void:
 func setup(won: bool, score: int, level_id: String, is_last: bool) -> void:
 	_is_win = won
 	_score = score
-	_level_id = level_id
+	_level_id = level_id.trim_prefix("L")
 	_is_last_level = is_last
 	_ensure_nodes()
 	_update_ui()

@@ -71,7 +71,8 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 	if debug_bar != null: debug_bar.setup(self, session, board)
 	_update_hearts()
 	if level_label != null and session != null:
-		level_label.text = str(session.level.get("id", runtime.current_level_label()))
+		var raw_id: String = str(session.level.get("id", runtime.current_level_label()))
+		level_label.text = raw_id.trim_prefix("L")
 	_update_timer(0.0)
 	if session != null and session.phase != PlaySession.Phase.ACTIVE:
 		call_deferred("_on_level_won" if session.phase == PlaySession.Phase.WON else "_on_level_failed")
@@ -244,6 +245,7 @@ func _on_help() -> void:
 		if sfx != null:
 			sfx.play(SfxCatalog.Effect.DIALOG_OPEN if rules_card.visible else SfxCatalog.Effect.DIALOG_CLOSE)
 func _on_settings() -> void:
+	if board != null: board.skip_entry_wave()
 	options_pressed.emit()
 
 func _on_candy_found(row: int, col: int, _region: String) -> void:

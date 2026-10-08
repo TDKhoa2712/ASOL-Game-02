@@ -4,8 +4,19 @@ title.play,Level %s,Level %s
 title.replay,Chơi lại chiến dịch,Replay Campaign
 title.help_tooltip,Xem cách chơi,How to Play
 title.debug,🛠 Debug,🛠 Debug
-help.title,Cách chơi,How to Play
-help.body,"Mỗi hàng, cột và vùng có đúng một viên kẹo. Kẹo không chạm chéo nhau. Chạm một lần để đánh dấu X, chạm hai lần để thử đặt kẹo, kéo để đánh dấu nhiều ô.","Each row, column, and region contains exactly one candy. Candies cannot touch diagonally. Tap once to mark X, double-tap to place a candy, swipe to mark multiple cells."
+help.title,Luật chơi,Rules
+help.rule1_title,Mỗi hàng và cột,Each row and column
+help.rule1_body,"Mỗi hàng và mỗi cột chỉ chứa đúng một viên kẹo.","Each row and each column contains exactly one candy."
+help.rule2_title,Mỗi vùng,Each region
+help.rule2_body,"Mỗi vùng màu chỉ chứa đúng một viên kẹo.","Each colored region contains exactly one candy."
+help.rule3_title,Kẹo không chạm nhau,Candies cannot touch
+help.rule3_body,"Hai viên kẹo bất kỳ không được chạm nhau — kể cả theo đường chéo.","No two candies may touch each other — not even diagonally."
+help.controls_title,Cách điều khiển,Controls
+help.control_tap,"Chạm một lần để đánh dấu X (loại trừ ô).","Tap once to mark X (eliminate a cell)."
+help.control_double,"Chạm hai lần để đặt kẹo.","Double-tap to place a candy."
+help.control_swipe,"Kéo ngang/dọc để đánh dấu X nhiều ô.","Swipe to mark multiple cells."
+help.hearts_title,Tim (❤️),Hearts (❤️)
+help.hearts_body,"Bạn có 3 tim. Mỗi lần đặt kẹo sai sẽ mất một tim. Hết tim thì thua.","You have 3 hearts. Each wrong candy placement costs one heart. Lose all hearts and you fail."
 settings.title,CÀI ĐẶT,SETTINGS
 settings.audio,Âm thanh,Sound
 settings.haptic,Rung phản hồi,Haptic Feedback
@@ -13,7 +24,6 @@ settings.reduced_motion,Giảm chuyển động,Reduce Motion
 settings.large_text,Cỡ chữ lớn,Large Text
 settings.high_contrast,Độ tương phản cao,High Contrast
 settings.colorblind,Hỗ trợ phân biệt màu,Colorblind Mode
-settings.undo_x,Hoàn tác X,Undo X
 settings.language,Ngôn ngữ,Language
 settings.language.vi,Tiếng Việt,Tiếng Việt
 settings.language.en,English,English
@@ -28,7 +38,7 @@ puzzle.restart_ok,Chơi lại,Restart
 puzzle.restart_cancel,Tiếp tục,Continue
 puzzle.rule_row,1 kẹo mỗi hàng và cột,1 candy per row and column
 puzzle.rule_region,1 kẹo mỗi vùng,1 candy per region
-puzzle.rule_diagonal,Kẹo không chạm góc,Candies don't touch diagonally
+puzzle.rule_diagonal,Kẹo không chạm nhau,Candies cannot touch each other
 result.win.title,Hoan hô!,Hooray!
 result.win.title_campaign,Hoàn thành chiến dịch!,Campaign Complete!
 result.win.subtitle,Bạn đã tìm đủ kẹo!,You found all the candies!

@@ -9,6 +9,7 @@ signal debug_level_selected(level_data: Dictionary, label: String)
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
+const HelpScreen = preload("res://scripts/screens/help_screen.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -21,7 +22,7 @@ var endless_btn: Button
 var options_btn: Button
 var help_btn: Button
 var debug_btn: Button
-var help_dialog: AcceptDialog
+var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
 
 func _ensure_nodes() -> void:
@@ -168,10 +169,6 @@ func _ensure_nodes() -> void:
 	var bottom_spacer := Control.new()
 	bottom_spacer.custom_minimum_size.y = 80
 	frame.add_child(bottom_spacer)
-	help_dialog = AcceptDialog.new()
-	help_dialog.title = tr("help.title")
-	help_dialog.dialog_text = tr("help.body")
-	add_child(help_dialog)
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()
 		debug_picker.name = "DebugPicker"
@@ -278,8 +275,14 @@ func _add_press_anim(button: Button) -> void:
 	)
 
 func _on_help() -> void:
-	if help_dialog != null:
-		help_dialog.popup_centered(Vector2i(700, 340))
+	if _help_overlay != null: return
+	_help_overlay = HelpScreen.new()
+	_help_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_help_overlay.back_pressed.connect(_close_help)
+	add_child(_help_overlay)
+
+func _close_help() -> void:
+	if _help_overlay != null: _help_overlay.queue_free(); _help_overlay = null
 
 func _set_round_icon(button: Button, path: String, side: float) -> void:
 	var center := CenterContainer.new()

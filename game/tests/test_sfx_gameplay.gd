@@ -16,16 +16,18 @@ func _run() -> void:
 	var title = shell.screen_host.get_child(0)
 	title.options_btn.pressed.emit()
 	_expect_effect(shell.sfx, SfxCatalog.Effect.SETTINGS_OPEN, "title settings opens")
-	var options = shell.screen_host.get_child(0)
+	var options = shell._options_overlay if shell._options_overlay != null else shell.screen_host.get_child(0)
 	options.back_btn.pressed.emit()
+	await process_frame
 	_expect_effect(shell.sfx, SfxCatalog.Effect.TAP_BACK, "settings closes with shared click")
 	shell._on_title_play()
 	var puzzle = shell.screen_host.get_child(0)
 	_expect_effect(shell.sfx, SfxCatalog.Effect.BOARD_OPEN, "board open")
 	puzzle.settings_btn.pressed.emit()
 	_expect_effect(shell.sfx, SfxCatalog.Effect.SETTINGS_OPEN, "puzzle settings opens")
-	options = shell.screen_host.get_child(0)
+	options = shell._options_overlay if shell._options_overlay != null else shell.screen_host.get_child(0)
 	options.back_btn.pressed.emit()
+	await process_frame
 	_check(shell.sfx._last_play_ms.has(SfxCatalog.Effect.TAP_BACK),
 		"puzzle settings closes with shared click")
 	puzzle = shell.screen_host.get_child(0)

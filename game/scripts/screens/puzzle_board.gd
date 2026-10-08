@@ -74,6 +74,10 @@ func play_entry_wave() -> void:
 	_entry_elapsed = 0.0 if LayoutTokens.motion_enabled and _session != null else -1.0
 	queue_redraw()
 
+func skip_entry_wave() -> void:
+	_entry_elapsed = -1.0
+	queue_redraw()
+
 func is_entering() -> bool: return _entry_elapsed >= 0.0 and LayoutTokens.motion_enabled
 
 func cell_entry_scale(row: int, col: int) -> float:

@@ -199,13 +199,14 @@ func _test_options_navigation_and_settings() -> void:
 	root.add_child(shell)
 	await process_frame
 
-	# 1. From Title to Options
+	# 1. From Title, open Options overlay
 	var title = shell.screen_host.get_child(0)
 	title._on_options()
-	_assert(shell.nav.current() == NavController.Screen.OPTIONS, "nav on options screen")
+	_assert(shell._options_overlay != null, "options overlay shown")
+	_assert(shell.nav.current() == NavController.Screen.TITLE, "nav stays on title when options overlay opens")
 
-	var options = shell.screen_host.get_child(0)
-	_assert(options != null and options.name == "OptionsScreen", "options screen active")
+	var options = shell._options_overlay
+	_assert(options != null, "options overlay active")
 
 	# Toggle audio off
 	options._on_toggle("audio", false)
@@ -216,21 +217,24 @@ func _test_options_navigation_and_settings() -> void:
 	options._on_toggle("haptic", false)
 	_assert(not Vibration.is_on(), "vibration disabled when haptic is off")
 
-	# Back from Options to Title
+	# Back from Options overlay
 	options._on_back()
-	_assert(shell.nav.current() == NavController.Screen.TITLE, "returned to title screen from options")
+	await process_frame
+	_assert(shell._options_overlay == null, "options overlay dismissed")
+	_assert(shell.nav.current() == NavController.Screen.TITLE, "still on title after options dismissed")
 
-	# 2. From Title to Puzzle, then to Options, then Back to Puzzle
+	# 2. From Title to Puzzle, then open Options overlay, then dismiss
 	title = shell.screen_host.get_child(0)
 	title._on_play()
 	_assert(shell.nav.current() == NavController.Screen.PUZZLE, "now on puzzle screen")
 
-	shell.nav.go_to(NavController.Screen.OPTIONS)
-	options = shell.screen_host.get_child(0)
-	_assert(options != null and options.name == "OptionsScreen", "opened options from puzzle")
+	shell._show_options_overlay()
+	_assert(shell._options_overlay != null, "options overlay shown from puzzle")
 
-	options._on_back()
-	_assert(shell.nav.current() == NavController.Screen.PUZZLE, "options back returned to puzzle screen")
+	shell._hide_options_overlay()
+	await process_frame
+	_assert(shell._options_overlay == null, "options overlay dismissed from puzzle")
+	_assert(shell.nav.current() == NavController.Screen.PUZZLE, "still on puzzle after options dismissed")
 
 	root.remove_child(shell)
 	shell.free()
