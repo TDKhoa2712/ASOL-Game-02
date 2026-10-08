@@ -276,8 +276,18 @@ func _draw_candy_procedural(rect: Rect2) -> void:
 	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
 
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
-	var prog: float = _mark_anims.get(Vector2i(r, c), 1.0) if (r >= 0 and c >= 0) else 1.0
-	CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog, _content_scale())
+	if r >= 0 and c >= 0 and _mark_anims.has(Vector2i(r, c)):
+		var prog: float = _mark_anims.get(Vector2i(r, c), 1.0)
+		CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog, _content_scale())
+		return
+	var tex := CellAnimator.get_mark_texture(is_error, _high_contrast)
+	if tex != null:
+		var cs := _content_scale()
+		var mark_sz := rect.size * cs
+		var draw_rect := Rect2(rect.get_center() - mark_sz * 0.5, mark_sz)
+		draw_texture_rect(tex, draw_rect, false)
+	else:
+		CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, 1.0, _content_scale())
 
 func _draw_solution_hint(rect: Rect2) -> void:
 	var cs := _content_scale()

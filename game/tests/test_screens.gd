@@ -144,8 +144,16 @@ func _test_puzzle_board() -> void:
 		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), false, false, 0.0)
 		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), false, false, 0.4)
 		CellAnimator.draw_hand_drawn_x(board, Rect2(0, 0, 50, 50), true, true, 1.0)
+		board._draw_cell_x(Rect2(0, 0, 50, 50), false, 0, 1)
+		board._draw_cell_x(Rect2(0, 0, 50, 50), false, 1, 1)
+		board._draw_cell_x(Rect2(0, 0, 50, 50), true, 2, 2)
 	)
+	session.board[1][1] = CellModel.CellKind.MARK
+	session.board[2][2] = CellModel.CellKind.ERROR
 	board.notification(CanvasItem.NOTIFICATION_DRAW)
+	board.set_high_contrast(true)
+	board.notification(CanvasItem.NOTIFICATION_DRAW)
+	board.set_high_contrast(false)
 
 	board.free()
 
