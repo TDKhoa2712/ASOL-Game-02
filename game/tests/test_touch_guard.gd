@@ -8,6 +8,8 @@ func _init() -> void:
 	_test_drag_waits_through_twelve_pixels()
 	_test_drag_starts_after_twelve_pixels()
 	_test_fast_drag_is_allowed()
+	_test_velocity_gate_fast_reject()
+	_test_velocity_gate_first_frame()
 	_test_diagonal_drag_is_allowed()
 	_test_new_gesture_resets_drag_state()
 	_test_zero_delta_time_is_allowed()
@@ -41,6 +43,23 @@ func _test_fast_drag_is_allowed() -> void:
 	var result := guard.filter_move(Vector2(124, 100), 1016)
 	_assert(bool(result.allow), "one-frame drag is not rejected by physical speed")
 	_assert(bool(result.get("drag_started", false)), "one-frame drag starts a stroke")
+
+func _test_velocity_gate_fast_reject() -> void:
+	var guard := TouchGuard.new()
+	guard.start_touch(Vector2(100, 100), 1000)
+	# First move sets prev
+	guard.filter_move(Vector2(110, 100), 1010)
+	# 1000px in 10ms = 100,000 px/s (> 2000 px/s) → reject
+	var result := guard.filter_move(Vector2(1110, 100), 1020)
+	_assert(not bool(result.allow), "super fast swipe rejected by velocity gate")
+	_assert(str(result.get("reason", "")) == "velocity", "reason is velocity")
+
+func _test_velocity_gate_first_frame() -> void:
+	var guard := TouchGuard.new()
+	guard.start_touch(Vector2(100, 100), 1000)
+	# First filter_move after start has no prev → always pass
+	var result := guard.filter_move(Vector2(5000, 100), 1001)
+	_assert(bool(result.allow), "first frame always passes velocity")
 
 func _test_diagonal_drag_is_allowed() -> void:
 	var guard := TouchGuard.new()
