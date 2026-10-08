@@ -16,8 +16,15 @@ func _init() -> void:
 	_test_lock_intersection()
 	_test_internal_exclusions_are_not_candidates()
 	_test_gen_subsets()
+	_test_popcount()
+	_test_precompute_zone_masks()
 	_test_locked_subset_returns_dict()
 	_test_locked_subset_no_crash_empty_board()
+	_test_locked_pair_rows()
+	_test_locked_triple_rows()
+	_test_locked_triple_columns()
+	_test_locked_subset_ignores_empty_zone()
+	_test_locked_subset_benchmarks()
 	_test_contradiction_returns_dict()
 	_test_clone_board()
 	_test_replay_solve_standard()
@@ -107,6 +114,26 @@ func _test_gen_subsets() -> void:
 	var over := SolverTechniques._gen_subsets(items, 5)
 	_assert(over.size() == 0, "C(4,5) = 0 subsets")
 
+func _test_popcount() -> void:
+	_assert(SolverTechniques._popcount(0) == 0, "popcount zero")
+	_assert(SolverTechniques._popcount(1) == 1, "popcount one")
+	_assert(SolverTechniques._popcount(0b1010) == 2, "popcount sparse")
+	_assert(SolverTechniques._popcount(0xFFF) == 12, "popcount 12 bits")
+	_assert(SolverTechniques._popcount(0b1000000000001) == 2, "popcount sparse 13 bits")
+
+func _test_precompute_zone_masks() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "AABB", "CCDD", "CCDD"]
+	var masks: Dictionary = SolverTechniques._precompute_zone_masks(board, 4, regions)
+	_assert(masks["row"]["A"] == 0b0011, "zone A row mask")
+	_assert(masks["col"]["A"] == 0b0011, "zone A col mask")
+	for r in range(2):
+		for c in range(2):
+			board[r][c] = CellModel.CellKind.MARK
+	masks = SolverTechniques._precompute_zone_masks(board, 4, regions)
+	_assert(masks["row"]["A"] == 0, "empty zone row mask")
+	_assert(masks["col"]["A"] == 0, "empty zone col mask")
+
 func _test_locked_subset_returns_dict() -> void:
 	var board := _empty_board(4)
 	var regions := ["AABB", "AABB", "CCDD", "CCDD"]
@@ -126,6 +153,62 @@ func _test_locked_subset_no_crash_empty_board() -> void:
 	SolverTechniques._apply_elimination(board, 4, regions)
 	var result := SolverTechniques._try_locked_subsets(board, 4, regions, 3)
 	_assert(result.has("found"), "subset on empty board returns found key")
+
+func _test_locked_pair_rows() -> void:
+	# bank_6x6.json, rank 1, index 0, seed 4.
+	var regions := ["AAAAAA", "AEBAAA", "CEEEEA", "EEDDAA", "EEDDDD", "EEEEFD"]
+	var result := SolverTechniques._try_locked_subsets(_empty_board(6), 6, regions, 2)
+	_assert(result.get("found", false), "6x6 row pair found")
+	_assert(result.get("technique", 0) == SolverTechniques.Technique.SUBSET_PAIR, "6x6 pair technique")
+	_assert(result.get("subset_zones", []) == ["B", "C"], "6x6 pair zones")
+	_assert(result.get("eliminated", []) == [[1, 0], [1, 1], [1, 3], [1, 4], [1, 5], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5]], "6x6 pair eliminations")
+
+func _test_locked_triple_rows() -> void:
+	# bank_8x8.json, rank 1, index 164, seed 334.
+	var regions := ["DCACCCCB", "DCCCBBBB", "DDCCBBEB", "DDDBBEEE", "DDDDBBBE", "FDGDEEEE", "FFGGGHHE", "FFFFFFHE"]
+	var result := SolverTechniques._try_locked_subsets(_empty_board(8), 8, regions, 3)
+	_assert(result.get("found", false), "8x8 row triple found")
+	_assert(result.get("technique", 0) == SolverTechniques.Technique.SUBSET_TRIPLE, "8x8 triple technique")
+	_assert(result.get("subset_zones", []) == ["F", "G", "H"], "8x8 triple zones")
+	_assert(result.get("eliminated", []) == [[5, 1], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [6, 7], [7, 7]], "8x8 triple eliminations")
+
+func _test_locked_triple_columns() -> void:
+	# bank_10x10.json, rank 3, index 8, seed 100277.
+	var regions := ["AAAAABBBCC", "ADABBBFBBC", "ADABAAFCCC", "ADAAAAFFEC", "ADAADAAFEC", "DDDDDAFFFC", "DGGDAAFJJC", "GGDDHAFJCC", "GDDDHHJJJI", "HHHHHJJIII"]
+	var result := SolverTechniques._try_locked_subsets(_empty_board(10), 10, regions, 3)
+	_assert(result.get("found", false), "10x10 column triple found")
+	_assert(result.get("technique", 0) == SolverTechniques.Technique.SUBSET_TRIPLE, "10x10 column triple technique")
+	_assert(result.get("subset_zones", []) == ["C", "E", "I"], "10x10 column triple zones")
+	_assert(result.get("eliminated", []) == [[1, 8], [5, 8], [6, 8], [8, 8], [0, 7], [1, 7], [3, 7], [4, 7], [5, 7], [6, 7], [7, 7], [8, 7]], "10x10 column triple eliminations")
+
+func _test_locked_subset_ignores_empty_zone() -> void:
+	var regions := ["AABCC", "AABCC", "DDEEC", "DDEEC", "DDEEC"]
+	var board := _empty_board(5)
+	for r in range(2):
+		for c in range(2):
+			board[r][c] = CellModel.CellKind.MARK
+	var result := SolverTechniques._try_locked_subsets(board, 5, regions, 2)
+	_assert(not result.get("subset_zones", []).has("A"), "zone without candidates cannot form a locked subset")
+
+func _test_locked_subset_benchmarks() -> void:
+	# Both bank geometries require a triple on an unmarked board; measure the S4-S6 function itself.
+	var cases := [
+		{"label": "10x10", "size": 10, "regions": ["AAAAABBBCC", "ADABBBFBBC", "ADABAAFCCC", "ADAAAAFFEC", "ADAADAAFEC", "DDDDDAFFFC", "DGGDAAFJJC", "GGDDHAFJCC", "GDDDHHJJJI", "HHHHHJJIII"], "zones": ["C", "E", "I"], "budget_us": 200000},
+		{"label": "12x12", "size": 12, "regions": ["AAAAABBBAAAA", "DDIIABBBBCCA", "DDDIAEEECCCA", "DDDIAEEAAAAA", "DDDIAEEEAGFF", "DDDIAHHHAGFF", "IIIIAHLHAGGG", "IIIIAHHHAGGG", "IIIJAHHAAJGG", "KIJJAAAAJJGG", "KJJJAJJJJJGG", "KKKJJJJJJJGG"], "zones": ["E", "H", "L"], "budget_us": 500000},
+	]
+	for case in cases:
+		var size: int = case["size"]
+		var board := _empty_board(size)
+		var times: Array[int] = []
+		for _run in range(5):
+			var start := Time.get_ticks_usec()
+			var result := SolverTechniques._try_locked_subsets(board, size, case["regions"], 3)
+			times.append(Time.get_ticks_usec() - start)
+			_assert(result.get("technique", 0) == SolverTechniques.Technique.SUBSET_TRIPLE, case["label"] + " benchmark invokes S5")
+			_assert(result.get("subset_zones", []) == case["zones"], case["label"] + " benchmark triple zones")
+		times.sort()
+		print("LOCKED_SUBSET_BENCH ", case["label"], " median_us=", times[2], " samples=", times)
+		_assert(times[2] < case["budget_us"], case["label"] + " subset median below budget")
 
 func _empty_board(size: int) -> Array:
 	var board: Array = []
