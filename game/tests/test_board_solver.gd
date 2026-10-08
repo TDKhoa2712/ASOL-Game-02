@@ -16,6 +16,8 @@ func _init() -> void:
 	_test_lock_intersection()
 	_test_internal_exclusions_are_not_candidates()
 	_test_gen_subsets()
+	_test_popcount()
+	_test_precompute_zone_masks()
 	_test_locked_subset_returns_dict()
 	_test_locked_subset_no_crash_empty_board()
 	_test_contradiction_returns_dict()
@@ -106,6 +108,26 @@ func _test_gen_subsets() -> void:
 	_assert(empty.size() == 0, "C(4,0) = 0 subsets")
 	var over := SolverTechniques._gen_subsets(items, 5)
 	_assert(over.size() == 0, "C(4,5) = 0 subsets")
+
+func _test_popcount() -> void:
+	_assert(SolverTechniques._popcount(0) == 0, "popcount zero")
+	_assert(SolverTechniques._popcount(1) == 1, "popcount one")
+	_assert(SolverTechniques._popcount(0b1010) == 2, "popcount sparse")
+	_assert(SolverTechniques._popcount(0xFFF) == 12, "popcount 12 bits")
+	_assert(SolverTechniques._popcount(0b1000000000001) == 2, "popcount sparse 13 bits")
+
+func _test_precompute_zone_masks() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "AABB", "CCDD", "CCDD"]
+	var masks: Dictionary = SolverTechniques._precompute_zone_masks(board, 4, regions)
+	_assert(masks["row"]["A"] == 0b0011, "zone A row mask")
+	_assert(masks["col"]["A"] == 0b0011, "zone A col mask")
+	for r in range(2):
+		for c in range(2):
+			board[r][c] = CellModel.CellKind.MARK
+	masks = SolverTechniques._precompute_zone_masks(board, 4, regions)
+	_assert(masks["row"]["A"] == 0, "empty zone row mask")
+	_assert(masks["col"]["A"] == 0, "empty zone col mask")
 
 func _test_locked_subset_returns_dict() -> void:
 	var board := _empty_board(4)

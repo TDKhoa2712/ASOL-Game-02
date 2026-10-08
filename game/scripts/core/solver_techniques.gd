@@ -166,6 +166,29 @@ static func _gen_subsets(items: Array, k: int) -> Array:
 			indices[j] = indices[j - 1] + 1
 	return result
 
+static func _popcount(mask: int) -> int:
+	var count: int = 0
+	var remaining: int = mask
+	while remaining != 0:
+		remaining &= remaining - 1
+		count += 1
+	return count
+
+static func _precompute_zone_masks(board: Array, size: int, regions: Array) -> Dictionary:
+	var row_masks: Dictionary = {}
+	var col_masks: Dictionary = {}
+	for zone in _zones(regions, size):
+		if _has_candy(board, size, regions, "zone", zone):
+			continue
+		var row_mask: int = 0
+		var col_mask: int = 0
+		for cell in _candidates_in_zone(board, size, regions, zone):
+			row_mask |= 1 << cell[0]
+			col_mask |= 1 << cell[1]
+		row_masks[zone] = row_mask
+		col_masks[zone] = col_mask
+	return {"row": row_masks, "col": col_masks}
+
 static func _try_locked_subsets(board: Array, size: int, regions: Array, max_k: int = 6) -> Dictionary:
 	var all_zones := _zones(regions, size)
 	var unplaced_zones: Array = []
