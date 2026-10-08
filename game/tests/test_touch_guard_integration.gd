@@ -11,8 +11,9 @@ func _init() -> void:
 	_test_diagonal_drag_previews_full_path()
 	_test_mouse_drag_uses_same_threshold()
 	_test_second_touch_drag_preserves_first_tap()
-	_test_axis_lock_integration_restricts_stroke_to_axis()
+	_test_multi_axis_integration_allows_free_diagonal_stroke()
 	_test_velocity_reject_integration_ignores_accidental_fast_swipe()
+	_test_rapid_batch_swipe_allowed_in_integration()
 	if _fails.is_empty():
 		print("INPUT_TOUCH_GUARD_INTEGRATION_PASS")
 		quit(0)
@@ -125,18 +126,14 @@ func _test_second_touch_drag_preserves_first_tap() -> void:
 	_assert(taps == [[0, 0]], "second-touch drag commits first pending tap")
 	board.free()
 
-func _test_axis_lock_integration_restricts_stroke_to_axis() -> void:
+func _test_multi_axis_integration_allows_free_diagonal_stroke() -> void:
 	var board := _configured_board()
 	var origin := _cell_center(board, 0, 0)
 	_screen_press(board, origin)
-	# Drag strongly horizontal to (0, 1) and (0, 2)
-	_screen_drag(board, _cell_center(board, 0, 1))
-	_screen_drag(board, _cell_center(board, 0, 2))
-	# Now attempt to drift vertically towards (2, 2)
+	# Drag diagonally from (0, 0) to (2, 2)
 	_screen_drag(board, _cell_center(board, 2, 2))
-	# Because axis is locked horizontal, y component is snapped to row 0, so previews stay on row 0
-	for cell in board._preview_cells:
-		_assert(cell[0] == 0, "axis lock restricts stroke to horizontal axis row 0")
+	# With Cách A, diagonal stroke is fully unblocked and interpolated
+	_assert(board._preview_cells == [[0, 0], [1, 1], [2, 2]], "diagonal stroke previews full interpolated path")
 	board.free()
 
 func _test_velocity_reject_integration_ignores_accidental_fast_swipe() -> void:
@@ -145,9 +142,19 @@ func _test_velocity_reject_integration_ignores_accidental_fast_swipe() -> void:
 	_screen_press(board, origin)
 	# First small drag establishes prev pos & time
 	_screen_drag(board, origin + Vector2(13, 0))
-	# Simulate massive jump (teleport/accidental scroll) where guard velocity exceeds threshold
+	# Simulate massive jump (teleport/accidental scroll) where velocity exceeds 6000 px/s
+	# (1000px in 10ms = 100,000 px/s > 6000 px/s)
 	var fast_drag_verdict: Dictionary = board._guard.filter_move(origin + Vector2(1000, 0), Time.get_ticks_msec() + 10)
-	_assert(not bool(fast_drag_verdict.allow), "velocity gate rejects fast accidental swipe")
+	_assert(not bool(fast_drag_verdict.allow), "velocity gate rejects fast accidental swipe above 6000 px/s")
+	board.free()
+
+func _test_rapid_batch_swipe_allowed_in_integration() -> void:
+	var board := _configured_board()
+	var origin := _cell_center(board, 0, 0)
+	_screen_press(board, origin)
+	# Fast intentional swipe (300px in 80ms = 3750 px/s, <= 6000 px/s)
+	var verdict: Dictionary = board._guard.filter_move(origin + Vector2(300, 0), Time.get_ticks_msec() + 80)
+	_assert(bool(verdict.allow), "rapid batch swipe at 3750 px/s is allowed by 6000 px/s gate")
 	board.free()
 
 func _assert(condition: bool, label: String) -> void:

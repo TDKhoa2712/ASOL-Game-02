@@ -1,13 +1,13 @@
 # Quyết định điều hành hiện hành
 
-## RST-022 — Tích hợp Swipe Guards 3 lớp bảo vệ cảm ứng (Velocity, Axis Lock, Neighbor Guard)
+## RST-022 — Tích hợp Swipe Guards 3 lớp bảo vệ cảm ứng (Velocity, Multi-Axis Freedom, Neighbor Guard)
 
 Ngày 2026-10-08. Triển khai bộ bảo vệ cử chỉ vuốt 3 lớp vào `touch_guard.gd` và tích hợp qua `board_pointer_router.gd`:
 
-- **Layer 1 (Velocity Gate):** Chặn các cú vuốt/scroll vô ý quá nhanh vượt `MAX_VELOCITY_PX_PER_SEC = 2000.0 px/s`. Các thao tác kéo bình thường (kể cả kéo nhanh 1500 px/s ở 60Hz) vẫn được chấp nhận. Bỏ qua frame đầu tiên và frame cùng timestamp (dt=0).
-- **Layer 2 (Axis Lock Hysteresis):** Khi thao tác lệch rõ rệt theo một trục (tỉ lệ >= 1.5x), khóa cố định theo trục đó (Horizontal hoặc Vertical) cho đến khi nhấc ngón tay (`end_touch()`). Trò chơi cho phép vuốt chéo: nếu tỉ lệ < 1.5x, giữ nguyên cả hai trục (không ép về 0). Xử lý chính xác khi vuốt thẳng một trục (dx hoặc dy = 0) không bị deadlock.
-- **Layer 3 (Neighbor Guard):** Kiểm tra ô kề hợp lệ 8 hướng (kể cả ô chéo kề cạnh theo Chebyshev <= 1). Cho phép nội suy (`_interpolate_cells`) khi kéo nhanh qua các ô trên bàn cờ; chặn các bước nhảy bất thường vượt quá phạm vi bàn cờ.
-- **Tích hợp:** `board_pointer_router.gd` kiểm tra `verdict.allow`, áp dụng tọa độ đã snap trục, và kiểm tra ô cờ qua `filter_cell` trước khi chuyển tiếp sang `touch_decoder.gd`. Giữ nguyên tính độc lập của `touch_decoder.gd`.
+- **Layer 1 (Velocity Gate):** Chặn các cú flick/cuộn vô ý quá nhanh vượt `MAX_VELOCITY_PX_PER_SEC = 6000.0 px/s`. Người chơi có thể lướt nhanh hàng loạt (3000–4500 px/s) qua các ô trên bàn cờ mà không bị chặn nhầm. Bỏ qua frame đầu tiên và frame cùng timestamp (dt=0).
+- **Layer 2 (Multi-Axis Freedom — theo MeowDoku gốc):** Không snap cứng trục tọa độ. Người chơi hoàn toàn tự do di chuyển theo mọi hướng (ngang, dọc, chéo 8 hướng), không bị khóa trục nhầm khi bắt đầu nét vuốt.
+- **Layer 3 (Neighbor Guard):** Kiểm tra ô kề hợp lệ 8 hướng (kể cả ô chéo kề cạnh theo Chebyshev <= 1). Cho phép cơ chế nội suy (`_interpolate_cells`) tự động nối liền mạch khi kéo nhanh qua các ô trên bàn cờ; chỉ chặn các bước nhảy bất thường vượt quá phạm vi bàn cờ (span > 12) hoặc tọa độ âm.
+- **Tích hợp:** `board_pointer_router.gd` kiểm tra `verdict.allow`, truyền tọa độ thực tế của ngón tay, và kiểm tra ô cờ qua `filter_cell` trước khi chuyển tiếp sang `touch_decoder.gd`. Giữ nguyên tính độc lập của `touch_decoder.gd`.
 
 ## RST-021 — Giữ Undo X mặc định cố định, loại bỏ toggle cài đặt
 

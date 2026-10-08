@@ -10,12 +10,10 @@ func _init() -> void:
 	_test_fast_drag_is_allowed()
 	_test_velocity_gate_fast_reject()
 	_test_velocity_gate_first_frame()
-	_test_axis_lock_horizontal()
-	_test_axis_lock_vertical()
-	_test_axis_lock_pure_horizontal()
-	_test_axis_lock_pure_vertical()
-	_test_axis_lock_diagonal_allowed()
-	_test_axis_lock_reset_on_end()
+	_test_velocity_gate_rapid_batch_allowed()
+	_test_diagonal_drag_keeps_both_axes()
+	_test_diagonal_drag_after_horizontal_movement_allowed()
+	_test_diagonal_drag_after_vertical_movement_allowed()
 	_test_neighbor_guard_adjacent_orthogonal_pass()
 	_test_neighbor_guard_adjacent_diagonal_pass()
 	_test_neighbor_guard_same_cell_pass()
@@ -77,86 +75,52 @@ func _test_velocity_gate_first_frame() -> void:
 	var result := guard.filter_move(Vector2(5000, 100), 1001)
 	_assert(bool(result.allow), "first frame always passes velocity")
 
-func _test_axis_lock_horizontal() -> void:
+func _test_velocity_gate_rapid_batch_allowed() -> void:
 	var g := TouchGuard.new()
 	g.start_touch(Vector2(100, 100), 1000)
-	g.filter_move(Vector2(100, 100), 1000)
-	# Strong horizontal: dx=100, dy=10 → ratio 10x → lock horizontal
-	var r := g.filter_move(Vector2(200, 110), 1100)
-	_assert(bool(r.allow), "horizontal move allowed")
-	# Subsequent vertical move should still be snapped horizontal
-	var r2 := g.filter_move(Vector2(200, 200), 1200)
-	_assert(bool(r2.allow), "locked horizontal allows move")
-	var delta: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta.y == 0.0, "vertical component snapped to zero when locked horizontal")
-	var pos: Vector2 = r2.get("position", Vector2.ZERO)
-	_assert(pos.y == 100.0, "position y remains snapped when locked horizontal")
+	g.filter_move(Vector2(110, 100), 1010)
+	# Rapid batch swipe across 400px in 100ms = 4000 px/s (<= 6000 px/s threshold)
+	var r := g.filter_move(Vector2(510, 100), 1110)
+	_assert(bool(r.allow), "rapid intentional batch swipe passes velocity gate")
 
-func _test_axis_lock_vertical() -> void:
+func _test_diagonal_drag_keeps_both_axes() -> void:
 	var g := TouchGuard.new()
 	g.start_touch(Vector2(100, 100), 1000)
 	g.filter_move(Vector2(100, 100), 1000)
-	# Strong vertical: dx=10, dy=100 → lock vertical
-	var r := g.filter_move(Vector2(110, 200), 1100)
-	_assert(bool(r.allow), "vertical move allowed")
-	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta.x == 0.0, "horizontal component snapped to zero when locked vertical")
-	var r2 := g.filter_move(Vector2(200, 200), 1200)
-	var delta2: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta2.x == 0.0, "horizontal component snapped to zero in subsequent move")
-	var pos2: Vector2 = r2.get("position", Vector2.ZERO)
-	_assert(pos2.x == 100.0, "position x remains snapped when locked vertical")
-
-func _test_axis_lock_pure_horizontal() -> void:
-	var g := TouchGuard.new()
-	g.start_touch(Vector2(100, 100), 1000)
-	g.filter_move(Vector2(100, 100), 1000)
-	# Pure horizontal (dy == 0) must lock horizontal without deadlock
-	var r := g.filter_move(Vector2(200, 100), 1100)
-	_assert(bool(r.allow), "pure horizontal move allowed")
-	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta.x == 100.0 and delta.y == 0.0, "pure horizontal delta preserved")
-	# Now move diagonally/vertically: must be snapped horizontal
-	var r2 := g.filter_move(Vector2(250, 150), 1200)
-	var delta2: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta2.y == 0.0, "pure horizontal locked subsequent vertical movement")
-
-func _test_axis_lock_pure_vertical() -> void:
-	var g := TouchGuard.new()
-	g.start_touch(Vector2(100, 100), 1000)
-	g.filter_move(Vector2(100, 100), 1000)
-	# Pure vertical (dx == 0) must lock vertical without deadlock
-	var r := g.filter_move(Vector2(100, 200), 1100)
-	_assert(bool(r.allow), "pure vertical move allowed")
-	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta.y == 100.0 and delta.x == 0.0, "pure vertical delta preserved")
-	# Now move horizontally: must be snapped vertical
-	var r2 := g.filter_move(Vector2(150, 250), 1200)
-	var delta2: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta2.x == 0.0, "pure vertical locked subsequent horizontal movement")
-
-func _test_axis_lock_diagonal_allowed() -> void:
-	var g := TouchGuard.new()
-	g.start_touch(Vector2(100, 100), 1000)
-	g.filter_move(Vector2(100, 100), 1000)
-	# Diagonal: dx=50, dy=50 → ratio 1.0 < 1.5 → unlocked diagonal allowed
-	var r := g.filter_move(Vector2(150, 150), 1100)
+	# Diagonal move: dx=100, dy=100
+	var r := g.filter_move(Vector2(200, 200), 1100)
 	_assert(bool(r.allow), "diagonal move allowed")
 	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta == Vector2(50, 50), "diagonal move keeps both axes")
+	_assert(delta == Vector2(100, 100), "diagonal delta preserves both axes")
+	_assert(r.position == Vector2(200, 200), "diagonal position preserves both axes")
 
-func _test_axis_lock_reset_on_end() -> void:
+func _test_diagonal_drag_after_horizontal_movement_allowed() -> void:
 	var g := TouchGuard.new()
 	g.start_touch(Vector2(100, 100), 1000)
 	g.filter_move(Vector2(100, 100), 1000)
-	g.filter_move(Vector2(200, 110), 1100)  # lock horizontal
-	g.end_touch()
-	g.start_touch(Vector2(100, 100), 2000)
-	g.filter_move(Vector2(100, 100), 2000)
-	# New gesture: strong vertical should lock vertical, not horizontal
-	var r := g.filter_move(Vector2(110, 200), 2100)
-	var delta: Vector2 = r.get("axis_snapped_delta", Vector2.ZERO)
-	_assert(delta.x == 0.0, "axis lock resets between gestures")
+	# Start with strong horizontal move
+	var r1 := g.filter_move(Vector2(200, 100), 1100)
+	_assert(bool(r1.allow), "horizontal start allowed")
+	# Then move diagonally: y component must NOT be locked or zeroed out
+	var r2 := g.filter_move(Vector2(250, 150), 1200)
+	_assert(bool(r2.allow), "subsequent diagonal move allowed without axis lock")
+	var delta: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
+	_assert(delta.y == 50.0 and delta.x == 50.0, "both axes preserved after horizontal movement")
+	_assert(r2.position == Vector2(250, 150), "unconstrained position reflects true pointer")
+
+func _test_diagonal_drag_after_vertical_movement_allowed() -> void:
+	var g := TouchGuard.new()
+	g.start_touch(Vector2(100, 100), 1000)
+	g.filter_move(Vector2(100, 100), 1000)
+	# Start with strong vertical move
+	var r1 := g.filter_move(Vector2(100, 200), 1100)
+	_assert(bool(r1.allow), "vertical start allowed")
+	# Then move diagonally: x component must NOT be locked or zeroed out
+	var r2 := g.filter_move(Vector2(150, 250), 1200)
+	_assert(bool(r2.allow), "subsequent diagonal move allowed without axis lock")
+	var delta: Vector2 = r2.get("axis_snapped_delta", Vector2.ZERO)
+	_assert(delta.x == 50.0 and delta.y == 50.0, "both axes preserved after vertical movement")
+	_assert(r2.position == Vector2(150, 250), "unconstrained position reflects true pointer")
 
 func _test_neighbor_guard_adjacent_orthogonal_pass() -> void:
 	var g := TouchGuard.new()

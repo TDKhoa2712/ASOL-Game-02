@@ -1,11 +1,8 @@
 extends RefCounted
 
 const DRAG_THRESHOLD_PX := 12.0
-const MAX_VELOCITY_PX_PER_SEC := 2000.0
-const AXIS_LOCK_RATIO := 1.5
+const MAX_VELOCITY_PX_PER_SEC := 6000.0
 const MAX_INTERPOLATE_SPAN := 12
-
-enum AxisLock { NONE, HORIZONTAL, VERTICAL }
 
 var _start_pos: Vector2
 var _drag_started: bool = false
@@ -14,12 +11,6 @@ var _drag_started: bool = false
 var _prev_pos: Vector2
 var _prev_time_ms: int = 0
 var _has_prev: bool = false
-
-# Axis lock state
-var _axis_lock: int = AxisLock.NONE
-var _cumulative_dx: float = 0.0
-var _cumulative_dy: float = 0.0
-var _current_pos: Vector2
 
 # Neighbor guard state
 var _prev_cell: Vector2i = Vector2i(-1, -1)
@@ -30,10 +21,6 @@ func start_touch(pos: Vector2, time_ms: int) -> void:
 	_prev_pos = pos
 	_prev_time_ms = time_ms
 	_has_prev = false
-	_axis_lock = AxisLock.NONE
-	_cumulative_dx = 0.0
-	_cumulative_dy = 0.0
-	_current_pos = pos
 	_prev_cell = Vector2i(-1, -1)
 
 func filter_cell(cell: Vector2i) -> Dictionary:
@@ -54,7 +41,7 @@ func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) 
 		_drag_started = true
 		just_started = true
 
-	# Layer 1: Velocity Gate
+	# Layer 1: Velocity Gate (threshold 6000 px/s)
 	if _has_prev:
 		var dt_sec := float(time_ms - _prev_time_ms) / 1000.0
 		if dt_sec > 0.0:
@@ -63,31 +50,14 @@ func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) 
 				return {
 					"allow": false,
 					"reason": "velocity",
-					"position": _current_pos,
+					"position": pos,
 					"drag_started": _drag_started,
 					"drag_just_started": just_started,
 					"axis_snapped_delta": Vector2.ZERO,
 				}
 
-	# Layer 2: Axis Lock Hysteresis
+	# Layer 2: Free Multi-Axis Movement (no hard axis lock, permits diagonal and orthogonal freely)
 	var delta := pos - _prev_pos
-	_cumulative_dx += absf(delta.x)
-	_cumulative_dy += absf(delta.y)
-
-	if _axis_lock == AxisLock.NONE:
-		if _cumulative_dx >= _cumulative_dy * AXIS_LOCK_RATIO and _cumulative_dx > 0.0:
-			_axis_lock = AxisLock.HORIZONTAL
-		elif _cumulative_dy >= _cumulative_dx * AXIS_LOCK_RATIO and _cumulative_dy > 0.0:
-			_axis_lock = AxisLock.VERTICAL
-
-	var snapped_delta := delta
-	match _axis_lock:
-		AxisLock.HORIZONTAL:
-			snapped_delta = Vector2(delta.x, 0.0)
-		AxisLock.VERTICAL:
-			snapped_delta = Vector2(0.0, delta.y)
-		_:
-			snapped_delta = delta
 
 	# Layer 3: Neighbor Guard (if cell provided)
 	if cell != Vector2i(-1, -1):
@@ -95,10 +65,10 @@ func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) 
 			return {
 				"allow": false,
 				"reason": "neighbor",
-				"position": _current_pos,
+				"position": pos,
 				"drag_started": _drag_started,
 				"drag_just_started": just_started,
-				"axis_snapped_delta": snapped_delta,
+				"axis_snapped_delta": delta,
 			}
 		if _prev_cell != Vector2i(-1, -1) and cell != _prev_cell:
 			var span := maxi(absi(cell.x - _prev_cell.x), absi(cell.y - _prev_cell.y))
@@ -106,14 +76,13 @@ func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) 
 				return {
 					"allow": false,
 					"reason": "neighbor",
-					"position": _current_pos,
+					"position": pos,
 					"drag_started": _drag_started,
 					"drag_just_started": just_started,
-					"axis_snapped_delta": snapped_delta,
+					"axis_snapped_delta": delta,
 				}
 		_prev_cell = cell
 
-	_current_pos += snapped_delta
 	_prev_pos = pos
 	_prev_time_ms = time_ms
 	_has_prev = true
@@ -121,16 +90,13 @@ func filter_move(pos: Vector2, time_ms: int, cell: Vector2i = Vector2i(-1, -1)) 
 	return {
 		"allow": true,
 		"reason": "",
-		"position": _current_pos,
+		"position": pos,
 		"drag_started": _drag_started,
 		"drag_just_started": just_started,
-		"axis_snapped_delta": snapped_delta,
+		"axis_snapped_delta": delta,
 	}
 
 func end_touch() -> void:
 	_drag_started = false
 	_has_prev = false
-	_axis_lock = AxisLock.NONE
-	_cumulative_dx = 0.0
-	_cumulative_dy = 0.0
 	_prev_cell = Vector2i(-1, -1)
