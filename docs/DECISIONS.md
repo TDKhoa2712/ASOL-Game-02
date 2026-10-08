@@ -1,5 +1,15 @@
 # Quyết định điều hành hiện hành
 
+## RST-021 — Giữ Undo X mặc định cố định, loại bỏ toggle cài đặt
+
+Ngày 2026-10-08. Chủ dự án chốt: Undo X vẫn hoạt động bình thường trong gameplay (hoàn tác thao tác đánh dấu X gần nhất), nhưng không còn là tùy chọn bật/tắt trong màn hình Cài đặt (Options Screen):
+
+- `puzzle_screen.gd`: Nút Undo X luôn hiển thị và hoạt động khi có session đánh dấu X.
+- `options_screen.gd`: Loại bỏ tile "Hoàn tác X" khỏi danh sách `WIDE_KEYS`.
+- `config_store.gd`: Loại bỏ key `"undo_x"` khỏi `DEFAULTS` và `EDITABLE_KEYS`.
+- Cập nhật các test suite liên quan (`test_config_store.gd`, `test_screens.gd`) đồng bộ theo hành vi mới.
+- Cập nhật từ quyết định RST-017.
+
 ## RST-020 — Chuyển đổi 100% bank levels sizes 7–12 và mở rộng phạm vi N=4–12
 
 Ngày 2026-10-07. Chủ dự án yêu cầu xử lý triệt để việc chuyển đổi bank, bảo toàn 100% level từ nguồn tham khảo, không bỏ sót các bài ở rank cao/kỹ thuật nâng cao:

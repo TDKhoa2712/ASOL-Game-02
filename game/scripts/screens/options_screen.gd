@@ -17,11 +17,10 @@ const LABEL_KEYS := {
 	"large_text": "settings.large_text",
 	"high_contrast": "settings.high_contrast",
 	"colorblind": "settings.colorblind",
-	"undo_x": "settings.undo_x",
 }
 
 const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
-const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind", "undo_x"]
+const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind"]
 
 var _config: Variant = null
 var _built: bool = false
@@ -144,6 +143,13 @@ func setup(config: Variant) -> void:
 	_built = false
 	_ensure_nodes()
 	_build_rows()
+	if _config != null and _config.has_signal("option_changed") and not _config.option_changed.is_connected(_on_config_changed):
+		_config.option_changed.connect(_on_config_changed)
+
+func _on_config_changed(key: String, _value: Variant) -> void:
+	if key == "language":
+		_built = false
+		_build_rows()
 
 func show_restart(visible_flag: bool) -> void:
 	if restart_btn != null:
@@ -281,15 +287,10 @@ func _make_language_tile() -> PanelContainer:
 	return tile
 
 func set_large_text(_enabled: bool) -> void:
-	_built = false
-	_build_rows()
+	_built = false; _build_rows()
 
 func _on_toggle(key: String, on: bool) -> void:
-	if _config != null:
-		_config.set_option(key, on)
+	if _config != null: _config.set_option(key, on)
 
-func _on_back() -> void:
-	back_pressed.emit()
-
-func _on_restart() -> void:
-	restart_pressed.emit()
+func _on_back() -> void: back_pressed.emit()
+func _on_restart() -> void: restart_pressed.emit()

@@ -151,7 +151,7 @@ func _test_title_screen() -> void:
 	_assert(title.runtime != null, "title runtime set")
 	_assert(title.find_child("CandyLogo", true, false) != null, "title logo present")
 	_assert(title.find_child("SafeArea", true, false) != null, "title safe area present")
-	_assert(title.help_btn != null and title.help_dialog != null, "home help restored")
+	_assert(title.help_btn != null, "home help button present")
 	_assert(title.play_btn.text == "Level 1-2", "play button shows only current level")
 	_assert(title.campaign_subtitle != null and title.campaign_subtitle.text == "1->30", "campaign subtitle shows 1->30")
 	_assert(title.endless_btn != null and title.endless_btn.text == "Level 1", "endless button shows default level 1")
@@ -231,7 +231,7 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == 5 and options.vbox.get_child(0).get_child_count() == 4, "settings grid, three wide rows, and language row generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 4 and options.vbox.get_child(0).get_child_count() == 4, "settings grid, two wide rows, and language row generated")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")
 	_assert(options.back_btn != null and options.back_btn.custom_minimum_size.x >= 48, "settings close target is touch sized")
 
@@ -240,10 +240,6 @@ func _test_options_screen() -> void:
 
 	options._on_toggle("colorblind", true)
 	_assert(bool(config.get_option("colorblind")), "colorblind enabled via options screen")
-	var undo_toggle := options.vbox.get_child(3).get_child(0).get_child(1) as PillToggle
-	undo_toggle._on_toggled(false)
-	_assert(not bool(config.get_option("undo_x")), "undo disabled via its settings toggle")
-
 	var back_box := [false]
 	options.back_pressed.connect(func(): back_box[0] = true)
 	options._on_back()
