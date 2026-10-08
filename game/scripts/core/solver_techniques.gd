@@ -177,17 +177,35 @@ static func _popcount(mask: int) -> int:
 static func _precompute_zone_masks(board: Array, size: int, regions: Array) -> Dictionary:
 	var row_masks: Dictionary = {}
 	var col_masks: Dictionary = {}
+	var row_orders: Dictionary = {}
+	var col_orders: Dictionary = {}
 	for zone in _zones(regions, size):
 		if _has_candy(board, size, regions, "zone", zone):
 			continue
 		var row_mask: int = 0
 		var col_mask: int = 0
+		var rows: Array = []
+		var cols: Array = []
 		for cell in _candidates_in_zone(board, size, regions, zone):
 			row_mask |= 1 << cell[0]
 			col_mask |= 1 << cell[1]
+			if not rows.has(cell[0]):
+				rows.append(cell[0])
+			if not cols.has(cell[1]):
+				cols.append(cell[1])
 		row_masks[zone] = row_mask
 		col_masks[zone] = col_mask
-	return {"row": row_masks, "col": col_masks}
+		row_orders[zone] = rows
+		col_orders[zone] = cols
+	return {"row": row_masks, "col": col_masks, "row_order": row_orders, "col_order": col_orders}
+
+static func _ordered_subset_units(subset: Array, zone_orders: Dictionary) -> Array:
+	var units: Array = []
+	for zone in subset:
+		for unit in zone_orders[zone]:
+			if not units.has(unit):
+				units.append(unit)
+	return units
 
 static func _try_locked_subsets(board: Array, size: int, regions: Array, max_k: int = 6) -> Dictionary:
 	var all_zones := _zones(regions, size)
@@ -197,19 +215,26 @@ static func _try_locked_subsets(board: Array, size: int, regions: Array, max_k: 
 			unplaced_zones.append(z)
 	if unplaced_zones.size() < 2:
 		return {"found": false, "eliminated": []}
+	var masks := _precompute_zone_masks(board, size, regions)
+	var row_masks: Dictionary = masks["row"]
+	var col_masks: Dictionary = masks["col"]
 	var limit := mini(unplaced_zones.size() - 1, max_k)
 	for k in range(2, limit + 1):
-		var subsets := _gen_subsets(unplaced_zones, k)
-		for subset in subsets:
-			var candidate_rows: Dictionary = {}
-			var zone_cands: Dictionary = {}
+		for subset in _gen_subsets(unplaced_zones, k):
+			var union_rows: int = 0
+			var union_cols: int = 0
+			var has_empty_zone: bool = false
 			for z in subset:
-				zone_cands[z] = _candidates_in_zone(board, size, regions, z)
-				for cell in zone_cands[z]:
-					candidate_rows[cell[0]] = true
-			if candidate_rows.size() == k:
+				if row_masks[z] == 0:
+					has_empty_zone = true
+					break
+				union_rows |= row_masks[z]
+				union_cols |= col_masks[z]
+			if has_empty_zone:
+				continue
+			if _popcount(union_rows) == k:
 				var elim: Array = []
-				for row_idx in candidate_rows:
+				for row_idx in _ordered_subset_units(subset, masks["row_order"]):
 					for c in range(size):
 						var z := CandyRules.zone_of(regions, row_idx, c)
 						if not subset.has(z) and _is_candidate(board, size, regions, row_idx, c):
@@ -217,13 +242,9 @@ static func _try_locked_subsets(board: Array, size: int, regions: Array, max_k: 
 				if not elim.is_empty():
 					var tech: int = Technique.SUBSET_PAIR if k == 2 else (Technique.SUBSET_TRIPLE if k == 3 else Technique.SUBSET_QUAD)
 					return {"found": true, "eliminated": elim, "technique": tech, "subset_zones": subset}
-			var candidate_cols: Dictionary = {}
-			for z in subset:
-				for cell in zone_cands[z]:
-					candidate_cols[cell[1]] = true
-			if candidate_cols.size() == k:
+			if _popcount(union_cols) == k:
 				var elim: Array = []
-				for col_idx in candidate_cols:
+				for col_idx in _ordered_subset_units(subset, masks["col_order"]):
 					for r in range(size):
 						var z := CandyRules.zone_of(regions, r, col_idx)
 						if not subset.has(z) and _is_candidate(board, size, regions, r, col_idx):
