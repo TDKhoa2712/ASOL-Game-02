@@ -9,6 +9,7 @@ func _init() -> void:
 	_test_detail_visible_only_for_chain()
 	_test_signals_emitted()
 	_test_apply_label_varies()
+	_test_formatted_text_with_params()
 	if _fails.is_empty():
 		print("HINT_OVERLAY_PASS")
 		quit(0)
@@ -58,6 +59,15 @@ func _test_apply_label_varies() -> void:
 	overlay.dismiss()
 	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
 	_assert(overlay._apply_btn.text != "", "apply has text for single")
+	overlay.free()
+
+func _test_formatted_text_with_params() -> void:
+	var overlay := HintOverlay.new()
+	var hint := _make_hint("SINGLE_CANDIDATE", "PLACE_CANDY")
+	hint["explanation_key"] = "hint.single_row"
+	hint["explanation_params"] = [3]
+	overlay.show_hint(hint)
+	_assert("3" in overlay._label_text.text, "params formatted into explanation: " + overlay._label_text.text)
 	overlay.free()
 
 func _make_hint(strategy: String, action: String) -> Dictionary:

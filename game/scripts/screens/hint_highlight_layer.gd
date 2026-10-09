@@ -17,7 +17,8 @@ var _badge_scales: Array = []
 var _size: int = 0
 var _focus_set: Dictionary = {}
 var _scrim_style: StyleBoxFlat = StyleBoxFlat.new()
-var _border_style: StyleBoxFlat = StyleBoxFlat.new()
+var _bob_style: StyleBoxFlat = StyleBoxFlat.new()
+var _target_style: StyleBoxFlat = StyleBoxFlat.new()
 
 const HIGHLIGHT_COLOR := Color(0.96, 0.62, 0.04)  # #F59E0B
 const SCRIM_COLOR := Color(0.06, 0.05, 0.10, 0.45)  # Spotlight scrim on un-focused cells
@@ -31,8 +32,8 @@ func _init() -> void:
 	visible = false
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_scrim_style.bg_color = SCRIM_COLOR
-	_border_style.draw_center = false
-	_border_style.set_border_width_all(3)
+	_bob_style.draw_center = true
+	_target_style.draw_center = false
 	_backdrop = ColorRect.new()
 	_backdrop.color = Color(0, 0, 0, 0.01)
 	_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -145,27 +146,53 @@ func _draw() -> void:
 						_scrim_style.set_corner_radius_all(int(rect.size.x * 0.12))
 						draw_style_box(_scrim_style, rect)
 
-	var pulse_alpha: float = 0.5 + 0.5 * sin(_pulse_phase)
-	var border_color := Color(HIGHLIGHT_COLOR, pulse_alpha)
-	_border_style.border_color = border_color
+	var bob_t: float = 0.5 - 0.5 * cos(_pulse_phase) if LayoutTokens.motion_enabled else 0.5
+	var bob_scale: float = 1.0 + bob_t * 0.08
+	var bob_y: float = -bob_t * 3.5
+
+	_bob_style.bg_color = Color(1.0, 0.84, 0.22, 0.16 + bob_t * 0.18)
+	_bob_style.border_color = Color(HIGHLIGHT_COLOR, 0.85 + bob_t * 0.15)
+	_bob_style.set_border_width_all(int(3.0 + bob_t * 2.0))
+	_bob_style.shadow_color = Color(0.04, 0.03, 0.08, 0.28 * bob_t)
+	_bob_style.shadow_size = int(4.0 + bob_t * 4.0)
+	_bob_style.shadow_offset = Vector2(0.0, 3.0 + bob_t * 3.0)
 
 	for cell in _hint.get("highlight_cells", []):
 		if cell.size() < 2: continue
 		var rect: Rect2 = _cell_rect_fn.call(int(cell[0]), int(cell[1]))
 		if rect.size.x <= 0: continue
-		_border_style.set_corner_radius_all(int(rect.size.x * 0.12))
-		draw_style_box(_border_style, rect)
+		var center := rect.get_center()
+		var b_size := rect.size * bob_scale
+		var b_rect := Rect2(center - b_size * 0.5 + Vector2(0.0, bob_y), b_size)
+		_bob_style.set_corner_radius_all(int(b_rect.size.x * 0.14))
+		draw_style_box(_bob_style, b_rect)
+
+	var target: Array = _hint.get("target_cell", [])
+	if target.size() >= 2:
+		var t_rect: Rect2 = _cell_rect_fn.call(int(target[0]), int(target[1]))
+		if t_rect.size.x > 0:
+			var t_center := t_rect.get_center()
+			var tb_size := t_rect.size * (1.0 + bob_t * 0.10)
+			var tb_rect := Rect2(t_center - tb_size * 0.5 + Vector2(0.0, -bob_t * 4.5), tb_size)
+			_target_style.set_corner_radius_all(int(tb_rect.size.x * 0.14))
+			_target_style.border_color = Color(1.0, 1.0, 1.0, 0.88 + bob_t * 0.12)
+			_target_style.set_border_width_all(2)
+			draw_style_box(_target_style, tb_rect)
 
 	for cell in _hint.get("eliminated_cells", []):
 		if cell.size() < 2: continue
 		var rect: Rect2 = _cell_rect_fn.call(int(cell[0]), int(cell[1]))
 		if rect.size.x <= 0: continue
-		var inset := rect.size * 0.2
-		var inner := Rect2(rect.position + inset, rect.size - inset * 2)
-		var c := Color(0.4, 0.4, 0.5, GHOST_ALPHA)
-		draw_line(inner.position, inner.position + inner.size, c, 2.0, true)
+		var center := rect.get_center()
+		var b_size := rect.size * (1.0 + bob_t * 0.05)
+		var b_rect := Rect2(center - b_size * 0.5 + Vector2(0.0, bob_y * 0.5), b_size)
+		var inset := b_rect.size * 0.22
+		var inner := Rect2(b_rect.position + inset, b_rect.size - inset * 2.0)
+		var c := Color(0.95, 0.25, 0.25, 0.70 + bob_t * 0.25)
+		var w := 2.5 + bob_t * 1.5
+		draw_line(inner.position, inner.position + inner.size, c, w, true)
 		draw_line(inner.position + Vector2(inner.size.x, 0),
-				inner.position + Vector2(0, inner.size.y), c, 2.0, true)
+				inner.position + Vector2(0, inner.size.y), c, w, true)
 
 	if not _chain.is_empty():
 		_draw_chain_badges()

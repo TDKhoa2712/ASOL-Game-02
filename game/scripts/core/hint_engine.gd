@@ -25,9 +25,12 @@ static func _find_hint_impl(board: Array, size: int, regions: Array, solution: A
 	if single.get("found", false):
 		var unit_type: String = single.get("unit_type", "")
 		var unit_id: Variant = single.get("unit_id", "")
+		var params: Array = []
+		if unit_type == "row" or unit_type == "col":
+			params = [int(unit_id) + 1]
 		return _make_result("SINGLE_CANDIDATE", "PLACE_CANDY",
 				single["cell"], _unit_cells(size, regions, unit_type, unit_id),
-				[], "hint.single_" + unit_type, [unit_id], unit_type, unit_id)
+				[], "hint.single_" + unit_type, params, unit_type, unit_id)
 
 	var lock := SolverTechniques._try_lock_intersection(work, size, regions)
 	if lock.get("found", false):
@@ -36,9 +39,14 @@ static func _find_hint_impl(board: Array, size: int, regions: Array, solution: A
 			var mode: String = lock.get("mode", "")
 			var explanation := _lock_explanation_key(mode)
 			var hl: Array = lock.get("eliminated", [])
+			var target_type: String = lock.get("target_type", "")
+			var target_id: Variant = lock.get("target_id", "")
+			var params: Array = []
+			if target_type == "row" or target_type == "col":
+				params = [int(target_id) + 1]
 			return _make_result("LOCK_INTERSECTION", "PLACE_MARKS",
-					filtered[0], hl, filtered, explanation, [],
-					lock.get("target_type", ""), lock.get("target_id", ""))
+					filtered[0], hl, filtered, explanation, params,
+					target_type, target_id)
 
 	var subset := SolverTechniques._try_locked_subsets(work, size, regions)
 	if subset.get("found", false):
@@ -61,8 +69,9 @@ static func _find_hint_impl(board: Array, size: int, regions: Array, solution: A
 			var detail: Dictionary = chain.get("chain_detail", {})
 			var depth: int = detail.get("depth", 0)
 			var exp_key := "hint.chain_short" if depth <= 2 else "hint.chain_long"
+			var params: Array = [depth] if depth > 2 else []
 			var result := _make_result("CONTRA_CHAIN", "PLACE_MARKS",
-					filtered[0], chain.get("eliminated", []), filtered, exp_key, [])
+					filtered[0], chain.get("eliminated", []), filtered, exp_key, params)
 			result["chain_detail"] = detail
 			return result
 

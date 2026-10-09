@@ -84,9 +84,15 @@ func show_hint(hint: Dictionary) -> void:
 	_setup_ui()
 	var strategy: String = hint.get("strategy", "")
 	_label_icon.text = _icon_for(strategy)
-	_label_text.text = tr(hint.get("explanation_key", ""))
+	var raw_text: String = tr(hint.get("explanation_key", ""))
+	var params: Array = hint.get("explanation_params", [])
+	if not params.is_empty() and "%" in raw_text:
+		_label_text.text = raw_text % params
+	else:
+		_label_text.text = raw_text
 	_apply_btn.text = _apply_label_for(strategy)
 	_dismiss_btn.text = "✕"
+	_detail_btn.text = tr("hint.detail")
 	_detail_btn.visible = strategy == "CONTRA_CHAIN" and hint.has("chain_detail")
 	_showing = true
 	visible = true
