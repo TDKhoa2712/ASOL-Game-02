@@ -9,6 +9,7 @@ const ProgressManagerClass = preload("res://scripts/state/progress_manager.gd")
 const SessionStoreClass = preload("res://scripts/state/session_store.gd")
 const BankReaderClass = preload("res://scripts/content/bank_reader.gd")
 const PlaySessionClass = preload("res://scripts/input/play_session.gd")
+const PreCandyDeciderClass = preload("res://scripts/core/pre_candy_decider.gd")
 
 signal level_started(level_id: String)
 signal level_won(level_id: String, next_id: String)
@@ -21,6 +22,7 @@ var sessions: SessionStoreClass
 var config: RefCounted
 var progress: EndlessProgressClass
 var selector: RefCounted
+var fail_streak: int = 0
 
 var current_session: PlaySessionClass = null
 var _current_level_data: Dictionary = {}
@@ -70,6 +72,9 @@ func start_level(level_arg: Variant = null) -> PlaySessionClass:
 	if level.is_empty():
 		return null
 
+	if PreCandyDeciderClass.should_prefill(PreCandyDeciderClass.Trigger.CONSECUTIVE_FAIL, fail_streak):
+		level = PreCandyDeciderClass.apply_prefill(level)
+
 	var label := current_level_label()
 	level["id"] = label
 	level["hash"] = progress_manager.puzzle_fingerprint(level) if progress_manager != null else str(level.hash)
@@ -100,6 +105,7 @@ func on_level_won(label: String, score_data: Dictionary) -> void:
 	if current_session == null or current_session.phase != PlaySessionClass.Phase.WON:
 		return
 
+	fail_streak = 0
 	var time_spent_s: float = float(score_data.get("time_ms", 0)) / 1000.0
 	var sz: int = int(_current_level_data.get("size", 4))
 
@@ -124,6 +130,7 @@ func on_level_lost(label: String) -> void:
 	if current_session == null:
 		return
 
+	fail_streak += 1
 	var result := {
 		"won": false,
 		"time": float(current_session.elapsed_ms) / 1000.0,
