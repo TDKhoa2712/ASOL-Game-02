@@ -1,9 +1,12 @@
-import sys
+import importlib.util
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import build_combo_atlas as atlas  # noqa: E402
+# Load by path: putting tools/ on sys.path shadows tools/tests modules of the same name.
+_SPEC = importlib.util.spec_from_file_location(
+    "build_combo_atlas", Path(__file__).resolve().parents[1] / "build_combo_atlas.py")
+atlas = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(atlas)
 
 
 class TestComboAtlas(unittest.TestCase):
