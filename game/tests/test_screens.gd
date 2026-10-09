@@ -14,6 +14,7 @@ const ConfigStore = preload("res://scripts/state/config_store.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const CellAnimator = preload("res://scripts/screens/cell_animator.gd")
 const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
+const PuzzleBoardPainter = preload("res://scripts/screens/puzzle_board_painter.gd")
 
 class MockRuntime extends RefCounted:
 	var label: String = "1-2"
@@ -155,6 +156,13 @@ func _test_puzzle_board() -> void:
 	board.set_high_contrast(true)
 	board.notification(CanvasItem.NOTIFICATION_DRAW)
 	board.set_high_contrast(false)
+
+	var bg_tex := PuzzleBoardPainter.get_cell_bg_tex()
+	_assert(bg_tex != null and bg_tex is Texture2D, "painter returns valid cell bg texture")
+	_assert(PuzzleBoardPainter.get_cell_bg_tex() == bg_tex, "painter caches cell bg texture")
+	var border_tex := PuzzleBoardPainter.get_border_tex()
+	_assert(border_tex != null and border_tex is Texture2D, "painter returns valid border texture")
+	_assert(PuzzleBoardPainter.get_border_tex() == border_tex, "painter caches border texture")
 
 	board.free()
 
