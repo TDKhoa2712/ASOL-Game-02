@@ -218,6 +218,9 @@ func _cell_rect(row: int, col: int) -> Rect2:
 	var pos := br.position + Vector2(float(col) * (cell_w + gap), float(row) * (cell_w + gap))
 	return Rect2(pos, Vector2(cell_w, cell_w))
 
+func get_cell_rect(row: int, col: int) -> Rect2:
+	return _cell_rect(row, col)
+
 func _cell_at(pos: Vector2) -> Array:
 	if _session == null: return []
 	var br := _board_rect()
