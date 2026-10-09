@@ -24,6 +24,8 @@ enum Effect {
 	HINT_APPLY,        # positive chime when hint is applied
 	HINT_DISMISS,      # soft close when hint is dismissed
 	HINT_WRONG_MARK,   # warning tone for wrong mark detection
+	COMBO_1, COMBO_2, COMBO_3, COMBO_4, COMBO_5, COMBO_6,     # combo voice, levels 1–6
+	COMBO_7, COMBO_8, COMBO_9, COMBO_10, COMBO_11, COMBO_12,  # combo voice, levels 7–12
 }
 
 const UI_TICK := {
@@ -36,6 +38,8 @@ const UI_TICK := {
 const SHARED_UI_EFFECTS := [Effect.HINT_SHOW, Effect.BTN_PRESS, Effect.RESTART,
 	Effect.TAP_BACK, Effect.TOGGLE_ON, Effect.TOGGLE_OFF, Effect.DIALOG_OPEN,
 	Effect.DIALOG_CLOSE, Effect.UNDO_X]
+
+const COMBO_DIR := "res://assets/audio/sfx/sfx-combo/"
 
 const PRESETS := {
 	Effect.MARK: {
@@ -115,6 +119,18 @@ const PRESETS := {
 		"wave": PcmSynth.Wave.SQUARE, "attack": 0.005, "decay": 0.04,
 		"release": 0.05, "sustain": 0.25,
 	},
+	Effect.COMBO_1: {"type": "file", "path": COMBO_DIR + "1-nice.ogg"},
+	Effect.COMBO_2: {"type": "file", "path": COMBO_DIR + "2-great.ogg"},
+	Effect.COMBO_3: {"type": "file", "path": COMBO_DIR + "3-sweet.ogg"},
+	Effect.COMBO_4: {"type": "file", "path": COMBO_DIR + "4-awesome.ogg"},
+	Effect.COMBO_5: {"type": "file", "path": COMBO_DIR + "5-excellent.ogg"},
+	Effect.COMBO_6: {"type": "file", "path": COMBO_DIR + "6-amazing.ogg"},
+	Effect.COMBO_7: {"type": "file", "path": COMBO_DIR + "7-delicious.ogg"},
+	Effect.COMBO_8: {"type": "file", "path": COMBO_DIR + "8-incredible.ogg"},
+	Effect.COMBO_9: {"type": "file", "path": COMBO_DIR + "9-fantastic.ogg"},
+	Effect.COMBO_10: {"type": "file", "path": COMBO_DIR + "10-devine.ogg"},
+	Effect.COMBO_11: {"type": "file", "path": COMBO_DIR + "11-unstoppable.ogg"},
+	Effect.COMBO_12: {"type": "file", "path": COMBO_DIR + "12-legendary.ogg"},
 }
 
 const MELODY_PRESETS := {
@@ -153,3 +169,6 @@ const MIN_INTERVAL_MS := {
 	Effect.MARK: 100,        # prevent double-fire on fast swipe
 	Effect.LOCK_TICK: 90,
 }
+
+static func combo_effect(level: int) -> int:
+	return Effect.COMBO_1 + clampi(level, 1, 12) - 1

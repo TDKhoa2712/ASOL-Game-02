@@ -13,6 +13,7 @@ func _init() -> void:
 
 func _run() -> void:
 	_test_catalog_complete()
+	_test_combo_effects()
 	_test_catalog_rate_limits()
 	_test_vibration_toggle()
 	_test_vibration_pulse_disabled()
@@ -35,6 +36,16 @@ func _run() -> void:
 		for f in _fails:
 			printerr(f)
 		quit(1)
+
+func _test_combo_effects() -> void:
+	_assert(SfxCatalog.combo_effect(1) == SfxCatalog.Effect.COMBO_1, "combo 1 maps to COMBO_1")
+	_assert(SfxCatalog.combo_effect(12) == SfxCatalog.Effect.COMBO_12, "combo 12 maps to COMBO_12")
+	_assert(SfxCatalog.combo_effect(40) == SfxCatalog.Effect.COMBO_12, "combo clamps high")
+	_assert(SfxCatalog.combo_effect(0) == SfxCatalog.Effect.COMBO_1, "combo clamps low")
+	for level in range(1, 13):
+		var preset: Dictionary = SfxCatalog.PRESETS.get(SfxCatalog.combo_effect(level), {})
+		_assert(preset.get("type", "") == "file", "combo %d is a file preset" % level)
+		_assert(ResourceLoader.exists(str(preset.get("path", ""))), "combo %d audio exists" % level)
 
 func _test_catalog_complete() -> void:
 	_assert(SfxCatalog.Effect.find_key(SfxCatalog.Effect.UNMARK) != null, "UNMARK effect exists")
