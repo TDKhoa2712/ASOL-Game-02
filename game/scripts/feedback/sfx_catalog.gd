@@ -21,6 +21,9 @@ enum Effect {
 	PROGRESS_COMPLETE, # halfway progress milestone
 	LOCK_TICK,     # reserved for system auto-mark
 	SETTINGS_OPEN, # source whoosh when settings opens
+	HINT_APPLY,        # positive chime when hint is applied
+	HINT_DISMISS,      # soft close when hint is dismissed
+	HINT_WRONG_MARK,   # warning tone for wrong mark detection
 }
 
 const UI_TICK := {
@@ -32,7 +35,7 @@ const UI_TICK := {
 
 const SHARED_UI_EFFECTS := [Effect.HINT_SHOW, Effect.BTN_PRESS, Effect.RESTART,
 	Effect.TAP_BACK, Effect.TOGGLE_ON, Effect.TOGGLE_OFF, Effect.DIALOG_OPEN,
-	Effect.DIALOG_CLOSE, Effect.UNDO_X]
+	Effect.DIALOG_CLOSE, Effect.UNDO_X, Effect.HINT_APPLY, Effect.HINT_DISMISS, Effect.HINT_WRONG_MARK]
 
 const PRESETS := {
 	Effect.MARK: {
@@ -96,6 +99,21 @@ const PRESETS := {
 		"wave": PcmSynth.Wave.TRIANGLE, "noise_mix": 0.06, "noise_decay": 0.015,
 		"attack": 0.005, "decay": 0.012, "release": 0.02, "sustain": 0.22,
 		"pitch_curve": PcmSynth.PitchCurve.LINEAR, "low_pass": 2600.0,
+	},
+	Effect.HINT_APPLY: {
+		"freq": 523.0, "end_freq": 784.0, "duration": 0.12, "volume": 0.28,
+		"wave": PcmSynth.Wave.TRIANGLE, "attack": 0.01, "decay": 0.03,
+		"release": 0.04, "sustain": 0.3, "pitch_curve": PcmSynth.PitchCurve.EXPONENTIAL,
+	},
+	Effect.HINT_DISMISS: {
+		"freq": 440.0, "end_freq": 350.0, "duration": 0.08, "volume": 0.18,
+		"wave": PcmSynth.Wave.SINE, "attack": 0.01, "decay": 0.02,
+		"release": 0.03, "sustain": 0.2,
+	},
+	Effect.HINT_WRONG_MARK: {
+		"freq": 300.0, "end_freq": 200.0, "duration": 0.15, "volume": 0.30,
+		"wave": PcmSynth.Wave.SQUARE, "attack": 0.005, "decay": 0.04,
+		"release": 0.05, "sustain": 0.25,
 	},
 }
 
