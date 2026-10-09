@@ -53,6 +53,7 @@ const X_STROKE_RATIO_HC := 0.12
 const X_MIN_STROKE := 4.0
 const X_BOW_RATIO := 0.022
 const CANDY_TEX_RATIO := 0.74
+const MASCOT_TEX_RATIO := 1.15 # atlas frames carry transparent margins, so they may overhang the cell
 const GIVEN_HALO_RATIO := 0.38
 const OVERLAY_ICON_RATIO := 0.35
 const SOLUTION_HINT_RATIO := 0.32

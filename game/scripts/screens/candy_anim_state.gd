@@ -4,8 +4,8 @@ extends RefCounted
 const MAX_CONCURRENT_IDLE := 6
 
 var motion: bool = true
-var idle_min := 4.0
-var idle_max := 7.0
+var idle_min := 2.5
+var idle_max := 5.0
 var _meta: Dictionary
 var _cells: Dictionary = {} # Vector2i -> {anim, t, playing, wait, done, cycle}
 

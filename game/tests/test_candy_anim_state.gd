@@ -52,14 +52,14 @@ func _test_idle_triggers_within_window() -> void:
 	var c := Vector2i(2, 3)
 	s.rest(c)
 	var elapsed := 0.0
-	while elapsed < 3.9:
+	while elapsed < 2.4:
 		s.advance(0.1, true); elapsed += 0.1
-	_assert(s.idle_playing_count() == 0, "idle not before 4s")
+	_assert(s.idle_playing_count() == 0, "idle not before 2.5s")
 	var played := false
-	while elapsed < 7.5:
+	while elapsed < 5.5:
 		s.advance(0.05, true); elapsed += 0.05
 		if s.frame_of(c)[1] > 0: played = true
-	_assert(played, "idle plays within 4-7s window")
+	_assert(played, "idle plays within 2.5-5s window")
 
 func _test_idle_cap() -> void:
 	var s := CandyAnimState.new(META)

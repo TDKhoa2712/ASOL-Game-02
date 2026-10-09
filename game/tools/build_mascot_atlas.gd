@@ -10,7 +10,7 @@ const PAD := 2
 const COLS := 10
 const SVG_SCALE := 0.175 # 640px-wide parts -> 112px
 const BASE := Vector2i(112, 91)
-const GROUND := 124 # bottom of the mascot canvas inside a frame
+const GROUND := 126 # bottom of the mascot canvas inside a frame
 const FEET := 16 # empty canvas rows below the feet (scaled)
 const WING_PIVOT_L := 0.29 # wing joint as fraction of BASE.x
 const WING_PIVOT_R := 0.71
@@ -58,26 +58,33 @@ func _pose(anim: String, t: float, i: int) -> Dictionary:
 	match anim:
 		"appear":
 			var k := 1.0 - pow(1.0 - t, 3.0)
-			p.sc = 0.3 + 0.7 * k + 0.12 * sin(PI * k)
-			p.sy = 1.0 - 0.12 * sin(PI * clampf((t - 0.6) / 0.4, 0.0, 1.0))
+			p.sc = 0.2 + 0.8 * k + 0.25 * sin(PI * k)
+			p.sy = 1.0 - 0.25 * sin(PI * clampf((t - 0.55) / 0.45, 0.0, 1.0))
 			p.sx = 2.0 - p.sy
-			p.face = "face_surprised" if t < 0.6 else "face_normal"
+			p.dy = -18.0 * sin(PI * clampf(t / 0.55, 0.0, 1.0))
+			p.face = "face_surprised" if t < 0.6 else "face_happy"
 		"idle":
-			p.sy = 1.0 + 0.04 * sin(TAU * t); p.sx = 1.0 - 0.03 * sin(TAU * t)
-			p.wing_s = 1.0 - 0.15 * absf(sin(TAU * t))
-			p.face = "face_blink" if i == 8 or i == 9 else "face_normal"
+			p.sy = 1.0 + 0.09 * sin(TAU * t); p.sx = 1.0 - 0.07 * sin(TAU * t)
+			p.dy = -6.0 * maxf(0.0, sin(TAU * t))
+			p.wing_s = 1.0 - 0.4 * absf(sin(TAU * 2.0 * t))
+			p.face = "face_blink" if i >= 8 and i <= 10 else "face_normal"
 		"error":
-			p.dx = 6.0 * sin(TAU * 2.0 * t) * (1.0 - 0.5 * t)
-			p.tint = 0.35 * sin(PI * t)
+			p.dx = 14.0 * sin(TAU * 3.0 * t) * (1.0 - 0.6 * t)
+			p.sy = 1.0 - 0.08 * sin(PI * t); p.sx = 2.0 - p.sy
+			p.tint = 0.55 * sin(PI * t)
 			p.face = "face_surprised"
 		"sad":
 			p.body = "body_sad"; p.wing = "_sad"; p.face = "face_sad"
-			p.sy = 1.0 - 0.03 * sin(TAU * t); p.sx = 1.0 + 0.02 * sin(TAU * t)
+			p.sy = 1.0 - 0.08 * sin(TAU * t); p.sx = 1.0 + 0.06 * sin(TAU * t)
+			p.dx = 2.5 * sin(TAU * 4.0 * t)
+			p.wing_s = 1.0 - 0.2 * absf(sin(TAU * t))
 			p.tear = t
 		"win":
-			p.dy = -22.0 * sin(PI * t)
-			if t < 0.15 or t > 0.9: p.sy = 0.88; p.sx = 1.1
-			p.wing_s = 1.0 - 0.3 * absf(sin(TAU * 2.0 * t))
+			p.dy = -34.0 * sin(PI * t)
+			if t < 0.12: p.sy = 0.8; p.sx = 1.2
+			elif t > 0.9: p.sy = 0.82; p.sx = 1.18
+			elif t > 0.2 and t < 0.8: p.sy = 1.1; p.sx = 0.92
+			p.wing_s = 1.0 - 0.55 * absf(sin(TAU * 3.0 * t))
 			p.face = "face_happy" if t < 0.5 else "face_heart"
 	return p
 

@@ -13,7 +13,8 @@ static func draw(canvas: CanvasItem, rect: Rect2, is_given: bool, cs: float, sta
 	var dst := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
 	var src := CandyAtlas.frame_rect(frame[0], frame[1]) if not frame.is_empty() else Rect2()
 	if src.size.x > 0.0:
-		canvas.draw_texture_rect_region(CandyAtlas.texture(), dst, src)
+		var mascot_size := rect.size * minf(LayoutTokens.MASCOT_TEX_RATIO * cs, 1.35)
+		canvas.draw_texture_rect_region(CandyAtlas.texture(), Rect2(rect.get_center() - mascot_size * 0.5, mascot_size), src)
 	elif static_tex != null:
 		canvas.draw_texture_rect(static_tex, dst, false)
 	else:
