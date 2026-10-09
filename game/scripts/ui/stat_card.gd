@@ -5,14 +5,14 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
-func _init(stats: Array[Dictionary]) -> void:
+func _init(stats: Array[Dictionary], shadow_color: Color = Color("#EFD27E")) -> void:
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	custom_minimum_size = Vector2(0, 96)
 
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color.WHITE
 	style.set_corner_radius_all(28)
-	style.shadow_color = Color("#EFD27E")
+	style.shadow_color = shadow_color
 	style.shadow_size = 8
 	style.shadow_offset = Vector2(0, 7)
 	style.content_margin_left = 24

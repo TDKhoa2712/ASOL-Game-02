@@ -15,6 +15,7 @@ var text: String:
 		_raw_text = v
 		if _label != null:
 			if v == "Hoan hô!": _label.text = "HOÀN THÀNH!"
+			elif v in ["Hết tim", "Hết tim!", "Hết tim rồi!"]: _label.text = "HẾT TIM RỒI!"
 			else: _label.text = v.to_upper()
 var _style: String
 var _tails: _RibbonTails

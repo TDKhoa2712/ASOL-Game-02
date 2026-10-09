@@ -13,10 +13,10 @@ func _init(total: int = 3, filled: int = 3, style: String = "win") -> void:
 	_filled = clampi(filled, 0, total)
 	_style = style
 	alignment = BoxContainer.ALIGNMENT_CENTER
-	add_theme_constant_override("separation", 20)
+	add_theme_constant_override("separation", 18)
 	for i in range(_total):
 		var is_middle := (i == 1)
-		var size := 148.0 if is_middle else 122.0
+		var size := 154.0 if is_middle else 126.0
 		var heart := _create_heart(i, size, i < _filled)
 		add_child(heart)
 
@@ -24,28 +24,27 @@ func _create_heart(index: int, heart_size: float, is_filled: bool) -> Control:
 	var container := Control.new()
 	container.custom_minimum_size = Vector2(heart_size, heart_size)
 	container.pivot_offset = Vector2(heart_size * 0.5, heart_size * 0.5)
-	if index == 0: container.rotation_degrees = -6.0
-	elif index == 2: container.rotation_degrees = 6.0
+	if index == 0:
+		container.rotation_degrees = -8.0
+		container.size_flags_vertical = Control.SIZE_SHRINK_END
+	elif index == 2:
+		container.rotation_degrees = 8.0
+		container.size_flags_vertical = Control.SIZE_SHRINK_END
+	else:
+		container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
 	var tex := TextureRect.new()
 	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	if is_filled:
+	if _style == "lose":
+		tex.texture = preload("res://assets/ui/result/heart_broken.svg")
+	elif is_filled:
 		tex.texture = preload("res://assets/ui/board/heart_icon.png")
 	else:
 		tex.texture = preload("res://assets/ui/board/heart_icon_empty.png")
-		if _style == "win":
-			tex.modulate = Color(1.4, 1.4, 1.45, 0.95)
-		elif _style == "lose":
-			tex.modulate = Color(0.85, 0.8, 0.9, 1.0)
+		tex.modulate = Color(1.4, 1.4, 1.45, 0.95)
 	container.add_child(tex)
-
-	if _style == "lose":
-		var crack_overlay := _CrackLine.new(heart_size)
-		crack_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		crack_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		container.add_child(crack_overlay)
 
 	return container
 
@@ -75,19 +74,3 @@ func _add_heartbeat(heart: Control, start_delay: float) -> void:
 	tw.tween_property(heart, "scale", Vector2(1.06, 1.06), 0.18).set_trans(Tween.TRANS_SINE)
 	tw.tween_property(heart, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_SINE)
 	tw.tween_interval(0.48)
-
-class _CrackLine extends Control:
-	var _s: float = 100.0
-
-	func _init(size_px: float) -> void:
-		_s = size_px
-
-	func _draw() -> void:
-		var pts: PackedVector2Array = [
-			Vector2(0.46 * _s, 0.14 * _s),
-			Vector2(0.52 * _s, 0.30 * _s),
-			Vector2(0.42 * _s, 0.44 * _s),
-			Vector2(0.56 * _s, 0.58 * _s),
-			Vector2(0.46 * _s, 0.74 * _s),
-		]
-		draw_polyline(pts, Palette.LOSE_HEART_CRACK, 4.0, true)

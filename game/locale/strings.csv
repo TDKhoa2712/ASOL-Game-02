@@ -47,12 +47,12 @@ puzzle.rule_diagonal,Candies cannot touch each other,キャンディ同士は隣
 result.win.title,Hooray!,万歳！,Hoan hô!,Hore!,Viva!,¡Hurra!,만세!
 result.win.title_campaign,Campaign Complete!,キャンペーンクリア！,Hoàn thành chiến dịch!,Kampanye Selesai!,Campanha Concluída!,¡Campaña Completada!,캠페인 완료!
 result.win.subtitle,You found all the candies!,すべてのキャンディを見つけました！,Bạn đã tìm đủ kẹo!,Kamu menemukan semua permen!,Você encontrou todos os doces!,¡Encontraste todos los dulces!,모든 사탕을 찾았습니다!
-result.win.next,Continue,次へ,Tiếp tục,Lanjut,Continuar,Continuar,계속
+result.win.next,Next Level,次のレベル,Màn tiếp theo,Level Berikutnya,Próximo Nível,Siguiente Nivel,다음 레벨
 result.win.replay,Play Again,もう一度,Chơi lại,Main Lagi,Jogar Novamente,Jugar de Nuevo,다시 하기
 result.win.home,Home,ホーム,Trang chủ,Beranda,Início,Inicio,홈
-result.lose.title,Out of Hearts,ハート切れ,Hết tim,Kehabisan Nyawa,Sem Vidas,Sin Vidas,하트 소진
+result.lose.title,Out of Hearts,ハート切れ,Hết tim rồi!,Kehabisan Nyawa,Sem Vidas,Sin Vidas,하트 소진
 result.lose.subtitle,You can try this level again.,もう一度挑戦できます。,Bạn có thể thử lại màn này.,Kamu bisa mencoba level ini lagi.,Você pode tentar este nível novamente.,Puedes intentar este nivel de nuevo.,이 레벨을 다시 시도할 수 있습니다.
-result.lose.retry,Retry,再挑戦,Thử lại,Coba Lagi,Tentar Novamente,Reintentar,다시 시도
+result.lose.retry,Retry,再挑戦,Chơi lại màn,Coba Lagi,Tentar Novamente,Reintentar,다시 시도
 result.lose.home,Home,ホーム,Trang chủ,Beranda,Início,Inicio,홈
 boot.error,Boot error: %s,起動エラー: %s,Lỗi khởi động: %s,Kesalahan boot: %s,Erro de inicialização: %s,Error de inicio: %s,부팅 오류: %s
 boot.save_failed,Save failed: %s,セーブ失敗: %s,Lưu dữ liệu thất bại: %s,Gagal menyimpan: %s,Falha ao salvar: %s,Error al guardar: %s,저장 실패: %s
@@ -83,7 +83,9 @@ result.level_badge,Level %s,レベル %s,Màn %s,Level %s,Nível %s,Nivel %s,레
 result.stat.time,Time,タイム,Thời gian,Waktu,Tempo,Tiempo,시간
 result.stat.mistakes,Mistakes,ミス,Lỗi sai,Kesalahan,Erros,Errores,실수
 result.win.next_level,Next: %s,次: %s,Màn tiếp: %s,Lanjut: %s,Próximo: %s,Siguiente: %s,다음: %s
+result.win.next_header,NEXT UP,次のステージ,TIẾP THEO,SELANJUTNYA,PRÓXIMO,SIGUIENTE,다음 스테이지
 result.lose.encourage_title,So close!,おしかった！,Suýt nữa là được rồi!,Hampir saja!,Por pouco!,¡Por poco!,아쉬워요!
+result.lose.encourage_subtitle,Try level %s again to solve the candy grid.,ステージ%sを再挑戦してキャンディグリッドを解こう。,Thử lại màn %s để giải xong lưới kẹo nhé.,Coba level %s lagi untuk menyelesaikan kisi permen.,Tente o nível %s novamente para resolver a grade de doces.,Intenta el nivel %s de nuevo para resolver la cuadrícula de dulces.,레벨 %s을 다시 시도해서 캔디 그리드를 풀어보세요.
 title.progress,Progress,進行度,Tiến độ,Kemajuan,Progresso,Progreso,진행도
 title.mascot_bubble,Solve puzzles with me!,一緒にパズルを解こう！,Giải đố cùng mình nhé!,Ayo pecahkan teka-teki bersamaku!,Vamos resolver quebra-cabeças juntos!,¡Resuelve acertijos conmigo!,나와 함께 퍼즐을 풀어봐요!
 difficulty.tutorial,Tutorial,チュートリアル,Hướng dẫn,Tutorial,Tutorial,Tutorial,튜토리얼
