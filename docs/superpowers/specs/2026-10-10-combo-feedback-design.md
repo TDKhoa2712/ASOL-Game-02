@@ -14,7 +14,7 @@ không làm giảm hiệu năng (không cấp phát node/texture khi đang chơi
 - Đặt sai → `streak = 0`.
 - Áp dụng hint → `streak = 0`; kẹo do hint đặt **không** cộng combo.
 - Đánh X, bỏ X, undo: không ảnh hưởng.
-- Level mới / restart → `streak = 0` (combo không giữ qua level).
+- Level mới / restart / resume → `streak = 0` (combo không giữ qua level).
 - Hệ quả: campaign 4×4–6×6 tối đa cấp 6; cấp 7–12 chỉ xuất hiện ở bàn ≥7×7.
 
 Thứ tự cấp: 1 nice, 2 great, 3 sweet, 4 awesome, 5 excellent, 6 amazing,
@@ -26,7 +26,7 @@ Thứ tự cấp: 1 nice, 2 great, 3 sweet, 4 awesome, 5 excellent, 6 amazing,
 |---|---|---|
 | ComboTracker | `game/scripts/feedback/combo_tracker.gd` | Đếm streak thuần (`on_correct() -> int`, `break_streak()`, `reset()`), không UI |
 | SfxCatalog | `game/scripts/feedback/sfx_catalog.gd` | Thêm `COMBO_1..COMBO_12` dạng `"type": "file"` |
-| Combo atlas tool | `game/tools/build_combo_atlas.gd` | Offline: render 12 chữ → `assets/ui/combo/combo_atlas.png` + `.json`; `--check` xác nhận atlas khớp |
+| Combo atlas tool | `tools/build_combo_atlas.py` (Pillow; Godot headless không vẽ chữ ra ảnh được) | Offline: render 12 chữ → `assets/ui/combo/combo_atlas.png` + `.json`; `--check` xác nhận atlas khớp |
 | ComboPopup | `game/scripts/screens/combo_popup.gd` | Một `Sprite2D` tái sử dụng + một `CPUParticles2D`; chạy animation |
 | PuzzleScreen | `game/scripts/screens/puzzle_screen.gd` | Nối signal session → tracker → sfx + popup |
 
@@ -62,5 +62,5 @@ không hạt, không di chuyển — chỉ hiện và fade.
 - `test_combo_tracker.gd`: tăng, kẹp 12, mất khi sai/hint, reset.
 - `test_feedback.gd`: catalog có đủ 12 effect, file tồn tại.
 - Test popup: gọi `show_combo` chọn đúng rect, reduced-motion không đổi scale.
-- `build_combo_atlas.gd --check`; full gate `tools/verify.py`.
+- `python -B tools/build_combo_atlas.py --check`; full gate `tools/verify.py`.
 - QA thủ công trên thiết bị: nghe/nhìn, không giật khung.
