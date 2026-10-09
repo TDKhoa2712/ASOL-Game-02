@@ -46,6 +46,8 @@ static func build(root: Control) -> Dictionary:
 	top.add_child(back)
 
 	_add_spacer(top)
+	# Narrower left gap nudges the level pill toward the back button.
+	top.get_child(top.get_child_count() - 1).size_flags_stretch_ratio = 0.4
 
 	var level_pill := PanelContainer.new()
 	level_pill.name = "LevelPill"

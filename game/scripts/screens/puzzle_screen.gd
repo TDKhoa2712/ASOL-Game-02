@@ -180,8 +180,7 @@ func _on_hint() -> void:
 func _on_restart() -> void:
 	if board != null:
 		board.settle_input()
-	if restart_confirm != null:
-		restart_confirm.popup_centered(Vector2i(650, 260))
+	_confirm_restart()
 
 func _confirm_restart() -> void:
 	hint_coordinator.force_release()

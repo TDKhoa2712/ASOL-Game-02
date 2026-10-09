@@ -42,7 +42,7 @@ func _ensure_nodes() -> void:
 	var safe := MarginContainer.new()
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for s in ["left", "right"]: safe.add_theme_constant_override("margin_" + s, 48)
-	safe.add_theme_constant_override("margin_top", 44)
+	safe.add_theme_constant_override("margin_top", 110)
 	safe.add_theme_constant_override("margin_bottom", 52)
 	add_child(safe)
 

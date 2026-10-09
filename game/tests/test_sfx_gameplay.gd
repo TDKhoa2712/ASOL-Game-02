@@ -52,11 +52,8 @@ func _run() -> void:
 	puzzle._on_hint()
 	_expect_effect(shell.sfx, SfxCatalog.Effect.HINT_SHOW, "hint")
 	puzzle._on_restart()
-	_expect_effect(shell.sfx, SfxCatalog.Effect.DIALOG_OPEN, "restart confirmation opens")
-	puzzle.restart_confirm.hide()
-	_expect_effect(shell.sfx, SfxCatalog.Effect.DIALOG_CLOSE, "restart confirmation closes")
-	puzzle._confirm_restart()
-	_expect_effect(shell.sfx, SfxCatalog.Effect.RESTART, "restart")
+	_expect_effect(shell.sfx, SfxCatalog.Effect.RESTART, "restart is immediate")
+	_check(not puzzle.restart_confirm.visible, "restart skips confirmation")
 	var session = puzzle.session
 	for row in range(session.level.solution.size()):
 		var col := int(session.level.solution[row])

@@ -55,7 +55,7 @@ func _ensure_nodes() -> void:
 	var safe := MarginContainer.new()
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	for s in ["left", "right"]: safe.add_theme_constant_override("margin_" + s, 48)
-	safe.add_theme_constant_override("margin_top", 44); safe.add_theme_constant_override("margin_bottom", 52)
+	safe.add_theme_constant_override("margin_top", 110); safe.add_theme_constant_override("margin_bottom", 52)
 	add_child(safe)
 
 	var stack := VBoxContainer.new()
@@ -96,7 +96,9 @@ func _ensure_nodes() -> void:
 	top.add_child(_level_badge)
 
 	var spacer2 := Control.new(); spacer2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	spacer2.custom_minimum_size.x = 84; top.add_child(spacer2)
+	top.add_child(spacer2)
+	# Mirrors the home button width so the badge sits at the true center.
+	var balance := Control.new(); balance.custom_minimum_size.x = 84; top.add_child(balance)
 
 	# 2. Ribbon
 	ribbon = RibbonBanner.new(tr("result.win.title"), "win")
