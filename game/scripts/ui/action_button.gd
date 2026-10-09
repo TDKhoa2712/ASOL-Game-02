@@ -60,3 +60,31 @@ static func add_pulse(btn: Button) -> void:
 	var tw := btn.create_tween().set_loops()
 	tw.tween_property(btn, "position:y", btn.position.y - 4.0, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_property(btn, "position:y", btn.position.y, 0.7).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+static func set_leading_icon(btn: Button, icon_path: String, icon_size: Vector2 = Vector2(30, 30)) -> Label:
+	for s in ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color"]:
+		btn.add_theme_color_override(s, Color.TRANSPARENT)
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	row.add_theme_constant_override("separation", 14)
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	btn.add_child(row)
+	var ico := TextureRect.new()
+	ico.texture = load(icon_path) as Texture2D
+	ico.custom_minimum_size = icon_size
+	ico.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	ico.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	ico.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(ico)
+	var lbl := Label.new()
+	lbl.name = "ActionLabel"
+	lbl.text = btn.text
+	lbl.add_theme_font_size_override("font_size", btn.get_theme_font_size("font_size"))
+	lbl.add_theme_color_override("font_color", Color.WHITE)
+	var f := FontTokens.body_bold()
+	if f != null: lbl.add_theme_font_override("font", f)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_child(lbl)
+	return lbl
+
