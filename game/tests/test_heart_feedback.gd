@@ -20,6 +20,7 @@ func _run() -> void:
 	await _test_last_heart()
 	await _test_restart_and_leave()
 	await _test_failed_resume()
+	await _test_mascot_reactions()
 	_test_reduced_motion_and_resume()
 	LayoutTokens.set_motion(true)
 	if failures.is_empty():
@@ -124,3 +125,16 @@ func _test_failed_resume() -> void:
 
 func _check(ok: bool, label: String) -> void:
 	if not ok: failures.append("FAIL: " + label)
+
+func _test_mascot_reactions() -> void:
+	var puzzle := _puzzle()
+	await process_frame
+	puzzle.session.try_candy(0, 0)
+	_check(puzzle.board.candy_frame(0, 1)[0] == "error", "mistake with hearts left makes mascots flinch")
+	puzzle.queue_free()
+	var last := _puzzle(1)
+	await process_frame
+	last.session.try_candy(0, 0)
+	await process_frame
+	_check(last.board.candy_frame(0, 1)[0] == "sad", "losing the last heart makes mascots cry")
+	last.queue_free()

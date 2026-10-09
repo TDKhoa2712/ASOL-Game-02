@@ -256,6 +256,7 @@ func _on_level_won() -> void:
 		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	level_done.emit(true)
 func _on_level_failed() -> void:
+	if board != null: board.play_sad()
 	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.
