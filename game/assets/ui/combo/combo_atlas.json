@@ -1,0 +1,21 @@
+{
+  "frame": [
+    512,
+    128
+  ],
+  "cols": 2,
+  "words": {
+    "1": "NICE!",
+    "2": "GREAT!",
+    "3": "SWEET!",
+    "4": "AWESOME!",
+    "5": "EXCELLENT!",
+    "6": "AMAZING!",
+    "7": "DELICIOUS!",
+    "8": "INCREDIBLE!",
+    "9": "FANTASTIC!",
+    "10": "DIVINE!",
+    "11": "UNSTOPPABLE!",
+    "12": "LEGENDARY!"
+  }
+}
