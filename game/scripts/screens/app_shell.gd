@@ -14,6 +14,7 @@ const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
 const SplashScreen = preload("res://scripts/screens/splash_screen.gd")
@@ -251,7 +252,8 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"colorblind": _refresh_puzzle_colorblind()
 		"language":
 			if value is String:
-				TranslationServer.set_locale(str(value)); _rebuild_current_screen()
+				var target_lang := LocaleResolver.resolve_locale(str(value), OS.get_locale())
+				TranslationServer.set_locale(target_lang); _rebuild_current_screen()
 
 func _rebuild_current_screen() -> void:
 	if nav != null: _swap_screen("", nav.current_name())

@@ -38,10 +38,8 @@ func _ensure_nodes() -> void:
 	_layout_ready = true
 	var legacy_header := get_node_or_null("Header")
 	var legacy_scroll := get_node_or_null("ScrollContainer")
-	if legacy_header != null:
-		legacy_header.hide()
-	if legacy_scroll != null:
-		legacy_scroll.hide()
+	if legacy_header != null: legacy_header.hide()
+	if legacy_scroll != null: legacy_scroll.hide()
 
 	var dimmer := ColorRect.new()
 	dimmer.name = "Dimmer"
@@ -134,10 +132,8 @@ func _ensure_nodes() -> void:
 
 func _ready() -> void:
 	_ensure_nodes()
-	if back_btn != null and not back_btn.pressed.is_connected(_on_back):
-		back_btn.pressed.connect(_on_back)
-	if restart_btn != null and not restart_btn.pressed.is_connected(_on_restart):
-		restart_btn.pressed.connect(_on_restart)
+	if back_btn != null and not back_btn.pressed.is_connected(_on_back): back_btn.pressed.connect(_on_back)
+	if restart_btn != null and not restart_btn.pressed.is_connected(_on_restart): restart_btn.pressed.connect(_on_restart)
 	_build_rows()
 
 func setup(config: Variant) -> void:
@@ -235,16 +231,11 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 
 func _get_setting_icon(key: String, on: bool) -> String:
 	match key:
-		"audio":
-			return "res://assets/ui/settings/button_audio_on.png" if on else "res://assets/ui/settings/button_audio_off.png"
-		"haptic":
-			return "res://assets/ui/settings/button_haptic.png"
-		"reduced_motion":
-			return "res://assets/ui/settings/button_reduced_motion.png"
-		"large_text":
-			return "res://assets/ui/settings/button_large_text.png"
-		_:
-			return ""
+		"audio": return "res://assets/ui/settings/button_audio_on.png" if on else "res://assets/ui/settings/button_audio_off.png"
+		"haptic": return "res://assets/ui/settings/button_haptic.png"
+		"reduced_motion": return "res://assets/ui/settings/button_reduced_motion.png"
+		"large_text": return "res://assets/ui/settings/button_large_text.png"
+		_: return ""
 
 func _make_language_tile() -> PanelContainer:
 	var tile := PanelContainer.new()
@@ -276,9 +267,8 @@ func _make_language_tile() -> PanelContainer:
 	var btn_style := StyleBoxFlat.new()
 	btn_style.bg_color = Palette.SURFACE_HOVER
 	btn_style.set_corner_radius_all(12)
-	btn_style.set_content_margin_all(8)
-	btn_style.content_margin_top = 10
-	btn_style.content_margin_bottom = 10
+	btn_style.content_margin_left = 8; btn_style.content_margin_right = 8
+	btn_style.content_margin_top = 10; btn_style.content_margin_bottom = 10
 	for state in ["normal", "hover", "pressed", "focus"]:
 		lang_btn.add_theme_stylebox_override(state, btn_style)
 	lang_btn.pressed.connect(_on_open_language_dialog)
