@@ -15,6 +15,9 @@ var _dismiss_btn: Button = null
 var _detail_btn: Button = null
 var _tween: Tween = null
 
+func _init() -> void:
+	visible = false
+
 func _ready() -> void:
 	_setup_ui()
 

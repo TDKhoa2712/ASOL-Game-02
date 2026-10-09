@@ -28,7 +28,8 @@ const GHOST_ALPHA := 0.4
 const BADGE_RADIUS_RATIO := 0.25
 
 func _init() -> void:
-	mouse_filter = Control.MOUSE_FILTER_PASS
+	visible = false
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_scrim_style.bg_color = SCRIM_COLOR
 	_border_style.draw_center = false
 	_border_style.set_border_width_all(3)
@@ -46,6 +47,7 @@ func show_hint(hint: Dictionary, cell_rect_fn: Callable, board_size: int = 0) ->
 	_cell_rect_fn = cell_rect_fn
 	_size = board_size if board_size > 0 else int(hint.get("size", 0))
 	_showing = true
+	visible = true
 	_pulse_phase = 0.0
 	_recompute_focus_set()
 	if _backdrop != null:
@@ -56,7 +58,11 @@ func show_hint(hint: Dictionary, cell_rect_fn: Callable, board_size: int = 0) ->
 func show_chain_detail(chain_detail: Dictionary, cell_rect_fn: Callable) -> void:
 	_chain = chain_detail
 	_cell_rect_fn = cell_rect_fn
+	_showing = true
+	visible = true
 	_recompute_focus_set()
+	if _backdrop != null:
+		_backdrop.visible = true
 	_kill_badge_tweens()
 	_badge_scales.clear()
 	var total: int = 1 + chain_detail.get("steps", []).size() + 1
@@ -81,6 +87,7 @@ func clear() -> void:
 	_focus_set.clear()
 	_size = 0
 	_showing = false
+	visible = false
 	if _backdrop != null:
 		_backdrop.visible = false
 	_kill_badge_tweens()
@@ -119,7 +126,7 @@ func _process(delta: float) -> void:
 		queue_redraw()
 
 func _on_backdrop_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed:
+	if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.pressed:
 		dismiss_requested.emit()
 		accept_event()
 

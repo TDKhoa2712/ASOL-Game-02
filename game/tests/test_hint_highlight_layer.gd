@@ -28,6 +28,8 @@ func _mock_cell_rect(r: int, c: int) -> Rect2:
 func _test_highlight_layer_lifecycle() -> void:
 	var layer := HintHighlightLayer.new()
 	_assert(not layer.is_showing(), "initially not showing")
+	_assert(not layer.visible, "initially visible is false to prevent blocking input")
+	_assert(layer.mouse_filter == Control.MOUSE_FILTER_IGNORE, "initially mouse_filter is IGNORE")
 
 	var hint := {
 		"size": 4,
@@ -37,9 +39,11 @@ func _test_highlight_layer_lifecycle() -> void:
 	}
 	layer.show_hint(hint, _mock_cell_rect, 4)
 	_assert(layer.is_showing(), "showing after show_hint")
+	_assert(layer.visible, "visible is true after show_hint")
 
 	layer.clear()
 	_assert(not layer.is_showing(), "not showing after clear")
+	_assert(not layer.visible, "visible is false after clear")
 	layer.free()
 
 func _test_spotlight_focus_cells() -> void:
@@ -86,13 +90,14 @@ func _test_chain_detail_focus() -> void:
 	_assert(layer.is_cell_focused(2, 3), "step 1 is focused")
 	_assert(layer.is_cell_focused(3, 1), "step 2 is focused")
 	_assert(not layer.is_cell_focused(0, 3), "other cell remains dimmed")
+	_assert(layer.visible, "visible is true during chain detail")
 
 	layer.free()
 
 func _test_backdrop_dismiss_signal() -> void:
 	var layer := HintHighlightLayer.new()
-	var dismissed := [false]
-	layer.dismiss_requested.connect(func(): dismissed[0] = true)
+	var dismiss_count := [0]
+	layer.dismiss_requested.connect(func(): dismiss_count[0] += 1)
 
 	var hint := {
 		"size": 4,
@@ -100,10 +105,14 @@ func _test_backdrop_dismiss_signal() -> void:
 	}
 	layer.show_hint(hint, _mock_cell_rect, 4)
 
-	var ev := InputEventMouseButton.new()
-	ev.button_index = MOUSE_BUTTON_LEFT
-	ev.pressed = true
-	layer._on_backdrop_input(ev)
+	var ev_mouse := InputEventMouseButton.new()
+	ev_mouse.button_index = MOUSE_BUTTON_LEFT
+	ev_mouse.pressed = true
+	layer._on_backdrop_input(ev_mouse)
 
-	_assert(dismissed[0], "backdrop click emits dismiss_requested")
+	var ev_touch := InputEventScreenTouch.new()
+	ev_touch.pressed = true
+	layer._on_backdrop_input(ev_touch)
+
+	_assert(dismiss_count[0] == 2, "both mouse and touch emit dismiss_requested")
 	layer.free()

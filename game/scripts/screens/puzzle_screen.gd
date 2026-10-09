@@ -76,7 +76,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 	if debug_bar != null: debug_bar.setup(self, session, board)
 	_update_hearts()
 	if level_label != null and session != null:
-		var raw_id: String = str(session.level.get("id", runtime.current_level_label()))
+		var raw_id: String = str(session.level.get("id", runtime.current_level_label() if runtime != null else ""))
 		level_label.text = raw_id.trim_prefix("L")
 	_update_timer(0.0)
 	if session != null and session.phase != PlaySession.Phase.ACTIVE:
