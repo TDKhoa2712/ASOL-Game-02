@@ -154,10 +154,11 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 		ranks.append(row_ranks)
 
 	for g in givens:
-		var gr: int = int(g[0]) if g is Array else int(g["row"])
-		var gc: int = int(g[1]) if g is Array else int(g["col"])
-		work_board[gr][gc] = CellModel.CellKind.GIVEN
-		ranks[gr][gc] = 1
+		var gr: int = int(g.get("r", g.get("row", -1))) if g is Dictionary else int(g[0])
+		var gc: int = int(g.get("c", g.get("col", -1))) if g is Dictionary else int(g[1])
+		if gr >= 0 and gr < size and gc >= 0 and gc < size:
+			work_board[gr][gc] = CellModel.CellKind.GIVEN
+			ranks[gr][gc] = 1
 
 	var current_max: int = 1
 	while true:

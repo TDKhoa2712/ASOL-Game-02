@@ -74,6 +74,11 @@ func _test_csv_key_coverage() -> void:
 		"settings.audio", "settings.haptic",
 		"result.win.title", "result.lose.title",
 		"puzzle.rule_row", "puzzle.rule_region", "puzzle.rule_diagonal",
+		"hint.wrong_mark", "hint.mark_neighbors", "hint.single_row", "hint.single_col",
+		"hint.single_zone", "hint.lock_zone_row", "hint.lock_zone_col", "hint.lock_row_zone",
+		"hint.lock_col_zone", "hint.subset_pair", "hint.subset_triple", "hint.subset_quad",
+		"hint.chain_short", "hint.chain_long", "hint.fallback", "hint.clear_mark",
+		"hint.mark_x", "hint.place_candy", "hint.reveal", "hint.detail",
 	]
 	TranslationServer.set_locale("vi")
 	for key in expected_keys:

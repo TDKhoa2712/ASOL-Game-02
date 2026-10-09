@@ -5,19 +5,21 @@ signal level_done(won: bool)
 signal options_pressed()
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
-const BoardSolver = preload("res://scripts/core/board_solver.gd")
+const PuzzleHintCoordinator = preload("res://scripts/screens/puzzle_hint_coordinator.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
-var session: Variant = null; var _hint_click_count: int = 0; var _is_custom: bool = false
+var session: Variant = null; var _is_custom: bool = false
 var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
 var restart_btn: Button; var home_btn: Button; var timer_label: Label
 var level_label: Label; var help_btn: Button; var settings_btn: Button
 var region_display: HBoxContainer; var rules_card: PanelContainer
 var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay; var debug_bar: Variant = null
+var hint_highlight: Variant = null
+var hint_coordinator: PuzzleHintCoordinator = PuzzleHintCoordinator.new()
 func _ensure_nodes() -> void:
 	if board != null: return
 	var n: Dictionary = PuzzleLayout.build(self)
@@ -25,7 +27,9 @@ func _ensure_nodes() -> void:
 	hint_btn = n["hint"]; restart_btn = n["restart"]; home_btn = n["back"]
 	help_btn = n["help"]; settings_btn = n["settings"]; level_label = n["level"]
 	rules_card = n["rules"]; undo_btn = n["undo"]; restart_confirm = n["confirm"]
-	hint_overlay = n.get("hint_overlay"); debug_bar = n.get("debug_bar")
+	hint_overlay = n.get("hint_overlay"); hint_highlight = n.get("hint_highlight")
+	debug_bar = n.get("debug_bar")
+	hint_coordinator.setup(board, hint_overlay, hint_highlight, sfx)
 func _ready() -> void:
 	_ensure_nodes()
 	_connect_ui()
@@ -45,9 +49,10 @@ func _connect_ui() -> void:
 		if not board.cell_double_tapped.is_connected(_on_board_double_tap): board.cell_double_tapped.connect(_on_board_double_tap)
 		if not board.cell_swiped.is_connected(_on_board_swipe): board.cell_swiped.connect(_on_board_swipe)
 		if not board.cell_stroke_step.is_connected(_on_board_stroke_step): board.cell_stroke_step.connect(_on_board_stroke_step)
+	hint_coordinator.connect_signals()
 
 func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Dictionary = {}, animate_custom_entry: bool = true) -> void:
-	runtime = rt; sfx = sfx_player; config = cfg; _hint_click_count = 0
+	runtime = rt; sfx = sfx_player; config = cfg
 	_is_custom = not custom_lvl.is_empty()
 	var new_level := _is_custom and animate_custom_entry
 	if _is_custom:
@@ -71,7 +76,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 	if debug_bar != null: debug_bar.setup(self, session, board)
 	_update_hearts()
 	if level_label != null and session != null:
-		var raw_id: String = str(session.level.get("id", runtime.current_level_label()))
+		var raw_id: String = str(session.level.get("id", runtime.current_level_label() if runtime != null else ""))
 		level_label.text = raw_id.trim_prefix("L")
 	_update_timer(0.0)
 	if session != null and session.phase != PlaySession.Phase.ACTIVE:
@@ -112,6 +117,8 @@ func _update_hearts(animate_loss: bool = false) -> void:
 
 func _on_board_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
+	if hint_coordinator.is_hint_showing():
+		hint_coordinator.dismiss_hint()
 	var was_blank: bool = session.cell_at(row, col) == CellModel.CellKind.BLANK
 	session.mark_x(row, col)
 	var is_marked: bool = session.cell_at(row, col) == CellModel.CellKind.MARK
@@ -127,11 +134,15 @@ func _on_board_stroke_step(_row: int, _col: int, is_mark: bool) -> void:
 		sfx.play(SfxCatalog.Effect.MARK if is_mark else SfxCatalog.Effect.UNMARK, true)
 func _on_board_double_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
+	if hint_coordinator.is_hint_showing():
+		hint_coordinator.dismiss_hint()
 	session.try_candy(row, col)
 	if board != null:
 		board.clear_highlight(); board.redraw()
 func _on_board_swipe(cells: Array) -> void:
 	if session == null or session.phase != 0 or cells.is_empty(): return
+	if hint_coordinator.is_hint_showing():
+		hint_coordinator.dismiss_hint()
 	var first: Array = cells[0]
 	if first.size() < 2: return
 	var first_kind: int = session.cell_at(int(first[0]), int(first[1]))
@@ -150,42 +161,9 @@ func _on_board_swipe(cells: Array) -> void:
 		board.redraw()
 
 func _on_hint() -> void:
-	if session == null or runtime == null:
+	if session == null:
 		return
-	if hint_overlay != null and hint_overlay.is_showing():
-		hint_overlay.dismiss()
-		if sfx != null: sfx.play(SfxCatalog.Effect.BTN_PRESS)
-		if board != null:
-			board.clear_highlight()
-		return
-	var pace_data: Dictionary = runtime.current_pace()
-	var costs: Array = pace_data.get("hintCosts", [1])
-	var max_clicks: int = costs.size()
-	if _hint_click_count >= max_clicks:
-		return
-	var lvl: Dictionary = session.level
-	var hint: Dictionary = BoardSolver.progressive_hint(
-		session.board, lvl["size"], lvl["regions"],
-		lvl["solution"], _hint_click_count + 1
-	)
-	if not hint.get("found", true) or hint.get("stage") == "none":
-		return
-	_hint_click_count += 1
-	session.use_hint()
-	var hl: Array = hint.get("highlight", [])
-	if board != null and not hl.is_empty():
-		board.highlight_cells(hl)
-	var explanation: String = str(hint.get("text", ""))
-	var stage: String = str(hint.get("stage", ""))
-	var unit_label: String = ""
-	if stage == "unit":
-		unit_label = tr("puzzle.hint_unit")
-	elif stage == "cell":
-		unit_label = tr("puzzle.hint_cell")
-	if hint_overlay != null and explanation != "":
-		hint_overlay.show_hint(explanation, unit_label)
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.HINT_SHOW)
+	hint_coordinator.request_hint(session)
 
 func _on_restart() -> void:
 	if board != null:
@@ -194,9 +172,7 @@ func _on_restart() -> void:
 		restart_confirm.popup_centered(Vector2i(650, 260))
 
 func _confirm_restart() -> void:
-	if hint_overlay != null and hint_overlay.is_showing():
-		hint_overlay.dismiss()
-	_hint_click_count = 0
+	hint_coordinator.force_release()
 	if _is_custom and session != null:
 		session = PlaySession.new(session.level)
 	elif runtime != null:
@@ -224,16 +200,15 @@ func set_large_text(enabled: bool) -> void:
 	if level_label != null: level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
 
 func _on_undo() -> void:
-	if hint_overlay != null and hint_overlay.is_showing():
-		hint_overlay.dismiss()
+	if hint_coordinator.is_hint_showing():
+		hint_coordinator.dismiss_hint()
 	if board != null: board.settle_input()
 	if session != null and session.undo_mark():
 		if sfx != null: sfx.play(SfxCatalog.Effect.UNDO_X)
 		if board != null: board.clear_highlight()
 
 func _on_home() -> void:
-	if hint_overlay != null and hint_overlay.is_showing():
-		hint_overlay.dismiss()
+	hint_coordinator.force_release()
 	if board != null:
 		board.settle_input()
 	if not _is_custom and runtime != null and session != null and runtime.sessions != null:
@@ -249,8 +224,8 @@ func _on_settings() -> void:
 	options_pressed.emit()
 
 func _on_candy_found(row: int, col: int, _region: String) -> void:
-	if hint_overlay != null and hint_overlay.is_showing():
-		hint_overlay.dismiss()
+	if hint_coordinator.is_hint_showing():
+		hint_coordinator.dismiss_hint()
 	if board != null:
 		board.play_candy_pop(row, col)
 	if sfx != null:
@@ -260,7 +235,6 @@ func _on_candy_found(row: int, col: int, _region: String) -> void:
 		if required > 1 and found == int((required + 1) / 2) and found < required:
 			sfx.play(SfxCatalog.Effect.PROGRESS_COMPLETE)
 	Vibration.pulse(Vibration.Strength.NORMAL)
-	_hint_click_count = 0
 	_update_hearts()
 	if board != null:
 		board.clear_highlight()

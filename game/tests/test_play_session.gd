@@ -16,6 +16,11 @@ func _init() -> void:
 	_test_legacy_restore()
 	_test_serialize_restore()
 	_test_win_condition()
+	_test_clear_mark()
+	_test_clear_mark_ignores_non_mark()
+	_test_apply_marks()
+	_test_apply_marks_skips_non_blank()
+	_test_clear_mark_inactive_phase()
 	if _fails.is_empty():
 		print("INPUT_PLAY_SESSION_PASS")
 		quit(0)
@@ -107,6 +112,44 @@ func _test_win_condition() -> void:
 	for row in 4:
 		session.try_candy(row, int(level["solution"][row]))
 	_assert(won.size() == 1, "level won after all candies")
+
+func _test_clear_mark() -> void:
+	var level := _make_level()
+	var s := PlaySession.new(level)
+	s.mark_x(0, 0)
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.MARK, "cell is marked")
+	s.clear_mark(0, 0)
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.BLANK, "cell cleared to blank")
+
+func _test_clear_mark_ignores_non_mark() -> void:
+	var level := _make_level()
+	var s := PlaySession.new(level)
+	s.clear_mark(0, 0)
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.BLANK, "blank stays blank")
+
+func _test_apply_marks() -> void:
+	var level := _make_level()
+	var s := PlaySession.new(level)
+	s.apply_marks([[0, 0], [0, 2], [1, 1]])
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.MARK, "0,0 marked")
+	_assert(s.cell_at(0, 2) == CellModel.CellKind.MARK, "0,2 marked")
+	_assert(s.cell_at(1, 1) == CellModel.CellKind.MARK, "1,1 marked")
+
+func _test_apply_marks_skips_non_blank() -> void:
+	var level := _make_level()
+	var s := PlaySession.new(level)
+	s.mark_x(0, 0)
+	s.apply_marks([[0, 0], [0, 2]])
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.MARK, "already marked stays")
+	_assert(s.cell_at(0, 2) == CellModel.CellKind.MARK, "new cell marked")
+
+func _test_clear_mark_inactive_phase() -> void:
+	var level := _make_level()
+	var s := PlaySession.new(level)
+	s.mark_x(0, 0)
+	s.phase = PlaySession.Phase.WON
+	s.clear_mark(0, 0)
+	_assert(s.cell_at(0, 0) == CellModel.CellKind.MARK, "no clear in WON phase")
 
 func _make_level() -> Dictionary:
 	return {

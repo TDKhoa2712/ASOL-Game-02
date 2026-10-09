@@ -1,4 +1,3 @@
-# game/tests/test_hint_overlay.gd
 extends SceneTree
 
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
@@ -7,12 +6,12 @@ var _fails: Array[String] = []
 
 func _init() -> void:
 	_test_show_and_dismiss()
-	_test_dismiss_emits_signal()
-	_test_show_updates_text()
-	_test_double_show_replaces()
-	_test_dismiss_when_not_showing()
+	_test_detail_visible_only_for_chain()
+	_test_signals_emitted()
+	_test_apply_label_varies()
+	_test_formatted_text_with_params()
 	if _fails.is_empty():
-		print("SCREENS_HINT_OVERLAY_PASS")
+		print("HINT_OVERLAY_PASS")
 		quit(0)
 	else:
 		for f in _fails:
@@ -21,49 +20,64 @@ func _init() -> void:
 
 func _test_show_and_dismiss() -> void:
 	var overlay := HintOverlay.new()
-	root.add_child(overlay)
-	_assert(not overlay.is_showing(), "starts hidden")
-	overlay.show_hint("Look at row 2", "Row 2")
+	_assert(not overlay.is_showing(), "not showing initially")
+	overlay.show_hint(_make_hint("WRONG_MARK", "CLEAR_MARK"))
 	_assert(overlay.is_showing(), "showing after show_hint")
 	overlay.dismiss()
-	_assert(not overlay.is_showing(), "hidden after dismiss")
-	overlay.queue_free()
+	_assert(not overlay.is_showing(), "not showing after dismiss")
+	overlay.free()
 
-func _test_dismiss_emits_signal() -> void:
+func _test_detail_visible_only_for_chain() -> void:
 	var overlay := HintOverlay.new()
-	root.add_child(overlay)
-	var signals: Array = []
-	overlay.dismissed.connect(func(): signals.append(true))
-	overlay.show_hint("Test", "Zone A")
+	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
+	_assert(not overlay._detail_btn.visible, "detail hidden for single")
 	overlay.dismiss()
-	_assert(signals.size() == 1, "dismissed signal emitted")
-	overlay.queue_free()
+	var chain_hint := _make_hint("CONTRA_CHAIN", "PLACE_MARKS")
+	chain_hint["chain_detail"] = {"hypothesis_cell": [0, 0], "depth": 3, "steps": [], "contra_type": "row", "contra_index": 0}
+	overlay.show_hint(chain_hint)
+	_assert(overlay._detail_btn.visible, "detail visible for chain")
+	overlay.free()
 
-func _test_show_updates_text() -> void:
+func _test_signals_emitted() -> void:
 	var overlay := HintOverlay.new()
-	root.add_child(overlay)
-	overlay.show_hint("First hint", "Row 1")
-	overlay.show_hint("Second hint", "Zone B")
-	_assert(overlay.is_showing(), "still showing after second show")
-	overlay.dismiss()
-	overlay.queue_free()
+	var applied := [false]
+	var dismissed := [false]
+	overlay.hint_applied.connect(func(): applied[0] = true)
+	overlay.hint_dismissed.connect(func(): dismissed[0] = true)
+	overlay.show_hint(_make_hint("MARK_NEIGHBORS", "PLACE_MARKS"))
+	overlay._on_apply()
+	_assert(applied[0], "hint_applied emitted")
+	overlay.show_hint(_make_hint("MARK_NEIGHBORS", "PLACE_MARKS"))
+	overlay._on_dismiss()
+	_assert(dismissed[0], "hint_dismissed emitted")
+	overlay.free()
 
-func _test_double_show_replaces() -> void:
+func _test_apply_label_varies() -> void:
 	var overlay := HintOverlay.new()
-	root.add_child(overlay)
-	overlay.show_hint("A", "X")
-	overlay.show_hint("B", "Y")
-	_assert(overlay.is_showing(), "showing after replace")
+	overlay.show_hint(_make_hint("WRONG_MARK", "CLEAR_MARK"))
+	_assert(overlay._apply_btn.text != "", "apply has text for wrong mark")
 	overlay.dismiss()
-	overlay.queue_free()
+	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
+	_assert(overlay._apply_btn.text != "", "apply has text for single")
+	overlay.free()
 
-func _test_dismiss_when_not_showing() -> void:
+func _test_formatted_text_with_params() -> void:
 	var overlay := HintOverlay.new()
-	root.add_child(overlay)
-	overlay.dismiss()
-	_assert(not overlay.is_showing(), "dismiss when not showing is safe")
-	overlay.queue_free()
+	var hint := _make_hint("SINGLE_CANDIDATE", "PLACE_CANDY")
+	hint["explanation_key"] = "hint.single_row"
+	hint["explanation_params"] = [3]
+	overlay.show_hint(hint)
+	_assert("3" in overlay._label_text.text, "params formatted into explanation: " + overlay._label_text.text)
+	overlay.free()
 
-func _assert(condition: bool, label: String) -> void:
+func _make_hint(strategy: String, action: String) -> Dictionary:
+	return {
+		"found": true, "strategy": strategy, "action": action,
+		"target_cell": [0, 0], "highlight_cells": [[0, 0]],
+		"eliminated_cells": [], "explanation_key": "hint.wrong_mark",
+		"explanation_params": [], "unit_type": "", "unit_id": "",
+	}
+
+func _assert(condition: bool, msg: String) -> void:
 	if not condition:
-		_fails.append("FAIL: " + label)
+		_fails.append("FAIL: " + msg)

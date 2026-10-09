@@ -43,6 +43,7 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 | Mốc | Ngày | Nội dung chính |
 |-----|------|---------------|
+| Hint Engine v2 | 2026-10-09 | 5 chiến lược gợi ý, spotlight scrim, 3D bobbing pulse, giải thích tọa độ, PreCandyDecider |
 | Repo cleanup & Undo X fix | 2026-10-08 | Dọn artifacts, cố định RST-021, full gate 66/66 PASS |
 | BGM & SFX Settings | 2026-10-07 | BGM WAV loop fix, settings-whoosh.ogg, SFX 19 effects |
 | Debug Mode & Campaign 100 | 2026-10-07 | Endless picker, reset progress, cheats toolbar, campaign_100.json |
