@@ -208,9 +208,6 @@ func set_high_contrast_and_redraw(enabled: bool) -> void:
 	if board != null:
 		board.set_high_contrast(enabled)
 		board.redraw()
-func set_large_text(enabled: bool) -> void:
-	_ensure_nodes()
-	if level_label != null: level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
 
 func _on_undo() -> void:
 	if hint_coordinator.is_hint_showing():
@@ -266,13 +263,10 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 func _on_level_won(hold: bool = true) -> void:
 	if board != null:
 		board.play_win_bounce()
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
 func _on_level_failed(hold: bool = true) -> void:
 	if board != null: board.play_sad()
-	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.
 	if not _is_custom and runtime != null and runtime.sessions != null:

@@ -4,21 +4,24 @@ const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
+const ZoneShape = preload("res://scripts/screens/zone_shape.gd")
 
 var _fails: Array[String] = []
 
 func _init() -> void:
 	_test_assign_with_overlays_basic()
-	_test_dark_zones_get_overlay()
-	_test_no_adjacent_same_overlay()
+	_test_every_zone_gets_shape()
+	_test_shape_follows_color()
+	_test_shapes_all_distinct()
+	_test_shape_points_drawable()
 	_test_all_zones_unique_color()
-	_test_overlay_tint_dark()
-	_test_overlay_tint_light()
 	_test_luminance_range()
 	_test_colorblind_keeps_same_colors()
 	_test_highest_degree_zone_colored_first()
 	_test_small_boards_use_primary_colors()
 	_test_plain_cells_without_colorblind()
+	_test_toggle_mid_game()
+	_test_bank_levels_never_repeat_colors()
 	if _fails.is_empty():
 		print("COLORBLIND_PASS")
 		quit(0)
@@ -39,36 +42,34 @@ func _test_assign_with_overlays_basic() -> void:
 	for z in result.overlays:
 		_assert(result.overlays[z] is int, "overlay for zone %s is int" % z)
 
-func _test_dark_zones_get_overlay() -> void:
-	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
-	var result := RegionPainter.assign_with_overlays(4, regions, Palette.ZONE_COLORS)
-	var has_overlay := false
-	var has_none := false
+func _test_every_zone_gets_shape() -> void:
+	var regions := ["AABBCC", "AABBCC", "ADDBEC", "DDDBEE", "DFFBEE", "FFFBEE"]
+	var result := RegionPainter.assign_with_overlays(6, regions, Palette.ZONE_COLORS)
 	for z in result.overlays:
-		if result.overlays[z] != RegionPainter.OverlayIcon.NONE:
-			has_overlay = true
-		else:
-			has_none = true
-	_assert(has_overlay, "some zones have overlay (dark pool)")
-	_assert(has_none, "some zones have no overlay (light pool)")
+		_assert(result.overlays[z] != RegionPainter.OverlayIcon.NONE, "zone %s has a shape" % z)
 
-func _test_no_adjacent_same_overlay() -> void:
-	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
-	var result := RegionPainter.assign_with_overlays(4, regions, Palette.ZONE_COLORS)
-	var grid := RegionPainter.precompute_grid(4, regions)
-	for r in range(4):
-		for c in range(4):
-			var z1: String = grid[r][c]
-			for d in [[0, 1], [1, 0]]:
-				var nr: int = r + d[0]
-				var nc: int = c + d[1]
-				if nr < 4 and nc < 4:
-					var z2: String = grid[nr][nc]
-					if z1 != z2:
-						var o1: int = result.overlays[z1]
-						var o2: int = result.overlays[z2]
-						if o1 != RegionPainter.OverlayIcon.NONE and o2 != RegionPainter.OverlayIcon.NONE:
-							_assert(o1 != o2, "adjacent dark zones %s,%s must have different overlay" % [z1, z2])
+func _test_shape_follows_color() -> void:
+	# Same color always means same shape, on any board.
+	for regions in [["AABB", "ABBB", "CCBB", "CCDB"], ["AABBB", "AABCB", "DDCCB", "DDEEB", "DDEEB"]]:
+		var n: int = regions.size()
+		var result := RegionPainter.assign_with_overlays(n, regions, Palette.ZONE_COLORS)
+		for z in result.colors:
+			_assert(result.overlays[z] == RegionPainter.icon_for_color(result.colors[z], Palette.ZONE_COLORS), "zone %s shape matches its color" % z)
+
+func _test_shapes_all_distinct() -> void:
+	var seen: Array = []
+	for col in Palette.ZONE_COLORS:
+		var icon := RegionPainter.icon_for_color(col, Palette.ZONE_COLORS)
+		_assert(icon != RegionPainter.OverlayIcon.NONE, "palette color has a shape")
+		_assert(not seen.has(icon), "palette colors never share a shape")
+		seen.append(icon)
+
+func _test_shape_points_drawable() -> void:
+	for icon in range(1, RegionPainter.OverlayIcon.size()):
+		var polys: Array = ZoneShape.polygons(icon, Vector2(50, 50), 20.0)
+		_assert(not polys.is_empty(), "shape %d has polygons" % icon)
+		for poly in polys:
+			_assert(poly.size() >= 3 and not Geometry2D.triangulate_polygon(poly).is_empty(), "shape %d polygon triangulates" % icon)
 
 func _test_all_zones_unique_color() -> void:
 	var cases := [
@@ -90,18 +91,6 @@ func _test_all_zones_unique_color() -> void:
 			var c: Color = result2.colors[z]
 			_assert(not seen2.has(c), "N=%d overlay zone %s color must be unique" % [n, z])
 			seen2.append(c)
-
-func _test_overlay_tint_dark() -> void:
-	var base := Color(0.2, 0.1, 0.3)
-	var tint := RegionPainter.overlay_tint(base, true)
-	_assert(tint != base, "dark tint differs from base")
-	var dist := RegionPainter.lab_distance(base, tint)
-	_assert(dist > 3.0, "dark overlay tint has visible ΔE (got %.1f)" % dist)
-
-func _test_overlay_tint_light() -> void:
-	var base := Color(0.8, 0.9, 0.7)
-	var tint := RegionPainter.overlay_tint(base, false)
-	_assert(tint != base, "light tint differs from base")
 
 func _test_luminance_range() -> void:
 	_assert(RegionPainter.luminance(Color.BLACK) < 0.01, "black luminance near 0")
@@ -149,3 +138,31 @@ func _test_plain_cells_without_colorblind() -> void:
 	board.configure(PlaySession.new(LEVEL_5.duplicate(true)), false)
 	_assert(not board._zone_overlays.is_empty(), "patterns appear when colorblind is on")
 	board.free()
+
+func _test_toggle_mid_game() -> void:
+	# The options toggle only calls set_colorblind on a board that is already configured.
+	var board := PuzzleBoard.new()
+	board.configure(PlaySession.new(LEVEL_5.duplicate(true)), false)
+	board.set_colorblind(true)
+	_assert(not board._zone_overlays.is_empty(), "turning colorblind on mid-game shows shapes")
+	board.set_colorblind(false)
+	_assert(board._zone_overlays.is_empty(), "turning colorblind off mid-game hides shapes")
+	board.free()
+
+func _test_bank_levels_never_repeat_colors() -> void:
+	# Every bank level has at most as many zones as palette colors, so no two zones may share one.
+	var bad := 0
+	for n in range(4, 13):
+		var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://data/banks/bank_%dx%d.json" % [n, n]))
+		if data == null: continue
+		for rank in data.ranks:
+			for lvl in data.ranks[rank]:
+				var colors := RegionPainter.assign_colors(n, lvl.regions, Palette.ZONE_COLORS)
+				var seen: Array = []
+				for z in colors:
+					if seen.has(colors[z]):
+						bad += 1
+						if bad <= 3: _fails.append("FAIL: %dx%d seed %s repeats a zone color" % [n, n, str(lvl.get("seed", "?"))])
+						break
+					seen.append(colors[z])
+	_assert(bad == 0, "%d bank levels repeat a zone color" % bad)

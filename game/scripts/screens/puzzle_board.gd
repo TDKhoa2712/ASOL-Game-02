@@ -58,13 +58,7 @@ func configure(session: Variant, animate_entry: bool = false) -> void:
 	_candy_tex = CandyRenderer.texture_for_type(CandyRenderer.type_for_label(level_id))
 	_candy_anim = CandyAnimState.new(CandyAtlas.meta()) if CandyAtlas.ensure_loaded() else null
 	if _candy_anim != null: _candy_anim.motion = LayoutTokens.motion_enabled; _candy_anim.sync(_session.board)
-	var n: int = int(_session.level.get("size", 0)); var regions: Array = _session.level.get("regions", [])
-	_zone_grid = RegionPainter.precompute_grid(n, regions)
-	if _colorblind:
-		var painted := RegionPainter.assign_with_overlays(n, regions, Palette.ZONE_COLORS)
-		_zone_colors = painted.colors; _zone_overlays = painted.overlays
-	else:
-		_zone_colors = RegionPainter.assign_colors(n, regions, Palette.ZONE_COLORS); _zone_overlays = {}
+	_paint_zones()
 	_decoder = TouchDecoder.new(); _guard = TouchGuard.new()
 	_decoder.cell_tapped.connect(func(r: int, c: int): cell_tapped.emit(r, c))
 	_decoder.cell_double_tapped.connect(func(r: int, c: int): cell_double_tapped.emit(r, c))
@@ -82,7 +76,13 @@ func cell_entry_scale(row: int, col: int) -> float:
 	if not is_entering() or _session == null: return 1.0
 	return BoardEntryWave.cell_scale(int(_session.level.get("size", 0)), row, col, _entry_elapsed)
 
-func set_colorblind(enabled: bool) -> void: _colorblind = enabled
+func set_colorblind(enabled: bool) -> void: _colorblind = enabled; _paint_zones()
+func _paint_zones() -> void:
+	if _session == null: return
+	var n: int = int(_session.level.get("size", 0)); var regions: Array = _session.level.get("regions", [])
+	_zone_grid = RegionPainter.precompute_grid(n, regions)
+	var painted := RegionPainter.assign_with_overlays(n, regions, Palette.ZONE_COLORS)
+	_zone_colors = painted.colors; _zone_overlays = painted.overlays if _colorblind else {}; queue_redraw()
 func set_high_contrast(enabled: bool) -> void: _high_contrast = enabled
 func redraw() -> void: queue_redraw()
 

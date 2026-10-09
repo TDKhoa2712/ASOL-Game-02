@@ -39,6 +39,9 @@ func _run() -> void:
 				"pitch range follows preset speed")
 			if not SfxCatalog.PITCH_RANDOMIZE.get(effect, false):
 				_check(is_equal_approx(voice.pitch_scale, expected_speed), "fixed effect uses preset speed")
+	for effect in [SfxCatalog.Effect.STAGE_CLEAR, SfxCatalog.Effect.STAGE_FAIL]:
+		_check(SfxCatalog.PRESETS.get(effect, {}).get("type", "") == "file",
+			"effect %d uses the win/lose melody OGG" % effect)
 	player.set_muted(true)
 	_check(player.is_muted(), "mute state")
 	_check(_playing_count(player) == 0, "mute stops all voices")

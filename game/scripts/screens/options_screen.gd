@@ -290,9 +290,6 @@ func _on_open_language_dialog() -> void:
 	)
 	add_child(dlg)
 
-func set_large_text(_enabled: bool) -> void:
-	_built = false; _build_rows()
-
 func _on_toggle(key: String, on: bool) -> void:
 	if _config != null: _config.set_option(key, on)
 

@@ -2,9 +2,8 @@ extends RefCounted
 
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
-const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
-const OVERLAY_CHARS = ["", "★", "◆", "♥", "▲", "✕", "●"]
+const ZoneShape = preload("res://scripts/screens/zone_shape.gd")
 
 static var _cell_bg_tex: Texture2D = null
 static var _border_tex: Texture2D = null
@@ -149,15 +148,11 @@ static func draw(board: Variant) -> void:
 			if cell_scale <= 0.0: continue
 			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
 			var icon_val: int = board._zone_overlays.get(zone, 0)
-			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
+			if icon_val > 0:
 				var cell_rect: Rect2 = board._cell_rect(r, c)
 				if cell_scale != 1.0:
 					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
-				var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
-				var is_dark := base_col.get_luminance() < 0.5
-				var tint := RegionPainter.overlay_tint(base_col, is_dark)
-				var icon_size := int(cell_w * LayoutTokens.OVERLAY_ICON_RATIO)
-				board.draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
+				ZoneShape.draw(board, icon_val, cell_rect, board._zone_colors.get(zone, Palette.BG_CREAM))
 				if cell_scale != 1.0:
 					board.draw_set_transform(Vector2.ZERO)
 

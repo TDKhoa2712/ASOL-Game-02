@@ -120,12 +120,6 @@ func _run() -> void:
 	tuner._on_play()
 	_check(tuner._player.stream.data.size() == int(22050 * tuner._current_params().duration) * 2,
 		"pencil preview renders selected duration")
-	tuner._preset_dropdown.select(SfxCatalog.Effect.STAGE_CLEAR)
-	tuner._preset_dropdown.item_selected.emit(SfxCatalog.Effect.STAGE_CLEAR)
-	tuner._notes.text = "bad input"
-	tuner._player.stop()
-	tuner._on_play()
-	_check(not tuner._player.playing and not tuner._status.text.is_empty(), "invalid notes show validation without playback")
 	runtime_player.free()
 	tuner.free()
 	var cleanup_ms := Time.get_ticks_msec()

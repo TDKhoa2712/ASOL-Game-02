@@ -11,10 +11,12 @@ const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
+const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
+const TextScaler = preload("res://scripts/theme/text_scaler.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
 
@@ -55,6 +57,7 @@ func _ready() -> void:
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
+	if is_inside_tree() and not get_tree().node_added.is_connected(_on_node_added): get_tree().node_added.connect(_on_node_added)
 	if runtime == null:
 		var bank := BankReader.new(); var pace := PaceReader.new()
 		var progress := ProgressManager.new(sel.progress_dir); var sessions := SessionStore.new(sel.progress_dir)
@@ -123,6 +126,9 @@ func _instantiate_screen(to_name: String) -> void:
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
 	if screen_host != null: screen_host.add_child(screen)
+	# Result melodies start with the result screen, not when the board resolves.
+	if sfx != null and to_name in ["win", "fail"]:
+		sfx.play(SfxCatalog.Effect.STAGE_CLEAR if to_name == "win" else SfxCatalog.Effect.STAGE_FAIL)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 	_debug_mode = true; _debug_lvl = level_data.duplicate(true); _debug_label = label
@@ -251,12 +257,18 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"haptic": Vibration.set_on(bool(value))
 		"reduced_motion": LayoutTokens.set_motion(not bool(value))
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
-		"large_text": LayoutTokens.set_large_text(bool(value)); _refresh_screen("set_large_text", bool(value))
+		"large_text": LayoutTokens.set_large_text(bool(value)); TextScaler.apply(self, bool(value))
 		"colorblind": _refresh_puzzle_colorblind()
 		"language":
 			if value is String:
 				TranslationServer.set_locale(LocaleResolver.resolve_locale(str(value), OS.get_locale()))
 				_rebuild_current_screen()
+
+func _on_node_added(n: Node) -> void:
+	if LayoutTokens.large_text_enabled and n is Control: _scale_later.call_deferred(n)
+
+func _scale_later(n: Node) -> void:
+	if is_instance_valid(n) and n.is_inside_tree(): TextScaler.apply(n, LayoutTokens.large_text_enabled)
 
 func _rebuild_current_screen() -> void:
 	if nav != null: _swap_screen("", nav.current_name())

@@ -55,7 +55,6 @@ const X_BOW_RATIO := 0.022
 const CANDY_TEX_RATIO := 0.74
 const MASCOT_TEX_RATIO := 1.15 # atlas frames carry transparent margins, so they may overhang the cell
 const GIVEN_HALO_RATIO := 0.38
-const OVERLAY_ICON_RATIO := 0.35
 const SOLUTION_HINT_RATIO := 0.32
 const ERROR_BADGE_OUTER_RATIO := 0.09
 const ERROR_BADGE_INNER_RATIO := 0.07
@@ -81,4 +80,4 @@ static func set_large_text(on: bool) -> void:
 	large_text_enabled = on
 
 static func tile_font_size() -> int:
-	return 26 if large_text_enabled else 22
+	return 22  # large text is applied globally by TextScaler

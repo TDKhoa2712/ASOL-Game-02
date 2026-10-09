@@ -68,7 +68,9 @@ func _run() -> void:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.PROGRESS_COMPLETE, "halfway progress")
 		elif session.phase == 0:
 			_expect_effect(shell.sfx, SfxCatalog.combo_effect(found), "correct candy combo voice")
-	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_CLEAR, "win melody")
+	if shell.screen_host.get_child(0).name != &"WinScreen":
+		await shell.screen_host.child_entered_tree
+	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_CLEAR, "win melody on result screen")
 	shell._on_next_level()
 	puzzle = shell.screen_host.get_child(0)
 	for mistake in range(3):
@@ -76,8 +78,10 @@ func _run() -> void:
 		puzzle._on_board_double_tap(blank.x, blank.y)
 		if puzzle.session.phase == 0:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.CANDY_NO, "wrong candy")
-	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_FAIL, "failure melody")
+	_check(shell.sfx._streams.find_key(shell.sfx._pool[(shell.sfx._pool_idx + 7) % 8].stream)
+		!= SfxCatalog.Effect.STAGE_FAIL, "failure melody waits for result screen")
 	if puzzle.hearts_display.is_animating(): await puzzle.hearts_display.loss_animation_finished
+	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_FAIL, "failure melody on result screen")
 	shell.config.set_option("audio", false)
 	var fail_screen = shell.screen_host.get_child(0)
 	fail_screen.home_btn.pressed.emit()

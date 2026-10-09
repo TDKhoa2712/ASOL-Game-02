@@ -119,6 +119,8 @@ const PRESETS := {
 		"wave": PcmSynth.Wave.SQUARE, "attack": 0.005, "decay": 0.04,
 		"release": 0.05, "sustain": 0.25,
 	},
+	Effect.STAGE_CLEAR: {"type": "file", "path": "res://assets/audio/sfx/win-melody.ogg"},
+	Effect.STAGE_FAIL: {"type": "file", "path": "res://assets/audio/sfx/lose-melody.ogg"},
 	Effect.COMBO_1: {"type": "file", "path": COMBO_DIR + "1-nice.ogg"},
 	Effect.COMBO_2: {"type": "file", "path": COMBO_DIR + "2-great.ogg"},
 	Effect.COMBO_3: {"type": "file", "path": COMBO_DIR + "3-sweet.ogg"},
@@ -133,17 +135,8 @@ const PRESETS := {
 	Effect.COMBO_12: {"type": "file", "path": COMBO_DIR + "12-legendary.ogg"},
 }
 
-const MELODY_PRESETS := {
-	Effect.STAGE_CLEAR: {
-		"freqs": [523.25, 659.25, 783.99, 1046.50],
-		"note_dur": 0.11, "volume": 0.30, "wave": PcmSynth.Wave.TRIANGLE,
-	},
-	Effect.STAGE_FAIL: {
-		"freqs": [392.0, 329.63, 293.66, 261.63],
-		"note_dur": 0.13, "volume": 0.30, "wave": PcmSynth.Wave.TRIANGLE,
-		"speed": 0.9,
-	},
-}
+# Procedural melodies (tuner-supported); win/lose now use authored OGG files.
+const MELODY_PRESETS := {}
 
 const PENCIL_PRESETS := {
 	Effect.MARK: {
