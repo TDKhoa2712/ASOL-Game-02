@@ -53,11 +53,12 @@ func _run() -> void:
 				_check(is_equal_approx(float(params.get(key, -999)), float(preset[key])), "preset %d loads %s" % [effect, key])
 		tuner._on_play()
 		_check(tuner._player.playing, "preview plays")
-		if effect != SfxCatalog.Effect.MARK and effect != SfxCatalog.Effect.SETTINGS_OPEN \
+		var is_file: bool = preset.get("type", "") == "file"
+		if effect != SfxCatalog.Effect.MARK and not is_file \
 				and float(preset.get("noise_mix", 0.0)) == 0.0:
 			_check(tuner._player.stream.data == runtime_player._streams[effect].data,
 				"untouched preview matches game PCM for %s" % SfxCatalog.Effect.find_key(effect))
-		if effect == SfxCatalog.Effect.SETTINGS_OPEN:
+		if is_file:
 			_check(params.get("type") == "file", "settings tuner selects source file")
 			_check(tuner._player.stream is AudioStreamOggVorbis,
 				"settings tuner previews OGG")

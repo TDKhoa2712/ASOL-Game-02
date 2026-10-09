@@ -14,6 +14,8 @@ var _board: Variant = null
 var _hint_overlay: HintOverlay = null
 var _hint_highlight: HintHighlightLayer = null
 var _sfx: Variant = null
+var _applying: bool = false
+func is_applying() -> bool: return _applying
 var _session: Variant = null
 
 func setup(board_node: Variant, overlay: HintOverlay, highlight: HintHighlightLayer, sfx_player: Variant) -> void:
@@ -62,6 +64,7 @@ func request_hint(session: Variant) -> void:
 		session.use_hint()
 
 func apply_hint(session: Variant = null) -> void:
+	_applying = false
 	if _current_hint.is_empty():
 		return
 	var hint := _current_hint
@@ -79,7 +82,9 @@ func apply_hint(session: Variant = null) -> void:
 				target_session.apply_marks(hint["eliminated_cells"])
 			"PLACE_CANDY", "REVEAL":
 				var cell: Array = hint["target_cell"]
+				_applying = true
 				target_session.try_candy(cell[0], cell[1])
+				_applying = false
 	if _sfx != null: _sfx.play(SfxCatalog.Effect.HINT_APPLY)
 	Vibration.pulse(Vibration.Strength.SOFT)
 	if _board != null: _board.redraw()
@@ -102,6 +107,7 @@ func show_detail() -> void:
 	_hint_highlight.show_chain_detail(chain, _board.get_cell_rect)
 
 func force_release() -> void:
+	_applying = false
 	_current_hint = {}
 	if _hint_highlight != null: _hint_highlight.clear()
 	if _hint_overlay != null: _hint_overlay.dismiss()

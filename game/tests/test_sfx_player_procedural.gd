@@ -22,10 +22,12 @@ func _run() -> void:
 		var voice: AudioStreamPlayer = player.get_child((effect + 8) % 8) if player.get_child_count() == 8 else null
 		if voice != null:
 			_check(voice.playing, "effect %d starts playback" % effect)
-			if effect == SfxCatalog.Effect.SETTINGS_OPEN:
-				_check(voice.stream is AudioStreamOggVorbis, "settings opens with source OGG")
-				_check(voice.stream.get_length() > 0.70 and voice.stream.get_length() < 0.82,
-					"settings cue starts without the quiet lead-in")
+			if SfxCatalog.PRESETS.get(effect, {}).get("type", "") == "file":
+				_check(voice.stream is AudioStreamOggVorbis and voice.stream.get_length() > 0.0,
+					"effect %d plays its source OGG" % effect)
+				if effect == SfxCatalog.Effect.SETTINGS_OPEN:
+					_check(voice.stream.get_length() > 0.70 and voice.stream.get_length() < 0.82,
+						"settings cue starts without the quiet lead-in")
 			else:
 				_check(voice.stream is AudioStreamWAV and voice.stream.data.size() > 0,
 					"effect %d has PCM" % effect)

@@ -23,6 +23,11 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Combo feedback (2026-10-10, `feat/v1.0.1/combo-feedback`)
+
+- RST-026: voice 12 cấp + chữ nghệ thuật cho chuỗi đặt kẹo đúng. Headless suites combo/feedback/screens/integration PASS.
+- Còn lại: QA trên thiết bị (nghe voice, nhìn popup, đo khung hình) chưa thực hiện.
+
 ## Mascot sprite animation (2026-10-10)
 
 Kẹo trên board là linh vật động từ atlas `game/assets/candy/anim/mascot_atlas.png` (sinh bằng `game/tools/build_mascot_atlas.gd`): appear/idle/error/sad/win; tối đa 6 ô idle đồng thời, chỉ redraw khi khung đổi. Headless verify pass (`scratch/verification/20261009T191635.275269Z.txt`); chưa QA thiết bị.

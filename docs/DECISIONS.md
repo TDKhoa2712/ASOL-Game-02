@@ -2,6 +2,15 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
+
+Ngày 2026-10-10. Spec: [combo feedback](superpowers/specs/2026-10-10-combo-feedback-design.md).
+
+- **Luật:** mỗi kẹo người chơi đặt đúng cộng 1 combo; cấp hiển thị tối đa 12 (NICE → LEGENDARY). Đặt sai, bấm hint, kẹo do hint đặt, level mới/restart/resume đều đưa combo về 0. Đánh X/bỏ X/undo không ảnh hưởng.
+- **Âm thanh:** voice combo (`assets/audio/sfx/sfx-combo/`) thay `CANDY_YES` cho mọi kẹo được tính combo; kẹo do hint giữ `CANDY_YES`.
+- **Hình:** 12 chữ được bake offline bằng `tools/build_combo_atlas.py` (Nunito Bold, OFL) thành một atlas; `ComboPopup` dùng lại một sprite + một Tween, hạt lấp lánh từ cấp 9; reduced-motion chỉ fade.
+- **Hệ quả:** campaign 4×4–6×6 đạt tối đa cấp 6; cấp 7–12 chỉ có ở bàn ≥ 7×7.
+
 ## RST-024 — Màn chơi theo mockup `screen/screenshot/board.png`, màu vùng tương phản và hint đồng bộ giao diện
 
 Ngày 2026-10-10.
