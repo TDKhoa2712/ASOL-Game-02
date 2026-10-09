@@ -131,6 +131,31 @@ func use_hint() -> void:
 	hints_used += 1
 	state_changed.emit()
 
+func clear_mark(row: int, col: int) -> void:
+	if phase != Phase.ACTIVE:
+		return
+	if row < 0 or row >= board.size() or col < 0 or col >= board.size():
+		return
+	if board[row][col] == CellModel.CellKind.MARK:
+		_undo_cells = [[row, col, CellModel.CellKind.MARK]]
+		board[row][col] = CellModel.CellKind.BLANK
+		state_changed.emit()
+
+func apply_marks(cells: Array) -> void:
+	if phase != Phase.ACTIVE:
+		return
+	var before: Array = []
+	for cell in cells:
+		var r: int = int(cell[0])
+		var c: int = int(cell[1])
+		if r >= 0 and r < board.size() and c >= 0 and c < board.size():
+			if board[r][c] == CellModel.CellKind.BLANK:
+				before.append([r, c, CellModel.CellKind.BLANK])
+				board[r][c] = CellModel.CellKind.MARK
+	if not before.is_empty():
+		_undo_cells = before
+		state_changed.emit()
+
 func cell_at(row: int, col: int) -> int:
 	if row < 0 or row >= board.size() or col < 0 or col >= board.size():
 		return CellModel.CellKind.BLANK
