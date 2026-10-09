@@ -4,7 +4,7 @@
 
 ## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
 
-Ngày 2026-10-10. Spec: [combo feedback](superpowers/specs/2026-10-10-combo-feedback-design.md).
+Ngày 2026-10-10.
 
 - **Luật:** mỗi kẹo người chơi đặt đúng cộng 1 combo; cấp hiển thị tối đa 12 (NICE → LEGENDARY). Đặt sai, bấm hint, kẹo do hint đặt, level mới/restart/resume đều đưa combo về 0. Đánh X/bỏ X/undo không ảnh hưởng.
 - **Âm thanh:** voice combo (`assets/audio/sfx/sfx-combo/`) thay `CANDY_YES` cho mọi kẹo được tính combo; kẹo do hint giữ `CANDY_YES`.
