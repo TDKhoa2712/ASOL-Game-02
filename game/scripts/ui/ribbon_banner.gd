@@ -8,16 +8,20 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 var _label: Label
 var label: Label:
 	get: return _label
+var _raw_text: String = ""
 var text: String:
-	get: return _label.text if _label != null else ""
+	get: return _raw_text if not _raw_text.is_empty() else (_label.text if _label != null else "")
 	set(v):
-		if _label != null: _label.text = v
+		_raw_text = v
+		if _label != null:
+			if v == "Hoan hô!": _label.text = "HOÀN THÀNH!"
+			else: _label.text = v.to_upper()
 var _style: String
 var _tails: _RibbonTails
 
-func _init(text: String, style: String = "win") -> void:
+func _init(init_text: String, style: String = "win") -> void:
 	_style = style
-	custom_minimum_size = Vector2(560, 96)
+	custom_minimum_size = Vector2(680, 108)
 	size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 
 	var colors := _get_colors()
@@ -60,6 +64,7 @@ func _init(text: String, style: String = "win") -> void:
 	if heading != null:
 		_label.add_theme_font_override("font", heading)
 	banner.add_child(_label)
+	self.text = init_text
 
 func _get_colors() -> Dictionary:
 	if _style == "lose":
@@ -81,13 +86,13 @@ func _get_colors() -> Dictionary:
 func animate() -> void:
 	if not LayoutTokens.motion_enabled:
 		return
-	pivot_offset = Vector2(size.x * 0.5, 0)
-	position.y -= 180
+	pivot_offset = Vector2(custom_minimum_size.x * 0.5, custom_minimum_size.y * 0.5)
+	scale = Vector2(0.7, 0.7)
 	modulate.a = 0.0
 	var tw := create_tween()
 	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(self, "position:y", position.y + 180, 0.6)
-	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.3)
+	tw.tween_property(self, "scale", Vector2.ONE, 0.45)
+	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.25)
 
 class _RibbonTails extends Control:
 	var _tail_color: Color

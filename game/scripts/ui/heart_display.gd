@@ -13,10 +13,10 @@ func _init(total: int = 3, filled: int = 3, style: String = "win") -> void:
 	_filled = clampi(filled, 0, total)
 	_style = style
 	alignment = BoxContainer.ALIGNMENT_CENTER
-	add_theme_constant_override("separation", 16)
+	add_theme_constant_override("separation", 20)
 	for i in range(_total):
 		var is_middle := (i == 1)
-		var size := 112.0 if is_middle else 92.0
+		var size := 148.0 if is_middle else 122.0
 		var heart := _create_heart(i, size, i < _filled)
 		add_child(heart)
 
@@ -24,6 +24,8 @@ func _create_heart(index: int, heart_size: float, is_filled: bool) -> Control:
 	var container := Control.new()
 	container.custom_minimum_size = Vector2(heart_size, heart_size)
 	container.pivot_offset = Vector2(heart_size * 0.5, heart_size * 0.5)
+	if index == 0: container.rotation_degrees = -6.0
+	elif index == 2: container.rotation_degrees = 6.0
 
 	var tex := TextureRect.new()
 	tex.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -33,8 +35,10 @@ func _create_heart(index: int, heart_size: float, is_filled: bool) -> Control:
 		tex.texture = preload("res://assets/ui/board/heart_icon.png")
 	else:
 		tex.texture = preload("res://assets/ui/board/heart_icon_empty.png")
-	if not is_filled and _style == "lose":
-		tex.modulate = Color(0.85, 0.8, 0.9, 1.0)
+		if _style == "win":
+			tex.modulate = Color(1.4, 1.4, 1.45, 0.95)
+		elif _style == "lose":
+			tex.modulate = Color(0.85, 0.8, 0.9, 1.0)
 	container.add_child(tex)
 
 	if _style == "lose":

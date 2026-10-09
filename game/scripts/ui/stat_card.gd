@@ -11,14 +11,14 @@ func _init(stats: Array[Dictionary]) -> void:
 
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color.WHITE
-	style.set_corner_radius_all(26)
-	style.shadow_color = Palette.WIN_CARD_SHADOW
+	style.set_corner_radius_all(28)
+	style.shadow_color = Color("#EFD27E")
 	style.shadow_size = 8
-	style.shadow_offset = Vector2(0, 8)
-	style.content_margin_left = 20
-	style.content_margin_right = 20
-	style.content_margin_top = 16
-	style.content_margin_bottom = 16
+	style.shadow_offset = Vector2(0, 7)
+	style.content_margin_left = 24
+	style.content_margin_right = 24
+	style.content_margin_top = 18
+	style.content_margin_bottom = 18
 	add_theme_stylebox_override("panel", style)
 
 	var use_grid := stats.size() > 1
@@ -51,11 +51,11 @@ func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 	hbox.add_theme_constant_override("separation", 14)
 
 	var icon_box := PanelContainer.new()
-	icon_box.custom_minimum_size = Vector2(48, 48)
+	icon_box.custom_minimum_size = Vector2(56, 56)
 	var is_clock: bool = stat.get("icon", "") == "clock"
 	var ib_style := StyleBoxFlat.new()
 	ib_style.bg_color = Palette.WIN_STAT_ICON_BG_TIME if is_clock else Palette.WIN_STAT_ICON_BG_ERR
-	ib_style.set_corner_radius_all(14)
+	ib_style.set_corner_radius_all(16)
 	ib_style.shadow_color = Palette.WIN_STAT_ICON_SHADOW_TIME if is_clock else Palette.WIN_STAT_ICON_SHADOW_ERR
 	ib_style.shadow_size = 4
 	ib_style.shadow_offset = Vector2(0, 4)
@@ -74,8 +74,8 @@ func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 
 	var lbl := Label.new()
 	lbl.text = str(stat.get("label", ""))
-	lbl.add_theme_font_size_override("font_size", 16)
-	lbl.add_theme_color_override("font_color", Palette.WIN_TEXT_SECONDARY)
+	lbl.add_theme_font_size_override("font_size", 22)
+	lbl.add_theme_color_override("font_color", Color("#64748B"))
 	var bold := FontTokens.body_bold()
 	if bold != null:
 		lbl.add_theme_font_override("font", bold)
@@ -83,8 +83,8 @@ func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 
 	var val := Label.new()
 	val.text = str(stat.get("value", ""))
-	val.add_theme_font_size_override("font_size", 28)
-	val.add_theme_color_override("font_color", Palette.WIN_TEXT_PRIMARY)
+	val.add_theme_font_size_override("font_size", 36)
+	val.add_theme_color_override("font_color", Color("#1E293B"))
 	var heading := FontTokens.heading()
 	if heading != null:
 		val.add_theme_font_override("font", heading)
@@ -97,11 +97,12 @@ func animate(delay: float = 1.1) -> void:
 	if not LayoutTokens.motion_enabled:
 		return
 	modulate.a = 0.0
-	position.y += 80
+	scale = Vector2(0.9, 0.9)
+	pivot_offset = Vector2(size.x * 0.5, size.y * 0.5)
 	var tw := create_tween()
 	tw.tween_interval(delay)
-	tw.tween_property(self, "position:y", position.y - 80, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.3)
+	tw.tween_property(self, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.25)
 
 class _StatIcon extends Control:
 	var _clock: bool = true
