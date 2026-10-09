@@ -1,5 +1,7 @@
 extends SceneTree
 
+const PuzzleScreenScript = preload("res://scripts/screens/puzzle_screen.gd")
+
 const AppShell = preload("res://scripts/screens/app_shell.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const CampaignRuntime = preload("res://scripts/campaign/campaign_runtime.gd")
@@ -14,6 +16,7 @@ const Vibration = preload("res://scripts/feedback/vibration.gd")
 
 var _failures: Array[String] = []
 func _initialize() -> void:
+	PuzzleScreenScript.hold_results = false # result hold is covered by test_heart_feedback
 	call_deferred("_run")
 func _run() -> void:
 	await _test_app_shell_boot_and_wiring()

@@ -333,7 +333,7 @@ func _test_puzzle_screen() -> void:
 		won_box[0] = true
 		won_box[1] = won
 	)
-	puzzle._on_level_won()
+	puzzle._on_level_won(false)
 	_assert(won_box[0] and won_box[1], "puzzle screen emitted level_done won")
 
 	var home_box := [false]
