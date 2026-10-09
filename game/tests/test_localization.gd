@@ -5,6 +5,7 @@ const ResultScreen = preload("res://scripts/screens/result_screen.gd")
 const OptionsScreen = preload("res://scripts/screens/options_screen.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 
 var _fails: Array[String] = []
 var _tmp_dir: String = ""
@@ -15,11 +16,14 @@ func _init() -> void:
 
 	_test_title_uses_tr()
 	_test_result_uses_tr()
-	_test_locale_switch()
-	_test_csv_key_coverage()
+	_test_all_7_locales_switch()
+	_test_csv_key_coverage_all_7_locales()
+	_test_parameter_format_accuracy()
 
 	DirAccess.remove_absolute(_tmp_dir.path_join("config.json"))
 	DirAccess.remove_absolute(_tmp_dir)
+
+	TranslationServer.set_locale("en")
 
 	if _fails.is_empty():
 		print("LOCALIZATION_PASS")
@@ -42,7 +46,6 @@ func _test_title_uses_tr() -> void:
 	if "Level" not in screen.play_btn.text:
 		_fails.append("title play_btn should contain 'Level' in EN, got '%s'" % screen.play_btn.text)
 	screen.free()
-	TranslationServer.set_locale("vi")
 
 func _test_result_uses_tr() -> void:
 	TranslationServer.set_locale("en")
@@ -55,20 +58,24 @@ func _test_result_uses_tr() -> void:
 	if screen.message_label.text != "Hooray!":
 		_fails.append("result win title in EN should be 'Hooray!', got '%s'" % screen.message_label.text)
 	screen.free()
-	TranslationServer.set_locale("vi")
 
-func _test_locale_switch() -> void:
-	TranslationServer.set_locale("vi")
-	var result := tr("result.win.title")
-	if result != "Hoan hô!":
-		_fails.append("VI result.win.title should be 'Hoan hô!', got '%s'" % result)
-	TranslationServer.set_locale("en")
-	result = tr("result.win.title")
-	if result != "Hooray!":
-		_fails.append("EN result.win.title should be 'Hooray!', got '%s'" % result)
-	TranslationServer.set_locale("vi")
+func _test_all_7_locales_switch() -> void:
+	var expected_win_titles := {
+		"en": "Hooray!",
+		"ja": "万歳！",
+		"vi": "Hoan hô!",
+		"id": "Hore!",
+		"pt_BR": "Viva!",
+		"es": "¡Hurra!",
+		"ko": "만세!",
+	}
+	for loc in expected_win_titles:
+		TranslationServer.set_locale(loc)
+		var text := tr("result.win.title")
+		if text != expected_win_titles[loc]:
+			_fails.append("result.win.title in '%s' expected '%s', got '%s'" % [loc, expected_win_titles[loc], text])
 
-func _test_csv_key_coverage() -> void:
+func _test_csv_key_coverage_all_7_locales() -> void:
 	var expected_keys := [
 		"title.name", "title.play", "title.replay",
 		"settings.audio", "settings.haptic",
@@ -80,17 +87,31 @@ func _test_csv_key_coverage() -> void:
 		"hint.chain_short", "hint.chain_long", "hint.fallback", "hint.clear_mark",
 		"hint.mark_x", "hint.place_candy", "hint.reveal", "hint.detail",
 	]
-	TranslationServer.set_locale("vi")
-	for key in expected_keys:
-		var translated := tr(key)
-		if translated == key:
-			_fails.append("key '%s' has no VI translation (tr returned key)" % key)
-	TranslationServer.set_locale("en")
-	for key in expected_keys:
-		var translated := tr(key)
-		if translated == key:
-			_fails.append("key '%s' has no EN translation (tr returned key)" % key)
-	TranslationServer.set_locale("vi")
+	for loc in LocaleResolver.SUPPORTED_LOCALES:
+		TranslationServer.set_locale(loc)
+		for key in expected_keys:
+			var translated := tr(key)
+			if translated == key:
+				_fails.append("key '%s' has no translation for locale '%s' (tr returned key)" % [key, loc])
+
+func _test_parameter_format_accuracy() -> void:
+	for loc in LocaleResolver.SUPPORTED_LOCALES:
+		TranslationServer.set_locale(loc)
+		var play_fmt := tr("title.play")
+		if not play_fmt.contains("%s"):
+			_fails.append("title.play in locale '%s' must contain '%%s', got '%s'" % [loc, play_fmt])
+		else:
+			var formatted := play_fmt % "5"
+			if "5" not in formatted:
+				_fails.append("title.play in '%s' failed to insert '5', got '%s'" % [loc, formatted])
+
+		var endless_fmt := tr("title.endless")
+		if not endless_fmt.contains("%d"):
+			_fails.append("title.endless in locale '%s' must contain '%%d', got '%s'" % [loc, endless_fmt])
+		else:
+			var formatted := endless_fmt % 10
+			if "10" not in formatted:
+				_fails.append("title.endless in '%s' failed to insert '10', got '%s'" % [loc, formatted])
 
 class _MockRuntime extends RefCounted:
 	func current_level_label() -> String: return "L01"

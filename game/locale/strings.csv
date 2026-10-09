@@ -1,76 +1,81 @@
-key,vi,en
-title.name,CanDoKu,CanDoKu
-title.play,Level %s,Level %s
-title.replay,Chơi lại chiến dịch,Replay Campaign
-title.help_tooltip,Xem cách chơi,How to Play
-title.debug,🛠 Debug,🛠 Debug
-help.title,Luật chơi,Rules
-help.rule1_title,Mỗi hàng và cột,Each row and column
-help.rule1_body,"Mỗi hàng và mỗi cột chỉ chứa đúng một viên kẹo.","Each row and each column contains exactly one candy."
-help.rule2_title,Mỗi vùng,Each region
-help.rule2_body,"Mỗi vùng màu chỉ chứa đúng một viên kẹo.","Each colored region contains exactly one candy."
-help.rule3_title,Kẹo không chạm nhau,Candies cannot touch
-help.rule3_body,"Hai viên kẹo bất kỳ không được chạm nhau — kể cả theo đường chéo.","No two candies may touch each other — not even diagonally."
-help.controls_title,Cách điều khiển,Controls
-help.control_tap,"Chạm một lần để đánh dấu X (loại trừ ô).","Tap once to mark X (eliminate a cell)."
-help.control_double,"Chạm hai lần để đặt kẹo.","Double-tap to place a candy."
-help.control_swipe,"Kéo ngang/dọc để đánh dấu X nhiều ô.","Swipe to mark multiple cells."
-help.hearts_title,Tim (❤️),Hearts (❤️)
-help.hearts_body,"Bạn có 3 tim. Mỗi lần đặt kẹo sai sẽ mất một tim. Hết tim thì thua.","You have 3 hearts. Each wrong candy placement costs one heart. Lose all hearts and you fail."
-settings.title,CÀI ĐẶT,SETTINGS
-settings.audio,Âm thanh,Sound
-settings.haptic,Rung phản hồi,Haptic Feedback
-settings.reduced_motion,Giảm chuyển động,Reduce Motion
-settings.large_text,Cỡ chữ lớn,Large Text
-settings.high_contrast,Độ tương phản cao,High Contrast
-settings.colorblind,Hỗ trợ phân biệt màu,Colorblind Mode
-settings.language,Ngôn ngữ,Language
-settings.language.vi,Tiếng Việt,Tiếng Việt
-settings.language.en,English,English
-settings.back,Quay lại,Back
-settings.restart,Bắt đầu lại,Restart
-puzzle.level_caption,Màn,Level
-puzzle.hint_unit,Xem kỹ khu vực này,Look at this area
-puzzle.hint_cell,Đặt kẹo ở đây,Place candy here
-puzzle.restart_title,Chơi lại màn này?,Restart this level?
-puzzle.restart_body,Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại.,Your marks and mistakes will be reset.
-puzzle.restart_ok,Chơi lại,Restart
-puzzle.restart_cancel,Tiếp tục,Continue
-puzzle.rule_row,1 kẹo mỗi hàng và cột,1 candy per row and column
-puzzle.rule_region,1 kẹo mỗi vùng,1 candy per region
-puzzle.rule_diagonal,Kẹo không chạm nhau,Candies cannot touch each other
-result.win.title,Hoan hô!,Hooray!
-result.win.title_campaign,Hoàn thành chiến dịch!,Campaign Complete!
-result.win.subtitle,Bạn đã tìm đủ kẹo!,You found all the candies!
-result.win.next,Tiếp tục,Continue
-result.win.replay,Chơi lại,Play Again
-result.win.home,Trang chủ,Home
-result.lose.title,Hết tim,Out of Hearts
-result.lose.subtitle,Bạn có thể thử lại màn này.,You can try this level again.
-result.lose.retry,Thử lại,Retry
-result.lose.home,Trang chủ,Home
-boot.error,Lỗi khởi động: %s,Boot error: %s
-boot.save_failed,Lưu dữ liệu thất bại: %s,Save failed: %s
-common.ok,OK,OK
-title.endless,Vô tận: Màn %d,Endless: Level %d
-title.campaign,Chiến dịch: Màn %s,Campaign: Level %s
-hint.wrong_mark,"Ô này đang bị đánh dấu X nhầm! Đây thực ra là vị trí đặt kẹo.","This cell is marked with X by mistake! A candy actually belongs here."
-hint.mark_neighbors,"Đã có kẹo tại ô này. Cùng hàng, cùng cột, cùng vùng và các ô chạm nhau không thể chứa thêm kẹo.","A candy is already placed here. Cells in the same row, column, zone, and touching cells cannot contain candy."
-hint.single_row,"Trong Hàng %d, chỉ còn đúng 1 ô trống có thể đặt kẹo!","In Row %d, there is only one valid cell left for a candy!"
-hint.single_col,"Trong Cột %d, chỉ còn đúng 1 ô trống có thể đặt kẹo!","In Column %d, there is only one valid cell left for a candy!"
-hint.single_zone,"Trong vùng màu này, chỉ còn đúng 1 ô trống có thể đặt kẹo!","In this zone, there is only one valid cell left for a candy!"
-hint.lock_zone_row,"Kẹo của vùng màu này chắc chắn nằm trên Hàng %d. Hãy đánh dấu X các ô còn lại trên hàng này.","This zone's candy must be on Row %d. Eliminate other cells in this row."
-hint.lock_zone_col,"Kẹo của vùng màu này chắc chắn nằm trên Cột %d. Hãy đánh dấu X các ô còn lại trên cột này.","This zone's candy must be on Column %d. Eliminate other cells in this column."
-hint.lock_row_zone,"Kẹo của Hàng %d chỉ có thể nằm trong vùng màu này. Hãy đánh dấu X các ô còn lại trong vùng.","The candy for Row %d must be inside this zone. Eliminate other cells in this zone."
-hint.lock_col_zone,"Kẹo của Cột %d chỉ có thể nằm trong vùng màu này. Hãy đánh dấu X các ô còn lại trong vùng.","The candy for Column %d must be inside this zone. Eliminate other cells in this zone."
-hint.subset_pair,"Hai vùng màu này chỉ có thể đặt kẹo trong 2 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","These two zones can only place candies within two corresponding lines. Eliminate extra cells."
-hint.subset_triple,"Ba vùng màu này chỉ có thể đặt kẹo trong 3 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","These three zones can only place candies within three corresponding lines. Eliminate extra cells."
-hint.subset_quad,"Bốn vùng màu này chỉ có thể đặt kẹo trong 4 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","These four zones can only place candies within four corresponding lines. Eliminate extra cells."
-hint.chain_short,"Nếu đặt kẹo vào ô này sẽ dẫn đến vi phạm luật chơi! Ô này chắc chắn phải đánh dấu X.","Placing a candy here causes a rule violation! This cell must be marked with X."
-hint.chain_long,"Suy luận nhiều bước: thử đặt kẹo vào đây sẽ gây mâu thuẫn sau %d bước. Nhấn 'Xem các bước' để theo dõi.","Multi-step deduction: placing candy here leads to a contradiction after %d steps. Tap 'View Steps' to inspect."
-hint.fallback,"Gợi ý nước đi tiếp theo: đặt một viên kẹo vào ô này.","Next move suggestion: place a candy in this cell."
-hint.clear_mark,Gỡ dấu X,Clear X
-hint.mark_x,Đánh dấu X,Mark X
-hint.place_candy,Đặt kẹo,Place Candy
-hint.reveal,Hiện kẹo,Reveal Candy
-hint.detail,Xem các bước,View Steps
+key,en,ja,vi,id,pt_BR,es,ko
+title.name,CanDoKu,CanDoKu,CanDoKu,CanDoKu,CanDoKu,CanDoKu,CanDoKu
+title.play,Level %s,レベル %s,Màn %s,Level %s,Nível %s,Nivel %s,레벨 %s
+title.replay,Replay Campaign,キャンペーンをやり直す,Chơi lại chiến dịch,Main Ulang Kampanye,Jogar Campanha Novamente,Repetir Campaña,캠페인 다시 플레이
+title.help_tooltip,How to Play,遊び方,Xem cách chơi,Cara Bermain,Como Jogar,Cómo Jugar,게임 방법
+title.debug,🛠 Debug,🛠 Debug,🛠 Debug,🛠 Debug,🛠 Debug,🛠 Debug,🛠 Debug
+help.title,Rules,ルール,Luật chơi,Aturan,Regras,Reglas,규칙
+help.rule1_title,Each row and column,各行と各列,Mỗi hàng và cột,Setiap baris dan kolom,Cada linha e coluna,Cada fila y columna,각 행과 열
+help.rule1_body,"Each row and each column contains exactly one candy.","各行と各列にはキャンディがちょうど1個ずつ入ります。","Mỗi hàng và mỗi cột chỉ chứa đúng một viên kẹo.","Setiap baris dan setiap kolom hanya berisi tepat satu permen.","Cada linha e cada coluna contém exatamente um doce.","Cada fila y cada columna contiene exactamente un dulce.","각 행과 각 열에는 사탕이 정확히 하나씩 들어갑니다."
+help.rule2_title,Each region,各エリア,Mỗi vùng,Setiap wilayah,Cada região,Cada región,각 구역
+help.rule2_body,"Each colored region contains exactly one candy.","色付きの各エリアにはキャンディがちょうど1個ずつ入ります。","Mỗi vùng màu chỉ chứa đúng một viên kẹo.","Setiap wilayah berwarna hanya berisi tepat satu permen.","Cada região colorida contém exatamente um doce.","Cada región coloreada contiene exactamente un dulce.","각 색상 구역에는 사탕이 정확히 하나씩 들어갑니다."
+help.rule3_title,Candies cannot touch,隣り合わせはNG,Kẹo không chạm nhau,Permen tidak boleh bersentuhan,Doces não podem se tocar,Los dulces no se tocan,사탕은 닿을 수 없음
+help.rule3_body,"No two candies may touch each other — not even diagonally.","2つのキャンディは斜めを含めて隣接できません。","Hai viên kẹo bất kỳ không được chạm nhau — kể cả theo đường chéo.","Dua permen mana pun tidak boleh saling bersentuhan — bahkan secara diagonal.","Dois doces não podem se tocar — nem mesmo na diagonal.","Dos dulces no pueden tocarse entre sí, ni siquiera en diagonal.","어떤 두 사탕도 대각선을 포함해 서로 닿을 수 없습니다."
+help.controls_title,Controls,操作方法,Cách điều khiển,Kontrol,Controles,Controles,조작법
+help.control_tap,"Tap once to mark X (eliminate a cell).","1回タップでXマーク（マスを除外）。","Chạm một lần để đánh dấu X (loại trừ ô).","Ketuk sekali untuk menandai X (mengeliminasi kotak).","Toque uma vez para marcar X (eliminar uma casa).","Toca una vez para marcar X (eliminar una casilla).","한 번 탭하여 X 표시(칸 제외)."
+help.control_double,"Double-tap to place a candy.","ダブルタップでキャンディを配置。","Chạm hai lần để đặt kẹo.","Ketuk dua kali untuk menempatkan permen.","Toque duas vezes para colocar um doce.","Toca dos veces para colocar un dulce.","두 번 탭하여 사탕 배치."
+help.control_swipe,"Swipe to mark multiple cells.","スワイプで複数のマスにXマーク。","Kéo ngang/dọc để đánh dấu X nhiều ô.","Geser untuk menandai X banyak kotak.","Deslize para marcar X em várias casas.","Desliza para marcar X en varias casillas.","스와이프하여 여러 칸에 X 표시."
+help.hearts_title,Hearts (❤️),ハート (❤️),Tim (❤️),Nyawa (❤️),Vidas (❤️),Vidas (❤️),하트 (❤️)
+help.hearts_body,"You have 3 hearts. Each wrong candy placement costs one heart. Lose all hearts and you fail.","ハートは3個あります。配置を間違えるたびに1個減り、ゼロになるとゲームオーバーです。","Bạn có 3 tim. Mỗi lần đặt kẹo sai sẽ mất một tim. Hết tim thì thua.","Kamu memiliki 3 nyawa. Setiap salah menempatkan permen akan mengurangi satu nyawa. Kehilangan semua nyawa berarti gagal.","Você tem 3 vidas. Cada doce colocado errado custa uma vida. Perca todas e você falha.","Tienes 3 vidas. Cada dulce mal colocado cuesta una vida. Si pierdes todas, fallarás.","하트는 3개입니다. 사탕을 잘못 놓을 때마다 하나씩 줄어들며, 모두 잃으면 실패합니다."
+settings.title,SETTINGS,設定,CÀI ĐẶT,PENGATURAN,CONFIGURAÇÕES,AJUSTES,설정
+settings.audio,Sound,サウンド,Âm thanh,Suara,Som,Sonido,소리
+settings.haptic,Haptic Feedback,振動,Rung phản hồi,Getaran,Vibração,Vibración,진동
+settings.reduced_motion,Reduce Motion,視覚効果を減らす,Giảm chuyển động,Kurangi Gerakan,Reduzir Movimento,Reducir Movimiento,동작 줄이기
+settings.large_text,Large Text,大きい文字,Cỡ chữ lớn,Teks Besar,Texto Grande,Texto Grande,큰 글자
+settings.high_contrast,High Contrast,ハイコントラスト,Độ tương phản cao,Kontras Tinggi,Alto Contraste,Alto Contraste,고대비
+settings.colorblind,Colorblind Mode,色覚サポート,Hỗ trợ phân biệt màu,Mode Buta Warna,Modo Daltonismo,Modo Daltónico,색약 모드
+settings.language,Language,言語,Ngôn ngữ,Bahasa,Idioma,Idioma,언어
+settings.language.en,English,English,English,English,English,English,English
+settings.language.ja,Japanese,日本語,Tiếng Nhật,Jepang,Japonês,Japonés,일본어
+settings.language.vi,Vietnamese,ベトナム語,Tiếng Việt,Vietnam,Vietnamita,Vietnamita,베트남어
+settings.language.id,Indonesian,インドネシア語,Tiếng Indonesia,Bahasa Indonesia,Indonésio,Indonesio,인도네시아어
+settings.language.pt_BR,Portuguese (Brazil),ポルトガル語（ブラジル）,Bồ Đào Nha (Brazil),Portugis (Brasil),Português (Brasil),Portugués (Brasil),포르투갈어 (브라질)
+settings.language.es,Spanish,スペイン語,Tây Ban Nha,Spanyol,Espanhol,Español,스페인어
+settings.language.ko,Korean,韓国語,Tiếng Hàn,Korea,Coreano,Coreano,한국어
+settings.back,Back,戻る,Quay lại,Kembali,Voltar,Volver,뒤로
+settings.restart,Restart,やり直す,Bắt đầu lại,Mulai Ulang,Reiniciar,Reiniciar,다시 시작
+puzzle.level_caption,Level,レベル,Màn,Level,Nível,Nivel,레벨
+puzzle.hint_unit,Look at this area,このエリアに注目,Xem kỹ khu vực này,Perhatikan area ini,Veja esta área,Mira esta área,이 구역을 보세요
+puzzle.hint_cell,Place candy here,ここにキャンディを置く,Đặt kẹo ở đây,Tempatkan permen di sini,Coloque o doce aqui,Coloca el dulce aquí,여기에 사탕 배치
+puzzle.restart_title,Restart this level?,やり直しますか？,Chơi lại màn này?,Ulangi level ini?,Reiniciar este nível?,¿Reiniciar este nivel?,다시 시작할까요?
+puzzle.restart_body,Your marks and mistakes will be reset.,マークとミスの数がリセットされます。,Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại.,Tanda dan kesalahanmu akan diatur ulang.,Suas marcações e erros serão redefinidos.,Tus marcas y errores se restablecerán.,표시와 실수가 초기화됩니다.
+puzzle.restart_ok,Restart,やり直す,Chơi lại,Ulangi,Reiniciar,Reiniciar,다시 시작
+puzzle.restart_cancel,Continue,続ける,Tiếp tục,Lanjutkan,Continuar,Continuar,계속하기
+puzzle.rule_row,1 candy per row and column,各行と各列に1個,1 kẹo mỗi hàng và cột,1 permen per baris dan kolom,1 doce por linha e coluna,1 dulce por fila y columna,행과 열당 사탕 1개
+puzzle.rule_region,1 candy per region,各エリアに1個,1 kẹo mỗi vùng,1 permen per wilayah,1 doce por região,1 dulce por región,구역당 사탕 1개
+puzzle.rule_diagonal,Candies cannot touch each other,キャンディ同士は隣接不可,Kẹo không chạm nhau,Permen tidak boleh saling menyentuh,Doces não podem se tocar,Los dulces no se tocan,사탕끼리 닿을 수 없음
+result.win.title,Hooray!,万歳！,Hoan hô!,Hore!,Viva!,¡Hurra!,만세!
+result.win.title_campaign,Campaign Complete!,キャンペーンクリア！,Hoàn thành chiến dịch!,Kampanye Selesai!,Campanha Concluída!,¡Campaña Completada!,캠페인 완료!
+result.win.subtitle,You found all the candies!,すべてのキャンディを見つけました！,Bạn đã tìm đủ kẹo!,Kamu menemukan semua permen!,Você encontrou todos os doces!,¡Encontraste todos los dulces!,모든 사탕을 찾았습니다!
+result.win.next,Continue,次へ,Tiếp tục,Lanjut,Continuar,Continuar,계속
+result.win.replay,Play Again,もう一度,Chơi lại,Main Lagi,Jogar Novamente,Jugar de Nuevo,다시 하기
+result.win.home,Home,ホーム,Trang chủ,Beranda,Início,Inicio,홈
+result.lose.title,Out of Hearts,ハート切れ,Hết tim,Kehabisan Nyawa,Sem Vidas,Sin Vidas,하트 소진
+result.lose.subtitle,You can try this level again.,もう一度挑戦できます。,Bạn có thể thử lại màn này.,Kamu bisa mencoba level ini lagi.,Você pode tentar este nível novamente.,Puedes intentar este nivel de nuevo.,이 레벨을 다시 시도할 수 있습니다.
+result.lose.retry,Retry,再挑戦,Thử lại,Coba Lagi,Tentar Novamente,Reintentar,다시 시도
+result.lose.home,Home,ホーム,Trang chủ,Beranda,Início,Inicio,홈
+boot.error,Boot error: %s,起動エラー: %s,Lỗi khởi động: %s,Kesalahan boot: %s,Erro de inicialização: %s,Error de inicio: %s,부팅 오류: %s
+boot.save_failed,Save failed: %s,セーブ失敗: %s,Lưu dữ liệu thất bại: %s,Gagal menyimpan: %s,Falha ao salvar: %s,Error al guardar: %s,저장 실패: %s
+common.ok,OK,OK,OK,OK,OK,OK,OK
+title.endless,Endless: Level %d,エンドレス: レベル %d,Vô tận: Màn %d,Endless: Level %d,Infinito: Nível %d,Infinito: Nivel %d,무한: 레벨 %d
+title.campaign,Campaign: Level %s,キャンペーン: レベル %s,Chiến dịch: Màn %s,Kampanye: Level %s,Campanha: Nível %s,Campaña: Nivel %s,캠페인: 레벨 %s
+hint.wrong_mark,"This cell is marked with X by mistake! A candy actually belongs here.","このマスは誤ってXマークされています！実際はキャンディの位置です。","Ô này đang bị đánh dấu X nhầm! Đây thực ra là vị trí đặt kẹo.","Kotak ini salah ditandai X! Permen sebenarnya ada di sini.","Esta casa foi marcada com X por engano! Na verdade, um doce vai aqui.","¡Esta casilla está marcada con X por error! En realidad aquí va un dulce.","이 칸은 실수로 X 표시되었습니다! 실제로는 사탕이 들어갈 자리입니다."
+hint.mark_neighbors,"A candy is already placed here. Cells in the same row, column, zone, and touching cells cannot contain candy.","ここにキャンディが置かれています。同じ行、列、エリア、および隣接するマスには置けません。","Đã có kẹo tại ô này. Cùng hàng, cùng cột, cùng vùng và các ô chạm nhau không thể chứa thêm kẹo.","Permen sudah ada di sini. Kotak di baris, kolom, wilayah yang sama, dan yang bersentuhan tidak boleh berisi permen.","Já há um doce aqui. Casas na mesma linha, coluna, região e casas vizinhas não podem conter doces.","Ya hay un dulce aquí. Las casillas en la misma fila, columna, región y las adyacentes no pueden contener dulces.","여기에 이미 사탕이 있습니다. 같은 행, 열, 구역 및 닿아 있는 칸에는 사탕이 들어갈 수 없습니다."
+hint.single_row,"In Row %d, there is only one valid cell left for a candy!","第%d行には、キャンディを置けるマスが残り1つしかありません！","Trong Hàng %d, chỉ còn đúng 1 ô trống có thể đặt kẹo!","Di Baris %d, hanya tersisa satu kotak valid untuk permen!","Na Linha %d, resta apenas uma casa válida para um doce!","¡En la Fila %d solo queda una casilla válida para un dulce!","%d행에는 사탕을 놓을 수 있는 칸이 하나만 남았습니다!"
+hint.single_col,"In Column %d, there is only one valid cell left for a candy!","第%d列には、キャンディを置けるマスが残り1つしかありません！","Trong Cột %d, chỉ còn đúng 1 ô trống có thể đặt kẹo!","Di Kolom %d, hanya tersisa satu kotak valid untuk permen!","Na Coluna %d, resta apenas uma casa válida para um doce!","¡En la Columna %d solo queda una casilla válida para un dulce!","%d열에는 사탕을 놓을 수 있는 칸이 하나만 남았습니다!"
+hint.single_zone,"In this zone, there is only one valid cell left for a candy!","このエリアには、キャンディを置けるマスが残り1つしかありません！","Trong vùng màu này, chỉ còn đúng 1 ô trống có thể đặt kẹo!","Di wilayah ini, hanya tersisa satu kotak valid untuk permen!","Nesta região, resta apenas uma casa válida para um doce!","¡En esta región solo queda una casilla válida para un dulce!","이 구역에는 사탕을 놓을 수 있는 칸이 하나만 남았습니다!"
+hint.lock_zone_row,"This zone's candy must be on Row %d. Eliminate other cells in this row.","このエリアのキャンディは必ず第%d行に入ります。その行の他のマスを除外しましょう。","Kẹo của vùng màu này chắc chắn nằm trên Hàng %d. Hãy đánh dấu X các ô còn lại trên hàng này.","Permen wilayah ini pasti ada di Baris %d. Eliminasi kotak lain di baris ini.","O doce desta região deve estar na Linha %d. Elimine as outras casas desta linha.","El dulce de esta región debe estar en la Fila %d. Elimina las demás casillas de esta fila.","이 구역의 사탕은 반드시 %d행에 있어야 합니다. 이 행의 다른 칸을 제외하세요."
+hint.lock_zone_col,"This zone's candy must be on Column %d. Eliminate other cells in this column.","このエリアのキャンディは必ず第%d列に入ります。その列の他のマスを除外しましょう。","Kẹo của vùng màu này chắc chắn nằm trên Cột %d. Hãy đánh dấu X các ô còn lại trên cột này.","Permen wilayah ini pasti ada di Kolom %d. Eliminasi kotak lain di kolom ini.","O doce desta região deve estar na Coluna %d. Elimine as outras casas desta coluna.","El dulce de esta región debe estar en la Columna %d. Elimina las demás casillas de esta columna.","이 구역의 사탕은 반드시 %d열에 있어야 합니다. 이 열의 다른 칸을 제외하세요."
+hint.lock_row_zone,"The candy for Row %d must be inside this zone. Eliminate other cells in this zone.","第%d行のキャンディはこのエリア内に入ります。エリア内の他のマスを除外しましょう。","Kẹo của Hàng %d chỉ có thể nằm trong vùng màu này. Hãy đánh dấu X các ô còn lại trong vùng.","Permen untuk Baris %d harus ada di dalam wilayah ini. Eliminasi kotak lain di wilayah ini.","O doce da Linha %d deve estar dentro desta região. Elimine outras casas nesta região.","El dulce de la Fila %d debe estar dentro de esta región. Elimina las demás casillas de esta región.","%d행의 사탕은 반드시 이 구역 안에 있어야 합니다. 이 구역의 다른 칸을 제외하세요."
+hint.lock_col_zone,"The candy for Column %d must be inside this zone. Eliminate other cells in this zone.","第%d列のキャンディはこのエリア内に入ります。エリア内の他のマスを除外しましょう。","Kẹo của Cột %d chỉ có thể nằm trong vùng màu này. Hãy đánh dấu X các ô còn lại trong vùng.","Permen untuk Kolom %d harus ada di dalam wilayah này. Eliminasi kotak lain di wilayah ini.","O doce da Coluna %d deve estar dentro desta região. Elimine outras casas nesta região.","El dulce de la Columna %d debe estar dentro de esta región. Elimina las demás casillas de esta región.","%d열의 사탕은 반드시 이 구역 안에 있어야 합니다. 이 구역의 다른 칸을 제외하세요."
+hint.subset_pair,"These two zones can only place candies within two corresponding lines. Eliminate extra cells.","この2つのエリアは対応する2本ライン内にしか配置できません。余分なマスを除外しましょう。","Hai vùng màu này chỉ có thể đặt kẹo trong 2 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","Dua wilayah ini hanya dapat menempatkan permen dalam dua garis terkait. Eliminasi kotak berlebih.","Estas duas regiões só podem ter doces em duas linhas correspondentes. Elimine as casas extras.","Estas dos regiones solo pueden colocar dulces dentro de dos líneas correspondientes. Elimina las casillas sobrantes.","이 두 구역은 해당 2개의 라인 내에서만 사탕을 놓을 수 있습니다. 불필요한 칸을 제외하세요."
+hint.subset_triple,"These three zones can only place candies within three corresponding lines. Eliminate extra cells.","この3つのエリアは対応する3本ライン内にしか配置できません。余分なマスを除外しましょう。","Ba vùng màu này chỉ có thể đặt kẹo trong 3 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","Tiga wilayah ini hanya dapat menempatkan permen dalam tiga garis terkait. Eliminasi kotak berlebih.","Estas três regiões só podem ter doces em três linhas correspondentes. Elimine as casas extras.","Estas tres regiones solo pueden colocar dulces dentro de tres líneas correspondientes. Elimina las casillas sobrantes.","이 세 구역은 해당 3개의 라인 내에서만 사탕을 놓을 수 있습니다. 불필요한 칸을 제외하세요."
+hint.subset_quad,"These four zones can only place candies within four corresponding lines. Eliminate extra cells.","この4つのエリアは対応する4本ライン内にしか配置できません。余分なマスを除外しましょう。","Bốn vùng màu này chỉ có thể đặt kẹo trong 4 hàng/cột tương ứng. Hãy đánh dấu X các ô thừa.","Empat wilayah ini hanya dapat menempatkan permen dalam empat garis terkait. Eliminasi kotak berlebih.","Estas quatro regiões só podem ter doces em quatro linhas correspondentes. Elimine as casas extras.","Estas cuatro regiones solo pueden colocar dulces dentro de cuatro líneas correspondientes. Elimina las casillas sobrantes.","이 네 구역은 해당 4개의 라인 내에서만 사탕을 놓을 수 있습니다. 불필요한 칸을 제외하세요."
+hint.chain_short,"Placing a candy here causes a rule violation! This cell must be marked with X.","ここにキャンディを置くとルール違反になります！このマスは必ずXマークです。","Nếu đặt kẹo vào ô này sẽ dẫn đến vi phạm luật chơi! Ô này chắc chắn phải đánh dấu X.","Menempatkan permen di sini melanggar aturan! Kotak ini harus ditandai X.","Colocar um doce aqui causa uma violação de regra! Esta casa deve ser marcada com X.","¡Colocar un dulce aquí viola las reglas! Esta casilla debe marcarse con X.","여기에 사탕을 놓으면 규칙을 위반하게 됩니다! 이 칸은 반드시 X로 표시해야 합니다."
+hint.chain_long,"Multi-step deduction: placing candy here leads to a contradiction after %d steps. Tap 'View Steps' to inspect.","段階的推論：ここに配置すると%d手後に矛盾が生じます。「手順を見る」で確認できます。","Suy luận nhiều bước: thử đặt kẹo vào đây sẽ gây mâu thuẫn sau %d bước. Nhấn 'Xem các bước' để theo dõi.","Deduksi multi-langkah: menempatkan permen di sini menimbulkan kontradiksi setelah %d langkah. Ketuk 'Lihat Langkah' untuk memeriksa.","Dedução em etapas: colocar doce aqui leva a uma contradição após %d passos. Toque em 'Ver Passos' para inspecionar.","Deducción por pasos: colocar un dulce aquí lleva a una contradicción tras %d pasos. Toca 'Ver Pasos' para inspeccionar.","다단계 추론: 여기에 사탕을 놓으면 %d단계 후 모순이 발생합니다. '단계 보기'를 눌러 확인하세요."
+hint.fallback,"Next move suggestion: place a candy in this cell.","次の手のヒント：このマスにキャンディを配置します。","Gợi ý nước đi tiếp theo: đặt một viên kẹo vào ô này.","Saran langkah berikutnya: tempatkan permen di kotak ini.","Sugestão de jogada: coloque um doce nesta casa.","Sugerencia de movimiento: coloca un dulce en esta casilla.","다음 수 힌트: 이 칸에 사탕을 배치하세요."
+hint.clear_mark,Clear X,Xを消す,Gỡ dấu X,Hapus X,Limpar X,Borrar X,X 지우기
+hint.mark_x,Mark X,Xを付ける,Đánh dấu X,Tandai X,Marcar X,Marcar X,X 표시
+hint.place_candy,Place Candy,キャンディ配置,Đặt kẹo,Taruh Permen,Colocar Doce,Poner Dulce,사탕 배치
+hint.reveal,Reveal Candy,キャンディ表示,Hiện kẹo,Buka Permen,Revelar Doce,Revelar Dulce,사탕 공개
+hint.detail,View Steps,手順を見る,Xem các bước,Lihat Langkah,Ver Passos,Ver Pasos,단계 보기
