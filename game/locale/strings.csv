@@ -54,3 +54,23 @@ boot.save_failed,Lưu dữ liệu thất bại: %s,Save failed: %s
 common.ok,OK,OK
 title.endless,Vô tận: Màn %d,Endless: Level %d
 title.campaign,Chiến dịch: Màn %s,Campaign: Level %s
+hint.wrong_mark,"Ô này đang bị đánh X sai! Candy cần đặt ở đây.","This cell is incorrectly marked! A candy belongs here."
+hint.mark_neighbors,"Đánh X loại trừ các ô xung quanh candy này.","Mark X to eliminate cells around this candy."
+hint.single_row,"Hàng được đánh dấu chỉ còn duy nhất 1 ô có thể đặt candy.","The highlighted row has only one possible cell for a candy."
+hint.single_col,"Cột được đánh dấu chỉ còn duy nhất 1 ô có thể đặt candy.","The highlighted column has only one possible cell for a candy."
+hint.single_zone,"Vùng được đánh dấu chỉ còn duy nhất 1 ô có thể đặt candy.","The highlighted zone has only one possible cell for a candy."
+hint.lock_zone_row,"Candy của vùng nhấp nháy chỉ có thể nằm trên hàng này. Loại trừ các ô khác.","This zone's candy must be on this row. Eliminate the other cells."
+hint.lock_zone_col,"Candy của vùng nhấp nháy chỉ có thể nằm trên cột này. Loại trừ các ô khác.","This zone's candy must be on this column. Eliminate the other cells."
+hint.lock_row_zone,"Hàng này chỉ có ứng viên trong vùng nhấp nháy. Loại trừ các ô khác trong vùng.","This row only has candidates in the highlighted zone. Eliminate other cells in the zone."
+hint.lock_col_zone,"Cột này chỉ có ứng viên trong vùng nhấp nháy. Loại trừ các ô khác trong vùng.","This column only has candidates in the highlighted zone. Eliminate other cells in the zone."
+hint.subset_pair,"Hai vùng nhấp nháy khóa chéo — loại trừ các ô thừa.","Two highlighted zones lock each other — eliminate extra cells."
+hint.subset_triple,"Ba vùng nhấp nháy khóa chéo — loại trừ các ô thừa.","Three highlighted zones lock each other — eliminate extra cells."
+hint.subset_quad,"Bốn vùng nhấp nháy khóa chéo — loại trừ các ô thừa.","Four highlighted zones lock each other — eliminate extra cells."
+hint.chain_short,"Giả sử đặt candy ở ô này → dẫn đến mâu thuẫn! Phải đánh X.","If a candy were here → contradiction! Must mark X."
+hint.chain_long,"Chuỗi suy luận dài: giả sử đặt candy → mâu thuẫn! Nhấn Chi Tiết để xem.","Long deduction chain: placing candy here → contradiction! Tap Detail to see."
+hint.fallback,"Gợi ý: đặt candy vào ô này.","Hint: place a candy here."
+hint.clear_mark,Xóa X,Clear X
+hint.mark_x,Đánh X,Mark X
+hint.place_candy,Đặt Candy,Place Candy
+hint.reveal,Mở,Reveal
+hint.detail,Chi Tiết,Detail
