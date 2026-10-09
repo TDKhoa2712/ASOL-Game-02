@@ -15,6 +15,13 @@ func _init(meta: Dictionary) -> void:
 func clear() -> void:
 	_cells.clear()
 
+func sync(board: Array) -> void:
+	_cells.clear()
+	for r in board.size():
+		for c in board[r].size():
+			var k: int = int(board[r][c])
+			if k == 2 or k == 4: rest(Vector2i(r, c)) # CellKind.CANDY / GIVEN
+
 func rest(cell: Vector2i) -> void:
 	var cycle: int = _cells[cell].cycle + 1 if _cells.has(cell) else 0
 	_cells[cell] = {"anim": "idle", "t": 0.0, "playing": false, "wait": _idle_wait(cell, cycle), "done": false, "cycle": cycle}

@@ -21,6 +21,7 @@ func _init() -> void:
 	_test_sad_loops_and_overrides_error()
 	_test_win_holds_last_and_staggers()
 	_test_motion_off()
+	_test_sync_rests_placed_cells()
 	if _fails.is_empty():
 		print("CANDY_ANIM_STATE_PASS"); quit(0)
 	else:
@@ -107,3 +108,9 @@ func _test_motion_off() -> void:
 	s.play_all("win")
 	_assert(s.frame_of(c) == ["win", 3], "no motion: win shows final pose")
 	_assert(not s.advance(1.0, false), "inactive advance never redraws")
+
+func _test_sync_rests_placed_cells() -> void:
+	var s := CandyAnimState.new(META)
+	s.sync([[0, 2], [4, 3]])
+	_assert(s.frame_of(Vector2i(0, 1)) == ["idle", 0] and s.frame_of(Vector2i(1, 0)) == ["idle", 0], "sync rests candy+given")
+	_assert(not s._cells.has(Vector2i(1, 1)), "sync skips ERROR cells")

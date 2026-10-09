@@ -10,7 +10,9 @@ const TouchGuard = preload("res://scripts/input/touch_guard.gd")
 const BoardPointerRouter = preload("res://scripts/input/board_pointer_router.gd")
 const CellAnimator = preload("res://scripts/screens/cell_animator.gd")
 const CandyRenderer = preload("res://scripts/core/candy_renderer.gd")
-const CandyPalette = preload("res://scripts/theme/candy_palette.gd")
+const CandyAtlas = preload("res://scripts/screens/candy_atlas.gd")
+const CandyAnimState = preload("res://scripts/screens/candy_anim_state.gd")
+const CandyCellDrawer = preload("res://scripts/screens/candy_cell_drawer.gd")
 const BoardEntryWave = preload("res://scripts/screens/board_entry_wave.gd")
 const PuzzleBoardPainter = preload("res://scripts/screens/puzzle_board_painter.gd")
 
@@ -31,6 +33,7 @@ var _high_contrast: bool = false
 var _decoder: TouchDecoder = null
 var _guard: TouchGuard = null
 var _candy_tex: Texture2D = null
+var _candy_anim: Variant = null
 var _highlight_cells: Array = []
 var _highlight_set: Dictionary = {}
 var _highlight_unit: String = ""
@@ -53,6 +56,8 @@ func configure(session: Variant, animate_entry: bool = false) -> void:
 	if _session == null: return
 	var level_id: String = str(_session.level.get("id", ""))
 	_candy_tex = CandyRenderer.texture_for_type(CandyRenderer.type_for_label(level_id))
+	_candy_anim = CandyAnimState.new(CandyAtlas.meta()) if CandyAtlas.ensure_loaded() else null
+	if _candy_anim != null: _candy_anim.motion = LayoutTokens.motion_enabled; _candy_anim.sync(_session.board)
 	var n: int = int(_session.level.get("size", 0)); var regions: Array = _session.level.get("regions", [])
 	_zone_grid = RegionPainter.precompute_grid(n, regions)
 	if _colorblind:
@@ -100,9 +105,20 @@ func _update_highlight_set() -> void:
 	for c in _highlight_cells:
 		if c.size() >= 2: _highlight_set[Vector2i(int(c[0]), int(c[1]))] = true
 
-func play_candy_pop(row: int, col: int) -> void: CellAnimator.play_candy_pop(self, _cell_rect(row, col)); candy_placed_anim.emit(row, col)
-func play_error_shake() -> void: CellAnimator.play_error_shake(self); error_anim.emit(0, 0)
-func play_win_bounce() -> void: CellAnimator.play_win_bounce(self, _session, _cell_rect); win_anim.emit()
+func play_candy_pop(row: int, col: int) -> void:
+	if _candy_anim != null: _candy_anim.play(Vector2i(row, col), "appear"); queue_redraw()
+	else: CellAnimator.play_candy_pop(self, _cell_rect(row, col))
+	candy_placed_anim.emit(row, col)
+func play_error_shake() -> void:
+	CellAnimator.play_error_shake(self)
+	if _candy_anim != null: _candy_anim.play_all("error")
+	error_anim.emit(0, 0)
+func play_win_bounce() -> void:
+	if _candy_anim != null: _candy_anim.play_all("win", 0.04); queue_redraw()
+	else: CellAnimator.play_win_bounce(self, _session, _cell_rect)
+	win_anim.emit()
+func play_sad() -> void: if _candy_anim != null: _candy_anim.play_all("sad"); queue_redraw()
+func candy_frame(row: int, col: int) -> Array: return _candy_anim.frame_of(Vector2i(row, col)) if _candy_anim != null else []
 
 func has_mark_anim(row: int, col: int) -> bool: return _mark_anims.has(Vector2i(row, col))
 func play_mark_anim(row: int, col: int) -> void: play_mark_anims([[row, col]])
@@ -146,6 +162,7 @@ func _on_preview_changed(cells: Array) -> void:
 	queue_redraw()
 
 func _process(_delta: float) -> void:
+	if _candy_anim != null and _candy_anim.advance(_delta, LayoutTokens.motion_enabled and is_visible_in_tree()): queue_redraw()
 	if _entry_elapsed >= 0.0:
 		_entry_elapsed += _delta
 		if not LayoutTokens.motion_enabled or _entry_elapsed >= BoardEntryWave.DURATION: _entry_elapsed = -1.0
@@ -260,23 +277,8 @@ func _draw_border(rect: Rect2, color: Color, width: int, radius: int) -> void:
 func _content_scale() -> float:
 	return 1.0 if _session == null else LayoutTokens.cell_content_scale(int(_session.level.get("size", 0)))
 
-func _draw_cell_candy(rect: Rect2, is_given: bool) -> void:
-	var cs := _content_scale()
-	if is_given:
-		draw_circle(rect.get_center(), rect.size.x * minf(LayoutTokens.GIVEN_HALO_RATIO * cs, 0.48), Color(CandyPalette.GIVEN_HALO, CandyPalette.GIVEN_HALO_OPACITY))
-	if _candy_tex != null:
-		var candy_size := rect.size * minf(LayoutTokens.CANDY_TEX_RATIO * cs, 0.95)
-		draw_texture_rect(_candy_tex, Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size), false)
-	else:
-		_draw_candy_procedural(rect)
-
-func _draw_candy_procedural(rect: Rect2) -> void:
-	var center := rect.get_center(); var radius := rect.size.x * 0.25
-	for dir in [-1.0, 1.0]:
-		var poly := PackedVector2Array([center + Vector2(dir * radius * 0.65, 0), center + Vector2(dir * radius * 1.6, -radius * 0.65), center + Vector2(dir * radius * 1.6, radius * 0.65)])
-		draw_colored_polygon(poly, Palette.CANDY_LIGHT); draw_polyline(poly, Palette.CANDY_OUTLINE, 2.0, true)
-	draw_circle(center, radius, Palette.CANDY_BROWN)
-	draw_arc(center, radius * 0.60, -PI * 0.8, PI * 0.25, 18, Palette.CANDY_LIGHT, radius * 0.22, true)
+func _draw_cell_candy(rect: Rect2, is_given: bool, r: int = -1, c: int = -1) -> void:
+	CandyCellDrawer.draw(self, rect, is_given, _content_scale(), _candy_tex, candy_frame(r, c) if r >= 0 else [])
 
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
 	if r >= 0 and c >= 0 and _mark_anims.has(Vector2i(r, c)):

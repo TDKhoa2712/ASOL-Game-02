@@ -171,7 +171,7 @@ static func draw(board: Variant) -> void:
 				var cell_rect: Rect2 = board._cell_rect(r, c)
 				if cell_scale != 1.0:
 					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
-				board._draw_cell_candy(cell_rect, k == CellModel.CellKind.GIVEN)
+				board._draw_cell_candy(cell_rect, k == CellModel.CellKind.GIVEN, r, c)
 				if cell_scale != 1.0:
 					board.draw_set_transform(Vector2.ZERO)
 
