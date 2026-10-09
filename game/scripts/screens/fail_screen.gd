@@ -19,13 +19,13 @@ var _level_id: String = ""
 var _elapsed_ms: int = 0
 
 var _bg: ColorRect
-var _ribbon: RibbonBanner
+var ribbon: RibbonBanner
 var _hearts: HeartDisplay
-var _mascot: TextureRect
+var mascot: TextureRect
 var _cloud: TextureRect
-var _stat_card: StatCard
-var _retry_btn: Button
-var _home_btn: Button
+var stat_card: StatCard
+var retry_btn: Button
+var home_btn: Button
 var _level_badge: Label
 
 func _ensure_nodes() -> void:
@@ -86,8 +86,8 @@ func _ensure_nodes() -> void:
 	top.add_child(spacer2)
 
 	# 2. Ribbon
-	_ribbon = RibbonBanner.new(tr("result.lose.title"), "lose")
-	stack.add_child(_ribbon)
+	ribbon = RibbonBanner.new(tr("result.lose.title"), "lose")
+	stack.add_child(ribbon)
 
 	# 3. Hearts (all 3 broken)
 	_hearts = HeartDisplay.new(3, 0, "lose")
@@ -103,17 +103,17 @@ func _ensure_nodes() -> void:
 	stack.add_child(_cloud)
 
 	# 5. Mascot (sad)
-	_mascot = TextureRect.new()
-	_mascot.texture = load("res://assets/ui/result/mascot_sad.svg") as Texture2D
-	_mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_mascot.custom_minimum_size = Vector2(420, 270)
-	_mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	stack.add_child(_mascot)
+	mascot = TextureRect.new()
+	mascot.texture = load("res://assets/ui/result/mascot_sad.svg") as Texture2D
+	mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	mascot.custom_minimum_size = Vector2(420, 270)
+	mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	stack.add_child(mascot)
 
 	# 6. Stat card (time only)
-	_stat_card = StatCard.new([{"label": tr("result.stat.time"), "value": _format_time(_elapsed_ms), "icon": "clock"}])
-	stack.add_child(_stat_card)
+	stat_card = StatCard.new([{"label": tr("result.stat.time"), "value": _format_time(_elapsed_ms), "icon": "clock"}])
+	stack.add_child(stat_card)
 
 	# Vertical flexible spacer
 	var bottom_space := Control.new()
@@ -143,14 +143,14 @@ func _ensure_nodes() -> void:
 	if heading != null: encourage_title.add_theme_font_override("font", heading)
 	ac_stack.add_child(encourage_title)
 
-	_retry_btn = ActionButton.create(tr("result.lose.retry"), Palette.LOSE_BUTTON_BG, Palette.LOSE_BUTTON_SHADOW, Palette.LOSE_BUTTON_TEXT_SHADOW, 34, 92)
-	_retry_btn.pressed.connect(func(): retry_pressed.emit())
-	ac_stack.add_child(_retry_btn)
+	retry_btn = ActionButton.create(tr("result.lose.retry"), Palette.LOSE_BUTTON_BG, Palette.LOSE_BUTTON_SHADOW, Palette.LOSE_BUTTON_TEXT_SHADOW, 34, 92)
+	retry_btn.pressed.connect(_on_retry)
+	ac_stack.add_child(retry_btn)
 
-	_home_btn = ActionButton.create(tr("result.win.home"), Palette.PILL_BG, Palette.LOSE_CARD_SHADOW, Color.TRANSPARENT, 28, 76)
-	_home_btn.add_theme_color_override("font_color", Palette.INK)
-	_home_btn.pressed.connect(func(): home_pressed.emit())
-	ac_stack.add_child(_home_btn)
+	home_btn = ActionButton.create(tr("result.win.home"), Palette.PILL_BG, Palette.LOSE_CARD_SHADOW, Color.TRANSPARENT, 28, 76)
+	home_btn.add_theme_color_override("font_color", Palette.INK)
+	home_btn.pressed.connect(_on_home)
+	ac_stack.add_child(home_btn)
 
 func _format_time(ms: int) -> String:
 	var total_secs: int = int(ms / 1000.0)
@@ -175,21 +175,19 @@ func _update_ui() -> void:
 		_level_badge.text = (b_fmt % _level_id) if b_fmt.contains("%s") else (b_fmt + " " + _level_id)
 
 func _play_entrance_animations() -> void:
-	if not LayoutTokens.motion_enabled:
-		return
-	if _ribbon != null:
-		_ribbon.animate()
-	if _hearts != null:
-		_hearts.animate()
-	if _stat_card != null:
-		_stat_card.animate(1.1)
-	if _mascot != null:
-		_animate_mascot_thud()
+	if not LayoutTokens.motion_enabled: return
+	if ribbon != null: ribbon.animate()
+	if _hearts != null: _hearts.animate()
+	if stat_card != null: stat_card.animate(1.1)
+	if mascot != null: _animate_mascot_thud()
 
 func _animate_mascot_thud() -> void:
-	_mascot.position.y -= 220
-	_mascot.modulate.a = 0.0
-	var tw := _mascot.create_tween()
+	mascot.position.y -= 220
+	mascot.modulate.a = 0.0
+	var tw := mascot.create_tween()
 	tw.tween_interval(0.8)
-	tw.tween_property(_mascot, "position:y", _mascot.position.y + 220, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.parallel().tween_property(_mascot, "modulate:a", 1.0, 0.2)
+	tw.tween_property(mascot, "position:y", mascot.position.y + 220, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(mascot, "modulate:a", 1.0, 0.2)
+
+func _on_retry() -> void: retry_pressed.emit()
+func _on_home() -> void: home_pressed.emit()

@@ -6,6 +6,12 @@ const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 var _label: Label
+var label: Label:
+	get: return _label
+var text: String:
+	get: return _label.text if _label != null else ""
+	set(v):
+		if _label != null: _label.text = v
 var _style: String
 var _tails: _RibbonTails
 

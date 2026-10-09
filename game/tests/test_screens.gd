@@ -3,7 +3,8 @@ extends SceneTree
 const PillToggle = preload("res://scripts/screens/pill_toggle.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const TitleScreen = preload("res://scripts/screens/title_screen.gd")
-const ResultScreen = preload("res://scripts/screens/result_screen.gd")
+const WinScreen = preload("res://scripts/screens/win_screen.gd")
+const FailScreen = preload("res://scripts/screens/fail_screen.gd")
 const OptionsScreen = preload("res://scripts/screens/options_screen.gd")
 const PuzzleScreen = preload("res://scripts/screens/puzzle_screen.gd")
 const AppShell = preload("res://scripts/screens/app_shell.gd")
@@ -195,7 +196,7 @@ func _test_title_screen() -> void:
 
 func _test_result_screen() -> void:
 	var win_packed := load("res://scenes/win.tscn") as PackedScene
-	var win_screen := win_packed.instantiate() as ResultScreen
+	var win_screen := win_packed.instantiate() as WinScreen
 
 	var next_box := [false]
 	var replay_box := [false]
@@ -205,17 +206,16 @@ func _test_result_screen() -> void:
 	win_screen.replay_pressed.connect(func(): replay_box[0] = true)
 	win_screen.home_pressed.connect(func(): home_box[0] = true)
 
-	win_screen.setup(true, 12000, "1-1", false)
-	_assert(win_screen.find_child("ResultCard", true, false) != null, "win result card present")
-	_assert(win_screen.find_child("ResultMessage", true, false) != null, "result shows a supporting message")
-	_assert(win_screen._is_win, "result is win")
-	_assert(not win_screen._is_last_level, "result not last level")
+	win_screen.setup(true, 12000, "1-1", false, 3, 0, "1-2", 4, "easy")
+	_assert(win_screen.ribbon != null, "win hero banner present")
+	_assert(win_screen.stat_card != null, "win stats container present")
+	_assert(not win_screen._is_last_level, "win not last level")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next btn visible on win")
 	win_screen._on_next()
 	_assert(next_box[0], "next_pressed emitted")
 
-	win_screen.setup(true, 50000, "3-10", true)
-	_assert(win_screen._is_last_level, "result is last level")
+	win_screen.setup(true, 50000, "3-10", true, 2, 1, "", 0, "")
+	_assert(win_screen._is_last_level, "win is last level")
 	_assert(win_screen.replay_btn != null and win_screen.replay_btn.visible, "replay btn visible on campaign win")
 	win_screen._on_replay()
 	_assert(replay_box[0], "replay_pressed emitted")
@@ -226,16 +226,19 @@ func _test_result_screen() -> void:
 	win_screen.free()
 
 	var fail_packed := load("res://scenes/fail.tscn") as PackedScene
-	var fail_screen := fail_packed.instantiate() as ResultScreen
+	var fail_screen := fail_packed.instantiate() as FailScreen
 
 	var retry_box := [false]
+	var fail_home_box := [false]
 	fail_screen.retry_pressed.connect(func(): retry_box[0] = true)
+	fail_screen.home_pressed.connect(func(): fail_home_box[0] = true)
 	fail_screen.setup(false, 0, "1-1", false)
-	_assert(fail_screen.find_child("ResultCard", true, false) != null, "fail result card present")
-	_assert(not fail_screen._is_win, "result is fail")
+	_assert(fail_screen.mascot != null, "fail mascot present")
 	_assert(fail_screen.retry_btn != null and fail_screen.retry_btn.visible, "retry btn visible on fail")
 	fail_screen._on_retry()
 	_assert(retry_box[0], "retry_pressed emitted")
+	fail_screen._on_home()
+	_assert(fail_home_box[0], "home_pressed emitted on fail")
 
 	fail_screen.free()
 

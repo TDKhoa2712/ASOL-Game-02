@@ -29,14 +29,16 @@ var _next_difficulty: String = ""
 var _bg: ColorRect
 var _rays: Control
 var _confetti: ConfettiLayer
-var _ribbon: RibbonBanner
+var ribbon: RibbonBanner
+var message_label: Label:
+	get: return ribbon.label if ribbon != null else null
 var _hearts: HeartDisplay
 var _mascot: TextureRect
-var _stat_card: StatCard
+var stat_card: StatCard
 var _next_card: PanelContainer
-var _next_btn: Button
-var _home_btn: Button
-var _replay_btn: Button
+var next_btn: Button
+var home_btn: Button
+var replay_btn: Button
 var _level_badge: Label
 
 func _ensure_nodes() -> void:
@@ -103,8 +105,8 @@ func _ensure_nodes() -> void:
 	top.add_child(spacer2)
 
 	# 2. Ribbon
-	_ribbon = RibbonBanner.new(tr("result.win.title"), "win")
-	stack.add_child(_ribbon)
+	ribbon = RibbonBanner.new(tr("result.win.title"), "win")
+	stack.add_child(ribbon)
 
 	# 3. Hearts
 	_hearts = HeartDisplay.new(3, _hearts_left, "win")
@@ -120,8 +122,8 @@ func _ensure_nodes() -> void:
 	stack.add_child(_mascot)
 
 	# 5. Stat card
-	_stat_card = StatCard.new(_build_stats())
-	stack.add_child(_stat_card)
+	stat_card = StatCard.new(_build_stats())
+	stack.add_child(stat_card)
 
 	# 6. Next-level preview card
 	_next_card = _create_next_card()
@@ -146,19 +148,19 @@ func _ensure_nodes() -> void:
 	ac_stack.add_theme_constant_override("separation", 14)
 	action_card.add_child(ac_stack)
 
-	_next_btn = ActionButton.create(tr("result.win.next"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 92)
-	_next_btn.pressed.connect(func(): next_pressed.emit())
-	ac_stack.add_child(_next_btn)
+	next_btn = ActionButton.create(tr("result.win.next"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 92)
+	next_btn.pressed.connect(_on_next)
+	ac_stack.add_child(next_btn)
 
-	_replay_btn = ActionButton.create(tr("result.win.replay"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 92)
-	_replay_btn.pressed.connect(func(): replay_pressed.emit())
-	_replay_btn.visible = false
-	ac_stack.add_child(_replay_btn)
+	replay_btn = ActionButton.create(tr("result.win.replay"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 92)
+	replay_btn.pressed.connect(_on_replay)
+	replay_btn.visible = false
+	ac_stack.add_child(replay_btn)
 
-	_home_btn = ActionButton.create(tr("result.win.home"), Palette.PILL_BG, Palette.WIN_CARD_SHADOW, Color.TRANSPARENT, 28, 76)
-	_home_btn.add_theme_color_override("font_color", Palette.INK)
-	_home_btn.pressed.connect(func(): home_pressed.emit())
-	ac_stack.add_child(_home_btn)
+	home_btn = ActionButton.create(tr("result.win.home"), Palette.PILL_BG, Palette.WIN_CARD_SHADOW, Color.TRANSPARENT, 28, 76)
+	home_btn.add_theme_color_override("font_color", Palette.INK)
+	home_btn.pressed.connect(_on_home)
+	ac_stack.add_child(home_btn)
 
 func _create_next_card() -> PanelContainer:
 	var card := PanelContainer.new()
@@ -246,14 +248,9 @@ static func _difficulty_color(d: String) -> Color:
 		_: return Palette.WIN_TEXT_SECONDARY
 
 func setup(won: bool, score: int, level_id: String, is_last: bool, hearts_left: int = 3, mistake_count: int = 0, next_label: String = "", next_size: int = 0, next_difficulty: String = "") -> void:
-	_is_last_level = is_last
-	_level_id = level_id.trim_prefix("L")
-	_elapsed_ms = score
-	_hearts_left = clampi(hearts_left, 0, 3)
-	_mistake_count = mistake_count
-	_next_label = next_label
-	_next_size = next_size
-	_next_difficulty = next_difficulty
+	_is_last_level = is_last; _level_id = level_id.trim_prefix("L"); _elapsed_ms = score
+	_hearts_left = clampi(hearts_left, 0, 3); _mistake_count = mistake_count
+	_next_label = next_label; _next_size = next_size; _next_difficulty = next_difficulty
 	_ensure_nodes()
 	_update_ui()
 
@@ -263,13 +260,15 @@ func _ready() -> void:
 	_play_entrance_animations()
 
 func _update_ui() -> void:
+	if ribbon != null:
+		ribbon.text = tr("result.win.title_campaign") if _is_last_level else tr("result.win.title")
 	if _level_badge != null:
 		var b_fmt := tr("result.level_badge")
 		_level_badge.text = (b_fmt % _level_id) if b_fmt.contains("%s") else (b_fmt + " " + _level_id)
-	if _next_btn != null:
-		_next_btn.visible = not _is_last_level
-	if _replay_btn != null:
-		_replay_btn.visible = _is_last_level
+	if next_btn != null:
+		next_btn.visible = not _is_last_level
+	if replay_btn != null:
+		replay_btn.visible = _is_last_level
 	if _next_card != null:
 		_next_card.visible = not _is_last_level and _next_label != ""
 		var title: Label = _next_card.find_child("NextTitle", true, false)
@@ -285,13 +284,12 @@ func _update_ui() -> void:
 			sz.text = "%dx%d" % [_next_size, _next_size] if _next_size > 0 else ""
 
 func _play_entrance_animations() -> void:
-	if not LayoutTokens.motion_enabled:
-		return
-	if _confetti != null:
-		_confetti.start()
-	if _ribbon != null:
-		_ribbon.animate()
-	if _hearts != null:
-		_hearts.animate()
-	if _stat_card != null:
-		_stat_card.animate(1.1)
+	if not LayoutTokens.motion_enabled: return
+	if _confetti != null: _confetti.start()
+	if ribbon != null: ribbon.animate()
+	if _hearts != null: _hearts.animate()
+	if stat_card != null: stat_card.animate(1.1)
+
+func _on_next() -> void: next_pressed.emit()
+func _on_replay() -> void: replay_pressed.emit()
+func _on_home() -> void: home_pressed.emit()
