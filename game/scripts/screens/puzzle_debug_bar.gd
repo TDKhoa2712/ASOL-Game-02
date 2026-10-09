@@ -31,28 +31,47 @@ func update_session(session: Variant) -> void:
 	_sync_ui_state()
 
 func _build_ui() -> void:
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = Color(0.12, 0.14, 0.18, 0.95)
-	sb.set_corner_radius_all(16)
-	sb.set_content_margin_all(10)
+	var sb := StyleBoxEmpty.new()
 	add_theme_stylebox_override("panel", sb)
 
-	var root_hbox := HBoxContainer.new()
-	root_hbox.add_theme_constant_override("separation", 10)
-	root_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	add_child(root_hbox)
+	var root_vbox := VBoxContainer.new()
+	root_vbox.add_theme_constant_override("separation", 8)
+	add_child(root_vbox)
 
 	_toggle_btn = Button.new()
-	_toggle_btn.text = "🛠 Cheats"
-	_toggle_btn.custom_minimum_size = Vector2(140, 54)
-	_toggle_btn.add_theme_font_size_override("font_size", 26)
+	_toggle_btn.text = "🔧 Cheats"
+	_toggle_btn.custom_minimum_size = Vector2(0, 48)
+	_toggle_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_toggle_btn.add_theme_font_size_override("font_size", 22)
+	_toggle_btn.add_theme_color_override("font_color", Color.WHITE)
+
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Palette.BOARD_CHEATS_BG
+	normal.set_corner_radius_all(14)
+	normal.border_width_bottom = 4
+	normal.border_color = Palette.BOARD_CHEATS_EDGE
+	normal.content_margin_top = 4
+	normal.content_margin_bottom = 4
+
+	var hover := normal.duplicate() as StyleBoxFlat
+	hover.bg_color = Palette.BOARD_CHEATS_BG.lightened(0.06)
+
+	var pressed := normal.duplicate() as StyleBoxFlat
+	pressed.border_width_bottom = 1
+	pressed.expand_margin_top = -3.0
+
+	for s in ["normal", "focus", "disabled"]:
+		_toggle_btn.add_theme_stylebox_override(s, normal)
+	_toggle_btn.add_theme_stylebox_override("hover", hover)
+	_toggle_btn.add_theme_stylebox_override("pressed", pressed)
 	_toggle_btn.pressed.connect(_on_toggle_pressed)
-	root_hbox.add_child(_toggle_btn)
+	root_vbox.add_child(_toggle_btn)
 
 	_tools_row = HBoxContainer.new()
 	_tools_row.add_theme_constant_override("separation", 10)
+	_tools_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	_tools_row.visible = false
-	root_hbox.add_child(_tools_row)
+	root_vbox.add_child(_tools_row)
 
 	_solution_btn = _create_btn("👁 Hiện nghiệm", _on_solution_pressed)
 	_tools_row.add_child(_solution_btn)

@@ -19,6 +19,8 @@ docs_analysis/
 .codex-remote-attachments/
 .claude/
 .serena/
+screen/
+candoku/
 IDENTITY.md
 SOUL.md
 USER.md

@@ -1,5 +1,7 @@
 extends SceneTree
 
+const PuzzleScreenScript = preload("res://scripts/screens/puzzle_screen.gd")
+
 const AppShell = preload("res://scripts/screens/app_shell.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
@@ -8,7 +10,9 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 var failures: Array[String] = []
 
-func _initialize() -> void: call_deferred("_run")
+func _initialize() -> void:
+	PuzzleScreenScript.hold_results = false # result hold is covered by test_heart_feedback
+	call_deferred("_run")
 
 func _run() -> void:
 	await _test_new_level_and_resume()

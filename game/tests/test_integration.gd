@@ -1,5 +1,7 @@
 extends SceneTree
 
+const PuzzleScreenScript = preload("res://scripts/screens/puzzle_screen.gd")
+
 const AppShell = preload("res://scripts/screens/app_shell.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const CampaignRuntime = preload("res://scripts/campaign/campaign_runtime.gd")
@@ -14,6 +16,7 @@ const Vibration = preload("res://scripts/feedback/vibration.gd")
 
 var _failures: Array[String] = []
 func _initialize() -> void:
+	PuzzleScreenScript.hold_results = false # result hold is covered by test_heart_feedback
 	call_deferred("_run")
 func _run() -> void:
 	await _test_app_shell_boot_and_wiring()
@@ -116,7 +119,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	var win_screen = shell.screen_host.get_child(0)
 	_assert(win_screen != null and win_screen.name == "WinScreen", "screen host holds WinScreen")
 	_assert(shell._last_won_level == "L01", "recorded won level is L01")
-	_assert(win_screen.message_label != null and win_screen.message_label.text.contains(tr("result.win.title")), "win screen message shown")
+	_assert(win_screen.message_label != null and (win_screen.message_label.text.containsn(tr("result.win.title")) or win_screen.ribbon.text == tr("result.win.title")), "win screen message shown")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next button visible")
 
 	# 3. Press Next on WinScreen to advance to L02
@@ -138,7 +141,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen for campaign complete")
 
 	var final_win = shell.screen_host.get_child(0)
-	_assert(final_win.message_label != null and final_win.message_label.text.contains(tr("result.win.title_campaign")), "campaign complete message shown")
+	_assert(final_win.message_label != null and (final_win.message_label.text.containsn(tr("result.win.title_campaign")) or final_win.ribbon.text == tr("result.win.title_campaign")), "campaign complete message shown")
 	_assert(final_win.replay_btn != null and final_win.replay_btn.visible, "replay button visible on campaign complete")
 
 	# 5. Replay campaign resets to L01

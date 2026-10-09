@@ -21,7 +21,7 @@ var _bob_style: StyleBoxFlat = StyleBoxFlat.new()
 var _target_style: StyleBoxFlat = StyleBoxFlat.new()
 
 const HIGHLIGHT_COLOR := Color(0.96, 0.62, 0.04)  # #F59E0B
-const SCRIM_COLOR := Color(0.06, 0.05, 0.10, 0.45)  # Spotlight scrim on un-focused cells
+const SCRIM_COLOR := Color(0.35, 0.20, 0.06, 0.32)  # Warm spotlight scrim matching the cream board
 const CHAIN_HYPOTHESIS := Color(0.94, 0.27, 0.27)  # #EF4444
 const CHAIN_STEP := Color(0.96, 0.62, 0.04)  # #F59E0B
 const CHAIN_CONTRA := Color(0.86, 0.15, 0.15)  # #DC2626

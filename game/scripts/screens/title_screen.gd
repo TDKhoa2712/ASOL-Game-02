@@ -10,6 +10,15 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 const HelpScreen = preload("res://scripts/screens/help_screen.gd")
+const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
+const ActionButton = preload("res://scripts/ui/action_button.gd")
+const ProgressBarWidget = preload("res://scripts/ui/progress_bar.gd")
+const TitleLogo = preload("res://scripts/ui/title_logo.gd")
+const TitleHeroMascot = preload("res://scripts/ui/title_hero_mascot.gd")
+const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
+const HomeDecorations = preload("res://scripts/ui/home_decorations.gd")
+const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -24,182 +33,152 @@ var help_btn: Button
 var debug_btn: Button
 var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
+var _hero_mascot: TitleHeroMascot = null
+var _progress_bar: ProgressBarWidget = null
+var _play_label: Label = null
 
 func _ensure_nodes() -> void:
-	if title_label != null:
-		return
-	var background := ColorRect.new()
+	if title_label != null: return
+	var background := GradientBg.new(Palette.HOME_BG_CENTER, Palette.HOME_BG_MID, Palette.HOME_BG_EDGE, Vector2(0.5, 0.46))
 	background.name = "Background"
-	background.color = Palette.BOARD_BG
-	background.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(background)
+	add_child(SunburstRays.new(Vector2(0.5, 0.51)))
+	add_child(HomeDecorations.new())
+
 	var safe := MarginContainer.new()
 	safe.name = "SafeArea"
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	safe.add_theme_constant_override("margin_left", 40)
-	safe.add_theme_constant_override("margin_right", 40)
-	safe.add_theme_constant_override("margin_top", 56)
-	safe.add_theme_constant_override("margin_bottom", 54)
+	for s in ["left", "right"]: safe.add_theme_constant_override("margin_" + s, 48)
+	safe.add_theme_constant_override("margin_top", 44)
+	safe.add_theme_constant_override("margin_bottom", 48)
 	add_child(safe)
+
 	var frame := VBoxContainer.new()
 	frame.name = "Frame"
+	frame.add_theme_constant_override("separation", 12)
 	safe.add_child(frame)
+
+	# 1. Top bar
 	var top := HBoxContainer.new()
 	top.add_theme_constant_override("separation", 16)
 	frame.add_child(top)
+
 	if OS.is_debug_build():
 		debug_btn = Button.new()
 		debug_btn.name = "DebugButton"
-		debug_btn.text = tr("title.debug")
-		debug_btn.custom_minimum_size = Vector2(140, 56)
+		debug_btn.text = "🐞 " + tr("title.debug").trim_prefix("🛠 ")
+		debug_btn.custom_minimum_size = Vector2(160, 64)
+		debug_btn.add_theme_font_size_override("font_size", 26)
+		var dstyle := StyleBoxFlat.new()
+		dstyle.bg_color = Color("#5E6577"); dstyle.set_corner_radius_all(18)
+		dstyle.shadow_color = Color("#3B4050"); dstyle.shadow_size = 5; dstyle.shadow_offset = Vector2(0, 5)
+		dstyle.content_margin_left = 18; dstyle.content_margin_right = 18
+		for s in ["normal", "hover", "pressed", "focus"]: debug_btn.add_theme_stylebox_override(s, dstyle)
 		top.add_child(debug_btn)
+
 	var spacer := Control.new()
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	top.add_child(spacer)
-	help_btn = Button.new()
-	help_btn.name = "HelpButton"
-	help_btn.custom_minimum_size = Vector2(88, 88)
-	help_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	_set_round_icon(help_btn, "res://assets/ui/home/button_help.png", 88)
+
+	help_btn = _make_round_top_btn("HelpButton", "res://assets/ui/home/icon_help_blue.svg")
 	help_btn.tooltip_text = tr("title.help_tooltip")
-	var help_style := StyleBoxEmpty.new()
-	for state in ["normal", "hover", "pressed", "focus"]:
-		help_btn.add_theme_stylebox_override(state, help_style)
 	top.add_child(help_btn)
-	options_btn = Button.new()
-	options_btn.name = "OptionsButton"
-	options_btn.custom_minimum_size = Vector2(88, 88)
-	options_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	options_btn.flat = false
-	_set_round_icon(options_btn, "res://assets/ui/home/button_settings.png", 88)
-	var option_style := StyleBoxEmpty.new()
-	for state in ["normal", "hover", "pressed", "focus"]:
-		options_btn.add_theme_stylebox_override(state, option_style)
+
+	options_btn = _make_round_top_btn("OptionsButton", "res://assets/ui/home/icon_settings_blue.svg")
 	top.add_child(options_btn)
-	var top_gap := Control.new()
-	top_gap.custom_minimum_size.y = 60
-	frame.add_child(top_gap)
+
+	# 2. Hero: Logo
 	var hero := VBoxContainer.new()
-	hero.name = "HeroBlock"
-	hero.alignment = BoxContainer.ALIGNMENT_CENTER
-	hero.add_theme_constant_override("separation", 0)
+	hero.name = "HeroBlock"; hero.alignment = BoxContainer.ALIGNMENT_CENTER
 	frame.add_child(hero)
-	var logo := TextureRect.new()
-	logo.name = "CandyLogo"
-	logo.texture = load("res://assets/ui/home/logo_candoku.png") as Texture2D
-	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	logo.custom_minimum_size = Vector2(580, 275)
-	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	hero.add_child(logo)
+
+	hero.add_child(TitleLogo.new())
+
 	title_label = Label.new()
-	title_label.name = "TitleLabel"
-	title_label.text = tr("title.name")
-	title_label.visible = false
+	title_label.name = "TitleLabel"; title_label.text = tr("title.name"); title_label.visible = false
 	hero.add_child(title_label)
-	var middle_space := Control.new()
-	middle_space.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	frame.add_child(middle_space)
+
+	# 3. Flex Spacer 1
+	var spacer1 := Control.new(); spacer1.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	frame.add_child(spacer1)
+
+	# 4. Hero Mascot (Centered)
+	_hero_mascot = TitleHeroMascot.new()
+	frame.add_child(_hero_mascot)
+
+	# 5. Flex Spacer 2
+	var spacer2 := Control.new(); spacer2.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	frame.add_child(spacer2)
+
+	# 6. Action Block (Bottom: Progress Card + Play Button)
 	var actions := VBoxContainer.new()
-	actions.name = "ActionBlock"
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("separation", 16)
+	actions.name = "ActionBlock"; actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("separation", 18); actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	frame.add_child(actions)
 
-	# 1. Campaign button container
+	_progress_bar = ProgressBarWidget.new(0, 30)
+	actions.add_child(_progress_bar)
+
 	campaign_box = VBoxContainer.new()
-	campaign_box.name = "CampaignBox"
-	campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	campaign_box.add_theme_constant_override("separation", 4)
+	campaign_box.name = "CampaignBox"; campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	campaign_box.add_theme_constant_override("separation", 0); campaign_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(campaign_box)
 
-	play_btn = Button.new()
+	var play_init_fmt := tr("title.play")
+	var play_init_txt := (play_init_fmt % "1") if play_init_fmt.contains("%s") else (play_init_fmt + " 1")
+	play_btn = ActionButton.create(play_init_txt, Palette.HOME_BUTTON_BG, Palette.HOME_BUTTON_SHADOW, Color("#8A3306"), 38, 108)
 	play_btn.name = "PlayButton"
-	play_btn.custom_minimum_size = Vector2(560, 100)
-	play_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	play_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	play_btn.add_theme_font_size_override("font_size", 40)
-	var btn_font := FontTokens.body_semibold()
-	if btn_font != null:
-		play_btn.add_theme_font_override("font", btn_font)
-	var play_style := StyleBoxFlat.new()
-	play_style.bg_color = Palette.PLAY_BUTTON
-	play_style.set_corner_radius_all(999)
-	play_style.shadow_color = Palette.PLAY_GLOW
-	play_style.shadow_size = 12
-	play_style.shadow_offset = Vector2(0, 4)
-	play_style.set_content_margin_all(16)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		play_btn.add_theme_stylebox_override(state, play_style)
+	_play_label = ActionButton.set_leading_icon(play_btn, "res://assets/ui/home/icon_play_white.svg")
 	campaign_box.add_child(play_btn)
 
 	campaign_subtitle = Label.new()
 	campaign_subtitle.name = "CampaignSubtitle"
 	campaign_subtitle.text = "1->30"
-	campaign_subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	campaign_subtitle.add_theme_font_size_override("font_size", 22)
-	campaign_subtitle.add_theme_color_override("font_color", Palette.INK_LIGHT)
-	var sub_font := FontTokens.body()
-	if sub_font != null:
-		campaign_subtitle.add_theme_font_override("font", sub_font)
+	campaign_subtitle.visible = false
 	campaign_box.add_child(campaign_subtitle)
 
-	# 2. Endless button
-	endless_btn = Button.new()
+	endless_btn = ActionButton.create("Endless", Palette.PILL_BG, Palette.HOME_CARD_SHADOW, Color.TRANSPARENT, 30, 84)
 	endless_btn.name = "EndlessButton"
-	endless_btn.custom_minimum_size = Vector2(560, 90)
-	endless_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	endless_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-	endless_btn.add_theme_font_size_override("font_size", 36)
-	if btn_font != null:
-		endless_btn.add_theme_font_override("font", btn_font)
-	var endless_style := StyleBoxFlat.new()
-	endless_style.bg_color = Palette.PILL_BG
-	endless_style.set_corner_radius_all(999)
-	endless_style.shadow_color = Palette.CARD_SHADOW
-	endless_style.shadow_size = 8
-	endless_style.shadow_offset = Vector2(0, 3)
-	endless_style.set_content_margin_all(14)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		endless_btn.add_theme_stylebox_override(state, endless_style)
 	endless_btn.add_theme_color_override("font_color", Palette.INK)
 	actions.add_child(endless_btn)
 
 	var bottom_spacer := Control.new()
-	bottom_spacer.custom_minimum_size.y = 80
+	bottom_spacer.custom_minimum_size.y = 24
 	frame.add_child(bottom_spacer)
+
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()
 		debug_picker.name = "DebugPicker"
 		debug_picker.visible = false
 		debug_picker.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-		debug_picker.level_selected.connect(func(lvl: Dictionary, lbl: String):
-			debug_picker.visible = false
-			debug_level_selected.emit(lvl, lbl)
-		)
+		debug_picker.level_selected.connect(func(lvl: Dictionary, lbl: String): debug_picker.visible = false; debug_level_selected.emit(lvl, lbl))
 		debug_picker.close_requested.connect(func(): debug_picker.visible = false)
 		debug_picker.progress_reset.connect(func(_m): _update_ui())
 		add_child(debug_picker)
 
+func _make_round_top_btn(btn_name: String, icon_path: String) -> Button:
+	var btn := Button.new()
+	btn.name = btn_name; btn.custom_minimum_size = Vector2(84, 84); btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	var style := StyleBoxFlat.new()
+	style.bg_color = Color.WHITE; style.set_corner_radius_all(22)
+	style.shadow_color = Color("#E2C46A"); style.shadow_size = 6; style.shadow_offset = Vector2(0, 6)
+	for s in ["normal", "hover", "pressed", "focus"]: btn.add_theme_stylebox_override(s, style)
+	_set_round_icon(btn, icon_path, 46)
+	return btn
+
 func _ready() -> void:
 	_ensure_nodes()
-	if play_btn != null and not play_btn.pressed.is_connected(_on_play):
-		play_btn.pressed.connect(_on_play)
-	if endless_btn != null and not endless_btn.pressed.is_connected(_on_endless):
-		endless_btn.pressed.connect(_on_endless)
-	if options_btn != null and not options_btn.pressed.is_connected(_on_options):
-		options_btn.pressed.connect(_on_options)
-	if help_btn != null and not help_btn.pressed.is_connected(_on_help):
-		help_btn.pressed.connect(_on_help)
-	if debug_btn != null and not debug_btn.pressed.is_connected(_on_debug_pressed):
-		debug_btn.pressed.connect(_on_debug_pressed)
-	for btn in [play_btn, endless_btn, options_btn, help_btn, debug_btn]:
-		if btn != null:
-			btn.pivot_offset = btn.size * 0.5
-			btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
-			_add_press_anim(btn)
+	var btn_signals := [
+		[play_btn, _on_play], [endless_btn, _on_endless],
+		[options_btn, _on_options], [help_btn, _on_help], [debug_btn, _on_debug_pressed]
+	]
+	for pair in btn_signals:
+		var btn: Button = pair[0]
+		if btn != null and not btn.pressed.is_connected(pair[1]):
+			btn.pressed.connect(pair[1])
 	_update_ui()
+	if _progress_bar != null: _progress_bar.animate()
+	_animate_entrance()
 
 func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	runtime = rt
@@ -212,8 +191,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 		debug_picker.setup(b, pl, endless_rt, rt)
 
 func _on_debug_pressed() -> void:
-	if debug_picker != null:
-		debug_picker.visible = not debug_picker.visible
+	if debug_picker != null: debug_picker.visible = not debug_picker.visible
 
 func _unhandled_input(event: InputEvent) -> void:
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and not event.echo:
@@ -230,10 +208,17 @@ func _update_ui() -> void:
 		var label: String = runtime.current_level_label()
 		if play_btn != null:
 			if runtime.is_campaign_done(): play_btn.text = tr("title.replay")
-			else: play_btn.text = tr("title.play") % label.trim_prefix("L")
+			else:
+				var p_fmt := tr("title.play")
+				play_btn.text = (p_fmt % label.trim_prefix("L")) if p_fmt.contains("%s") else (p_fmt + " " + label.trim_prefix("L"))
+			if _play_label != null: _play_label.text = play_btn.text
 		if campaign_subtitle != null and runtime.has_method("playlist_order"):
 			var order: Array = runtime.playlist_order()
 			if not order.is_empty(): campaign_subtitle.text = "1->%d" % order.size()
+		if _progress_bar != null:
+			var done_cnt: int = runtime.completed_count() if runtime.has_method("completed_count") else 0
+			var total_cnt: int = runtime.playlist_order().size() if runtime.has_method("playlist_order") else 30
+			_progress_bar.set_progress(done_cnt, total_cnt)
 	if endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:
@@ -252,27 +237,42 @@ func _style_primary_endless() -> void:
 	for s in ["normal", "hover", "pressed", "focus"]: endless_btn.add_theme_stylebox_override(s, style)
 	endless_btn.add_theme_color_override("font_color", Color.WHITE)
 
-func _on_play() -> void:
-	play_pressed.emit()
+func _animate_entrance() -> void:
+	if not LayoutTokens.motion_enabled: return
+	var logo: Control = find_child("CandyLogo", true, false) as Control
+	if logo != null:
+		logo.pivot_offset = logo.size * 0.5
+		logo.scale = Vector2(0.6, 0.6)
+		logo.modulate.a = 0.0
+		var tw := create_tween()
+		tw.tween_property(logo, "modulate:a", 1.0, 0.2)
+		tw.parallel().tween_property(logo, "scale", Vector2.ONE, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_callback(func(): TweenHelpers.bob(logo, 8.0, 3.2))
 
-func _on_endless() -> void:
-	endless_pressed.emit()
+	if _hero_mascot != null:
+		var bubble: Control = _hero_mascot.bubble
+		if bubble != null:
+			bubble.pivot_offset = Vector2(bubble.size.x * 0.5, bubble.size.y)
+			bubble.scale = Vector2.ZERO
+			var btw := create_tween()
+			btw.tween_interval(1.2)
+			btw.tween_property(bubble, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		if _hero_mascot.mascot != null:
+			_hero_mascot.mascot.drop_in(0.4)
 
-func _on_options() -> void:
-	options_pressed.emit()
+	if _progress_bar != null:
+		TweenHelpers.rise_in(_progress_bar, 0.8)
 
-func _add_press_anim(button: Button) -> void:
-	button.button_down.connect(func():
-		button.pivot_offset = button.size * 0.5
-		var tw := button.create_tween()
-		tw.tween_property(button, "scale", Vector2(0.95, 0.95), 0.06)
-	)
-	button.button_up.connect(func():
-		button.pivot_offset = button.size * 0.5
-		var tw := button.create_tween()
-		tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-		tw.tween_property(button, "scale", Vector2.ONE, 0.15)
-	)
+	if play_btn != null:
+		TweenHelpers.rise_in(play_btn, 1.0)
+		get_tree().create_timer(1.9).timeout.connect(func():
+			if is_instance_valid(play_btn):
+				TweenHelpers.pulse(play_btn, 0.0)
+		)
+
+func _on_play() -> void: play_pressed.emit()
+func _on_endless() -> void: endless_pressed.emit()
+func _on_options() -> void: options_pressed.emit()
 
 func _on_help() -> void:
 	if _help_overlay != null: return
@@ -286,13 +286,10 @@ func _close_help() -> void:
 
 func _set_round_icon(button: Button, path: String, side: float) -> void:
 	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(center)
 	var icon := TextureRect.new()
-	icon.texture = load(path) as Texture2D
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.custom_minimum_size = Vector2.ONE * side
+	icon.texture = load(path) as Texture2D; icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size = Vector2.ONE * side
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	center.add_child(icon)

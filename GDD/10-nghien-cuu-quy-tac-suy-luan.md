@@ -8,16 +8,20 @@
 
 | Nhóm | Phạm vi | Trạng thái |
 | --- | --- | --- |
-| S1 | Loại theo kẹo đã biết | Nền của bộ tính ứng viên, không có step riêng trong trace v4 |
-| S2 | Một ứng viên còn lại trong hàng/cột/vùng | Trace v4 hiện hành |
-| S3 | Khóa giao thoa hai đơn vị | Trace v4 hiện hành; bắt buộc cần cho order 19–24 |
-| S4 | Hai đơn vị khóa hai đơn vị | Nghiên cứu; giữ nghĩa của mã S4 cũ |
-| S5 | Phản chứng ngắn | Nghiên cứu; giữ nghĩa của mã S5 cũ |
+| S1 Elimination | Loại theo kẹo đã biết (row/col/zone/diagonal) | Nền của bộ tính ứng viên, không có step riêng trong trace v4 |
+| S2 SingleCandidate | Một ứng viên còn lại trong hàng/cột/vùng | Trace v4 hiện hành; solver + hint |
+| S3 LockIntersection | Khóa giao thoa hai đơn vị (4 modes) | Trace v4 hiện hành; bắt buộc cần cho order 19–24; solver + hint |
+| S4 SubsetPair | Hai zones share đúng hai rows/cols | Đã triển khai trong `solver_techniques.gd`; bitmask precomputed; hint hỗ trợ (LOCKED_SUBSET) |
+| S5 SubsetTriple | Ba zones share đúng ba rows/cols | Đã triển khai trong `solver_techniques.gd`; hint hỗ trợ (LOCKED_SUBSET) |
+| S6 SubsetQuad | Bốn zones share đúng bốn rows/cols | Đã triển khai trong `solver_techniques.gd`; hint hỗ trợ (LOCKED_SUBSET) |
+| S7 ContraChain | Thử đặt, propagate, tìm contradiction | Đã triển khai trong `solver_techniques.gd`; hint hỗ trợ (CONTRA_CHAIN) |
 | X1–X4 | Vùng cấm chung, hỗ trợ, tập khóa tổng quát, sức chứa | Danh mục mở rộng, chưa có encoding v4 |
 | CASE | Xét hết trường hợp và chuỗi mệnh đề | Phương pháp nghiên cứu/chứng minh |
 | EXACT | Duyệt nghiệm đầy đủ có giới hạn tài nguyên | Kiểm tồn tại/duy nhất; không dùng thay lời giải cho người chơi |
 
-Baseline campaign: order 1–18 giải hoàn toàn bằng S1/S2, mỗi order 19–24 giải bằng S1/S2/S3 và closure chỉ S1/S2 không hoàn tất. Order 25–30 của playtest cần profile riêng nhưng vẫn chỉ dùng S1–S3. Không gắn S4/S5/X vào step mang tên S3 để qua validator. Tên kỹ thuật candy/TryCandy trong hệ thống hiện có mang nghĩa kẹo/tìm kẹo.
+Solver chain trong `board_solver.gd`: S1→S2→S3→S4→S5→S6→S7, lặp đến khi đủ candy hoặc STUCK. Bitmask precomputed masks cho locked subsets tối ưu hiệu năng. `compute_cell_ranks` và `replay_solve` hỗ trợ đánh giá độ khó.
+
+Baseline campaign: order 1–18 giải hoàn toàn bằng S1/S2, mỗi order 19–24 giải bằng S1/S2/S3 và closure chỉ S1/S2 không hoàn tất. Order 25–30 của playtest cần profile riêng nhưng vẫn chỉ dùng S1–S3. S4–S7 được solver dùng cho bank levels kích thước lớn (N=7–12) và Endless mode; campaign playtest 30 level giữ giới hạn S1–S3. Tên kỹ thuật candy/TryCandy trong hệ thống hiện có mang nghĩa kẹo/tìm kẹo.
 
 ## 2. Mô hình toán chính xác
 

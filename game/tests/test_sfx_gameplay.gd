@@ -1,11 +1,14 @@
 extends SceneTree
 
+const PuzzleScreenScript = preload("res://scripts/screens/puzzle_screen.gd")
+
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 var failures: Array[String] = []
 var _observed_voice_index := 0
 
 func _init() -> void:
+	PuzzleScreenScript.hold_results = false # result hold is covered by test_heart_feedback
 	call_deferred("_run")
 
 func _run() -> void:

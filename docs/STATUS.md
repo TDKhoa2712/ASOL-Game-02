@@ -23,6 +23,10 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Mascot sprite animation (2026-10-10)
+
+Kẹo trên board là linh vật động từ atlas `game/assets/candy/anim/mascot_atlas.png` (sinh bằng `game/tools/build_mascot_atlas.gd`): appear/idle/error/sad/win; tối đa 6 ô idle đồng thời, chỉ redraw khi khung đổi. Headless verify pass (`scratch/verification/20261009T191635.275269Z.txt`); chưa QA thiết bị.
+
 ## Tối ưu hiệu năng gần nhất (2026-10-08)
 
 ### RST-023 — Mark X GPU Batching & O(1) Sets

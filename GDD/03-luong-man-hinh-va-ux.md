@@ -4,8 +4,9 @@
 
 ```mermaid
 flowchart TD
-    A[Khởi động] --> B[Home]
+    S[Splash] --> B[Home/Title]
     B -->|Chơi/Tiếp tục| C[Level hiện tại]
+    B -->|Endless| H[Endless Mode]
     B --> D[Trợ giúp/Luật]
     B --> E[Settings]
     C -->|Back To Home| B
@@ -22,19 +23,25 @@ flowchart TD
     G -->|Thử lại| C
     G -->|Home| B
     F -->|Home| B
+    H -->|Level tiếp| H
+    H -->|Home| B
 ```
 
-Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` mở level hiện tại đã lưu; nếu vừa thắng, mở level kế; nếu đang thua, mở lại màn thua. Khi hoàn thành mọi level hiện có, Home báo “Bạn đã hoàn thành các level hiện có” và không dẫn vào bàn trống.
+`nav_controller.gd` quản lý FSM điều hướng: TITLE → PUZZLE → WIN/FAIL, với route validation. Splash screen (`splash_screen.gd`) hiển thị khi khởi động app.
+
+Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` mở level hiện tại đã lưu; nếu vừa thắng, mở level kế; nếu đang thua, mở lại màn thua. Home có thêm nút `Endless` dẫn vào chế độ chơi vô hạn. Khi hoàn thành mọi level campaign hiện có, Home báo “Bạn đã hoàn thành các level hiện có” và không dẫn vào bàn trống.
 
 | ID | Màn | Nội dung và hành động |
 | --- | --- | --- |
-| UX-01 | Home | Chơi/Tiếp tục, tên/số level hiện tại, Trợ giúp, Settings; trạng thái hết nội dung |
+| UX-00 | Splash | Logo CanDoKu, animation khởi động; tự chuyển sang Home |
+| UX-01 | Home | Chơi/Tiếp tục, Endless, tên/số level hiện tại, Trợ giúp, Settings, Debug (dev); trạng thái hết nội dung |
 | UX-03 | Puzzle | Tên level, tim, **vùng luật bốn icon + chữ luôn nhìn thấy**, bàn, **hàng N vị trí tiến độ có màu/nhãn/họa tiết vùng**, Undo, Restart có xác nhận, Back To Home, một Hint/lượt, Trợ giúp, Settings |
 | UX-04 | Tutorial | Chỉ có ở Level 1; chỉ dẫn ngắn trên bàn cho X, clear, kéo X, chạm đôi, bốn luật, X đỏ khóa và Hint; tiến theo hành động |
 | UX-05 | Kết quả thắng | Câu khích lệ, điểm, sticker chúc mừng/hoạt ảnh kẹo, nút “Level tiếp theo” và Home |
 | UX-06 | Kết quả thua riêng | Thông điệp hết 3 tim, điểm lượt, “Thử lại” và Home; không dùng giao diện thắng đổi chữ |
 | UX-07 | Trợ giúp/Luật | Ví dụ hàng/cột/vùng/chạm chéo; chạm/kéo X, chạm đôi kẹo, X đỏ khóa, hint; trở lại màn trước |
-| UX-08 | Settings | Âm, rung, giảm chuyển động, chữ lớn, tương phản cao; trở lại đúng màn gọi |
+| UX-08 | Settings | Âm, rung, giảm chuyển động, chữ lớn, tương phản cao, colorblind, ngôn ngữ (vi/en); trở lại đúng màn gọi |
+| UX-09b | Endless | Chế độ chơi vô hạn; level tự chọn từ 5 providers theo 4-tier selection; DDA (PreCandyDecider) prefill givens khi fail streak; progress per-session với settlement |
 
 Vùng luật cơ bản trên puzzle là bốn icon kèm nhãn ngắn **không gấp và luôn nhìn thấy**; người chơi mở Trợ giúp để xem ví dụ. Settings là modal có lớp nền mờ, chặn input bàn bên dưới, không làm mất session. Back đóng modal và trở về đúng màn gọi. Nếu từ Home mở Trợ giúp/Settings, nút trở lại về Home; nếu từ puzzle, trở lại puzzle. Result không nhận thao tác bàn.
 

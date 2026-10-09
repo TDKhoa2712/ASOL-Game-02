@@ -1,7 +1,7 @@
 extends SceneTree
 
 const TitleScreen = preload("res://scripts/screens/title_screen.gd")
-const ResultScreen = preload("res://scripts/screens/result_screen.gd")
+const WinScreen = preload("res://scripts/screens/win_screen.gd")
 const OptionsScreen = preload("res://scripts/screens/options_screen.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
@@ -49,14 +49,14 @@ func _test_title_uses_tr() -> void:
 
 func _test_result_uses_tr() -> void:
 	TranslationServer.set_locale("en")
-	var screen := ResultScreen.new()
+	var screen := WinScreen.new()
 	screen.setup(true, 5000, "L01", false)
-	if screen.message_label == null:
-		_fails.append("result message_label is null")
+	if screen.ribbon == null:
+		_fails.append("win ribbon is null")
 		screen.free()
 		return
-	if screen.message_label.text != "Hooray!":
-		_fails.append("result win title in EN should be 'Hooray!', got '%s'" % screen.message_label.text)
+	if screen.ribbon.text != "Hooray!":
+		_fails.append("win ribbon title in EN should be 'Hooray!', got '%s'" % screen.ribbon.text)
 	screen.free()
 
 func _test_all_7_locales_switch() -> void:
@@ -86,6 +86,9 @@ func _test_csv_key_coverage_all_7_locales() -> void:
 		"hint.lock_col_zone", "hint.subset_pair", "hint.subset_triple", "hint.subset_quad",
 		"hint.chain_short", "hint.chain_long", "hint.fallback", "hint.clear_mark",
 		"hint.mark_x", "hint.place_candy", "hint.reveal", "hint.detail",
+		"result.stat.time", "result.stat.mistakes", "result.level_badge",
+		"result.win.next_level", "result.lose.encourage_title",
+		"title.progress", "title.mascot_bubble",
 	]
 	for loc in LocaleResolver.SUPPORTED_LOCALES:
 		TranslationServer.set_locale(loc)

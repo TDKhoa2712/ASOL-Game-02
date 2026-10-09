@@ -3,8 +3,8 @@ extends Control
 signal break_finished()
 
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
-const FULL = preload("res://assets/ui/board/button_heart.png")
-const EMPTY = preload("res://assets/ui/board/button_heart_empty.png")
+const FULL = preload("res://assets/ui/board/heart.svg")
+const EMPTY = preload("res://assets/ui/board/heart_off.svg")
 const SHEET = preload("res://assets/ui/board/heart_sprite.png")
 const DURATION := 0.72
 const FRAME_ENDS := [0.06, 0.14, 0.22, 0.30, 0.40, 0.50, 0.60, DURATION]

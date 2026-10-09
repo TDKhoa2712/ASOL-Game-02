@@ -17,7 +17,6 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
-const SplashScreen = preload("res://scripts/screens/splash_screen.gd")
 
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
@@ -40,6 +39,8 @@ var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
 var _last_won_elapsed: int = 0
 var _last_won_is_last: bool = false
+var _last_won_hearts: int = 3; var _last_won_mistakes: int = 0
+var _next_level_label: String = ""; var _next_level_size: int = 0; var _next_level_difficulty: String = ""
 var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label: String = ""
 var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 var _options_overlay: Control = null
@@ -50,9 +51,7 @@ var _options_overlay: Control = null
 func _ready() -> void:
 	var sel := CampaignSelector.load_config(selector_path, profile_dir)
 	if not sel.ok: _on_boot_error(str(sel.error)); return
-	if config == null:
-		config = ConfigStore.new(profile_dir)
-		config.option_changed.connect(_apply_setting)
+	if config == null: config = ConfigStore.new(profile_dir); config.option_changed.connect(_apply_setting)
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
@@ -73,18 +72,7 @@ func _ready() -> void:
 	if screen_host == null:
 		screen_host = Control.new(); screen_host.name = "ScreenHost"
 		screen_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(screen_host)
-	_show_splash()
-
-func _show_splash() -> void:
-	if DisplayServer.get_name() == "headless":
-		_start_bgm(); _swap_screen("", nav.current_name()); return
-	var splash := SplashScreen.new()
-	splash.name = "SplashOverlay"
-	splash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(splash)
-	splash.finished.connect(func():
-		splash.queue_free(); _start_bgm(); _swap_screen("", nav.current_name())
-	)
+	_start_bgm(); _swap_screen("", nav.current_name())
 
 func _start_bgm() -> void:
 	if bgm != null and is_inside_tree() and ResourceLoader.exists(BGM_TRACK):
@@ -129,11 +117,11 @@ func _instantiate_screen(to_name: String) -> void:
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			var elapsed: int = _last_won_elapsed
 			var is_last: bool = _last_won_is_last or (_mode == "campaign" and runtime != null and runtime.is_campaign_done())
-			if screen.has_method("setup"): screen.call("setup", true, elapsed, label, is_last)
+			if screen.has_method("setup"): screen.call("setup", true, elapsed, label, is_last, _last_won_hearts, _last_won_mistakes, _next_level_label, _next_level_size, _next_level_difficulty)
 		"fail":
 			if screen.has_signal("retry_pressed"): screen.connect("retry_pressed", _on_retry_level)
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
-			if screen.has_method("setup"): screen.call("setup", false, 0, label, false)
+			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
 	if screen_host != null: screen_host.add_child(screen)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
@@ -160,21 +148,31 @@ func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 		if not _debug_next.is_empty():
 			_debug_next_lbl = "Endless %d" % nxt_n
 			_debug_next["id"] = _debug_next_lbl; _debug_next["_endless_level_num"] = nxt_n
+	_nav_to_puzzle()
+
+func _nav_to_puzzle() -> void:
 	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
 	else: nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_puzzle_home() -> void:
 	_debug_mode = false; _debug_lvl = {}; _debug_next = {}
+	var cur_rt = _active_runtime()
+	if cur_rt != null and cur_rt.current_session != null and cur_rt.current_session.phase != 0:
+		cur_rt.restart_level()
 	nav.go_to(NavController.Screen.TITLE)
 
 func _on_title_play() -> void:
 	_mode = "campaign"; _debug_mode = false; _debug_lvl = {}; _debug_next = {}
-	if runtime != null and runtime.is_campaign_done(): runtime.replay_campaign()
-	nav.go_to(NavController.Screen.PUZZLE)
+	if runtime != null:
+		if runtime.is_campaign_done(): runtime.replay_campaign()
+		elif runtime.current_session != null and runtime.current_session.phase != 0: runtime.restart_level()
+	_nav_to_puzzle()
 
 func _on_title_endless() -> void:
 	_mode = "endless"; _debug_mode = false; _debug_lvl = {}; _debug_next = {}
-	nav.go_to(NavController.Screen.PUZZLE)
+	if endless_runtime != null and endless_runtime.current_session != null and endless_runtime.current_session.phase != 0:
+		endless_runtime.restart_level()
+	_nav_to_puzzle()
 
 func _on_level_done(won: bool) -> void:
 	var cur_rt = _active_runtime()
@@ -184,17 +182,27 @@ func _on_level_done(won: bool) -> void:
 	var sess = cur_sc.get("session") if (cur_sc != null and cur_sc.get("session") != null) else (cur_rt.current_session if cur_rt != null else null)
 	var elapsed: int = sess.elapsed_ms if sess != null else 0
 	_last_won_elapsed = elapsed
+	_last_won_hearts = sess.hearts if (sess != null and won) else 0
+	_last_won_mistakes = sess.mistake_count if sess != null else 0
+	_next_level_label = ""; _next_level_size = 0; _next_level_difficulty = ""
 	if _debug_mode:
 		_last_won_is_last = _debug_next.is_empty()
 		nav.go_to(NavController.Screen.WIN if won else NavController.Screen.FAIL)
 		return
 	if won:
 		_last_won_is_last = (_mode == "campaign" and runtime.completed_count() + 1 >= runtime.playlist_order().size())
-		var score_data := {"time_ms": elapsed, "mistakes": sess.mistake_count if sess != null else 0, "hints_used": sess.hints_used if sess != null else 0}
+		if not _last_won_is_last and cur_rt != null and cur_rt.has_method("next_level_label"):
+			var nxt_lbl: String = cur_rt.next_level_label(label)
+			if nxt_lbl != "":
+				_next_level_label = nxt_lbl
+				var nxt_entry: Dictionary = cur_rt._resolve_playlist_entry(nxt_lbl) if cur_rt.has_method("_resolve_playlist_entry") else {}
+				if not nxt_entry.is_empty():
+					_next_level_size = int(nxt_entry.get("size", 0)); _next_level_difficulty = str(nxt_entry.get("difficulty", ""))
+		var score_data := {"time_ms": elapsed, "mistakes": _last_won_mistakes, "hints_used": sess.hints_used if sess != null else 0}
 		cur_rt.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)
 	else:
-		_last_won_elapsed = 0; _last_won_is_last = false
+		_last_won_is_last = false
 		cur_rt.on_level_lost(label)
 		nav.go_to(NavController.Screen.FAIL)
 
@@ -203,23 +211,17 @@ func _on_next_level() -> void:
 		if not _debug_next.is_empty(): _on_debug_level_selected(_debug_next, _debug_next_lbl)
 		else: _debug_mode = false; nav.go_to(NavController.Screen.TITLE)
 		return
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	_nav_to_puzzle()
 
 func _on_retry_level() -> void:
-	if _debug_mode:
-		if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-		else: nav.go_to(NavController.Screen.PUZZLE)
-		return
-	var cur_rt = _active_runtime()
-	if cur_rt != null: cur_rt.restart_level()
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	if not _debug_mode:
+		var cur_rt = _active_runtime()
+		if cur_rt != null: cur_rt.restart_level()
+	_nav_to_puzzle()
 
 func _on_replay_campaign() -> void:
 	if _mode == "campaign" and runtime != null: runtime.replay_campaign()
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	_nav_to_puzzle()
 
 func _show_options_overlay() -> void:
 	if _options_overlay != null: return
@@ -243,8 +245,7 @@ func _on_options_back() -> void:
 func _apply_setting(key: String, value: Variant) -> void:
 	match key:
 		"audio":
-			if sfx != null: sfx.set_muted(not bool(value))
-			if bgm != null: bgm.set_muted(not bool(value))
+			if sfx != null: sfx.set_muted(not bool(value)); if bgm != null: bgm.set_muted(not bool(value))
 		"haptic": Vibration.set_on(bool(value))
 		"reduced_motion": LayoutTokens.set_motion(not bool(value))
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
@@ -252,8 +253,8 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"colorblind": _refresh_puzzle_colorblind()
 		"language":
 			if value is String:
-				var target_lang := LocaleResolver.resolve_locale(str(value), OS.get_locale())
-				TranslationServer.set_locale(target_lang); _rebuild_current_screen()
+				TranslationServer.set_locale(LocaleResolver.resolve_locale(str(value), OS.get_locale()))
+				_rebuild_current_screen()
 
 func _rebuild_current_screen() -> void:
 	if nav != null: _swap_screen("", nav.current_name())
@@ -278,10 +279,8 @@ func _apply_all_settings() -> void:
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)
-	if save_error_dialog != null:
-		save_error_dialog.dialog_text = tr("boot.error") % err; save_error_dialog.popup_centered()
+	if save_error_dialog != null: save_error_dialog.dialog_text = tr("boot.error") % err; save_error_dialog.popup_centered()
 
 func _on_save_failed(reason: String) -> void:
 	push_warning("Save failed: " + reason)
-	if save_error_dialog != null:
-		save_error_dialog.dialog_text = tr("boot.save_failed") % reason; save_error_dialog.popup_centered()
+	if save_error_dialog != null: save_error_dialog.dialog_text = tr("boot.save_failed") % reason; save_error_dialog.popup_centered()

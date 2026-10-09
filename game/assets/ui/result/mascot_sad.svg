@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 150" width="230" height="150">
+  <style>
+    .ck{stroke:#4F3A6B;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+    .ckt{stroke:#4F3A6B;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;fill:none}
+    .crack{fill:none;stroke:#4F3A6B;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+
+          <g transform="rotate(-22 66 72)">
+            <path class="ck" d="M66 72 L14 34 L22 52 L6 60 L20 72 L6 84 L22 92 L14 110 Z" style="fill: #A9C9E2"></path>
+            <path d="M58 72 L24 48 M58 72 L18 72 M58 72 L24 96" style="stroke: #85AACA; stroke-width: 3; stroke-linecap: round; fill: none"></path>
+          </g>
+          <g transform="rotate(22 164 72)">
+            <path class="ck" d="M164 72 L216 34 L208 52 L224 60 L210 72 L224 84 L208 92 L216 110 Z" style="fill: #A9C9E2"></path>
+            <path d="M172 72 L206 48 M172 72 L212 72 M172 72 L206 96" style="stroke: #85AACA; stroke-width: 3; stroke-linecap: round; fill: none"></path>
+          </g>
+          <ellipse class="ck" cx="68" cy="76" rx="9" ry="14" style="fill: #E8D48A"></ellipse>
+          <ellipse class="ck" cx="162" cy="76" rx="9" ry="14" style="fill: #E8D48A"></ellipse>
+          <ellipse cx="115" cy="86" rx="54" ry="48" style="fill: #B57A98"></ellipse>
+          <ellipse class="ck" cx="115" cy="80" rx="54" ry="48" style="fill: #E7B3CA"></ellipse>
+          <path d="M80 54 Q96 72 88 108" style="stroke: #FFFFFF; stroke-width: 9; stroke-linecap: round; fill: none; opacity: .55"></path>
+          <path d="M150 54 Q134 72 142 108" style="stroke: #FFFFFF; stroke-width: 9; stroke-linecap: round; fill: none; opacity: .55"></path>
+          <path class="crack" d="M128 33 L120 48 L131 58 L118 70 L126 80" style="fill: none; stroke: #4F3A6B; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round"></path>
+          <path class="crack" d="M131 58 L142 62" style="fill: none; stroke: #4F3A6B; stroke-width: 3; stroke-linecap: round"></path>
+          <path class="ckt" d="M88 72 L102 76" style="stroke-width: 4"></path>
+          <path class="ckt" d="M142 72 L128 76" style="stroke-width: 4"></path>
+          <path class="ckt" d="M92 84 Q98 90 104 84" style="stroke-width: 5"></path>
+          <path class="ckt" d="M126 84 Q132 90 138 84" style="stroke-width: 5"></path>
+          <path class="ckt" d="M104 108 Q115 98 126 108" style="stroke-width: 4"></path>
+          <path class="tear" d="M97 92 C93 98 93 102 97 103 C101 102 101 98 97 92 Z" style="fill: #6FB8F0; stroke: #3F7FB8; stroke-width: 1.5"></path>
+          <path class="tear2" d="M133 92 C129 98 129 102 133 103 C137 102 137 98 133 92 Z" style="fill: #6FB8F0; stroke: #3F7FB8; stroke-width: 1.5"></path>
+          <path d="M166 48 C162 54 162 58 166 59 C170 58 170 54 166 48 Z" style="fill: #BFE0FA; stroke: #3F7FB8; stroke-width: 1.5"></path>
+        
+</svg>

@@ -72,7 +72,8 @@ game/scripts/
     ├── puzzle_layout.gd     Dựng layout gameplay
     ├── rule_icon.gd         Minh họa luật
     ├── puzzle_board.gd      Board rendering (_draw)
-    ├── result_screen.gd     Win/fail screen
+    ├── win_screen.gd        Win screen (ribbon, stats, confetti, next preview)
+    ├── fail_screen.gd       Fail screen (sad mascot, broken hearts, encourage)
     ├── options_screen.gd    Settings UI
     └── pill_toggle.gd       Toggle widget
 ```

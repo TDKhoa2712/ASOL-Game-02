@@ -20,6 +20,8 @@ func _run() -> void:
 	await _test_last_heart()
 	await _test_restart_and_leave()
 	await _test_failed_resume()
+	await _test_mascot_reactions()
+	await _test_win_holds_before_result()
 	_test_reduced_motion_and_resume()
 	LayoutTokens.set_motion(true)
 	if failures.is_empty():
@@ -73,7 +75,9 @@ func _test_last_heart() -> void:
 	_check(results.is_empty(), "result waits for last heart to fall")
 	_check(_animating(puzzle), "last heart plays the same animation")
 	await create_timer(1.0).timeout
-	_check(results == [false], "failure result emitted once after animation")
+	_check(results.is_empty(), "crying mascots stay on screen after the heart falls")
+	await create_timer(PuzzleScreen.RESULT_HOLD_LOSE).timeout
+	_check(results == [false], "failure result emitted once after the hold")
 	puzzle.free()
 
 func _test_restart_and_leave() -> void:
@@ -124,3 +128,35 @@ func _test_failed_resume() -> void:
 
 func _check(ok: bool, label: String) -> void:
 	if not ok: failures.append("FAIL: " + label)
+
+func _test_mascot_reactions() -> void:
+	var puzzle := _puzzle()
+	await process_frame
+	puzzle.session.try_candy(0, 0)
+	_check(puzzle.board.candy_frame(0, 1)[0] == "error", "mistake with hearts left makes mascots flinch")
+	puzzle.queue_free()
+	var last := _puzzle(1)
+	await process_frame
+	last.session.try_candy(0, 0)
+	await process_frame
+	_check(last.board.candy_frame(0, 1)[0] == "sad", "losing the last heart makes mascots cry")
+	last.queue_free()
+
+func _test_win_holds_before_result() -> void:
+	var puzzle := _puzzle()
+	await process_frame
+	var results: Array = []
+	puzzle.level_done.connect(func(won: bool): results.append(won))
+	puzzle._on_level_won()
+	_check(results.is_empty(), "win result waits so the celebration can play")
+	await create_timer(PuzzleScreen.RESULT_HOLD_WIN + 0.1).timeout
+	_check(results == [true], "win result emitted once after the hold")
+	var left := _puzzle()
+	await process_frame
+	var stale: Array = []
+	left.level_done.connect(func(won: bool): stale.append(won))
+	left._on_level_won()
+	left.free()
+	await create_timer(PuzzleScreen.RESULT_HOLD_WIN + 0.1).timeout
+	_check(stale.is_empty(), "leaving during the win hold emits nothing")
+	puzzle.free()

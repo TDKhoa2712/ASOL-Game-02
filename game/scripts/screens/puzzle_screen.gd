@@ -11,6 +11,12 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+# Tests may turn the post-result board hold off to drive screen flow synchronously.
+static var hold_results := true
+# Seconds the board stays up after a result so the mascot celebration / crying is seen.
+const RESULT_HOLD_WIN := 1.5
+const RESULT_HOLD_LOSE := 1.2
 var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
 var session: Variant = null; var _is_custom: bool = false
 var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
@@ -80,7 +86,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 		level_label.text = raw_id.trim_prefix("L")
 	_update_timer(0.0)
 	if session != null and session.phase != PlaySession.Phase.ACTIVE:
-		call_deferred("_on_level_won" if session.phase == PlaySession.Phase.WON else "_on_level_failed")
+		call_deferred("_on_level_won" if session.phase == PlaySession.Phase.WON else "_on_level_failed", false)
 	elif sfx != null:
 		sfx.play(SfxCatalog.Effect.BOARD_OPEN)
 
@@ -110,10 +116,10 @@ func _update_timer(_delta: float) -> void:
 	var secs: int = total_secs % 60
 	timer_label.text = "%02d:%02d" % [mins, secs]
 
-func _update_hearts(animate_loss: bool = false) -> void:
+func _update_hearts(animate_loss: bool = false, found_region: String = "") -> void:
 	if hearts_display == null or session == null:
 		return
-	PuzzleLayout.refresh_status(session, region_display, hearts_display, animate_loss)
+	PuzzleLayout.refresh_status(session, region_display, hearts_display, animate_loss, found_region)
 
 func _on_board_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
@@ -223,7 +229,7 @@ func _on_settings() -> void:
 	if board != null: board.skip_entry_wave()
 	options_pressed.emit()
 
-func _on_candy_found(row: int, col: int, _region: String) -> void:
+func _on_candy_found(row: int, col: int, region: String) -> void:
 	if hint_coordinator.is_hint_showing():
 		hint_coordinator.dismiss_hint()
 	if board != null:
@@ -235,7 +241,7 @@ func _on_candy_found(row: int, col: int, _region: String) -> void:
 		if required > 1 and found == int((required + 1) / 2) and found < required:
 			sfx.play(SfxCatalog.Effect.PROGRESS_COMPLETE)
 	Vibration.pulse(Vibration.Strength.NORMAL)
-	_update_hearts()
+	_update_hearts(false, region)
 	if board != null:
 		board.clear_highlight()
 		board.redraw()
@@ -249,13 +255,15 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	_update_hearts(true)
 	if board != null:
 		board.redraw()
-func _on_level_won() -> void:
+func _on_level_won(hold: bool = true) -> void:
 	if board != null:
 		board.play_win_bounce()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
+	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
-func _on_level_failed() -> void:
+func _on_level_failed(hold: bool = true) -> void:
+	if board != null: board.play_sad()
 	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.
@@ -265,7 +273,15 @@ func _on_level_failed() -> void:
 		var failed_session: Variant = session
 		await hearts_display.loss_animation_finished
 		if not is_inside_tree() or session != failed_session: return
+	if hold and not await _hold_result(RESULT_HOLD_LOSE): return
 	level_done.emit(false)
+
+# Waits on the board unless reduced motion; false if the round was left or restarted meanwhile.
+func _hold_result(seconds: float) -> bool:
+	if not hold_results or not LayoutTokens.motion_enabled or not is_inside_tree(): return true
+	var held_session: Variant = session
+	await get_tree().create_timer(seconds).timeout
+	return is_instance_valid(self) and is_inside_tree() and session == held_session
 
 static func _btn_conn(btn: Button, target: Callable) -> void:
 	if btn != null and not btn.pressed.is_connected(target): btn.pressed.connect(target)
