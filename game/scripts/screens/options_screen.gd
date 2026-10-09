@@ -13,6 +13,7 @@ const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
 
 const LABEL_KEYS := {
+	"music": "settings.music",
 	"audio": "settings.audio",
 	"haptic": "settings.haptic",
 	"reduced_motion": "settings.reduced_motion",
@@ -21,8 +22,8 @@ const LABEL_KEYS := {
 	"colorblind": "settings.colorblind",
 }
 
-const TILE_KEYS_GRID := ["audio", "haptic", "reduced_motion", "large_text"]
-const WIDE_KEYS: Array[String] = ["high_contrast", "colorblind"]
+const TILE_KEYS_GRID := ["music", "audio", "haptic", "reduced_motion", "large_text", "colorblind"]
+const WIDE_KEYS: Array[String] = ["high_contrast"]
 
 var _config: Variant = null
 var _built: bool = false
@@ -220,7 +221,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	if icon_tex != null:
 		toggle.icon_target = icon_tex
 	toggle.toggled_value.connect(func(on: bool):
-		if key == "audio" and icon_tex != null:
+		if key in ["audio", "music"] and icon_tex != null:
 			icon_tex.texture = load(_get_setting_icon(key, on)) as Texture2D
 		_on_toggle(key, on)
 	)
@@ -231,8 +232,9 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 
 func _get_setting_icon(key: String, on: bool) -> String:
 	match key:
-		"audio": return "res://assets/ui/settings/button_audio_on.png" if on else "res://assets/ui/settings/button_audio_off.png"
+		"audio", "music": return "res://assets/ui/settings/button_%s_%s.png" % [key, "on" if on else "off"]
 		"haptic": return "res://assets/ui/settings/button_haptic.png"
+		"colorblind": return "res://assets/ui/settings/button_colorblind.png"
 		"reduced_motion": return "res://assets/ui/settings/button_reduced_motion.png"
 		"large_text": return "res://assets/ui/settings/button_large_text.png"
 		_: return ""

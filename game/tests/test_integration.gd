@@ -216,7 +216,9 @@ func _test_options_navigation_and_settings() -> void:
 	# Toggle audio off
 	options._on_toggle("audio", false)
 	_assert(shell.sfx.is_muted(), "sfx player muted when audio is off")
-	_assert(shell.bgm.is_muted(), "bgm player muted when audio is off")
+	_assert(not shell.bgm.is_muted(), "bgm keeps playing when only sound is off")
+	options._on_toggle("music", false)
+	_assert(shell.bgm.is_muted(), "bgm player muted when music is off")
 
 	# Toggle haptic off
 	options._on_toggle("haptic", false)

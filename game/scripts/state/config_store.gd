@@ -3,8 +3,8 @@ extends RefCounted
 signal option_changed(key: String, value: Variant)
 
 const VERSION := 1
-const DEFAULTS := {"audio": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "language": ""}
-const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "language"]
+const DEFAULTS := {"audio": true, "music": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "language": ""}
+const EDITABLE_KEYS: Array[String] = ["audio", "music", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "language"]
 const VALID_LANGUAGES: Array[String] = ["", "en", "ja", "vi", "id", "pt_BR", "es", "ko"]
 
 var _path: String
@@ -31,6 +31,9 @@ func load_config() -> void:
 		else:
 			if saved.options.get(key) is bool:
 				_data[key] = saved.options[key]
+	# Profiles saved before music had its own switch muted it through "audio".
+	if not saved.options.get("music") is bool:
+		_data["music"] = _data["audio"]
 
 func save_config() -> void:
 	var directory := _path.get_base_dir()

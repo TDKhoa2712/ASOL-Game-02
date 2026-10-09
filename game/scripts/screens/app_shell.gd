@@ -245,7 +245,9 @@ func _on_options_back() -> void:
 func _apply_setting(key: String, value: Variant) -> void:
 	match key:
 		"audio":
-			if sfx != null: sfx.set_muted(not bool(value)); if bgm != null: bgm.set_muted(not bool(value))
+			if sfx != null: sfx.set_muted(not bool(value))
+		"music":
+			if bgm != null: bgm.set_muted(not bool(value))
 		"haptic": Vibration.set_on(bool(value))
 		"reduced_motion": LayoutTokens.set_motion(not bool(value))
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
@@ -274,7 +276,7 @@ func _refresh_puzzle_colorblind() -> void:
 
 func _apply_all_settings() -> void:
 	if config == null: return
-	for key in ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "language"]:
+	for key in ["audio", "music", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "language"]:
 		_apply_setting(key, config.get_option(key))
 
 func _on_boot_error(err: String) -> void:

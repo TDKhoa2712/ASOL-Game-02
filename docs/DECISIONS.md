@@ -13,6 +13,14 @@ Ngày 2026-10-10.
 - **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.
 - **Thanh Cheats** chỉ có trong bản debug (`OS.is_debug_build()`).
 
+## RST-025 — Tách cài đặt Nhạc nền khỏi Âm thanh
+
+Ngày 2026-10-10.
+
+- **Config:** thêm key `music` (mặc định bật). Key `audio` giữ tên cũ nhưng từ nay chỉ điều khiển SFX; `music` điều khiển BGM. Profile cũ chưa có `music` sẽ lấy giá trị `audio` đã lưu, nên người đã tắt âm thanh không bị bật nhạc lại.
+- **Màn Settings:** lưới 2 cột gồm 6 tile — Nhạc nền | Âm thanh, Rung | Giảm chuyển động, Chữ lớn | Hỗ trợ phân biệt màu; Tương phản cao là hàng rộng (chưa có icon riêng). Icon nhạc dùng `button_music_on/off.png` có sẵn.
+- **Text:** thêm `settings.music` cho 8 ngôn ngữ.
+
 ## RST-023 — Tối ưu hóa hiệu năng render và đánh dấu X trên bàn cờ lớn (Batched GPU Mark Texture & O(1) Sets)
 
 Ngày 2026-10-08. Khắc phục triệt để hiện tượng giật lag khi đánh dấu X trên thiết bị di động ở các bàn cờ kích thước lớn ($N=7 \to 12$, lên tới 144 ô):
