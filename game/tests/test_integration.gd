@@ -238,6 +238,13 @@ func _test_options_navigation_and_settings() -> void:
 	shell._show_options_overlay()
 	_assert(shell._options_overlay != null, "options overlay shown from puzzle")
 
+	# Colorblind applies to the live board without leaving the puzzle
+	var puzzle = shell.screen_host.get_child(shell.screen_host.get_child_count() - 1)
+	shell._options_overlay._on_toggle("colorblind", true)
+	_assert(not puzzle.board._zone_overlays.is_empty(), "colorblind shapes appear on the live board")
+	shell._options_overlay._on_toggle("colorblind", false)
+	_assert(puzzle.board._zone_overlays.is_empty(), "colorblind shapes disappear from the live board")
+
 	shell._hide_options_overlay()
 	await process_frame
 	_assert(shell._options_overlay == null, "options overlay dismissed from puzzle")
