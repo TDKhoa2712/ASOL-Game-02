@@ -64,6 +64,7 @@ func request_hint(session: Variant) -> void:
 		session.use_hint()
 
 func apply_hint(session: Variant = null) -> void:
+	_applying = false
 	if _current_hint.is_empty():
 		return
 	var hint := _current_hint
@@ -106,6 +107,7 @@ func show_detail() -> void:
 	_hint_highlight.show_chain_detail(chain, _board.get_cell_rect)
 
 func force_release() -> void:
+	_applying = false
 	_current_hint = {}
 	if _hint_highlight != null: _hint_highlight.clear()
 	if _hint_overlay != null: _hint_overlay.dismiss()

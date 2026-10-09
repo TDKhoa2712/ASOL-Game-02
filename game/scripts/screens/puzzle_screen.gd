@@ -55,6 +55,7 @@ func _connect_ui() -> void:
 
 func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Dictionary = {}, animate_custom_entry: bool = true) -> void:
 	runtime = rt; sfx = sfx_player; config = cfg
+	var previous_session: Variant = session
 	_is_custom = not custom_lvl.is_empty()
 	var new_level := _is_custom and animate_custom_entry
 	if _is_custom:
@@ -69,7 +70,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 			new_level = session != null
 	_ensure_nodes()
 	if board != null: combo.bind(board, sfx)
-	combo.reset()
+	if session != previous_session: combo.reset()
 	if board != null and session != null:
 		if config != null:
 			board.set_colorblind(config.get_option("colorblind"))
