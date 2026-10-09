@@ -1,4 +1,4 @@
-# fail_screen.gd — Game over screen with sad mascot, broken hearts, and rain cloud.
+﻿# fail_screen.gd — Game over screen with sad mascot, broken hearts, and rain cloud.
 extends Control
 
 signal next_pressed()
@@ -14,6 +14,9 @@ const RibbonBanner = preload("res://scripts/ui/ribbon_banner.gd")
 const HeartDisplay = preload("res://scripts/ui/heart_display.gd")
 const StatCard = preload("res://scripts/ui/stat_card.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
+const CandyCharacterScene = preload("res://scenes/components/candy_character.tscn")
+const CandyCharacter = preload("res://scripts/ui/candy_character.gd")
+const RainLayer = preload("res://scripts/ui/rain_layer.gd")
 
 var _level_id: String = ""
 var _elapsed_ms: int = 0
@@ -21,8 +24,10 @@ var _elapsed_ms: int = 0
 var _bg: ColorRect
 var ribbon: RibbonBanner
 var _hearts: HeartDisplay
-var mascot: TextureRect
+var mascot: CandyCharacter
 var _cloud: TextureRect
+var _rain: RainLayer
+var _mascot_host: Control
 var stat_card: StatCard
 var retry_btn: Button
 var home_btn: Button
@@ -99,15 +104,24 @@ func _ensure_nodes() -> void:
 	_cloud.custom_minimum_size = Vector2(240, 130); _cloud.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	mascot_box.add_child(_cloud)
 
-	mascot = TextureRect.new()
-	mascot.texture = load("res://assets/ui/result/mascot_sad.svg") as Texture2D
-	mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	mascot.custom_minimum_size = Vector2(520, 330); mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mascot_box.add_child(mascot)
+	_mascot_host = Control.new()
+	_mascot_host.custom_minimum_size = Vector2(480, 320)
+	_mascot_host.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	mascot_box.add_child(_mascot_host)
 
-	var shadow := _GroundShadow.new()
-	shadow.custom_minimum_size = Vector2(300, 42); shadow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mascot_box.add_child(shadow)
+	_rain = RainLayer.new(170.0); _rain.z_index = 2
+	_rain.position = Vector2(240, 20)
+	_mascot_host.add_child(_rain)
+
+	mascot = CandyCharacterScene.instantiate()
+	mascot.position = Vector2(240, 135)
+	mascot.scale = Vector2(0.85, 0.85)
+	mascot.palette = "sad"
+	mascot.expression = "sad"
+	mascot.cracked = true
+	mascot.wing_droop = 12.0
+	mascot.idle_style = "shiver" if LayoutTokens.motion_enabled else "none"
+	_mascot_host.add_child(mascot)
 
 	# 5. Stat card (time only)
 	stat_card = StatCard.new([{"label": tr("result.stat.time"), "value": _format_time(_elapsed_ms), "icon": "clock"}], Palette.LOSE_CARD_SHADOW)
@@ -179,9 +193,10 @@ func _update_ui() -> void:
 
 func _play_entrance_animations() -> void:
 	if not LayoutTokens.motion_enabled: return
-	if ribbon != null: ribbon.animate()
-	if _hearts != null: _hearts.animate()
+	if ribbon != null: ribbon.animate(-3.0)
+	if _hearts != null: _hearts.animate_break()
 	if stat_card != null: stat_card.animate(0.4)
+	if _rain != null: _rain.start()
 	if mascot != null:
 		mascot.scale = Vector2(0.9, 0.9)
 		var tw := mascot.create_tween()

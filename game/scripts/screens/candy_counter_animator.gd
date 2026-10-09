@@ -7,6 +7,8 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const CandyRenderer = preload("res://scripts/core/candy_renderer.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
+const TWEEN_META := "candy_counter_tween"
+
 static func resolve_candy_texture(session: Variant) -> Texture2D:
 	if session == null or session.level == null:
 		return CandyRenderer.texture_for_type("bonbon")
@@ -26,6 +28,7 @@ static func calculate_sizing(size: int) -> Dictionary:
 static func sync_status(session: Variant, regions_row: HBoxContainer) -> void:
 	if session == null or session.level == null:
 		return
+	_kill_running(regions_row)
 	var size: int = int(session.level.get("size", 0))
 	var regions: Array = session.level.get("regions", [])
 	var found: Dictionary = {}
@@ -114,40 +117,61 @@ static func play_candy_found(session: Variant, regions_row: HBoxContainer, regio
 	var target_color: Color = zone_colors.get(region_id, Color.WHITE)
 	var sizing: Dictionary = calculate_sizing(size)
 	var icon_size: float = float(sizing.icon_size)
-	var step: float = icon_size + float(sizing.gap)
 
+	_kill_running(regions_row)
 	icon.z_index = 10
 	icon.pivot_offset = Vector2(icon_size, icon_size) * 0.5
+	var base_y: float = icon.position.y
+	var hop: float = icon_size * 0.45
 	var tw := icon.create_tween()
+	regions_row.set_meta(TWEEN_META, tw)
 
-	# Phase 1: Pop & Wobble
-	tw.tween_property(icon, "scale", Vector2(1.35, 1.35), 0.12).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.parallel().tween_property(icon, "rotation_degrees", -8.0, 0.05)
-	tw.tween_property(icon, "rotation_degrees", 8.0, 0.07)
-	tw.tween_property(icon, "rotation_degrees", -4.0, 0.06)
-	tw.tween_property(icon, "rotation_degrees", 0.0, 0.04)
-
-	# Phase 2: Reveal candy color
+	# Phase 1: Hop up, pop & reveal colour
+	tw.tween_property(icon, "position:y", base_y - hop, 0.14).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tw.parallel().tween_property(icon, "scale", Vector2(1.3, 1.3), 0.14).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 	tw.parallel().tween_property(icon, "modulate", target_color, 0.18)
 
-	# Phase 3: Slide to front & push others back
+	# Phase 2: If not already on the next slot, glide there in the air while hidden candies shift right
 	if old_idx > target_idx:
-		var start_x: float = icon.position.x if icon.position.x > 0.0 else float(old_idx) * step
-		var target_x: float = start_x - float(old_idx - target_idx) * step
+		var target_x: float = (children[target_idx] as Control).position.x
 		for j in range(target_idx, old_idx):
 			var shifted: Control = children[j] as Control
-			var shifted_start_x: float = shifted.position.x if shifted.position.x > 0.0 else float(j) * step
-			var shifted_target_x: float = shifted_start_x + step
-			tw.parallel().tween_property(shifted, "position:x", shifted_target_x, 0.28).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
-		tw.parallel().tween_property(icon, "position:x", target_x, 0.32).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+			var next_x: float = (children[j + 1] as Control).position.x
+			tw.parallel().tween_property(shifted, "position:x", next_x, 0.28).set_delay(0.08).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		tw.tween_property(icon, "position:x", target_x, 0.3).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUAD)
+		tw.parallel().tween_property(icon, "rotation_degrees", -8.0, 0.15)
+		tw.chain().tween_property(icon, "rotation_degrees", 0.0, 0.1)
 
-	tw.parallel().tween_property(icon, "scale", Vector2.ONE, 0.32).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	# Phase 3: Land with a small squash back to rest
+	tw.tween_property(icon, "position:y", base_y, 0.16).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tw.parallel().tween_property(icon, "scale", Vector2(1.15, 0.85), 0.16)
+	tw.tween_property(icon, "scale", Vector2.ONE, 0.14).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 	tw.tween_callback(func():
-		icon.z_index = 0
-		if old_idx > target_idx:
-			regions_row.move_child(icon, target_idx)
-		regions_row.queue_sort()
+		_finish(regions_row, icon, old_idx, target_idx)
 	)
 
 	return tw
+
+static func _finish(regions_row: HBoxContainer, icon: Control, old_idx: int, target_idx: int) -> void:
+	icon.z_index = 0
+	icon.scale = Vector2.ONE
+	icon.rotation_degrees = 0.0
+	if old_idx > target_idx:
+		regions_row.move_child(icon, target_idx)
+	regions_row.remove_meta(TWEEN_META)
+	regions_row.queue_sort()
+
+static func _kill_running(regions_row: HBoxContainer) -> void:
+	if not regions_row.has_meta(TWEEN_META):
+		return
+	var tw: Tween = regions_row.get_meta(TWEEN_META)
+	regions_row.remove_meta(TWEEN_META)
+	if tw != null and tw.is_valid():
+		tw.kill()
+	for child in regions_row.get_children():
+		if child is Control:
+			child.z_index = 0
+			child.scale = Vector2.ONE
+			child.rotation_degrees = 0.0
+	regions_row.queue_sort()

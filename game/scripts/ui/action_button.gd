@@ -1,10 +1,10 @@
-# action_button.gd — 3D-style button with shadow, press animation, and optional pulse.
+# action_button.gd — 3D-style button with depth edge, press animation, and optional pulse.
 extends RefCounted
 
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
-static func create(text: String, bg_color: Color, shadow_color: Color, text_shadow_color: Color, font_size: int = 34, height: int = 90) -> Button:
+static func create(text: String, bg_color: Color, shadow_color: Color, text_shadow_color: Color, font_size: int = 34, height: int = 90, depth: int = 8) -> Button:
 	var btn := Button.new()
 	btn.text = text
 	btn.custom_minimum_size = Vector2(0, height)
@@ -24,17 +24,22 @@ static func create(text: String, bg_color: Color, shadow_color: Color, text_shad
 	style.content_margin_right = 24
 	style.content_margin_top = 16
 	style.content_margin_bottom = 16
-	style.shadow_color = shadow_color
-	style.shadow_size = 8
-	style.shadow_offset = Vector2(0, 8)
+	style.border_width_bottom = depth
+	style.border_color = shadow_color
 
-	for state in ["normal", "hover", "focus"]:
+	var hover := style.duplicate() as StyleBoxFlat
+	hover.bg_color = bg_color.lightened(0.06)
+
+	var pressed := style.duplicate() as StyleBoxFlat
+	pressed.border_width_bottom = 1
+	pressed.expand_margin_top = float(-(depth - 1))
+	pressed.content_margin_top = 16 + float(depth - 1)
+
+	for state in ["normal", "focus"]:
 		btn.add_theme_stylebox_override(state, style)
-
-	var pressed_style := style.duplicate() as StyleBoxFlat
-	pressed_style.shadow_size = 2
-	pressed_style.shadow_offset = Vector2(0, 2)
-	btn.add_theme_stylebox_override("pressed", pressed_style)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_stylebox_override("pressed", pressed)
+	btn.add_theme_stylebox_override("hover_pressed", pressed)
 
 	btn.pivot_offset = Vector2(btn.custom_minimum_size.x * 0.5, btn.custom_minimum_size.y * 0.5)
 	btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
@@ -87,4 +92,3 @@ static func set_leading_icon(btn: Button, icon_path: String, icon_size: Vector2 
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	row.add_child(lbl)
 	return lbl
-

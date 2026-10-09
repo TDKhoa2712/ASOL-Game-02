@@ -1,29 +1,43 @@
 extends RefCounted
 
-# Region colors for boards N=4-6.
+# Region colors for boards N=4-12 matching Claude design reference.
 const ZONE_COLORS: Array[Color] = [
-	Color("#91D984"),
-	Color("#9586D9"),
-	Color("#E0BD43"),
-	Color("#F6DA98"),
-	Color("#EFACDD"),
-	Color("#D884A0"),
-	Color("#F4AA71"),
-	Color("#BA8665"),
-	Color("#469B68"),
-	Color("#64B8CB"),
-	Color("#A5E8D4"),
-	Color("#C8A5E8"),
+	Color("#F5B0D2"), # Pink
+	Color("#93DB7F"), # Green
+	Color("#C9A9F0"), # Lavender
+	Color("#A2E8D5"), # Mint
+	Color("#FFD54A"), # Yellow
+	Color("#FFB06E"), # Orange
+	Color("#70C7E8"), # Blue
+	Color("#9D8BE6"), # Violet
+	Color("#E98BA8"), # Rose
+	Color("#D9E86A"), # Lime
+	Color("#F08A7E"), # Coral
+	Color("#C9A27E"), # Sand
 ]
 
 # UI colors.
 const BG_CREAM := Color("#FFFDF5")
-const BOARD_BG := Color("#F8F1EC")
+const BOARD_BG := Color("#FFF8DC")
 const BG_PAPER := Color("#F5F0E8")
 const SHADOW_SOFT := Color(0.545, 0.353, 0.290, 0.18)
 const TEXT_STAT := Color("#9B5A52")
 const TEXT_RULE := Color("#A0655C")
-const PILL_BG := Color.WHITE
+const PILL_BG := Color("#FFF6E2")
+const BOARD_BORDER := Color("#5A3410")
+const BOARD_SHADOW := Color(0.78, 0.59, 0.16, 0.28)
+const BOARD_GOLD_EDGE := Color("#EFD27E")
+const BOARD_BTN_EDGE := Color("#E2C46A")
+const BOARD_NAVY := Color("#23365E")
+const BOARD_NAVY_SOFT := Color("#4F5D86")
+const BOARD_BLUE := Color("#3D8BEB")
+const BOARD_BLUE_EDGE := Color("#2463B0")
+const BOARD_HINT_BG := Color("#FFC93C")
+const BOARD_HINT_EDGE := Color("#A9700A")
+const BOARD_HINT_ICON := Color("#5A3410")
+const BOARD_CHEATS_BG := Color("#5E6577")
+const BOARD_CHEATS_EDGE := Color("#3B4050")
+const BOARD_RULE_BORDER := Color("#D5B88D")
 const PILL_RADIUS := 28
 const CARD_CORNER := 24
 const BOARD_CARD_CORNER := 32

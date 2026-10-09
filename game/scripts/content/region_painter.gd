@@ -1,144 +1,115 @@
 # region_painter.gd
 extends RefCounted
 
+# Adjacent regions must stay at least this far apart in CIELAB (dE76).
+const MIN_ADJACENT_CONTRAST := 20.0
+# The first colors of the palette are the mockup's main theme; the rest are reserves
+# used only when a board has more zones or no primary color keeps the contrast.
+const PRIMARY_COLOR_COUNT := 9
+
 enum OverlayIcon { NONE, STAR, DIAMOND, HEART, TRIANGLE, CROSS, DOT }
 
 static func luminance(c: Color) -> float:
 	return 0.299 * c.r + 0.587 * c.g + 0.114 * c.b
 
+# Greedy graph coloring of the region adjacency graph:
+# 1. zones sorted by degree (most neighbors first),
+# 2. a color is acceptable only if its dE to every colored neighbor >= MIN_ADJACENT_CONTRAST,
+# 3. among acceptable colors pick the one maximizing min dE to neighbors (unused colors first).
 static func assign_colors(size: int, zones: Array, palette: Array[Color]) -> Dictionary:
 	if palette.is_empty():
 		return {}
-
 	var grid := precompute_grid(size, zones)
 	var adj := _build_adjacency(size, grid)
-	var all_zones: Array = []
-	for r in range(size):
-		for c in range(size):
-			var z: String = grid[r][c]
-			if not all_zones.has(z):
-				all_zones.append(z)
-
-	# Sort zones by descending neighbor count (degree)
-	all_zones.sort_custom(func(a: String, b: String) -> bool:
-		var deg_a: int = adj.get(a, []).size()
-		var deg_b: int = adj.get(b, []).size()
-		return deg_a > deg_b
-	)
-
+	var order := _degree_order(grid, adj)
+	var pool: Array[Color] = palette.slice(0, maxi(PRIMARY_COLOR_COUNT, order.size()))
 	var assigned: Dictionary = {}
 	var used_colors: Array[Color] = []
-
-	for z in all_zones:
-		var neighbor_colors: Array[Color] = []
-		for nbr in adj.get(z, []):
-			if assigned.has(nbr):
-				neighbor_colors.append(assigned[nbr])
-
-		# Prefer colors not used by any zone yet, then fall back to neighbor-safe
-		var candidates: Array[Color] = []
-		for col in palette:
-			if not neighbor_colors.has(col) and not used_colors.has(col):
-				candidates.append(col)
-		if candidates.is_empty():
-			for col in palette:
-				if not neighbor_colors.has(col):
-					candidates.append(col)
-		if candidates.is_empty():
-			candidates = palette.duplicate()
-
-		var best_col: Color = candidates[0]
-		if not neighbor_colors.is_empty():
-			var max_min_dist: float = -1.0
-			for col in candidates:
-				var min_d: float = INF
-				for n_col in neighbor_colors:
-					var d := lab_distance(col, n_col)
-					if d < min_d:
-						min_d = d
-				if min_d > max_min_dist:
-					max_min_dist = min_d
-					best_col = col
-		assigned[z] = best_col
-		used_colors.append(best_col)
-
+	for z in order:
+		var neighbor_colors := _neighbor_colors(z, adj, assigned)
+		var col: Variant = _pick_color(pool, neighbor_colors, used_colors, true)
+		if col == null and pool.size() < palette.size():
+			col = _pick_color(palette, neighbor_colors, used_colors, true)
+		if col == null:
+			col = _pick_color(palette, neighbor_colors, used_colors, false)
+		assigned[z] = col
+		used_colors.append(col)
 	return assigned
 
+# Returns the color maximizing min dE to neighbors; unused colors win ties of acceptability.
+# With strict=true, colors below MIN_ADJACENT_CONTRAST are rejected (returns null if none).
+static func _pick_color(pool: Array, neighbor_colors: Array[Color], used_colors: Array[Color], strict: bool) -> Variant:
+	var best: Variant = null
+	var best_unused := false
+	var best_d: float = -1.0
+	for col in pool:
+		var min_d: float = 1000.0
+		for n_col in neighbor_colors:
+			min_d = minf(min_d, lab_distance(col, n_col))
+		if strict and min_d < MIN_ADJACENT_CONTRAST:
+			continue
+		var unused: bool = not used_colors.has(col)
+		if best == null or (unused and not best_unused) or (unused == best_unused and min_d > best_d):
+			best = col
+			best_unused = unused
+			best_d = min_d
+	return best
+
+static func _neighbor_colors(z: String, adj: Dictionary, assigned: Dictionary) -> Array[Color]:
+	var out: Array[Color] = []
+	for nbr in adj.get(z, []):
+		if assigned.has(nbr):
+			out.append(assigned[nbr])
+	return out
+
+# Zones by descending degree; ties keep reading order so results are deterministic.
+static func _degree_order(grid: Array, adj: Dictionary) -> Array:
+	var order: Array = []
+	for row in grid:
+		for z in row:
+			if not order.has(z):
+				order.append(z)
+	var first_seen := {}
+	for i in range(order.size()):
+		first_seen[order[i]] = i
+	order.sort_custom(func(a: String, b: String) -> bool:
+		var da: int = adj.get(a, []).size()
+		var db: int = adj.get(b, []).size()
+		return da > db if da != db else first_seen[a] < first_seen[b]
+	)
+	return order
+
+# Colorblind mode: same colors as assign_colors, plus patterns on the darker half of zones
+# (adjacent patterned zones never share a pattern).
 static func assign_with_overlays(size: int, zones: Array, palette: Array[Color]) -> Dictionary:
-	if palette.is_empty():
+	var colors := assign_colors(size, zones, palette)
+	if colors.is_empty():
 		return {"colors": {}, "overlays": {}}
 	var grid := precompute_grid(size, zones)
 	var adj := _build_adjacency(size, grid)
-	var all_zones: Array = []
-	for r in range(size):
-		for c in range(size):
-			var z: String = grid[r][c]
-			if not all_zones.has(z):
-				all_zones.append(z)
-	var sorted_palette := palette.duplicate()
-	sorted_palette.sort_custom(func(a: Color, b: Color) -> bool: return luminance(a) < luminance(b))
-	var n_pattern := ceili(size / 2.0)
-	var dark_pool: Array[Color] = []
-	var light_pool: Array[Color] = []
-	for i in range(sorted_palette.size()):
-		if i < n_pattern:
-			dark_pool.append(sorted_palette[i])
-		else:
-			light_pool.append(sorted_palette[i])
-	if light_pool.is_empty():
-		light_pool = dark_pool.duplicate()
-	all_zones.sort_custom(func(a: String, b: String) -> bool:
-		return adj.get(a, []).size() > adj.get(b, []).size()
+	var by_dark: Array = colors.keys()
+	by_dark.sort_custom(func(a: String, b: String) -> bool:
+		var la := luminance(colors[a])
+		var lb := luminance(colors[b])
+		return la < lb if la != lb else a < b
 	)
-	var colors: Dictionary = {}
+	var n_pattern := ceili(by_dark.size() / 2.0)
+	var icons := [OverlayIcon.STAR, OverlayIcon.DIAMOND, OverlayIcon.HEART, OverlayIcon.TRIANGLE, OverlayIcon.CROSS, OverlayIcon.DOT]
 	var overlays: Dictionary = {}
-	var used_colors: Array[Color] = []
-	var dark_assigned: int = 0
-	var overlay_icons := [OverlayIcon.STAR, OverlayIcon.DIAMOND, OverlayIcon.HEART, OverlayIcon.TRIANGLE, OverlayIcon.CROSS, OverlayIcon.DOT]
-	for z in all_zones:
-		var neighbor_colors: Array[Color] = []
+	for z in by_dark:
+		overlays[z] = OverlayIcon.NONE
+	for i in range(n_pattern):
+		var z: String = by_dark[i]
+		var taken: Array = []
 		for nbr in adj.get(z, []):
-			if colors.has(nbr):
-				neighbor_colors.append(colors[nbr])
-		var pool: Array[Color] = dark_pool if dark_assigned < n_pattern else light_pool
-		var candidates: Array[Color] = []
-		for col in pool:
-			if not neighbor_colors.has(col) and not used_colors.has(col):
-				candidates.append(col)
-		if candidates.is_empty():
-			for col in pool:
-				if not neighbor_colors.has(col):
-					candidates.append(col)
-		if candidates.is_empty():
-			candidates = pool.duplicate()
-		var best_col: Color = candidates[0]
-		if not neighbor_colors.is_empty():
-			var max_min_dist: float = -1.0
-			for col in candidates:
-				var min_d: float = INF
-				for n_col in neighbor_colors:
-					min_d = minf(min_d, lab_distance(col, n_col))
-				if min_d > max_min_dist:
-					max_min_dist = min_d
-					best_col = col
-		colors[z] = best_col
-		used_colors.append(best_col)
-		if dark_assigned < n_pattern:
-			var neighbor_overlays: Array = []
-			for nbr in adj.get(z, []):
-				if overlays.has(nbr) and overlays[nbr] != OverlayIcon.NONE:
-					neighbor_overlays.append(overlays[nbr])
-			var chosen_icon: int = OverlayIcon.NONE
-			for icon in overlay_icons:
-				if not neighbor_overlays.has(icon):
-					chosen_icon = icon
-					break
-			if chosen_icon == OverlayIcon.NONE:
-				chosen_icon = overlay_icons[dark_assigned % overlay_icons.size()]
-			overlays[z] = chosen_icon
-			dark_assigned += 1
-		else:
-			overlays[z] = OverlayIcon.NONE
+			if overlays[nbr] != OverlayIcon.NONE:
+				taken.append(overlays[nbr])
+		var chosen: int = icons[i % icons.size()]
+		for icon in icons:
+			if not taken.has(icon):
+				chosen = icon
+				break
+		overlays[z] = chosen
 	return {"colors": colors, "overlays": overlays}
 
 static func overlay_tint(base_color: Color, is_dark: bool) -> Color:

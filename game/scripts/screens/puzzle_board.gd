@@ -182,9 +182,24 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and (event.button_mask & MOUSE_BUTTON_MASK_LEFT):
 		BoardPointerRouter.handle_move(event.position, _guard, _decoder, _cell_at); accept_event()
 
-func _board_rect() -> Rect2:
+# Outer framed card (background + brown border).
+func _card_rect() -> Rect2:
 	var side := maxf(0.0, minf(size.x, size.y) - float(LayoutTokens.BOARD_PADDING * 2))
-	return Rect2((size - Vector2.ONE * side) * 0.5, Vector2.ONE * side)
+	return Rect2((size - Vector2.ONE * side) * 0.5, Vector2.ONE * side).grow(LayoutTokens.CARD_GROW)
+
+# Cell grid, inset inside the card so the border, rounded corners and the cells'
+# 3D bottom edge never overflow the frame.
+func _board_rect() -> Rect2:
+	var card := _card_rect()
+	var inset := LayoutTokens.BOARD_BORDER_WIDTH + maxf(6.0, card.size.x * LayoutTokens.BOARD_INNER_PAD_RATIO)
+	var inner := card.grow(-inset)
+	if inner.size.x <= 0.0 or inner.size.y <= 0.0:
+		return Rect2(card.get_center(), Vector2.ZERO)
+	var n := maxi(1, int(_session.level.get("size", 1)) if _session != null else 1)
+	var depth_k := LayoutTokens.CELL_DEPTH_RATIO * (1.0 - LayoutTokens.CELL_GAP_RATIO * float(n - 1)) / float(n)
+	var side := minf(inner.size.x, inner.size.y / (1.0 + depth_k))
+	var block := Vector2(side, side * (1.0 + depth_k))
+	return Rect2(inner.position + (inner.size - block) * 0.5, Vector2.ONE * side)
 
 func _cell_gap(board_w: float) -> float: return maxf(3.0, board_w * LayoutTokens.CELL_GAP_RATIO)
 
@@ -266,12 +281,10 @@ func _draw_candy_procedural(rect: Rect2) -> void:
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
 	if r >= 0 and c >= 0 and _mark_anims.has(Vector2i(r, c)):
 		var prog: float = _mark_anims.get(Vector2i(r, c), 1.0)
-		if _stroke_visited.size() >= 3:
-			var tex := CellAnimator.get_mark_texture(is_error, _high_contrast)
-			if tex != null:
-				var mark_sz := rect.size * _content_scale() * (1.0 + 0.15 * (1.0 - prog))
-				draw_texture_rect(tex, Rect2(rect.get_center() - mark_sz * 0.5, mark_sz), false); return
-		CellAnimator.draw_hand_drawn_x(self, rect, is_error, _high_contrast, prog, _content_scale()); return
+		var anim_tex := CellAnimator.get_mark_texture(is_error, _high_contrast)
+		if anim_tex != null:
+			var pop_sz := rect.size * _content_scale() * (1.0 + 0.15 * (1.0 - prog))
+			draw_texture_rect(anim_tex, Rect2(rect.get_center() - pop_sz * 0.5, pop_sz), false, Color(1, 1, 1, minf(prog * 2.0, 1.0))); return
 	var tex := CellAnimator.get_mark_texture(is_error, _high_contrast)
 	if tex != null:
 		var mark_sz := rect.size * _content_scale()

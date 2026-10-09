@@ -4,8 +4,8 @@ extends Control
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
+var _particles: CPUParticles2D
 var _count: int = 40
-var _particles: Array[ColorRect] = []
 
 func _init(count: int = 40) -> void:
 	_count = count
@@ -16,28 +16,38 @@ func _init(count: int = 40) -> void:
 func start() -> void:
 	if not LayoutTokens.motion_enabled:
 		return
-	var sw := size.x if size.x > 0 else 1080.0
-	var sh := size.y if size.y > 0 else 1920.0
-	for i in range(_count):
-		var p := ColorRect.new()
-		var w: float = 12.0 + fmod(_pseudo_random(i + 1) * 14.0, 14.0)
-		var h: float = w * (2.2 if _pseudo_random(i + 50) > 0.5 else 1.2)
-		p.custom_minimum_size = Vector2(w, h)
-		p.size = Vector2(w, h)
-		p.color = Palette.CONFETTI_COLORS[i % Palette.CONFETTI_COLORS.size()]
-		p.position = Vector2(_pseudo_random(i + 3) * sw, -120.0)
-		p.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		add_child(p)
-		_particles.append(p)
-		var duration: float = 3.2 + _pseudo_random(i + 7) * 3.0
-		var delay: float = _pseudo_random(i + 11) * 3.0
-		var drift_x: float = (_pseudo_random(i + 20) - 0.5) * 160.0
-		var tw := p.create_tween().set_loops()
-		tw.tween_interval(delay)
-		tw.tween_property(p, "position:y", sh + 120.0, duration).from(-120.0).set_trans(Tween.TRANS_LINEAR)
-		tw.parallel().tween_property(p, "position:x", p.position.x + drift_x, duration).set_trans(Tween.TRANS_LINEAR)
-		tw.parallel().tween_property(p, "rotation", TAU * 2.0, duration).from(0.0).set_trans(Tween.TRANS_LINEAR)
-
-func _pseudo_random(seed_val: int) -> float:
-	var x: float = sin(float(seed_val) * 9301.0 + 49297.0) * 233280.0
-	return x - floorf(x)
+	if _particles != null:
+		_particles.restart()
+		return
+	_particles = CPUParticles2D.new()
+	_particles.amount = _count
+	_particles.lifetime = 5.0
+	_particles.preprocess = 1.0
+	_particles.emitting = true
+	if ResourceLoader.exists("res://assets/ui/result/square_confetti.svg"):
+		_particles.texture = load("res://assets/ui/result/square_confetti.svg")
+	var sw := size.x if size.x > 0 else 780.0
+	_particles.position = Vector2(sw * 0.5, -30.0)
+	_particles.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_particles.emission_rect_extents = Vector2(sw * 0.5, 10.0)
+	_particles.direction = Vector2(0, 1)
+	_particles.spread = 25.0
+	_particles.gravity = Vector2(0, 160)
+	_particles.initial_velocity_min = 120.0
+	_particles.initial_velocity_max = 260.0
+	_particles.angular_velocity_min = -420.0
+	_particles.angular_velocity_max = 420.0
+	_particles.angle_min = 0.0
+	_particles.angle_max = 360.0
+	_particles.scale_amount_min = 1.2
+	_particles.scale_amount_max = 2.6
+	var ramp := Gradient.new()
+	ramp.colors = PackedColorArray(Palette.CONFETTI_COLORS)
+	var step := 1.0 / float(Palette.CONFETTI_COLORS.size() - 1)
+	var offsets: PackedFloat32Array = []
+	for i in range(Palette.CONFETTI_COLORS.size()):
+		offsets.append(float(i) * step)
+	ramp.offsets = offsets
+	ramp.interpolation_mode = Gradient.GRADIENT_INTERPOLATE_CONSTANT
+	_particles.color_initial_ramp = ramp
+	add_child(_particles)

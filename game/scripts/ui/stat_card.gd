@@ -1,4 +1,4 @@
-# stat_card.gd — Stats display card (time, mistakes) for result screens.
+﻿# stat_card.gd — Stats display card (time, mistakes) for result screens.
 extends PanelContainer
 
 const Palette = preload("res://scripts/theme/palette.gd")
@@ -37,8 +37,7 @@ func _init(stats: Array[Dictionary], shadow_color: Color = Color("#EFD27E")) -> 
 	for i in range(stats.size()):
 		var stat: Dictionary = stats[i]
 		if i > 0 and use_grid:
-			var sep := VSeparator.new()
-			sep.modulate = Palette.WIN_DASHED_BORDER
+			var sep := _DashedSeparator.new(Palette.WIN_DASHED_BORDER)
 			container.add_child(sep)
 		var item := _create_stat_item(stat)
 		if use_grid:
@@ -48,14 +47,14 @@ func _init(stats: Array[Dictionary], shadow_color: Color = Color("#EFD27E")) -> 
 func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 	var hbox := HBoxContainer.new()
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_theme_constant_override("separation", 14)
+	hbox.add_theme_constant_override("separation", 20)
 
 	var icon_box := PanelContainer.new()
-	icon_box.custom_minimum_size = Vector2(56, 56)
+	icon_box.custom_minimum_size = Vector2(80, 80); icon_box.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var is_clock: bool = stat.get("icon", "") == "clock"
 	var ib_style := StyleBoxFlat.new()
 	ib_style.bg_color = Palette.WIN_STAT_ICON_BG_TIME if is_clock else Palette.WIN_STAT_ICON_BG_ERR
-	ib_style.set_corner_radius_all(16)
+	ib_style.set_corner_radius_all(24)
 	ib_style.shadow_color = Palette.WIN_STAT_ICON_SHADOW_TIME if is_clock else Palette.WIN_STAT_ICON_SHADOW_ERR
 	ib_style.shadow_size = 4
 	ib_style.shadow_offset = Vector2(0, 4)
@@ -74,7 +73,7 @@ func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 
 	var lbl := Label.new()
 	lbl.text = str(stat.get("label", ""))
-	lbl.add_theme_font_size_override("font_size", 22)
+	lbl.add_theme_font_size_override("font_size", 26)
 	lbl.add_theme_color_override("font_color", Color("#64748B"))
 	var bold := FontTokens.body_bold()
 	if bold != null:
@@ -83,7 +82,7 @@ func _create_stat_item(stat: Dictionary) -> HBoxContainer:
 
 	var val := Label.new()
 	val.text = str(stat.get("value", ""))
-	val.add_theme_font_size_override("font_size", 36)
+	val.add_theme_font_size_override("font_size", 48)
 	val.add_theme_color_override("font_color", Color("#1E293B"))
 	var heading := FontTokens.heading()
 	if heading != null:
@@ -104,6 +103,24 @@ func animate(delay: float = 1.1) -> void:
 	tw.tween_property(self, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.25)
 
+class _DashedSeparator extends Control:
+	var _col: Color
+
+	func _init(col: Color) -> void:
+		_col = col
+		custom_minimum_size = Vector2(2, 0)
+		size_flags_vertical = Control.SIZE_EXPAND_FILL
+		mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	func _draw() -> void:
+		var dash := 6.0
+		var gap := 5.0
+		var y := 4.0
+		while y < size.y - 4.0:
+			var end := minf(y + dash, size.y - 4.0)
+			draw_line(Vector2(1, y), Vector2(1, end), _col, 2.0)
+			y = end + gap
+
 class _StatIcon extends Control:
 	var _clock: bool = true
 
@@ -114,10 +131,10 @@ class _StatIcon extends Control:
 		var center := size * 0.5
 		if _clock:
 			var col := Color("#2C78B8")
-			draw_arc(center, 12.0, 0, TAU, 32, col, 2.5, true)
-			draw_line(center, center + Vector2(0, -6.0), col, 2.5)
-			draw_line(center, center + Vector2(4.5, 3.0), col, 2.5)
+			draw_arc(center, 17.0, 0, TAU, 32, col, 3.5, true)
+			draw_line(center, center + Vector2(0, -9.0), col, 3.5)
+			draw_line(center, center + Vector2(6.0, 4.0), col, 3.5)
 		else:
 			var col := Color("#D04A2B")
-			draw_line(center + Vector2(-6.0, -6.0), center + Vector2(6.0, 6.0), col, 2.8, true)
-			draw_line(center + Vector2(6.0, -6.0), center + Vector2(-6.0, 6.0), col, 2.8, true)
+			draw_line(center + Vector2(-9.0, -9.0), center + Vector2(9.0, 9.0), col, 4.0, true)
+			draw_line(center + Vector2(9.0, -9.0), center + Vector2(-9.0, 9.0), col, 4.0, true)

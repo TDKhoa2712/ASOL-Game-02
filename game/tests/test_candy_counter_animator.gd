@@ -63,6 +63,40 @@ func _run_tests() -> void:
 	var remaining_zones: Array = [row.get_child(2).get_meta("zone_id"), row.get_child(3).get_meta("zone_id")]
 	_assert(remaining_zones.has("A") and remaining_zones.has("C"), "Missing zones pushed back to indices 2 and 3")
 
+	# 2b. In-order candy (C lands on the next slot): reveal + hop only, no slide
+	session.try_candy(2, 2) # Zone C — but first force C onto the next slot
+	CandyCounterAnimator.sync_status(session, row)
+	await process_frame
+	var c_idx_before: int = -1
+	for i in range(row.get_child_count()):
+		if row.get_child(i).get_meta("zone_id") == "C":
+			c_idx_before = i
+	_assert(c_idx_before == 2, "Zone C synced to index 2 (next slot)")
+	var c_icon: TextureRect = row.get_child(2) as TextureRect
+	var c_x: float = c_icon.position.x
+	var base_y: float = c_icon.position.y
+	var tw_in_order: Tween = CandyCounterAnimator.play_candy_found(session, row, "C")
+	_assert(tw_in_order != null, "Tween created for in-order candy")
+	await create_timer(0.1).timeout
+	_assert(c_icon.position.y < base_y, "In-order candy hops up during animation")
+	_assert(is_equal_approx(c_icon.position.x, c_x), "In-order candy does not slide horizontally")
+	if tw_in_order != null and tw_in_order.is_running():
+		await tw_in_order.finished
+	_assert(row.get_child(2) == c_icon, "In-order candy keeps its slot")
+	_assert(is_equal_approx(c_icon.position.y, base_y), "In-order candy lands back on baseline")
+	# Undo C so the motion-off case below still finds A at index 2
+	session.board[2][2] = 0
+	CandyCounterAnimator.sync_status(session, row)
+
+	# 2c. sync_status during a running tween must cancel it cleanly
+	session.try_candy(2, 2)
+	var tw_cancel: Tween = CandyCounterAnimator.play_candy_found(session, row, "C")
+	CandyCounterAnimator.sync_status(session, row)
+	_assert(tw_cancel == null or not tw_cancel.is_valid() or not tw_cancel.is_running(), "sync_status kills running counter tween")
+	session.board[2][2] = 0
+	CandyCounterAnimator.sync_status(session, row)
+	await process_frame
+
 	# 3. Test with motion_enabled = false
 	LayoutTokens.motion_enabled = false
 	session.try_candy(0, 0) # Zone A

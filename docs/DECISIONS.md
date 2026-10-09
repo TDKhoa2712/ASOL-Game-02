@@ -2,6 +2,17 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-024 — Màn chơi theo mockup `screen/screenshot/board.png`, màu vùng tương phản và hint đồng bộ giao diện
+
+Ngày 2026-10-10.
+
+- **Bố cục theo mockup, nội dung theo dữ liệu thật:** header (Back, “Màn n”, Trợ giúp, Restart, Settings), hàng kẹo vùng + 3 tim, 3 thẻ luật, bàn ô kẹo 3D không viền vùng, dock Undo/Hint. Số màn, vùng, màu, tim lấy từ session; không hiển thị số liệu giả.
+- **Phân phối màu vùng — tô màu đồ thị tham lam (greedy graph coloring) theo CIELAB:** vùng là đỉnh, biên chung là cạnh; xếp vùng theo bậc giảm dần; màu chỉ hợp lệ khi ΔE76 tới mọi vùng kề đã tô ≥ `MIN_ADJACENT_CONTRAST` = 20; trong các màu hợp lệ chọn màu tối đa hóa ΔE nhỏ nhất tới láng giềng (ưu tiên màu chưa dùng). Bàn ≤ 9 vùng chỉ dùng `PRIMARY_COLOR_COUNT` = 9 màu chủ đạo của mockup; 3 màu dự phòng chỉ dùng khi thiếu. Kiểm bằng `test_region_contrast.gd` trên mẫu mọi bank 4×4–12×12.
+- **Ô màu trơn:** mặc định ô chỉ có màu, không họa tiết. Chế độ hỗ trợ mù màu giữ nguyên màu và chỉ phủ thêm họa tiết lên nửa số vùng tối hơn (vùng kề không trùng họa tiết).
+- **Thẻ luật:** icon 96, chữ 21 (`RULE_ICON_SIZE`, `RULE_FONT_SIZE` trong `puzzle_layout.gd`).
+- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.
+- **Thanh Cheats** chỉ có trong bản debug (`OS.is_debug_build()`).
+
 ## RST-023 — Tối ưu hóa hiệu năng render và đánh dấu X trên bàn cờ lớn (Batched GPU Mark Texture & O(1) Sets)
 
 Ngày 2026-10-08. Khắc phục triệt để hiện tượng giật lag khi đánh dấu X trên thiết bị di động ở các bàn cờ kích thước lớn ($N=7 \to 12$, lên tới 144 ô):

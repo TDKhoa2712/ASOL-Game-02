@@ -42,8 +42,8 @@ puzzle.restart_body,Your marks and mistakes will be reset.,マークとミスの
 puzzle.restart_ok,Restart,やり直す,Chơi lại,Ulangi,Reiniciar,Reiniciar,다시 시작
 puzzle.restart_cancel,Continue,続ける,Tiếp tục,Lanjutkan,Continuar,Continuar,계속하기
 puzzle.rule_row,1 candy per row and column,各行と各列に1個,1 kẹo mỗi hàng và cột,1 permen per baris dan kolom,1 doce por linha e coluna,1 dulce por fila y columna,행과 열당 사탕 1개
-puzzle.rule_region,1 candy per region,各エリアに1個,1 kẹo mỗi vùng,1 permen per wilayah,1 doce por região,1 dulce por región,구역당 사탕 1개
-puzzle.rule_diagonal,Candies cannot touch each other,キャンディ同士は隣接不可,Kẹo không chạm nhau,Permen tidak boleh saling menyentuh,Doces não podem se tocar,Los dulces no se tocan,사탕끼리 닿을 수 없음
+puzzle.rule_region,1 candy per region,各エリアに1個,1 kẹo mỗi vùng màu,1 permen per wilayah,1 doce por região,1 dulce por región,구역당 사탕 1개
+puzzle.rule_diagonal,Candies cannot touch each other,キャンディ同士は隣接不可,Kẹo không chạm nhau, kể cả chéo,Permen không boleh saling menyentuh,Doces não podem se tocar,Los dulces no se tocan,사탕끼리 닿을 수 없음
 result.win.title,Hooray!,万歳！,Hoan hô!,Hore!,Viva!,¡Hurra!,만세!
 result.win.title_campaign,Campaign Complete!,キャンペーンクリア！,Hoàn thành chiến dịch!,Kampanye Selesai!,Campanha Concluída!,¡Campaña Completada!,캠페인 완료!
 result.win.subtitle,You found all the candies!,すべてのキャンディを見つけました！,Bạn đã tìm đủ kẹo!,Kamu menemukan semua permen!,Você encontrou todos os doces!,¡Encontraste todos los dulces!,모든 사탕을 찾았습니다!
@@ -93,3 +93,6 @@ difficulty.easy,Easy,かんたん,Dễ,Mudah,Fácil,Fácil,쉬움
 difficulty.medium,Medium,ふつう,Trung bình,Sedang,Médio,Medio,보통
 difficulty.hard,Hard,むずかしい,Khó,Sulit,Difícil,Difícil,어려움
 difficulty.expert,Expert,エキスパート,Chuyên gia,Ahli,Especialista,Experto,전문가
+title.mascot_poke_1,"Hehe, that tickles!",くすぐったいよ！,"Hihi, nhột quá!","Hihi, geli!","Hehe, faz cócegas!","¡Jeje, me hace cosquillas!","히히, 간지러워!"
+title.mascot_poke_2,I love puzzles!,パズル大好き！,Mình mê giải đố lắm!,Aku suka teka-teki!,Eu amo quebra-cabeças!,¡Me encantan los acertijos!,퍼즐이 너무 좋아!
+title.mascot_poke_3,Wheee!,わーい！,Yeee!,Horeee!,Uhuuu!,¡Yupiii!,야호!

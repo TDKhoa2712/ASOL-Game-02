@@ -13,9 +13,12 @@ const HelpScreen = preload("res://scripts/screens/help_screen.gd")
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const ProgressBarWidget = preload("res://scripts/ui/progress_bar.gd")
+const TitleLogo = preload("res://scripts/ui/title_logo.gd")
 const TitleHeroMascot = preload("res://scripts/ui/title_hero_mascot.gd")
 const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
 const HomeDecorations = preload("res://scripts/ui/home_decorations.gd")
+const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -86,28 +89,17 @@ func _ensure_nodes() -> void:
 
 	# 2. Hero: Logo
 	var hero := VBoxContainer.new()
-	hero.name = "HeroBlock"
-	hero.alignment = BoxContainer.ALIGNMENT_CENTER
+	hero.name = "HeroBlock"; hero.alignment = BoxContainer.ALIGNMENT_CENTER
 	frame.add_child(hero)
 
-	var logo := TextureRect.new()
-	logo.name = "CandyLogo"
-	logo.texture = load("res://assets/ui/home/logo_candoku_vector.svg") as Texture2D
-	logo.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	logo.custom_minimum_size = Vector2(740, 320)
-	logo.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	logo.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	hero.add_child(logo)
+	hero.add_child(TitleLogo.new())
 
 	title_label = Label.new()
-	title_label.name = "TitleLabel"
-	title_label.text = tr("title.name")
-	title_label.visible = false
+	title_label.name = "TitleLabel"; title_label.text = tr("title.name"); title_label.visible = false
 	hero.add_child(title_label)
 
 	# 3. Flex Spacer 1
-	var spacer1 := Control.new()
-	spacer1.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var spacer1 := Control.new(); spacer1.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	frame.add_child(spacer1)
 
 	# 4. Hero Mascot (Centered)
@@ -115,26 +107,21 @@ func _ensure_nodes() -> void:
 	frame.add_child(_hero_mascot)
 
 	# 5. Flex Spacer 2
-	var spacer2 := Control.new()
-	spacer2.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var spacer2 := Control.new(); spacer2.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	frame.add_child(spacer2)
 
 	# 6. Action Block (Bottom: Progress Card + Play Button)
 	var actions := VBoxContainer.new()
-	actions.name = "ActionBlock"
-	actions.alignment = BoxContainer.ALIGNMENT_CENTER
-	actions.add_theme_constant_override("separation", 18)
-	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	actions.name = "ActionBlock"; actions.alignment = BoxContainer.ALIGNMENT_CENTER
+	actions.add_theme_constant_override("separation", 18); actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	frame.add_child(actions)
 
 	_progress_bar = ProgressBarWidget.new(0, 30)
 	actions.add_child(_progress_bar)
 
 	campaign_box = VBoxContainer.new()
-	campaign_box.name = "CampaignBox"
-	campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	campaign_box.add_theme_constant_override("separation", 0)
-	campaign_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	campaign_box.name = "CampaignBox"; campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
+	campaign_box.add_theme_constant_override("separation", 0); campaign_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_child(campaign_box)
 
 	var play_init_fmt := tr("title.play")
@@ -171,9 +158,7 @@ func _ensure_nodes() -> void:
 
 func _make_round_top_btn(btn_name: String, icon_path: String) -> Button:
 	var btn := Button.new()
-	btn.name = btn_name
-	btn.custom_minimum_size = Vector2(84, 84)
-	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	btn.name = btn_name; btn.custom_minimum_size = Vector2(84, 84); btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color.WHITE; style.set_corner_radius_all(22)
 	style.shadow_color = Color("#E2C46A"); style.shadow_size = 6; style.shadow_offset = Vector2(0, 6)
@@ -191,11 +176,9 @@ func _ready() -> void:
 		var btn: Button = pair[0]
 		if btn != null and not btn.pressed.is_connected(pair[1]):
 			btn.pressed.connect(pair[1])
-			btn.pivot_offset = btn.size * 0.5
-			btn.resized.connect(func(): btn.pivot_offset = btn.size * 0.5)
-			_add_press_anim(btn)
 	_update_ui()
 	if _progress_bar != null: _progress_bar.animate()
+	_animate_entrance()
 
 func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	runtime = rt
@@ -208,8 +191,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 		debug_picker.setup(b, pl, endless_rt, rt)
 
 func _on_debug_pressed() -> void:
-	if debug_picker != null:
-		debug_picker.visible = not debug_picker.visible
+	if debug_picker != null: debug_picker.visible = not debug_picker.visible
 
 func _unhandled_input(event: InputEvent) -> void:
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and not event.echo:
@@ -255,22 +237,42 @@ func _style_primary_endless() -> void:
 	for s in ["normal", "hover", "pressed", "focus"]: endless_btn.add_theme_stylebox_override(s, style)
 	endless_btn.add_theme_color_override("font_color", Color.WHITE)
 
+func _animate_entrance() -> void:
+	if not LayoutTokens.motion_enabled: return
+	var logo: Control = find_child("CandyLogo", true, false) as Control
+	if logo != null:
+		logo.pivot_offset = logo.size * 0.5
+		logo.scale = Vector2(0.6, 0.6)
+		logo.modulate.a = 0.0
+		var tw := create_tween()
+		tw.tween_property(logo, "modulate:a", 1.0, 0.2)
+		tw.parallel().tween_property(logo, "scale", Vector2.ONE, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_callback(func(): TweenHelpers.bob(logo, 8.0, 3.2))
+
+	if _hero_mascot != null:
+		var bubble: Control = _hero_mascot.bubble
+		if bubble != null:
+			bubble.pivot_offset = Vector2(bubble.size.x * 0.5, bubble.size.y)
+			bubble.scale = Vector2.ZERO
+			var btw := create_tween()
+			btw.tween_interval(1.2)
+			btw.tween_property(bubble, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		if _hero_mascot.mascot != null:
+			_hero_mascot.mascot.drop_in(0.4)
+
+	if _progress_bar != null:
+		TweenHelpers.rise_in(_progress_bar, 0.8)
+
+	if play_btn != null:
+		TweenHelpers.rise_in(play_btn, 1.0)
+		get_tree().create_timer(1.9).timeout.connect(func():
+			if is_instance_valid(play_btn):
+				TweenHelpers.pulse(play_btn, 0.0)
+		)
+
 func _on_play() -> void: play_pressed.emit()
 func _on_endless() -> void: endless_pressed.emit()
 func _on_options() -> void: options_pressed.emit()
-
-func _add_press_anim(button: Button) -> void:
-	button.button_down.connect(func():
-		button.pivot_offset = button.size * 0.5
-		var tw := button.create_tween()
-		tw.tween_property(button, "scale", Vector2(0.95, 0.95), 0.06)
-	)
-	button.button_up.connect(func():
-		button.pivot_offset = button.size * 0.5
-		var tw := button.create_tween()
-		tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-		tw.tween_property(button, "scale", Vector2.ONE, 0.15)
-	)
 
 func _on_help() -> void:
 	if _help_overlay != null: return
@@ -284,13 +286,10 @@ func _close_help() -> void:
 
 func _set_round_icon(button: Button, path: String, side: float) -> void:
 	var center := CenterContainer.new()
-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	button.add_child(center)
 	var icon := TextureRect.new()
-	icon.texture = load(path) as Texture2D
-	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.custom_minimum_size = Vector2.ONE * side
+	icon.texture = load(path) as Texture2D; icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; icon.custom_minimum_size = Vector2.ONE * side
 	icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	center.add_child(icon)

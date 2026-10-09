@@ -59,16 +59,9 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 		session = PlaySession.new(custom_lvl)
 	elif runtime != null:
 		if runtime.current_session != null:
-			if runtime.current_session.phase != PlaySession.Phase.ACTIVE:
-				session = runtime.restart_level()
-				new_level = session != null
-			else:
-				session = runtime.current_session
+			session = runtime.current_session
 		elif runtime.has_pending_session():
 			session = runtime.resume_level()
-			if session != null and session.phase != PlaySession.Phase.ACTIVE:
-				session = runtime.restart_level()
-				new_level = session != null
 		if session == null:
 			session = runtime.start_level(runtime.current_level_label())
 			new_level = session != null
@@ -117,10 +110,10 @@ func _update_timer(_delta: float) -> void:
 	var secs: int = total_secs % 60
 	timer_label.text = "%02d:%02d" % [mins, secs]
 
-func _update_hearts(animate_loss: bool = false) -> void:
+func _update_hearts(animate_loss: bool = false, found_region: String = "") -> void:
 	if hearts_display == null or session == null:
 		return
-	PuzzleLayout.refresh_status(session, region_display, hearts_display, animate_loss)
+	PuzzleLayout.refresh_status(session, region_display, hearts_display, animate_loss, found_region)
 
 func _on_board_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
@@ -230,7 +223,7 @@ func _on_settings() -> void:
 	if board != null: board.skip_entry_wave()
 	options_pressed.emit()
 
-func _on_candy_found(row: int, col: int, _region: String) -> void:
+func _on_candy_found(row: int, col: int, region: String) -> void:
 	if hint_coordinator.is_hint_showing():
 		hint_coordinator.dismiss_hint()
 	if board != null:
@@ -242,7 +235,7 @@ func _on_candy_found(row: int, col: int, _region: String) -> void:
 		if required > 1 and found == int((required + 1) / 2) and found < required:
 			sfx.play(SfxCatalog.Effect.PROGRESS_COMPLETE)
 	Vibration.pulse(Vibration.Strength.NORMAL)
-	_update_hearts()
+	_update_hearts(false, region)
 	if board != null:
 		board.clear_highlight()
 		board.redraw()

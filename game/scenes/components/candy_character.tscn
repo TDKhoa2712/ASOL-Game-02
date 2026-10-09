@@ -1,0 +1,138 @@
+[gd_scene load_steps=17 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/candy_character.gd" id="1_dlhnj"]
+[ext_resource type="Texture2D" path="res://assets/candy/shadow.svg" id="2_0cns7"]
+[ext_resource type="Texture2D" path="res://assets/candy/wing_l.svg" id="3_2473q"]
+[ext_resource type="Texture2D" path="res://assets/candy/wing_r.svg" id="4_3yyv6"]
+[ext_resource type="Texture2D" path="res://assets/candy/leg_l.svg" id="5_ikehe"]
+[ext_resource type="Texture2D" path="res://assets/candy/leg_r.svg" id="6_7icmt"]
+[ext_resource type="Texture2D" path="res://assets/candy/body.svg" id="7_p863w"]
+[ext_resource type="Texture2D" path="res://assets/candy/crack.svg" id="8_nf8km"]
+[ext_resource type="Texture2D" path="res://assets/candy/face_normal.svg" id="9_5mqps"]
+[ext_resource type="Texture2D" path="res://assets/candy/heart_prop.svg" id="10_mauuc"]
+[ext_resource type="Texture2D" path="res://assets/candy/arm.svg" id="11_awd0s"]
+[ext_resource type="Texture2D" path="res://assets/candy/tear.svg" id="12_t0ol0"]
+[ext_resource type="Texture2D" path="res://assets/candy/fx_happy.svg" id="13_8ar0y"]
+[ext_resource type="Texture2D" path="res://assets/ui/heart_small.svg" id="14_r17dv"]
+
+[sub_resource type="Gradient" id="Gradient_sb3pu"]
+offsets = PackedFloat32Array(0.6, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="Gradient" id="Gradient_5a6g0"]
+offsets = PackedFloat32Array(0, 0.25, 0.5, 0.75, 1)
+colors = PackedColorArray(1, 0.352941, 0.305882, 1, 1, 0.788235, 0.235294, 1, 0.239216, 0.545098, 0.921569, 1, 0.247059, 0.705882, 0.529412, 1, 0.72549, 0.541176, 0.941176, 1)
+
+[node name="CandyCharacter" type="Node2D"]
+script = ExtResource("1_dlhnj")
+expression = "normal"
+arms_pose = "auto"
+palette = "normal"
+idle_style = "hop"
+wing_droop = 0.0
+cracked = false
+auto_blink = true
+
+[node name="Shadow" type="Sprite2D" parent="."]
+position = Vector2(0, 172)
+texture = ExtResource("2_0cns7")
+
+[node name="Rig" type="Node2D" parent="."]
+
+[node name="Squash" type="Node2D" parent="Rig"]
+position = Vector2(0, 168)
+
+[node name="Art" type="Node2D" parent="Rig/Squash"]
+position = Vector2(0, -168)
+
+[node name="WingL" type="Sprite2D" parent="Rig/Squash/Art"]
+position = Vector2(-136, 0)
+texture = ExtResource("3_2473q")
+centered = false
+offset = Vector2(-184, -256)
+
+[node name="WingR" type="Sprite2D" parent="Rig/Squash/Art"]
+position = Vector2(136, 0)
+texture = ExtResource("4_3yyv6")
+centered = false
+offset = Vector2(-456, -256)
+
+[node name="LegL" type="Sprite2D" parent="Rig/Squash/Art"]
+position = Vector2(-36, 112)
+texture = ExtResource("5_ikehe")
+centered = false
+offset = Vector2(-284, -368)
+
+[node name="LegR" type="Sprite2D" parent="Rig/Squash/Art"]
+position = Vector2(36, 112)
+texture = ExtResource("6_7icmt")
+centered = false
+offset = Vector2(-356, -368)
+
+[node name="Body" type="Sprite2D" parent="Rig/Squash/Art"]
+texture = ExtResource("7_p863w")
+centered = false
+offset = Vector2(-320, -256)
+
+[node name="Crack" type="Sprite2D" parent="Rig/Squash/Art"]
+visible = false
+texture = ExtResource("8_nf8km")
+centered = false
+offset = Vector2(-320, -256)
+
+[node name="Face" type="Sprite2D" parent="Rig/Squash/Art"]
+texture = ExtResource("9_5mqps")
+centered = false
+offset = Vector2(-320, -256)
+
+[node name="HeartProp" type="Sprite2D" parent="Rig/Squash/Art"]
+visible = false
+texture = ExtResource("10_mauuc")
+centered = false
+offset = Vector2(-320, -256)
+
+[node name="ArmL" type="Sprite2D" parent="Rig/Squash/Art"]
+texture = ExtResource("11_awd0s")
+
+[node name="ArmRPivot" type="Node2D" parent="Rig/Squash/Art"]
+position = Vector2(108, -20)
+
+[node name="ArmR" type="Sprite2D" parent="Rig/Squash/Art/ArmRPivot"]
+texture = ExtResource("11_awd0s")
+
+[node name="TearL" type="Sprite2D" parent="Rig/Squash/Art"]
+visible = false
+position = Vector2(-48, 16)
+texture = ExtResource("12_t0ol0")
+
+[node name="TearR" type="Sprite2D" parent="Rig/Squash/Art"]
+visible = false
+position = Vector2(52, 16)
+texture = ExtResource("12_t0ol0")
+
+[node name="FX" type="Sprite2D" parent="Rig/Squash/Art"]
+visible = false
+position = Vector2(0, -136)
+texture = ExtResource("13_8ar0y")
+centered = false
+offset = Vector2(-320, -120)
+
+[node name="Burst" type="CPUParticles2D" parent="."]
+position = Vector2(0, -40)
+emitting = false
+amount = 18
+lifetime = 1.1
+one_shot = true
+explosiveness = 1.0
+texture = ExtResource("14_r17dv")
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 700)
+initial_velocity_min = 380.0
+initial_velocity_max = 640.0
+angular_velocity_min = -300.0
+angular_velocity_max = 300.0
+scale_amount_min = 0.9
+scale_amount_max = 1.6
+color_ramp = SubResource("Gradient_sb3pu")
+color_initial_ramp = SubResource("Gradient_5a6g0")

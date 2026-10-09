@@ -84,16 +84,18 @@ func _get_colors() -> Dictionary:
 		"text_shadow": Palette.WIN_RIBBON_TEXT_SHADOW,
 	}
 
-func animate() -> void:
+func animate(tilt_deg: float = 0.0) -> void:
 	if not LayoutTokens.motion_enabled:
 		return
 	pivot_offset = Vector2(custom_minimum_size.x * 0.5, custom_minimum_size.y * 0.5)
-	scale = Vector2(0.7, 0.7)
+	var base_y := position.y
+	position.y = base_y - 140.0
 	modulate.a = 0.0
 	var tw := create_tween()
-	tw.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	tw.tween_property(self, "scale", Vector2.ONE, 0.45)
-	tw.parallel().tween_property(self, "modulate:a", 1.0, 0.25)
+	tw.tween_property(self, "modulate:a", 1.0, 0.15)
+	tw.parallel().tween_property(self, "position:y", base_y, 0.7).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if tilt_deg != 0.0:
+		tw.tween_property(self, "rotation_degrees", tilt_deg, 0.4).set_trans(Tween.TRANS_SINE)
 
 class _RibbonTails extends Control:
 	var _tail_color: Color

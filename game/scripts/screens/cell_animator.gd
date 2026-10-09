@@ -6,23 +6,23 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
+const X_MARK_TEX = preload("res://assets/ui/board/x_mark.svg")
+
 static var _tex_cache: Dictionary = {}
 
 static func get_mark_texture(is_error: bool, high_contrast: bool) -> Texture2D:
-	var key := "err" if is_error else ("hc" if high_contrast else "white")
+	if not is_error and not high_contrast:
+		return X_MARK_TEX
+	var key := "err" if is_error else "hc"
 	if _tex_cache.has(key):
 		return _tex_cache[key]
 
-	var stroke_hex := "#E53935" if is_error else ("#344054" if high_contrast else "#FFF8F0")
-	var stroke_w := "8" if high_contrast else "7"
-	var badge_svg := ""
-	if is_error:
-		badge_svg = '<circle cx="50" cy="14" r="8" fill="#FFFFFF"/><circle cx="50" cy="14" r="6" fill="#E53935"/><line x1="47.5" y1="11.5" x2="52.5" y2="16.5" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/><line x1="52.5" y1="11.5" x2="47.5" y2="16.5" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round"/>'
-
-	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path d="M 14 14 Q 31 33 50 50" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round"/><path d="M 50 14 Q 33 31 14 50" fill="none" stroke="%s" stroke-width="%s" stroke-linecap="round"/>%s</svg>' % [stroke_hex, stroke_w, stroke_hex, stroke_w, badge_svg]
+	# Same geometry as x_mark.svg; error = red, high contrast = dark, no badge.
+	var stroke_hex := "#E53935" if is_error else "#344054"
+	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="%s" stroke-width="3.4" stroke-linecap="round"/></svg>' % stroke_hex
 
 	var img := Image.new()
-	var err := img.load_svg_from_string(svg, 2.0)
+	var err := img.load_svg_from_string(svg, 4.0)
 	if err == OK:
 		var tex := ImageTexture.create_from_image(img)
 		_tex_cache[key] = tex

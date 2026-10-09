@@ -1,6 +1,7 @@
 extends SceneTree
 
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 
 var _fails: Array[String] = []
 
@@ -10,6 +11,8 @@ func _init() -> void:
 	_test_signals_emitted()
 	_test_apply_label_varies()
 	_test_formatted_text_with_params()
+	_test_buttons_match_board_style()
+	_test_hint_badge_hidden_without_limit()
 	if _fails.is_empty():
 		print("HINT_OVERLAY_PASS")
 		quit(0)
@@ -81,3 +84,17 @@ func _make_hint(strategy: String, action: String) -> Dictionary:
 func _assert(condition: bool, msg: String) -> void:
 	if not condition:
 		_fails.append("FAIL: " + msg)
+
+func _test_buttons_match_board_style() -> void:
+	var overlay := HintOverlay.new()
+	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
+	for btn in [overlay._apply_btn, overlay._dismiss_btn, overlay._detail_btn]:
+		_assert(btn.has_theme_stylebox_override("normal"), "hint button uses board 3D style")
+	overlay.free()
+
+func _test_hint_badge_hidden_without_limit() -> void:
+	var root := Control.new()
+	var n: Dictionary = PuzzleLayout.build(root)
+	var badge: Node = n["hint"].get_node_or_null("Badge")
+	_assert(badge == null or not badge.visible, "hint badge hidden while hints are unlimited")
+	root.free()

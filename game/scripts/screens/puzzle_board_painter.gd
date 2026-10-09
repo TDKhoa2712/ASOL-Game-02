@@ -14,7 +14,7 @@ static var _card_cr: int = -1
 static func get_cell_bg_tex() -> Texture2D:
 	if _cell_bg_tex != null:
 		return _cell_bg_tex
-	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="0" y="0" width="128" height="128" rx="18" ry="18" fill="#FFFFFF"/></svg>'
+	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="0" y="0" width="128" height="128" rx="26" ry="26" fill="#FFFFFF"/></svg>'
 	var img := Image.new()
 	var err := img.load_svg_from_string(svg, 2.0)
 	if err == OK:
@@ -24,12 +24,15 @@ static func get_cell_bg_tex() -> Texture2D:
 static func get_border_tex() -> Texture2D:
 	if _border_tex != null:
 		return _border_tex
-	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="3" y="3" width="122" height="122" rx="16" ry="16" fill="none" stroke="#FFFFFF" stroke-width="6"/></svg>'
+	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="3" y="3" width="122" height="122" rx="20" ry="20" fill="none" stroke="#FFFFFF" stroke-width="6"/></svg>'
 	var img := Image.new()
 	var err := img.load_svg_from_string(svg, 2.0)
 	if err == OK:
 		_border_tex = ImageTexture.create_from_image(img)
 	return _border_tex
+
+static var _border_sb: StyleBoxFlat = null
+static var _border_cr: int = -1
 
 static func _get_card_sb(cr: int) -> StyleBoxFlat:
 	if _card_sb != null and _card_cr == cr:
@@ -37,15 +40,34 @@ static func _get_card_sb(cr: int) -> StyleBoxFlat:
 	_card_sb = StyleBoxFlat.new()
 	_card_sb.bg_color = Palette.PILL_BG
 	_card_sb.set_corner_radius_all(cr)
+	_card_sb.shadow_color = Palette.BOARD_SHADOW
+	_card_sb.shadow_size = 18
+	_card_sb.shadow_offset = Vector2(0, 8)
 	_card_cr = cr
+	_border_sb = null
 	return _card_sb
+
+static func _get_border_sb(cr: int) -> StyleBoxFlat:
+	if _border_sb != null and _border_cr == cr:
+		return _border_sb
+	_border_sb = StyleBoxFlat.new()
+	_border_sb.bg_color = Color.TRANSPARENT
+	_border_sb.draw_center = false
+	_border_sb.border_color = Palette.BOARD_BORDER
+	var bw := int(LayoutTokens.BOARD_BORDER_WIDTH)
+	_border_sb.set_border_width_all(bw)
+	_border_sb.set_corner_radius_all(cr)
+	_border_cr = cr
+	return _border_sb
 
 static func draw(board: Variant) -> void:
 	if board._session == null:
 		return
 	var br: Rect2 = board._board_rect()
-	var card_cr := int(br.size.x * LayoutTokens.CARD_CORNER_RATIO)
-	board.draw_style_box(_get_card_sb(card_cr), br.grow(LayoutTokens.CARD_GROW))
+	var card_rect: Rect2 = board._card_rect()
+	var card_cr := int(card_rect.size.x * LayoutTokens.CARD_CORNER_RATIO)
+	board.draw_style_box(_get_card_sb(card_cr), card_rect)
+	board.draw_style_box(_get_border_sb(card_cr), card_rect)
 
 	var count := int(board._session.level.get("size", 0))
 	if count <= 0:
@@ -74,7 +96,25 @@ static func draw(board: Variant) -> void:
 			row_kinds[c] = kind
 		kinds[r] = row_kinds
 
-	# Pass 1: Cell backgrounds
+	var depth := cell_w * LayoutTokens.CELL_DEPTH_RATIO
+
+	# Pass 1a: Cell bottom edge (3D depth)
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var cell_rect: Rect2 = board._cell_rect(r, c)
+			if cell_scale != 1.0:
+				board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
+			var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
+			var edge_col := base_col.darkened(0.22)
+			var edge_rect := Rect2(cell_rect.position + Vector2(0, depth), cell_rect.size)
+			board.draw_texture_rect(bg_tex, edge_rect, false, edge_col)
+			if cell_scale != 1.0:
+				board.draw_set_transform(Vector2.ZERO)
+
+	# Pass 1b: Cell backgrounds
 	for r in range(count):
 		for c in range(count):
 			var cell_scale: float = board.cell_entry_scale(r, c)

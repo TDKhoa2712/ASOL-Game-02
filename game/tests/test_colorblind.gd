@@ -1,5 +1,7 @@
 extends SceneTree
 
+const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
+const PlaySession = preload("res://scripts/input/play_session.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 
@@ -13,6 +15,10 @@ func _init() -> void:
 	_test_overlay_tint_dark()
 	_test_overlay_tint_light()
 	_test_luminance_range()
+	_test_colorblind_keeps_same_colors()
+	_test_highest_degree_zone_colored_first()
+	_test_small_boards_use_primary_colors()
+	_test_plain_cells_without_colorblind()
 	if _fails.is_empty():
 		print("COLORBLIND_PASS")
 		quit(0)
@@ -105,3 +111,41 @@ func _test_luminance_range() -> void:
 func _assert(condition: bool, label: String) -> void:
 	if not condition:
 		_fails.append("FAIL: " + label)
+
+const LEVEL_5 := {"id": "T", "size": 5, "regions": ["AABBB", "AABCB", "DDCCB", "DDEEB", "DDEEB"], "solution": [0, 3, 1, 4, 2], "givens": []}
+
+func _test_colorblind_keeps_same_colors() -> void:
+	var regions: Array = LEVEL_5["regions"]
+	var plain := RegionPainter.assign_colors(5, regions, Palette.ZONE_COLORS)
+	var cb := RegionPainter.assign_with_overlays(5, regions, Palette.ZONE_COLORS)
+	for z in plain:
+		_assert(cb.colors[z] == plain[z], "colorblind keeps zone %s color, only adds pattern" % z)
+
+func _test_highest_degree_zone_colored_first() -> void:
+	# Degree ordering: the zone with most neighbors is colored first, so it gets palette[0].
+	var regions: Array = LEVEL_5["regions"]
+	var grid := RegionPainter.precompute_grid(5, regions)
+	var adj := RegionPainter._build_adjacency(5, grid)
+	var top := ""
+	for z in ["A", "B", "C", "D", "E"]:
+		if top == "" or adj[z].size() > adj[top].size():
+			top = z
+	var colors := RegionPainter.assign_colors(5, regions, Palette.ZONE_COLORS)
+	_assert(colors[top] == Palette.ZONE_COLORS[0], "highest-degree zone %s gets first palette color" % top)
+
+func _test_small_boards_use_primary_colors() -> void:
+	var regions: Array = LEVEL_5["regions"]
+	var colors := RegionPainter.assign_colors(5, regions, Palette.ZONE_COLORS)
+	var primary := Palette.ZONE_COLORS.slice(0, RegionPainter.PRIMARY_COLOR_COUNT)
+	for z in colors:
+		_assert(primary.has(colors[z]), "zone %s uses a primary mockup color" % z)
+
+func _test_plain_cells_without_colorblind() -> void:
+	var board := PuzzleBoard.new()
+	board.set_colorblind(false)
+	board.configure(PlaySession.new(LEVEL_5.duplicate(true)), false)
+	_assert(board._zone_overlays.is_empty(), "no patterns when colorblind is off")
+	board.set_colorblind(true)
+	board.configure(PlaySession.new(LEVEL_5.duplicate(true)), false)
+	_assert(not board._zone_overlays.is_empty(), "patterns appear when colorblind is on")
+	board.free()

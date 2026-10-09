@@ -1,4 +1,4 @@
-# win_screen.gd — Victory screen with animated mascot, hearts, ribbon, stats, and next-level preview.
+﻿# win_screen.gd — Victory screen with animated mascot, hearts, ribbon, stats, and next-level preview.
 extends Control
 
 signal next_pressed()
@@ -16,6 +16,10 @@ const StatCard = preload("res://scripts/ui/stat_card.gd")
 const ConfettiLayer = preload("res://scripts/ui/confetti_layer.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
+const CandyCharacterScene = preload("res://scenes/components/candy_character.tscn")
+const CandyCharacter = preload("res://scripts/ui/candy_character.gd")
+const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
+const TwinkleStar = preload("res://scripts/ui/twinkle_star.gd")
 
 var _is_last_level: bool = false
 var _level_id: String = ""
@@ -33,7 +37,8 @@ var ribbon: RibbonBanner
 var message_label: Label:
 	get: return ribbon.label if ribbon != null else null
 var _hearts: HeartDisplay
-var _mascot: TextureRect
+var mascot: CandyCharacter
+var _mascot_host: Control
 var stat_card: StatCard
 var _next_card: PanelContainer
 var next_btn: Button
@@ -45,7 +50,7 @@ func _ensure_nodes() -> void:
 	if _bg != null: return
 	_bg = GradientBg.new(Palette.WIN_BG_CENTER, Palette.WIN_BG_MID, Palette.WIN_BG_EDGE); add_child(_bg)
 	_rays = SunburstRays.new(); add_child(_rays)
-	_confetti = ConfettiLayer.new(40); add_child(_confetti)
+	_confetti = ConfettiLayer.new(40); _confetti.z_index = 0; add_child(_confetti)
 
 	var safe := MarginContainer.new()
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -97,24 +102,36 @@ func _ensure_nodes() -> void:
 	ribbon = RibbonBanner.new(tr("result.win.title"), "win")
 	stack.add_child(ribbon)
 
-	# 3. Hearts
+	# 3. Hearts + sparkle stars
+	var hearts_wrap := Control.new()
+	hearts_wrap.custom_minimum_size = Vector2(0, 200)
+	hearts_wrap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	stack.add_child(hearts_wrap)
+
 	_hearts = HeartDisplay.new(3, _hearts_left, "win")
-	stack.add_child(_hearts)
+	_hearts.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
+	_hearts.grow_horizontal = Control.GROW_DIRECTION_BOTH
+	hearts_wrap.add_child(_hearts)
 
-	# 4. Mascot & Ground Shadow
-	var mascot_box := VBoxContainer.new()
-	mascot_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	mascot_box.add_theme_constant_override("separation", -8); stack.add_child(mascot_box)
+	for s in [[Vector2(-250, 16), 22.0, Color("#FFC93C"), 0.0], [Vector2(226, -4), 30.0, Color("#FFC93C"), 0.7], [Vector2(110, -20), 20.0, Color("#7CC8FF"), 1.1]]:
+		var star := TwinkleStar.new(s[1], s[2]); star.modulate.a = 0.3
+		star.anchor_left = 0.5; star.anchor_right = 0.5
+		star.offset_left = s[0].x; star.offset_top = s[0].y; star.offset_right = s[0].x + s[1]; star.offset_bottom = s[0].y + s[1]
+		hearts_wrap.add_child(star)
+		if LayoutTokens.motion_enabled: _animate_twinkle(star, s[3])
 
-	_mascot = TextureRect.new()
-	_mascot.texture = load("res://assets/ui/result/mascot_happy.svg") as Texture2D
-	_mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; _mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_mascot.custom_minimum_size = Vector2(460, 290); _mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mascot_box.add_child(_mascot)
+	# 4. Mascot Component
+	_mascot_host = Control.new()
+	_mascot_host.custom_minimum_size = Vector2(600, 380)
+	_mascot_host.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	stack.add_child(_mascot_host)
 
-	var shadow := _GroundShadow.new()
-	shadow.custom_minimum_size = Vector2(260, 36); shadow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	mascot_box.add_child(shadow)
+	mascot = CandyCharacterScene.instantiate()
+	mascot.position = Vector2(300, 184)
+	mascot.scale = Vector2(1.05, 1.05)
+	mascot.expression = "happy"
+	mascot.idle_style = "hop" if LayoutTokens.motion_enabled else "none"
+	_mascot_host.add_child(mascot)
 
 	# 5. Stat card
 	stat_card = StatCard.new(_build_stats())
@@ -133,27 +150,33 @@ func _create_next_card() -> PanelContainer:
 	card.name = "NextCard"
 	card.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var nc_style := StyleBoxFlat.new()
-	nc_style.bg_color = Color.WHITE; nc_style.set_corner_radius_all(28)
+	nc_style.bg_color = Color.WHITE; nc_style.set_corner_radius_all(52)
 	nc_style.shadow_color = Color("#EFD27E"); nc_style.shadow_size = 8; nc_style.shadow_offset = Vector2(0, 7)
-	nc_style.set_content_margin_all(20)
+	nc_style.set_content_margin_all(28)
 	card.add_theme_stylebox_override("panel", nc_style)
 
 	var inner := VBoxContainer.new()
-	inner.add_theme_constant_override("separation", 16)
+	inner.add_theme_constant_override("separation", 28)
 	card.add_child(inner)
 
 	var row := HBoxContainer.new()
-	row.name = "PreviewRow"; row.add_theme_constant_override("separation", 18)
+	row.name = "PreviewRow"; row.add_theme_constant_override("separation", 28)
 	inner.add_child(row)
 
+	var mini_host := Control.new()
+	mini_host.custom_minimum_size = Vector2(148, 148)
+	mini_host.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	row.add_child(mini_host)
+
 	var mini_wrap := PanelContainer.new()
-	mini_wrap.custom_minimum_size = Vector2(106, 106)
-	mini_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	mini_wrap.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mini_wrap.pivot_offset = Vector2(74, 74)
+	mini_wrap.rotation = deg_to_rad(-6.0)
 	var mg_style := StyleBoxFlat.new()
-	mg_style.bg_color = Color("#FAF0DA"); mg_style.set_corner_radius_all(18)
-	mg_style.shadow_color = Color("#E2C46A"); mg_style.shadow_size = 5; mg_style.shadow_offset = Vector2(0, 4)
+	mg_style.bg_color = Palette.WIN_NEXT_BOARD_BG; mg_style.set_corner_radius_all(28)
+	mg_style.shadow_color = Palette.WIN_NEXT_BOARD_SHADOW; mg_style.shadow_size = 5; mg_style.shadow_offset = Vector2(0, 4)
 	mini_wrap.add_theme_stylebox_override("panel", mg_style)
-	row.add_child(mini_wrap)
+	mini_host.add_child(mini_wrap)
 
 	var mini_center := CenterContainer.new()
 	mini_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -164,7 +187,7 @@ func _create_next_card() -> PanelContainer:
 	mini_grid.columns = cols
 	var gap: int = 3 if cols <= 6 else 2
 	mini_grid.add_theme_constant_override("h_separation", gap); mini_grid.add_theme_constant_override("v_separation", gap)
-	var cell_side: float = maxf(6.0, floor((82.0 - (cols - 1) * gap) / float(cols)))
+	var cell_side: float = maxf(6.0, floor((120.0 - (cols - 1) * gap) / float(cols)))
 	var pcols: Array[Color] = [Color("#38BDF8"), Color("#FBBF24"), Color("#FB923C"), Color("#34D399"), Color("#F5E8C8")]
 	var pattern: Array[int] = [4, 0, 4, 4, 4, 3, 1, 4, 4, 4, 1, 2, 2, 4, 4, 1]
 	for ci in range(cols * cols):
@@ -183,14 +206,14 @@ func _create_next_card() -> PanelContainer:
 
 	var next_hdr := Label.new()
 	next_hdr.name = "NextLabel"; next_hdr.text = tr("result.win.next_header")
-	next_hdr.add_theme_font_size_override("font_size", 20); next_hdr.add_theme_color_override("font_color", Color("#64748B"))
+	next_hdr.add_theme_font_size_override("font_size", 28); next_hdr.add_theme_color_override("font_color", Color("#64748B"))
 	var bold := FontTokens.body_bold()
 	if bold != null: next_hdr.add_theme_font_override("font", bold)
 	info.add_child(next_hdr)
 
 	var title := Label.new()
 	title.name = "NextTitle"; title.text = _next_label
-	title.add_theme_font_size_override("font_size", 36); title.add_theme_color_override("font_color", Color("#1E293B"))
+	title.add_theme_font_size_override("font_size", 60); title.add_theme_color_override("font_color", Color("#1E293B"))
 	var hfont := FontTokens.heading()
 	if hfont != null: title.add_theme_font_override("font", hfont)
 	info.add_child(title)
@@ -200,7 +223,7 @@ func _create_next_card() -> PanelContainer:
 
 	var diff_lbl := Label.new()
 	diff_lbl.name = "NextDiff"; diff_lbl.text = _difficulty_display(_next_difficulty)
-	diff_lbl.add_theme_font_size_override("font_size", 18); diff_lbl.add_theme_color_override("font_color", Color.WHITE)
+	diff_lbl.add_theme_font_size_override("font_size", 26); diff_lbl.add_theme_color_override("font_color", Color.WHITE)
 	if bold != null: diff_lbl.add_theme_font_override("font", bold)
 	var dp_style := StyleBoxFlat.new()
 	dp_style.bg_color = _difficulty_color(_next_difficulty); dp_style.set_corner_radius_all(999)
@@ -210,14 +233,25 @@ func _create_next_card() -> PanelContainer:
 	var size_lbl := Label.new()
 	size_lbl.name = "NextSize"
 	size_lbl.text = "%dx%d" % [_next_size, _next_size] if _next_size > 0 else ""
-	size_lbl.add_theme_font_size_override("font_size", 22); size_lbl.add_theme_color_override("font_color", Color("#64748B"))
+	size_lbl.add_theme_font_size_override("font_size", 28); size_lbl.add_theme_color_override("font_color", Color("#64748B"))
 	if bold != null: size_lbl.add_theme_font_override("font", bold)
 	meta_row.add_child(size_lbl)
 
-	next_btn = ActionButton.create(tr("result.win.next") + " ➔", Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 94)
+	next_btn = ActionButton.create(tr("result.win.next") + " ➔", Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 52, 128)
+	next_btn.clip_contents = true
 	next_btn.pressed.connect(_on_next); inner.add_child(next_btn)
 
-	replay_btn = ActionButton.create(tr("result.win.replay"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 94)
+	var glint := ColorRect.new()
+	glint.name = "Glint"
+	glint.color = Color(1, 1, 1, 0.28)
+	glint.custom_minimum_size = Vector2(70, 170)
+	glint.size = Vector2(70, 170)
+	glint.position = Vector2(-60, -10)
+	glint.rotation = deg_to_rad(-20.0)
+	glint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	next_btn.add_child(glint)
+
+	replay_btn = ActionButton.create(tr("result.win.replay"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 52, 128)
 	replay_btn.pressed.connect(_on_replay); replay_btn.visible = false; inner.add_child(replay_btn)
 	return card
 
@@ -277,20 +311,44 @@ func _update_ui() -> void:
 
 func _play_entrance_animations() -> void:
 	if not LayoutTokens.motion_enabled: return
+	if _next_card != null: _next_card.modulate.a = 0.0
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if not is_inside_tree(): return
 	if _confetti != null: _confetti.start()
 	if ribbon != null: ribbon.animate()
 	if _hearts != null: _hearts.animate()
 	if stat_card != null: stat_card.animate(0.4)
+	if _next_card != null: TweenHelpers.rise_in(_next_card, 1.3)
+	if mascot != null:
+		mascot.drop_in(0.8)
+		get_tree().create_timer(2.2).timeout.connect(func():
+			if is_instance_valid(mascot): mascot.celebrate()
+		)
+	if next_btn != null:
+		get_tree().create_timer(2.0).timeout.connect(func():
+			if is_instance_valid(next_btn): TweenHelpers.pulse(next_btn, 0.0)
+		)
+	_animate_glint()
 
 func _on_next() -> void: next_pressed.emit()
 func _on_replay() -> void: replay_pressed.emit()
 func _on_home() -> void: home_pressed.emit()
 
-class _GroundShadow extends Control:
-	func _draw() -> void:
-		var pts: PackedVector2Array = []
-		var rx: float = size.x * 0.5; var ry: float = size.y * 0.5; var center := Vector2(rx, ry)
-		for i in range(32):
-			var a: float = (float(i) / 32.0) * TAU
-			pts.append(center + Vector2(cos(a) * rx, sin(a) * ry))
-		draw_colored_polygon(pts, Color(0.78, 0.59, 0.16, 0.28))
+static func _animate_twinkle(star: Control, delay: float) -> void:
+	var tw := star.create_tween().set_loops()
+	tw.tween_interval(delay)
+	tw.tween_property(star, "scale", Vector2(1.1, 1.1), 0.8).set_trans(Tween.TRANS_SINE)
+	tw.parallel().tween_property(star, "modulate:a", 1.0, 0.8)
+	tw.parallel().tween_property(star, "rotation_degrees", 45.0, 0.8)
+	tw.tween_property(star, "scale", Vector2(0.4, 0.4), 0.8).set_trans(Tween.TRANS_SINE)
+	tw.parallel().tween_property(star, "modulate:a", 0.3, 0.8)
+	tw.parallel().tween_property(star, "rotation_degrees", 0.0, 0.8)
+
+func _animate_glint() -> void:
+	if not LayoutTokens.motion_enabled: return
+	var glint: ColorRect = next_btn.get_node_or_null("Glint") if next_btn != null else null
+	if glint == null: return
+	var tw := glint.create_tween().set_loops()
+	tw.tween_interval(2.2); tw.tween_property(glint, "position:x", -160.0, 0.0)
+	tw.tween_property(glint, "position:x", 420.0, 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT); tw.tween_interval(1.8)

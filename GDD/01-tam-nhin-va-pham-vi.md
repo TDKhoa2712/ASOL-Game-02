@@ -36,7 +36,7 @@ Kẹo cho sẵn là viên đã được tìm trước khi vào màn, hiển th�
 | Save cục bộ, Retry, Undo X, Restart | Không tài khoản, cloud save hoặc mạng bắt buộc |
 | Android và iOS | Phải kiểm thiết bị thật trước khi tuyên bố phát hành |
 
-Endless, daily challenge, leaderboard, generator runtime, quảng cáo/IAP, điểm danh, vàng/cứu lượt và xây vườn không thuộc bản playtest. R1 tiếp tục là bản chơi liền mạch bốn level; hoàn thiện campaign playtest 30 level thuộc R3, không tự mở R2–R4. Số level và phạm vi bản phát hành chính thức chỉ được quyết định sau playtest theo RST-011.
+**Endless mode** đã triển khai với 4-tier level selection, 5 providers, DDA (PreCandyDecider prefill givens khi fail streak cao) và 36.500+ level trong banks N=4–12. Campaign **advanced** (7×7–12×12) có sẵn. Daily challenge, leaderboard, quảng cáo/IAP, điểm danh, vàng/cứu lượt và xây vườn không thuộc bản playtest. Số level và phạm vi bản phát hành chính thức chỉ được quyết định sau playtest theo RST-011.
 
 ## 4. Nhịp vườn và đường cong học
 
