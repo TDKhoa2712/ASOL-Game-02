@@ -70,7 +70,6 @@ func advance(delta: float, active: bool) -> bool:
 	var idle_slots := MAX_CONCURRENT_IDLE - idle_playing_count()
 	for cell in _cells.keys():
 		var e: Dictionary = _cells[cell]
-		var before := _frame(e)
 		if not e.playing:
 			if e.done or e.anim == "sad": continue
 			e.wait -= delta
@@ -79,7 +78,7 @@ func advance(delta: float, active: bool) -> bool:
 				if idle_slots <= 0: continue
 				idle_slots -= 1
 			e.playing = true; e.t = 0.0
-			changed = changed or _frame(e) != before
+			changed = true
 			continue
 		e.t += delta
 		var info: Dictionary = _meta[e.anim]
@@ -88,8 +87,17 @@ func advance(delta: float, active: bool) -> bool:
 				e.playing = false; e.done = true
 			else:
 				rest(cell); changed = true; continue
-		if _frame(e) != before: changed = true
+		changed = true # body motion is continuous while playing
 	return changed
+
+# Continuous 0..1 progress for MascotMotion; loops wrap, finished win holds 1.
+func progress_of(cell: Vector2i) -> float:
+	if not _cells.has(cell): return 0.0
+	var e: Dictionary = _cells[cell]
+	if not e.playing: return 1.0 if e.done else 0.0
+	var info: Dictionary = _meta[e.anim]
+	var u: float = e.t * info.fps / float(info.count)
+	return fmod(u, 1.0) if info.loop else minf(u, 1.0)
 
 func _frame(e: Dictionary) -> int:
 	var info: Dictionary = _meta[e.anim]

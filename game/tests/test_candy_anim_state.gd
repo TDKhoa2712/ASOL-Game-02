@@ -23,6 +23,7 @@ func _init() -> void:
 	_test_motion_off()
 	_test_sync_rests_placed_cells()
 	_test_motion_toggled_live()
+	_test_progress_is_continuous()
 	if _fails.is_empty():
 		print("CANDY_ANIM_STATE_PASS"); quit(0)
 	else:
@@ -126,3 +127,18 @@ func _test_motion_toggled_live() -> void:
 	_assert(not s.tick(0.5, false, true), "motion off: sad stays still")
 	s.tick(0.0, true, true)
 	_assert(s.tick(0.15, true, true) and s.frame_of(c)[1] > 0, "motion back on: sad resumes looping")
+
+func _test_progress_is_continuous() -> void:
+	var s := CandyAnimState.new(META)
+	var c := Vector2i(0, 0)
+	s.play(c, "appear")
+	_assert(s.progress_of(c) == 0.0, "progress starts at 0")
+	_assert(s.advance(0.01, true), "playing cell redraws every tick even without a frame change")
+	_assert(absf(s.progress_of(c) - 0.025) < 0.001, "progress is continuous (0.01s of 0.4s)")
+	s.play_all("sad")
+	s.advance(0.5, true)
+	_assert(absf(s.progress_of(c) - 0.25) < 0.001, "looping progress wraps (0.5s of 0.4s)")
+	s.play_all("win")
+	for i in 20: s.advance(0.05, true)
+	_assert(s.progress_of(c) == 1.0, "finished win holds progress 1")
+	_assert(s.progress_of(Vector2i(9, 9)) == 0.0, "unknown cell progress 0")

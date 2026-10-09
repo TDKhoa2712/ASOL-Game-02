@@ -77,3 +77,7 @@ Import: VRAM compressed, mipmaps off. Tool có chế độ `--check` để verif
 
 Atlas cho các loại kẹo khác (`bonbon`, `lollipop`, ...), particle mới, âm thanh.
 
+
+## Cập nhật 2026-10-10 — chuyển động hybrid
+
+Để mượt ở mọi tốc độ màn hình, atlas chỉ còn giữ **hình dáng** (biểu cảm, vỗ cánh, thân/cánh buồn, nước mắt) ở vị trí cố định. Chuyển động thân (co giãn, nảy, nhảy, lắc, ửng đỏ) do `game/scripts/screens/mascot_motion.gd` tính liên tục theo `CandyAnimState.progress_of()` và được `candy_cell_drawer.gd` áp khi vẽ, neo tại chân; bóng đổ vẽ runtime và co lại khi nhảy. Board vẽ lại mỗi frame khi còn ô đang chạy, dừng hẳn khi mọi ô nghỉ. Linh vật vẽ ở `MASCOT_TEX_RATIO = 1.15` ô; idle chờ 2.5–5s.
