@@ -24,6 +24,20 @@ const FADE_MS := 150
 const AUTO_MARK_STAGGER_MS := 40
 const LOCK_FADE_MS := 120
 
+# Screen transition animations.
+const RIBBON_DROP_MS := 800
+const HEART_POP_MS := 600
+const HEART_POP_STAGGER_MS := 250
+const MASCOT_RISE_MS := 700
+const CARD_RISE_MS := 700
+const CARD_RISE_STAGGER_MS := 200
+const CONFETTI_FALL_MIN_MS := 3200
+const CONFETTI_FALL_MAX_MS := 6200
+const RAYS_SPIN_MS := 22000
+const BUTTON_PULSE_MS := 1400
+const PROGRESS_FILL_MS := 1200
+const LOGO_IN_MS := 900
+
 # Gameplay.
 const INITIAL_HEARTS := 3
 const DOUBLE_TAP_MS := 350
