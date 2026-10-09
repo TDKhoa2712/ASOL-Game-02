@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://c8e3j5s5dyxh0"
-path="res://.godot/imported/Baloo2-Regular.ttf-c7170eaa0c3863c24de8774a58b599f5.fontdata"
+uid="uid://ca73ye2yrjhu4"
+path="res://.godot/imported/BeVietnamPro-Bold.ttf-72bed21476fded23b0c94890b2d1a0b2.fontdata"
 
 [deps]
 
-source_file="res://assets/fonts/Baloo2-Regular.ttf"
-dest_files=["res://.godot/imported/Baloo2-Regular.ttf-c7170eaa0c3863c24de8774a58b599f5.fontdata"]
+source_file="res://assets/fonts/BeVietnamPro-Bold.ttf"
+dest_files=["res://.godot/imported/BeVietnamPro-Bold.ttf-72bed21476fded23b0c94890b2d1a0b2.fontdata"]
 
 [params]
 
