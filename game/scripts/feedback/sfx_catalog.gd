@@ -35,7 +35,7 @@ const UI_TICK := {
 
 const SHARED_UI_EFFECTS := [Effect.HINT_SHOW, Effect.BTN_PRESS, Effect.RESTART,
 	Effect.TAP_BACK, Effect.TOGGLE_ON, Effect.TOGGLE_OFF, Effect.DIALOG_OPEN,
-	Effect.DIALOG_CLOSE, Effect.UNDO_X, Effect.HINT_APPLY, Effect.HINT_DISMISS, Effect.HINT_WRONG_MARK]
+	Effect.DIALOG_CLOSE, Effect.UNDO_X]
 
 const PRESETS := {
 	Effect.MARK: {
