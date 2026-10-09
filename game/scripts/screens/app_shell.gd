@@ -40,6 +40,8 @@ var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
 var _last_won_elapsed: int = 0
 var _last_won_is_last: bool = false
+var _last_won_hearts: int = 3; var _last_won_mistakes: int = 0
+var _next_level_label: String = ""; var _next_level_size: int = 0; var _next_level_difficulty: String = ""
 var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label: String = ""
 var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 var _options_overlay: Control = null
@@ -129,11 +131,11 @@ func _instantiate_screen(to_name: String) -> void:
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			var elapsed: int = _last_won_elapsed
 			var is_last: bool = _last_won_is_last or (_mode == "campaign" and runtime != null and runtime.is_campaign_done())
-			if screen.has_method("setup"): screen.call("setup", true, elapsed, label, is_last)
+			if screen.has_method("setup"): screen.call("setup", true, elapsed, label, is_last, _last_won_hearts, _last_won_mistakes, _next_level_label, _next_level_size, _next_level_difficulty)
 		"fail":
 			if screen.has_signal("retry_pressed"): screen.connect("retry_pressed", _on_retry_level)
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
-			if screen.has_method("setup"): screen.call("setup", false, 0, label, false)
+			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
 	if screen_host != null: screen_host.add_child(screen)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
@@ -184,17 +186,27 @@ func _on_level_done(won: bool) -> void:
 	var sess = cur_sc.get("session") if (cur_sc != null and cur_sc.get("session") != null) else (cur_rt.current_session if cur_rt != null else null)
 	var elapsed: int = sess.elapsed_ms if sess != null else 0
 	_last_won_elapsed = elapsed
+	_last_won_hearts = sess.hearts if (sess != null and won) else 0
+	_last_won_mistakes = sess.mistake_count if sess != null else 0
+	_next_level_label = ""; _next_level_size = 0; _next_level_difficulty = ""
 	if _debug_mode:
 		_last_won_is_last = _debug_next.is_empty()
 		nav.go_to(NavController.Screen.WIN if won else NavController.Screen.FAIL)
 		return
 	if won:
 		_last_won_is_last = (_mode == "campaign" and runtime.completed_count() + 1 >= runtime.playlist_order().size())
-		var score_data := {"time_ms": elapsed, "mistakes": sess.mistake_count if sess != null else 0, "hints_used": sess.hints_used if sess != null else 0}
+		if not _last_won_is_last and cur_rt != null and cur_rt.has_method("next_level_label"):
+			var nxt_lbl: String = cur_rt.next_level_label(label)
+			if nxt_lbl != "":
+				_next_level_label = nxt_lbl
+				var nxt_entry: Dictionary = cur_rt._resolve_playlist_entry(nxt_lbl) if cur_rt.has_method("_resolve_playlist_entry") else {}
+				if not nxt_entry.is_empty():
+					_next_level_size = int(nxt_entry.get("size", 0)); _next_level_difficulty = str(nxt_entry.get("difficulty", ""))
+		var score_data := {"time_ms": elapsed, "mistakes": _last_won_mistakes, "hints_used": sess.hints_used if sess != null else 0}
 		cur_rt.on_level_won(label, score_data)
 		nav.go_to(NavController.Screen.WIN)
 	else:
-		_last_won_elapsed = 0; _last_won_is_last = false
+		_last_won_is_last = false
 		cur_rt.on_level_lost(label)
 		nav.go_to(NavController.Screen.FAIL)
 
