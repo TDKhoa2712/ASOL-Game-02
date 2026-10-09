@@ -1,38 +1,41 @@
 # Kế hoạch thực hiện
 
-> Cập nhật: 2026-10-03. Quyền thực hiện theo [AGENTS](../AGENTS.md).
+> Cập nhật: 2026-10-09. Quyền thực hiện theo [AGENTS](../AGENTS.md).
+> Quản lý version: [VERSIONING](VERSIONING.md).
 
-## Giai đoạn hiện tại: Chỉnh lại Gameplay & UI
+## Giai đoạn hiện tại: Chuẩn bị phát hành v1.0.0
 
-Căn chỉnh gameplay và giao diện theo nguồn tham khảo `extracted_reusable/` và layout cũ `archive/legacy_pre_rebuild/`. Plan: [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md).
+Rebuild hoàn tất, gameplay/UI realignment đã merge. Dự án đang ở giai đoạn QA, hoàn thiện tài nguyên và chuẩn bị đóng gói phát hành.
 
-### Thay đổi chính
+### Các track còn lại
 
-| Thay đổi | Chi tiết |
-|----------|----------|
-| Bỏ auto-lock | Không lock cells khi đặt candy |
-| CellKind 5-state | BLANK, MARK, CANDY, ERROR, GIVEN (bỏ LOCKED, WRONG→ERROR) |
-| Undo X | Code hiện giữ Undo cho thao tác X gần nhất; cần chốt chênh lệch với RST-015 |
-| Bật swipe | Paint/clear X trên nhiều ô |
-| UI layout legacy | Programmatic build: TopBar, StatusRow, RuleCard, BoardCard, BottomDock |
+| Track | Nội dung | Trạng thái |
+|-------|----------|------------|
+| Track D | Hoàn thiện tài nguyên (BGM OGG, font tiếng Việt, app icon) | Tồn đọng |
+| Track E | QA cử chỉ, safe area, playtest thiết bị thật | Tồn đọng |
+| Track F | Đóng gói APK/AAB, keystore, mã hóa bank | Tồn đọng |
 
-**Đầu ra cần nghiệm thu:** Luồng 30 level 4×4, Hint, save/load, cử chỉ và giao diện trên thiết bị. Code nhánh realignment đã triển khai nhiều hạng mục; kết quả headless và QA xem [STATUS](STATUS.md).
+Chi tiết: [REMAINING_TASKS](REMAINING_TASKS.md)
 
-## Giai đoạn trước: Rebuild (hoàn tất)
+## Giai đoạn trước (hoàn tất)
 
-Rebuild hoàn chỉnh 10 modules với code viết mới, tham khảo hành vi từ `extracted_reusable/`. Tất cả module đã merge vào `dev` (PR #1–#10). Bank playtest hiện có 30 level 4×4; 5×5/6×6 chưa có nội dung tương ứng.
+### Rebuild (hoàn tất)
+Rebuild 10 modules, tất cả đã merge vào `dev` (PR #1–#10).
 
-## Sau Chỉnh sửa: Playtest
+### System Upgrade (hoàn tất)
+Solver S4–S7, DDA, ShapeFingerprint, XOR Codec, bank sizes N=4–12.
 
-- Phân phối build hạn chế
-- Thu dữ liệu: thời gian giải, Hint, lỗi, bỏ cuộc, UX
-- QA Android (iOS cần signing/Mac)
-- Hiệu chỉnh difficulty, tutorial, feedback
+### Gameplay & UI Realignment (hoàn tất)
+CellKind 5 trạng thái, bỏ auto-lock, Undo X cố định (RST-021), swipe, dựng lại màn hình.
 
-## Sau Playtest: Quyết định phát hành
+### Content & Endless (hoàn tất)
+36.500+ levels offline, Campaign 30/100/998, Endless Mode 4-tier selection.
 
-Chủ dự án quyết định: số level, nền tảng, Endless mode, tiêu chí phát hành.
+### Tối ưu hiệu năng (hoàn tất)
+Solver bitmask S4–S6, Mark X GPU batching, O(1) hash set preview/highlight, Swipe guards 3-layer.
 
-## Ngoài phạm vi hiện tại
+## Sau phát hành
 
-Endless UI, IAP, ads, analytics, account, cloud save, N > 6, S4/S5 rules, runtime level gen.
+- Playtest mù và hiệu chỉnh difficulty
+- QA iOS (cần signing/Mac)
+- Quyết định mở rộng: thêm tính năng, nền tảng mới

@@ -18,6 +18,9 @@ meowdoku-clone.xml
 .codex-remote-attachments/
 .claude/
 .serena/
+IDENTITY.md
+SOUL.md
+USER.md
 
 # Private clean-room reference material — never commit or publish
 extracted_reusable/

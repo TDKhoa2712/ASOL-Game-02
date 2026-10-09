@@ -1,7 +1,7 @@
 # Danh mục Tiến độ và Các vấn đề Tồn đọng — CanDoKu
 
-> **Ngày cập nhật:** 08-10-2026  
-> **Nền tích hợp:** Nhánh `dev`  
+> **Ngày cập nhật:** 2026-10-09  
+> **Nền tích hợp:** Nhánh version `release/vX.Y.Z` (xem [VERSIONING](VERSIONING.md))  
 > **Mục tiêu hiện tại:** Kiểm thử thực tế (Track E), Phông chữ tiếng Việt (Track D2) và Chuẩn bị phát hành (Track F).
 
 ---

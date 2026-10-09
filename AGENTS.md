@@ -8,6 +8,7 @@ CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã 
 1. [STATUS](docs/STATUS.md) — tiến độ thực tế và vấn đề còn mở
 2. [DECISIONS](docs/DECISIONS.md) và [GDD 02](GDD/02-luat-choi-va-trang-thai.md) — quyết định và luật chuẩn
 3. [Completion Plan](docs/superpowers/plans/2026-10-03-completion-plan.md) — Track D/E/F còn lại (assets, QA, release)
+4. [VERSIONING](docs/VERSIONING.md) — quy tắc quản lý version, nhánh và release (bắt buộc)
 
 ## 2. Nhận module và bắt đầu
 
@@ -16,11 +17,13 @@ CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã 
 ```bash
 rtk git branch --show-current
 rtk git status --short
-# Chỉ khi bắt đầu việc mới trên dev và working tree đã được bảo toàn:
-rtk git checkout -b <type>/<scope>-<mo-ta-ngan>
+# Xác định nhánh version hiện hành (ví dụ: release/v1.0.1)
+# Tạo nhánh con từ nhánh version, KHÔNG từ dev hay main:
+rtk git checkout release/v<version>
+rtk git checkout -b <type>/v<version>/<mo-ta-ngan>
 ```
 
-Tên nhánh dùng chữ thường, số và dấu gạch nối (`kebab-case`). Nếu đang ở nhánh của cùng việc, tiếp tục trên nhánh đó; không checkout khi có thay đổi chưa được bảo toàn.
+Tên nhánh dùng chữ thường, số và dấu gạch nối (`kebab-case`). Nếu đang ở nhánh của cùng việc, tiếp tục trên nhánh đó; không checkout khi có thay đổi chưa được bảo toàn. Xem [VERSIONING](docs/VERSIONING.md) để biết quy tắc đầy đủ.
 
 ### Quy tắc thực hiện
 
@@ -67,14 +70,18 @@ rtk python -B tools/verify.py --godot <executable>
 
 ## 5. Nhánh và tích hợp
 
-- `dev` là nền tích hợp. Tạo nhánh từ `dev` theo mẫu `<type>/<scope>-<mo-ta-ngan>`; chỉ dùng nền khác khi người dùng chỉ định rõ.
-- `type` của nhánh và commit phải phản ánh đúng thay đổi chính: `feat` (tính năng), `fix`/`hotfix` (sửa lỗi), `refactor` (tái cấu trúc không đổi hành vi), `docs`, `test`, `chore`, `perf`, `build` hoặc `ci`.
-- Tên nhánh phải ngắn, dễ tìm kiếm, dùng lowercase/kebab-case và không lặp thông tin hiển nhiên. Ví dụ: `feat/m03-bank-reader`, `fix/m04-drag-selection`, `docs/history-guide`.
-- `main` giữ mốc hiện có — không push vào main.
-- Commit chọn đúng file thuộc module và tuân theo Conventional Commits: `<type>(<scope>): <mô tả>`, ví dụ `feat(m01): add board solver`, `fix(m04): reject invalid drag path`, `docs(workflow): clarify history lookup`. Dùng `!` và footer `BREAKING CHANGE:` khi có thay đổi phá vỡ contract.
-- Rebuild theo wave đã merge; việc hiện tại tích hợp vào `dev` sau khi qua gate và được giao quyền.
+> **Quy tắc đầy đủ:** [VERSIONING](docs/VERSIONING.md) — bắt buộc đọc trước khi tạo nhánh.
+
+- **Nhánh version (`release/vX.Y.Z`) là nền tích hợp.** Tạo nhánh con từ nhánh version theo mẫu `<type>/v<version>/<mo-ta-ngan>`. Ví dụ: `feat/v1.0.1/endless-mode`, `fix/v1.0.1/crash-on-undo`.
+- Nhánh con CHỈ merge về nhánh version cha. Không merge chéo giữa các version.
+- Hotfix ở version cũ phải forward-merge vào tất cả version mới hơn đang phát triển.
+- `type` của nhánh và commit phải phản ánh đúng thay đổi chính: `feat`, `fix`/`hotfix`, `refactor`, `docs`, `test`, `chore`, `perf`, `build` hoặc `ci`.
+- Tên nhánh phải ngắn, dễ tìm kiếm, dùng lowercase/kebab-case. Ví dụ: `feat/v1.0.1/bank-reader`, `hotfix/v1.0.1/save-corruption`.
+- `main` chỉ nhận merge từ nhánh version khi release. Không push trực tiếp vào main.
+- Commit chọn đúng file thuộc module và tuân theo Conventional Commits: `<type>(<scope>): <mô tả>`. Dùng `!` và footer `BREAKING CHANGE:` khi có thay đổi phá vỡ contract.
 - **Giữ nguyên thay đổi sẵn có.** Không add/reset/dọn files ngoài module. Không xóa tài sản hoặc phát hành ngoài phạm vi được giao.
 - Chỉ merge/push/phát hành trong quyền được giao.
+- Không xóa nhánh version đã release (giữ để hotfix).
 
 ## 6. Blocker và báo cáo
 

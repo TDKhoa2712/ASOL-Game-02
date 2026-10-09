@@ -1,14 +1,14 @@
 # CanDoKu — Kiến trúc phần mềm
 
-> Kiến trúc cho bản playtest 30 level. Cập nhật: 2026-10-03.
-> **Nhánh realignment:** CellKind 5 trạng thái, không auto-lock, UI qua `puzzle_layout.gd`. Undo X vẫn có trong code và đang lệch RST-015; xem [STATUS](STATUS.md).
+> Cập nhật: 2026-10-09. Rebuild hoàn tất, gameplay/UI realignment đã merge.
+> Quản lý version: [VERSIONING](VERSIONING.md).
 
 ## 1. Phạm vi và nguồn sự thật
 
 - Luật/domain: [GDD 02](../GDD/02-luat-choi-va-trang-thai.md)
-- Plan hiện tại: [Gameplay & UI Realignment](superpowers/plans/2026-10-02-gameplay-ui-realign.md)
 - Quyết định: [DECISIONS](DECISIONS.md)
 - Trạng thái: [STATUS](STATUS.md)
+- Version management: [VERSIONING](VERSIONING.md)
 
 ## 2. Nguyên tắc kiến trúc
 
@@ -36,10 +36,12 @@ game/scripts/
 │   └── config_store.gd     Settings/preferences
 │
 ├── content/        # M03 — Content pipeline
-│   ├── bank_reader.gd      Load rank-based level banks
+│   ├── bank_reader.gd      Load rank-based level banks (N=4–12)
+│   ├── flat_bank_cache.gd  Variant B flat bank support
 │   ├── pace_reader.gd      Load hint economy sidecars
 │   ├── board_transform.gd  x8 rotation/mirror transforms
 │   ├── level_validator.gd  Schema + logic validation
+│   ├── bank_codec.gd       XOR encode/decode for release
 │   └── region_painter.gd   LAB distance graph coloring
 │
 ├── input/          # M04 — Touch & game session
@@ -80,11 +82,14 @@ game/scripts/
 ```
 game/data/
 ├── banks/
-│   ├── bank_4x4.json        {bankVersion, size, ranks: {"1": [levels]}}
-│   ├── bank_4x4.pace.json   {bankVersion, size, pacing: {"1": [{rSeq, hintCosts}]}}
-│                            Bank playtest hiện chỉ có 4x4
+│   ├── bank_4x4.json .. bank_12x12.json   {bankVersion, size, ranks: {"1": [levels]}}
+│   ├── bank_*.pace.json                   {bankVersion, size, pacing: {"1": [{rSeq, hintCosts}]}}
+│   ├── bank_daily_*.json, etc.            Variant B flat banks
 └── campaigns/
-    └── demo_30.json          {campaignVersion, id, playlist: [{label, size, rank, index}]}
+    ├── demo_30.json          30 levels (4×4–6×6)
+    ├── campaign_100.json     100 levels (4×4–12×12)
+    ├── full_998.json         998 levels
+    └── advanced.json         7×7–12×12 advanced campaign
 ```
 
 ## 5. CellKind 5-state model
@@ -161,4 +166,4 @@ grep -rE "(EventBus|GameState|SaveStore|SoundManager|CellAction|CellState|BankDa
 | Session state | scripts/input/play_session.gd |
 | Save/load | scripts/state/dual_slot_store.gd |
 | Board rendering | scripts/screens/puzzle_board.gd |
-| Realignment plan | docs/superpowers/plans/2026-10-02-gameplay-ui-realign.md |
+| Version management | docs/VERSIONING.md |
