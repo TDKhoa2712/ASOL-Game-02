@@ -3,9 +3,9 @@ extends RefCounted
 signal option_changed(key: String, value: Variant)
 
 const VERSION := 1
-const DEFAULTS := {"audio": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "language": "vi"}
+const DEFAULTS := {"audio": true, "haptic": true, "reduced_motion": false, "high_contrast": false, "large_text": false, "colorblind": false, "language": ""}
 const EDITABLE_KEYS: Array[String] = ["audio", "haptic", "reduced_motion", "high_contrast", "large_text", "colorblind", "language"]
-const VALID_LANGUAGES: Array[String] = ["vi", "en"]
+const VALID_LANGUAGES: Array[String] = ["", "en", "ja", "vi", "id", "pt_BR", "es", "ko"]
 
 var _path: String
 var _data: Dictionary = {}
