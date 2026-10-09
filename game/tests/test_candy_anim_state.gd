@@ -22,6 +22,7 @@ func _init() -> void:
 	_test_win_holds_last_and_staggers()
 	_test_motion_off()
 	_test_sync_rests_placed_cells()
+	_test_motion_toggled_live()
 	if _fails.is_empty():
 		print("CANDY_ANIM_STATE_PASS"); quit(0)
 	else:
@@ -114,3 +115,14 @@ func _test_sync_rests_placed_cells() -> void:
 	s.sync([[0, 2], [4, 3]])
 	_assert(s.frame_of(Vector2i(0, 1)) == ["idle", 0] and s.frame_of(Vector2i(1, 0)) == ["idle", 0], "sync rests candy+given")
 	_assert(not s._cells.has(Vector2i(1, 1)), "sync skips ERROR cells")
+
+func _test_motion_toggled_live() -> void:
+	var s := CandyAnimState.new(META)
+	var c := Vector2i(0, 0)
+	s.play(c, "appear")
+	_assert(s.tick(0.0, false, true), "turning motion off requests a redraw")
+	_assert(s.frame_of(c) == ["idle", 0], "motion off mid-appear settles to rest, not a tiny frame")
+	s.play_all("sad")
+	_assert(not s.tick(0.5, false, true), "motion off: sad stays still")
+	s.tick(0.0, true, true)
+	_assert(s.tick(0.15, true, true) and s.frame_of(c)[1] > 0, "motion back on: sad resumes looping")

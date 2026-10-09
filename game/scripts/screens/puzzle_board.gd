@@ -162,7 +162,7 @@ func _on_preview_changed(cells: Array) -> void:
 	queue_redraw()
 
 func _process(_delta: float) -> void:
-	if _candy_anim != null and _candy_anim.advance(_delta, LayoutTokens.motion_enabled and is_visible_in_tree()): queue_redraw()
+	if _candy_anim != null and _candy_anim.tick(_delta, LayoutTokens.motion_enabled, is_visible_in_tree()): queue_redraw()
 	if _entry_elapsed >= 0.0:
 		_entry_elapsed += _delta
 		if not LayoutTokens.motion_enabled or _entry_elapsed >= BoardEntryWave.DURATION: _entry_elapsed = -1.0

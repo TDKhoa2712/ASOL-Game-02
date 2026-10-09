@@ -49,6 +49,21 @@ func idle_playing_count() -> int:
 		if e.anim == "idle" and e.playing: n += 1
 	return n
 
+func tick(delta: float, motion_now: bool, visible: bool) -> bool:
+	var changed := false
+	if motion_now != motion: set_motion(motion_now); changed = true
+	return advance(delta, visible) or changed
+
+func set_motion(enabled: bool) -> void:
+	motion = enabled
+	for cell in _cells.keys():
+		var e: Dictionary = _cells[cell]
+		if enabled:
+			if e.anim == "sad": e.playing = true; e.t = 0.0
+		elif e.anim == "win": e.playing = false; e.done = true
+		elif e.anim == "sad": e.playing = false
+		elif e.playing or e.anim != "idle": rest(cell)
+
 func advance(delta: float, active: bool) -> bool:
 	if not active or not motion or _cells.is_empty(): return false
 	var changed := false
