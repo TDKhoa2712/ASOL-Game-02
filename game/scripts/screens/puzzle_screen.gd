@@ -208,9 +208,6 @@ func set_high_contrast_and_redraw(enabled: bool) -> void:
 	if board != null:
 		board.set_high_contrast(enabled)
 		board.redraw()
-func set_large_text(enabled: bool) -> void:
-	_ensure_nodes()
-	if level_label != null: level_label.add_theme_font_size_override("font_size", 50 if enabled else 40)
 
 func _on_undo() -> void:
 	if hint_coordinator.is_hint_showing():
