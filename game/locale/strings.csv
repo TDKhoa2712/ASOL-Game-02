@@ -79,3 +79,15 @@ hint.mark_x,Mark X,Xを付ける,Đánh dấu X,Tandai X,Marcar X,Marcar X,X 표
 hint.place_candy,Place Candy,キャンディ配置,Đặt kẹo,Taruh Permen,Colocar Doce,Poner Dulce,사탕 배치
 hint.reveal,Reveal Candy,キャンディ表示,Hiện kẹo,Buka Permen,Revelar Doce,Revelar Dulce,사탕 공개
 hint.detail,View Steps,手順を見る,Xem các bước,Lihat Langkah,Ver Passos,Ver Pasos,단계 보기
+result.level_badge,Level %s,レベル %s,Màn %s,Level %s,Nível %s,Nivel %s,레벨 %s
+result.stat.time,Time,タイム,Thời gian,Waktu,Tempo,Tiempo,시간
+result.stat.mistakes,Mistakes,ミス,Lỗi sai,Kesalahan,Erros,Errores,실수
+result.win.next_level,Next: %s,次: %s,Màn tiếp: %s,Lanjut: %s,Próximo: %s,Siguiente: %s,다음: %s
+result.lose.encourage_title,So close!,おしかった！,Suýt nữa là được rồi!,Hampir saja!,Por pouco!,¡Por poco!,아쉬워요!
+title.progress,Progress,進行度,Tiến độ,Kemajuan,Progresso,Progreso,진행도
+title.mascot_bubble,Solve puzzles with me!,一緒にパズルを解こう！,Giải đố cùng mình nhé!,Ayo pecahkan teka-teki bersamaku!,Vamos resolver quebra-cabeças juntos!,¡Resuelve acertijos conmigo!,나와 함께 퍼즐을 풀어봐요!
+difficulty.tutorial,Tutorial,チュートリアル,Hướng dẫn,Tutorial,Tutorial,Tutorial,튜토리얼
+difficulty.easy,Easy,かんたん,Dễ,Mudah,Fácil,Fácil,쉬움
+difficulty.medium,Medium,ふつう,Trung bình,Sedang,Médio,Medio,보통
+difficulty.hard,Hard,むずかしい,Khó,Sulit,Difícil,Difícil,어려움
+difficulty.expert,Expert,エキスパート,Chuyên gia,Ahli,Especialista,Experto,전문가
