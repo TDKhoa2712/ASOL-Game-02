@@ -104,20 +104,16 @@ func _ensure_nodes() -> void:
 	# 4. Mascot & Ground Shadow
 	var mascot_box := VBoxContainer.new()
 	mascot_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	mascot_box.add_theme_constant_override("separation", -8)
-	stack.add_child(mascot_box)
+	mascot_box.add_theme_constant_override("separation", -8); stack.add_child(mascot_box)
 
 	_mascot = TextureRect.new()
 	_mascot.texture = load("res://assets/ui/result/mascot_happy.svg") as Texture2D
-	_mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	_mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	_mascot.custom_minimum_size = Vector2(460, 290)
-	_mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_mascot.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; _mascot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_mascot.custom_minimum_size = Vector2(460, 290); _mascot.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	mascot_box.add_child(_mascot)
 
 	var shadow := _GroundShadow.new()
-	shadow.custom_minimum_size = Vector2(260, 36)
-	shadow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	shadow.custom_minimum_size = Vector2(260, 36); shadow.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	mascot_box.add_child(shadow)
 
 	# 5. Stat card
@@ -151,24 +147,35 @@ func _create_next_card() -> PanelContainer:
 	inner.add_child(row)
 
 	var mini_wrap := PanelContainer.new()
-	mini_wrap.custom_minimum_size = Vector2(96, 96)
+	mini_wrap.custom_minimum_size = Vector2(106, 106)
+	mini_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	var mg_style := StyleBoxFlat.new()
 	mg_style.bg_color = Color("#FAF0DA"); mg_style.set_corner_radius_all(18)
 	mg_style.shadow_color = Color("#E2C46A"); mg_style.shadow_size = 5; mg_style.shadow_offset = Vector2(0, 4)
-	mg_style.set_content_margin_all(10)
 	mini_wrap.add_theme_stylebox_override("panel", mg_style)
 	row.add_child(mini_wrap)
 
+	var mini_center := CenterContainer.new()
+	mini_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	mini_center.mouse_filter = Control.MOUSE_FILTER_IGNORE; mini_wrap.add_child(mini_center)
+
 	var mini_grid := GridContainer.new()
-	mini_grid.columns = clampi(_next_size, 4, 12) if _next_size > 0 else 4
-	var pcols: Array[Color] = [Color("#38BDF8"), Color("#FBBF24"), Color("#FB923C"), Color("#34D399")]
-	for ci in range(mini_grid.columns * mini_grid.columns):
+	var cols: int = clampi(_next_size, 4, 12) if _next_size > 0 else 4
+	mini_grid.columns = cols
+	var gap: int = 3 if cols <= 6 else 2
+	mini_grid.add_theme_constant_override("h_separation", gap); mini_grid.add_theme_constant_override("v_separation", gap)
+	var cell_side: float = maxf(6.0, floor((82.0 - (cols - 1) * gap) / float(cols)))
+	var pcols: Array[Color] = [Color("#38BDF8"), Color("#FBBF24"), Color("#FB923C"), Color("#34D399"), Color("#F5E8C8")]
+	var pattern: Array[int] = [4, 0, 4, 4, 4, 3, 1, 4, 4, 4, 1, 2, 2, 4, 4, 1]
+	for ci in range(cols * cols):
 		var cell := PanelContainer.new()
-		cell.custom_minimum_size = Vector2(14, 14)
-		var cs := StyleBoxFlat.new(); cs.bg_color = pcols[(ci * 3 + 1) % 4]; cs.set_corner_radius_all(4)
+		cell.custom_minimum_size = Vector2(cell_side, cell_side)
+		var cs := StyleBoxFlat.new()
+		var col_idx: int = pattern[ci % 16] if cols == 4 else ((ci * 3 + 1) % 4)
+		cs.bg_color = pcols[col_idx]; cs.set_corner_radius_all(maxi(2, int(cell_side * 0.25)))
 		cell.add_theme_stylebox_override("panel", cs)
 		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE; mini_grid.add_child(cell)
-	mini_wrap.add_child(mini_grid)
+	mini_center.add_child(mini_grid)
 
 	var info := VBoxContainer.new()
 	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL; info.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -212,7 +219,6 @@ func _create_next_card() -> PanelContainer:
 
 	replay_btn = ActionButton.create(tr("result.win.replay"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 34, 94)
 	replay_btn.pressed.connect(_on_replay); replay_btn.visible = false; inner.add_child(replay_btn)
-
 	return card
 
 func _build_stats() -> Array[Dictionary]:
@@ -222,23 +228,16 @@ func _build_stats() -> Array[Dictionary]:
 	]
 
 func _format_time(ms: int) -> String:
-	var total_secs: int = int(ms / 1000.0)
-	return "%02d:%02d" % [int(total_secs / 60.0), total_secs % 60]
+	var s: int = int(ms / 1000.0)
+	return "%02d:%02d" % [int(s / 60.0), s % 60]
 
 func _difficulty_display(d: String) -> String:
-	match d:
-		"tutorial": return tr("difficulty.tutorial")
-		"easy": return tr("difficulty.easy")
-		"medium": return tr("difficulty.medium")
-		"hard": return tr("difficulty.hard")
-		_: return ""
+	return tr("difficulty." + d) if d in ["tutorial", "easy", "medium", "hard"] else ""
 
 static func _difficulty_color(d: String) -> Color:
-	match d:
-		"tutorial", "easy": return Palette.WIN_DIFFICULTY_EASY
-		"medium": return Palette.WIN_DIFFICULTY_MEDIUM
-		"hard": return Color("#BE185D")
-		_: return Palette.WIN_TEXT_SECONDARY
+	if d in ["tutorial", "easy"]: return Palette.WIN_DIFFICULTY_EASY
+	if d == "medium": return Palette.WIN_DIFFICULTY_MEDIUM
+	return Color("#BE185D") if d == "hard" else Palette.WIN_TEXT_SECONDARY
 
 func setup(won: bool, score: int, level_id: String, is_last: bool, hearts_left: int = 3, mistake_count: int = 0, next_label: String = "", next_size: int = 0, next_difficulty: String = "") -> void:
 	_is_last_level = is_last; _level_id = level_id.trim_prefix("L"); _elapsed_ms = score
