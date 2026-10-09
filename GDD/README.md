@@ -1,6 +1,6 @@
 # CanDoKu — Game Design Document
 
-**Phiên bản 0.8.0 · 2026-10-02 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này thống nhất chủ đề, campaign playtest 30 level và ranh giới phát hành chính thức sau playtest; không chứng nhận client hiện tại đã đủ nội dung hoặc đạt phát hành. Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
+**Phiên bản 0.9.0 · 2026-10-09 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này phản ánh kiến trúc và tính năng đã triển khai: 10 module rebuild, solver S1–S7, Hint Engine v2, Endless mode, DDA, 36.500+ level trong bank N=4–12, campaign playtest 30 level và chế độ Advanced (7×7–12×12). Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
 
 ## Điểm bắt đầu
 
@@ -16,7 +16,7 @@ Người chơi dùng hàng, cột và các luống vườn để suy ra vị tr�
 | [06 — Mỹ thuật/âm thanh](06-my-thuat-va-am-thanh.md) | Kẹo, vườn, asset, chuyển động và âm |
 | [07 — Nghiệm thu](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | QA gameplay, chủ đề, nội dung và thiết bị |
 | [09 — Rà soát CanDoKu](09-ra-soat-thiet-ke.md) | Những điểm sửa, rủi ro còn lại và thứ tự triển khai |
-| [10 — Nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md) | Mô hình toán, S1–S5/X1–X4, chứng minh, phản ví dụ, trace và Hint; phân biệt hiện hành/mở rộng |
+| [10 — Nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md) | Mô hình toán, S1–S7 (Elimination → ContraChain), chứng minh, phản ví dụ, trace và Hint; S1–S3 hiện hành, S4–S7 đã triển khai trong solver |
 | [11 — Sinh level và độ khó](11-sinh-level-va-danh-gia-do-kho.md) | Profile/seed, sinh nghiệm/vùng/givens, kiểm nghiệm, thang độ khó thử nghiệm, playtest và mẫu giao việc |
 
 Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài liệu 08/11/12 cũ đã được tinh gọn khỏi GDD theo yêu cầu; cách khôi phục từ Git ở [09](09-ra-soat-thiet-ke.md#6-tinh-gọn-và-truy-vết). File 11 mới chuyên về sinh level/độ khó theo yêu cầu bổ sung, không khôi phục đề án kinh tế/bộ sưu tập cũ. Hai tài liệu 10/11 là nền của [generator pilot offline](../docs/level-generation.md); công cụ chưa tạo campaign phát hành hoặc mở Endless.
@@ -29,11 +29,11 @@ Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài li
 | D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; profile 25–30 phải duyệt riêng nhưng chỉ dùng S1–S3; không yêu cầu đoán |
 | D-03 | Năm trạng thái kỹ thuật `empty/x/x_error/candy/locked`; `locked` là auto-mark X do hệ thống; `given` là cờ hiển thị |
 | D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X, grouped undo (candy + auto-marks = 1 nhóm); Restart có xác nhận |
-| D-05 | Một Hint/lượt với progressive reveal (unit → cell), ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
+| D-05 | Hint Engine v2 với progressive reveal (unit → cell), spotlight scrim, bobbing pulse glow; budget hint từ pace data; ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
 | D-06 | Godot 4.x/GDScript, runtime 2D; kẹo bọc giấy gốc và hiệu ứng 2D, không bắt buộc model/rig kẹo |
 | D-07 | Offline, Android/iOS, tiếng Việt; không tài khoản, quảng cáo, IAP hoặc analytics mạng trong bản đầu |
 | D-08 | X đỏ khóa trong lượt; ghi chú X không là chứng cứ của solver/Hint |
-| D-09 | Level 10/20 có motif vườn riêng; generator, Endless, kinh tế và bộ sưu tập để sau |
+| D-09 | Level 10/20 có motif vườn riêng; Endless mode đã triển khai (4-tier selection, DDA); generator offline đã có; kinh tế và bộ sưu tập để sau |
 | D-10 | Tên sản phẩm **CanDoKu**; chủ đề tìm kẹo đánh rơi, không có nuôi thú hoặc xây vườn |
 
 GDD 02 giữ luật chuẩn; [DECISIONS](../docs/DECISIONS.md) ghi ngoại lệ/quyết định mới. Replay L01 của bản kiểm thử bốn level theo RST-003 không phải tính năng của campaign phát hành. Đổi tên hiển thị không đổi schema level v4, progress v2, session v3, ID level hoặc hash puzzle.
