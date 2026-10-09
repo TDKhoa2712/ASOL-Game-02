@@ -62,10 +62,15 @@ static func find_hint(board: Array, size: int, regions: Array, solution: Array) 
 
 	return _find_fallback(board, size, solution)
 
+static func _sol_col(solution: Array, r: int) -> int:
+	if r < 0 or r >= solution.size(): return -1
+	var v = solution[r]
+	return int(v.get("c", -1)) if v is Dictionary else int(v)
+
 static func _find_wrong_mark(board: Array, size: int, solution: Array) -> Dictionary:
 	for r in range(size):
 		for c in range(size):
-			if board[r][c] == CellModel.CellKind.MARK and int(solution[r]) == c:
+			if board[r][c] == CellModel.CellKind.MARK and _sol_col(solution, r) == c:
 				return _make_result("WRONG_MARK", "CLEAR_MARK",
 						[r, c], [[r, c]], [], "hint.wrong_mark", [])
 	return {"found": false}
@@ -113,8 +118,8 @@ static func _find_mark_hint(board: Array, size: int, regions: Array) -> Dictiona
 
 static func _find_fallback(board: Array, size: int, solution: Array) -> Dictionary:
 	for r in range(size):
-		var c: int = int(solution[r])
-		if not CellModel.is_placed(board[r][c]):
+		var c: int = _sol_col(solution, r)
+		if c >= 0 and not CellModel.is_placed(board[r][c]):
 			return _make_result("FALLBACK", "REVEAL",
 					[r, c], [[r, c]], [], "hint.fallback", [])
 	return {"found": false}
@@ -127,7 +132,7 @@ static func _build_hint_work_board(board: Array, size: int, regions: Array, solu
 			var cell: int = board[r][c]
 			if CellModel.is_placed(cell):
 				row.append(cell)
-			elif cell == CellModel.CellKind.MARK and int(solution[r]) != c:
+			elif cell == CellModel.CellKind.MARK and _sol_col(solution, r) != c:
 				row.append(CellModel.CellKind.MARK)
 			else:
 				row.append(CellModel.CellKind.BLANK)

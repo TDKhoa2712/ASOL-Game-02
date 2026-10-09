@@ -22,7 +22,7 @@ const CHAIN_CONTRA := Color(0.86, 0.15, 0.15)  # #DC2626
 const GHOST_ALPHA := 0.4
 const BADGE_RADIUS_RATIO := 0.25
 
-func _ready() -> void:
+func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
 	_backdrop = ColorRect.new()
 	_backdrop.color = Color(0, 0, 0, 0.01)
@@ -38,7 +38,8 @@ func show_hint(hint: Dictionary, cell_rect_fn: Callable) -> void:
 	_cell_rect_fn = cell_rect_fn
 	_showing = true
 	_pulse_phase = 0.0
-	_backdrop.visible = true
+	if _backdrop != null:
+		_backdrop.visible = true
 	_kill_badge_tweens()
 	queue_redraw()
 
@@ -52,21 +53,23 @@ func show_chain_detail(chain_detail: Dictionary, cell_rect_fn: Callable) -> void
 		_badge_scales.append(0.0)
 	for i in range(total):
 		var tw := create_tween()
-		tw.tween_interval(float(i) * 0.05)
-		var idx := i
-		tw.tween_method(func(v: float):
-			if idx < _badge_scales.size():
-				_badge_scales[idx] = v
-			queue_redraw()
-		, 0.0, 1.0, 0.15)
-		_badge_tweens.append(tw)
+		if tw != null:
+			tw.tween_interval(float(i) * 0.05)
+			var idx := i
+			tw.tween_method(func(v: float):
+				if idx < _badge_scales.size():
+					_badge_scales[idx] = v
+				queue_redraw()
+			, 0.0, 1.0, 0.15)
+			_badge_tweens.append(tw)
 	queue_redraw()
 
 func clear() -> void:
 	_hint = {}
 	_chain = {}
 	_showing = false
-	_backdrop.visible = false
+	if _backdrop != null:
+		_backdrop.visible = false
 	_kill_badge_tweens()
 	_badge_scales.clear()
 	queue_redraw()

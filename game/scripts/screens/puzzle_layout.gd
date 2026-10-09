@@ -7,6 +7,7 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const HintHighlightLayer = preload("res://scripts/screens/hint_highlight_layer.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const HeartsDisplay = preload("res://scripts/screens/hearts_display.gd")
 const CandyRenderer = preload("res://scripts/core/candy_renderer.gd")
@@ -113,6 +114,12 @@ static func build(root: Control) -> Dictionary:
 	board.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	board_card.add_child(board)
 
+	var hint_highlight := HintHighlightLayer.new()
+	hint_highlight.name = "HintHighlightLayer"
+	hint_highlight.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hint_highlight.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	board_card.add_child(hint_highlight)
+
 	var hint_overlay := HintOverlay.new()
 	hint_overlay.name = "HintOverlay"
 	hint_overlay.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -145,7 +152,8 @@ static func build(root: Control) -> Dictionary:
 	root.add_child(confirm)
 	return {"board": board, "back": back, "help": help, "restart": restart,
 		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
-		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay, "debug_bar": debug_bar}
+		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay,
+		"hint_highlight": hint_highlight, "debug_bar": debug_bar}
 
 static func refresh_status(session: Variant, regions_row: HBoxContainer, lives_row: HBoxContainer, animate_loss: bool = false, found_region: String = "") -> void:
 	if session == null:
