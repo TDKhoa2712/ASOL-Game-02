@@ -5,6 +5,12 @@ const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const SolverTechniques = preload("res://scripts/core/solver_techniques.gd")
 
 static func find_hint(board: Array, size: int, regions: Array, solution: Array) -> Dictionary:
+	var res := _find_hint_impl(board, size, regions, solution)
+	if res.get("found", false):
+		res["size"] = size
+	return res
+
+static func _find_hint_impl(board: Array, size: int, regions: Array, solution: Array) -> Dictionary:
 	var wrong := _find_wrong_mark(board, size, solution)
 	if wrong.get("found", false):
 		return wrong

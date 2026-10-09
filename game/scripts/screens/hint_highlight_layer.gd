@@ -14,8 +14,13 @@ var _showing: bool = false
 var _pulse_phase: float = 0.0
 var _badge_tweens: Array = []
 var _badge_scales: Array = []
+var _size: int = 0
+var _focus_set: Dictionary = {}
+var _scrim_style: StyleBoxFlat = StyleBoxFlat.new()
+var _border_style: StyleBoxFlat = StyleBoxFlat.new()
 
 const HIGHLIGHT_COLOR := Color(0.96, 0.62, 0.04)  # #F59E0B
+const SCRIM_COLOR := Color(0.06, 0.05, 0.10, 0.45)  # Spotlight scrim on un-focused cells
 const CHAIN_HYPOTHESIS := Color(0.94, 0.27, 0.27)  # #EF4444
 const CHAIN_STEP := Color(0.96, 0.62, 0.04)  # #F59E0B
 const CHAIN_CONTRA := Color(0.86, 0.15, 0.15)  # #DC2626
@@ -24,6 +29,9 @@ const BADGE_RADIUS_RATIO := 0.25
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_PASS
+	_scrim_style.bg_color = SCRIM_COLOR
+	_border_style.draw_center = false
+	_border_style.set_border_width_all(3)
 	_backdrop = ColorRect.new()
 	_backdrop.color = Color(0, 0, 0, 0.01)
 	_backdrop.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -32,12 +40,14 @@ func _init() -> void:
 	_backdrop.gui_input.connect(_on_backdrop_input)
 	add_child(_backdrop)
 
-func show_hint(hint: Dictionary, cell_rect_fn: Callable) -> void:
+func show_hint(hint: Dictionary, cell_rect_fn: Callable, board_size: int = 0) -> void:
 	_hint = hint
 	_chain = {}
 	_cell_rect_fn = cell_rect_fn
+	_size = board_size if board_size > 0 else int(hint.get("size", 0))
 	_showing = true
 	_pulse_phase = 0.0
+	_recompute_focus_set()
 	if _backdrop != null:
 		_backdrop.visible = true
 	_kill_badge_tweens()
@@ -46,6 +56,7 @@ func show_hint(hint: Dictionary, cell_rect_fn: Callable) -> void:
 func show_chain_detail(chain_detail: Dictionary, cell_rect_fn: Callable) -> void:
 	_chain = chain_detail
 	_cell_rect_fn = cell_rect_fn
+	_recompute_focus_set()
 	_kill_badge_tweens()
 	_badge_scales.clear()
 	var total: int = 1 + chain_detail.get("steps", []).size() + 1
@@ -67,6 +78,8 @@ func show_chain_detail(chain_detail: Dictionary, cell_rect_fn: Callable) -> void
 func clear() -> void:
 	_hint = {}
 	_chain = {}
+	_focus_set.clear()
+	_size = 0
 	_showing = false
 	if _backdrop != null:
 		_backdrop.visible = false
@@ -76,6 +89,27 @@ func clear() -> void:
 
 func is_showing() -> bool:
 	return _showing
+
+func is_cell_focused(row: int, col: int) -> bool:
+	return _focus_set.has(Vector2i(row, col))
+
+func _recompute_focus_set() -> void:
+	_focus_set.clear()
+	for cell in _hint.get("highlight_cells", []):
+		if cell.size() >= 2:
+			_focus_set[Vector2i(int(cell[0]), int(cell[1]))] = true
+	for cell in _hint.get("eliminated_cells", []):
+		if cell.size() >= 2:
+			_focus_set[Vector2i(int(cell[0]), int(cell[1]))] = true
+	var target: Array = _hint.get("target_cell", [])
+	if target.size() >= 2:
+		_focus_set[Vector2i(int(target[0]), int(target[1]))] = true
+	var hyp: Array = _chain.get("hypothesis_cell", [])
+	if hyp.size() >= 2:
+		_focus_set[Vector2i(int(hyp[0]), int(hyp[1]))] = true
+	for step in _chain.get("steps", []):
+		if step.size() >= 2:
+			_focus_set[Vector2i(int(step[0]), int(step[1]))] = true
 
 func _process(delta: float) -> void:
 	if _showing:
@@ -94,19 +128,26 @@ func _draw() -> void:
 		return
 	if not _cell_rect_fn.is_valid():
 		return
+
+	if _size > 0:
+		for r in range(_size):
+			for c in range(_size):
+				if not _focus_set.has(Vector2i(r, c)):
+					var rect: Rect2 = _cell_rect_fn.call(r, c)
+					if rect.size.x > 0:
+						_scrim_style.set_corner_radius_all(int(rect.size.x * 0.12))
+						draw_style_box(_scrim_style, rect)
+
 	var pulse_alpha: float = 0.5 + 0.5 * sin(_pulse_phase)
 	var border_color := Color(HIGHLIGHT_COLOR, pulse_alpha)
+	_border_style.border_color = border_color
 
 	for cell in _hint.get("highlight_cells", []):
 		if cell.size() < 2: continue
 		var rect: Rect2 = _cell_rect_fn.call(int(cell[0]), int(cell[1]))
 		if rect.size.x <= 0: continue
-		var sb := StyleBoxFlat.new()
-		sb.draw_center = false
-		sb.border_color = border_color
-		sb.set_border_width_all(3)
-		sb.set_corner_radius_all(int(rect.size.x * 0.12))
-		draw_style_box(sb, rect)
+		_border_style.set_corner_radius_all(int(rect.size.x * 0.12))
+		draw_style_box(_border_style, rect)
 
 	for cell in _hint.get("eliminated_cells", []):
 		if cell.size() < 2: continue

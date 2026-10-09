@@ -51,7 +51,7 @@ func request_hint(session: Variant) -> void:
 		return
 	_current_hint = hint
 	if _hint_highlight != null and _board != null:
-		_hint_highlight.show_hint(hint, _board.get_cell_rect)
+		_hint_highlight.show_hint(hint, _board.get_cell_rect, int(lvl.get("size", 0)))
 	if _hint_overlay != null:
 		_hint_overlay.show_hint(hint)
 	if hint.get("strategy") == "WRONG_MARK":
