@@ -59,9 +59,16 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 		session = PlaySession.new(custom_lvl)
 	elif runtime != null:
 		if runtime.current_session != null:
-			session = runtime.current_session
+			if runtime.current_session.phase != PlaySession.Phase.ACTIVE:
+				session = runtime.restart_level()
+				new_level = session != null
+			else:
+				session = runtime.current_session
 		elif runtime.has_pending_session():
 			session = runtime.resume_level()
+			if session != null and session.phase != PlaySession.Phase.ACTIVE:
+				session = runtime.restart_level()
+				new_level = session != null
 		if session == null:
 			session = runtime.start_level(runtime.current_level_label())
 			new_level = session != null

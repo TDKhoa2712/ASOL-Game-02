@@ -52,9 +52,7 @@ var _options_overlay: Control = null
 func _ready() -> void:
 	var sel := CampaignSelector.load_config(selector_path, profile_dir)
 	if not sel.ok: _on_boot_error(str(sel.error)); return
-	if config == null:
-		config = ConfigStore.new(profile_dir)
-		config.option_changed.connect(_apply_setting)
+	if config == null: config = ConfigStore.new(profile_dir); config.option_changed.connect(_apply_setting)
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
@@ -162,21 +160,31 @@ func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 		if not _debug_next.is_empty():
 			_debug_next_lbl = "Endless %d" % nxt_n
 			_debug_next["id"] = _debug_next_lbl; _debug_next["_endless_level_num"] = nxt_n
+	_nav_to_puzzle()
+
+func _nav_to_puzzle() -> void:
 	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
 	else: nav.go_to(NavController.Screen.PUZZLE)
 
 func _on_puzzle_home() -> void:
 	_debug_mode = false; _debug_lvl = {}; _debug_next = {}
+	var cur_rt = _active_runtime()
+	if cur_rt != null and cur_rt.current_session != null and cur_rt.current_session.phase != 0:
+		cur_rt.restart_level()
 	nav.go_to(NavController.Screen.TITLE)
 
 func _on_title_play() -> void:
 	_mode = "campaign"; _debug_mode = false; _debug_lvl = {}; _debug_next = {}
-	if runtime != null and runtime.is_campaign_done(): runtime.replay_campaign()
-	nav.go_to(NavController.Screen.PUZZLE)
+	if runtime != null:
+		if runtime.is_campaign_done(): runtime.replay_campaign()
+		elif runtime.current_session != null and runtime.current_session.phase != 0: runtime.restart_level()
+	_nav_to_puzzle()
 
 func _on_title_endless() -> void:
 	_mode = "endless"; _debug_mode = false; _debug_lvl = {}; _debug_next = {}
-	nav.go_to(NavController.Screen.PUZZLE)
+	if endless_runtime != null and endless_runtime.current_session != null and endless_runtime.current_session.phase != 0:
+		endless_runtime.restart_level()
+	_nav_to_puzzle()
 
 func _on_level_done(won: bool) -> void:
 	var cur_rt = _active_runtime()
@@ -215,23 +223,17 @@ func _on_next_level() -> void:
 		if not _debug_next.is_empty(): _on_debug_level_selected(_debug_next, _debug_next_lbl)
 		else: _debug_mode = false; nav.go_to(NavController.Screen.TITLE)
 		return
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	_nav_to_puzzle()
 
 func _on_retry_level() -> void:
-	if _debug_mode:
-		if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-		else: nav.go_to(NavController.Screen.PUZZLE)
-		return
-	var cur_rt = _active_runtime()
-	if cur_rt != null: cur_rt.restart_level()
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	if not _debug_mode:
+		var cur_rt = _active_runtime()
+		if cur_rt != null: cur_rt.restart_level()
+	_nav_to_puzzle()
 
 func _on_replay_campaign() -> void:
 	if _mode == "campaign" and runtime != null: runtime.replay_campaign()
-	if nav.current() == NavController.Screen.PUZZLE: _swap_screen("puzzle", "puzzle")
-	else: nav.go_to(NavController.Screen.PUZZLE)
+	_nav_to_puzzle()
 
 func _show_options_overlay() -> void:
 	if _options_overlay != null: return
@@ -255,8 +257,7 @@ func _on_options_back() -> void:
 func _apply_setting(key: String, value: Variant) -> void:
 	match key:
 		"audio":
-			if sfx != null: sfx.set_muted(not bool(value))
-			if bgm != null: bgm.set_muted(not bool(value))
+			if sfx != null: sfx.set_muted(not bool(value)); if bgm != null: bgm.set_muted(not bool(value))
 		"haptic": Vibration.set_on(bool(value))
 		"reduced_motion": LayoutTokens.set_motion(not bool(value))
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
@@ -264,8 +265,8 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"colorblind": _refresh_puzzle_colorblind()
 		"language":
 			if value is String:
-				var target_lang := LocaleResolver.resolve_locale(str(value), OS.get_locale())
-				TranslationServer.set_locale(target_lang); _rebuild_current_screen()
+				TranslationServer.set_locale(LocaleResolver.resolve_locale(str(value), OS.get_locale()))
+				_rebuild_current_screen()
 
 func _rebuild_current_screen() -> void:
 	if nav != null: _swap_screen("", nav.current_name())
@@ -290,10 +291,8 @@ func _apply_all_settings() -> void:
 
 func _on_boot_error(err: String) -> void:
 	push_error("Boot error: " + err)
-	if save_error_dialog != null:
-		save_error_dialog.dialog_text = tr("boot.error") % err; save_error_dialog.popup_centered()
+	if save_error_dialog != null: save_error_dialog.dialog_text = tr("boot.error") % err; save_error_dialog.popup_centered()
 
 func _on_save_failed(reason: String) -> void:
 	push_warning("Save failed: " + reason)
-	if save_error_dialog != null:
-		save_error_dialog.dialog_text = tr("boot.save_failed") % reason; save_error_dialog.popup_centered()
+	if save_error_dialog != null: save_error_dialog.dialog_text = tr("boot.save_failed") % reason; save_error_dialog.popup_centered()
