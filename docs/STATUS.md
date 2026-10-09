@@ -23,6 +23,13 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Combo feedback (2026-10-10, `feat/v1.0.1/combo-feedback`)
+
+- RST-024: voice 12 cấp + chữ nghệ thuật cho chuỗi đặt kẹo đúng. Headless suites combo/feedback/screens/integration PASS.
+- Còn lại: QA trên thiết bị (nghe voice, nhìn popup, đo khung hình) chưa thực hiện.
+
+---
+
 ## Tối ưu hiệu năng gần nhất (2026-10-08)
 
 ### RST-023 — Mark X GPU Batching & O(1) Sets

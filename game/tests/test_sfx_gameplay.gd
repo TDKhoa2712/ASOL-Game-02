@@ -64,7 +64,7 @@ func _run() -> void:
 		if found == int((total + 1) / 2) and found < total:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.PROGRESS_COMPLETE, "halfway progress")
 		elif session.phase == 0:
-			_expect_effect(shell.sfx, SfxCatalog.Effect.CANDY_YES, "correct candy")
+			_expect_effect(shell.sfx, SfxCatalog.combo_effect(found), "correct candy combo voice")
 	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_CLEAR, "win melody")
 	shell._on_next_level()
 	puzzle = shell.screen_host.get_child(0)

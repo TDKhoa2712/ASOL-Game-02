@@ -11,6 +11,7 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
+const ComboFeedback = preload("res://scripts/screens/combo_feedback.gd")
 var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
 var session: Variant = null; var _is_custom: bool = false
 var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
@@ -20,6 +21,7 @@ var region_display: HBoxContainer; var rules_card: PanelContainer
 var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay; var debug_bar: Variant = null
 var hint_highlight: Variant = null
 var hint_coordinator: PuzzleHintCoordinator = PuzzleHintCoordinator.new()
+var combo := ComboFeedback.new()
 func _ensure_nodes() -> void:
 	if board != null: return
 	var n: Dictionary = PuzzleLayout.build(self)
@@ -66,6 +68,8 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 			session = runtime.start_level(runtime.current_level_label())
 			new_level = session != null
 	_ensure_nodes()
+	if board != null: combo.bind(board, sfx)
+	combo.reset()
 	if board != null and session != null:
 		if config != null:
 			board.set_colorblind(config.get_option("colorblind"))
@@ -163,6 +167,7 @@ func _on_board_swipe(cells: Array) -> void:
 func _on_hint() -> void:
 	if session == null:
 		return
+	combo.reset()
 	hint_coordinator.request_hint(session)
 
 func _on_restart() -> void:
@@ -173,6 +178,7 @@ func _on_restart() -> void:
 
 func _confirm_restart() -> void:
 	hint_coordinator.force_release()
+	combo.reset()
 	if _is_custom and session != null:
 		session = PlaySession.new(session.level)
 	elif runtime != null:
@@ -228,8 +234,8 @@ func _on_candy_found(row: int, col: int, _region: String) -> void:
 		hint_coordinator.dismiss_hint()
 	if board != null:
 		board.play_candy_pop(row, col)
+	combo.on_candy(row, col, hint_coordinator.is_applying())
 	if sfx != null:
-		sfx.play(SfxCatalog.Effect.CANDY_YES)
 		var required: int = int(session.level.get("size", 0)) - session.level.get("givens", []).size()
 		var found: int = required - session.remaining_candies()
 		if required > 1 and found == int((required + 1) / 2) and found < required:
@@ -241,6 +247,7 @@ func _on_candy_found(row: int, col: int, _region: String) -> void:
 		board.redraw()
 
 func _on_mistake(_row: int, _col: int, _clash: String) -> void:
+	combo.reset()
 	if board != null:
 		board.play_error_shake()
 	if sfx != null:
