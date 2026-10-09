@@ -73,10 +73,11 @@ Riêng tutorial Level 1, thao tác sai **trên ô tutorial được gọi rõ b�
 | ID | Quy tắc |
 | --- | --- |
 | GR-21 | Mỗi lượt bắt đầu với budget hint từ pace data (`hintCosts`). Hint dùng given và candy đúng đã đặt; bỏ qua X và `x_error` khi tính ứng viên. |
-| GR-22 | Hint hợp lệ tìm S2 trực tiếp hoặc chuỗi S3→S2 còn hiệu lực, tô sáng focus/source/target/ô bị loại và kẹo nguồn; không tự đặt X hoặc kẹo. |
+| GR-22 | Hint Engine v2 (`hint_engine.gd`) tìm hint theo thứ tự ưu tiên: WRONG_MARK (X ở ô nghiệm) → MARK_NEIGHBORS (gợi ý đánh X quanh candy) → SINGLE_CANDIDATE (S2) → LOCK_INTERSECTION (S3) → LOCKED_SUBSET (S4–S6) → CONTRA_CHAIN (S7) → FALLBACK (reveal trực tiếp). Trả structured hint với strategy, action (mark/place/reveal), target cell, highlight cells và explanation key. Không tự đặt X hoặc kẹo. |
 | GR-23 | Nếu ô đích đang là X, nhắc chạm đôi trực tiếp để thử kẹo. Ô `x_error` không thể là đích đúng nếu dữ liệu level hợp lệ; không đề nghị xóa X đỏ. |
 | GR-24 | Tính lại Hint từ trạng thái hiện tại, không dùng con trỏ trace; bỏ qua bước đã hoàn thành. Chỉ evidence hợp lệ mới tiêu budget; `NoHint` không tiêu thụ. |
-| GR-37 | Hint dùng progressive reveal: click đầu tiên tô sáng đơn vị (hàng/cột/vùng) chứa ứng viên; click tiếp thu hẹp đến ô cụ thể. Chi phí mỗi bước theo hintCosts từ pace data. |
+| GR-37 | Hint dùng progressive reveal: click đầu tiên tô sáng đơn vị (hàng/cột/vùng) chứa ứng viên với spotlight scrim (dim non-hint cells); click tiếp thu hẹp đến ô cụ thể với bobbing pulse glow. Chi phí mỗi bước theo hintCosts từ pace data. |
+| GR-38 | Hint phối hợp qua `puzzle_hint_coordinator`: HintEngine tìm hint → HintHighlightLayer (board overlay: spotlight scrim + glow + chain visualization) + HintOverlay (UI panel: apply/dismiss/detail). HintMutex (500ms cooldown) ngăn re-trigger nhanh. Hint có SFX riêng: HINT_SHOW, HINT_APPLY, HINT_DISMISS, HINT_WRONG_MARK. |
 
 Hint budget đến từ pace data (`hintCosts`); mỗi click progressive reveal tiêu 1 unit từ budget. Khi budget hết, nút Hint ở trạng thái đã dùng và không phát evidence thêm. Reload cùng session không cấp lại budget. Retry hoặc Restart tạo lượt mới với budget đầy; Back To Home rồi tiếp tục giữ nguyên budget đã dùng. Hint không đổi scorecard, tim hoặc board và có thể đóng để tiếp tục chơi. Nguồn Hint bổ sung từ điểm danh/quảng cáo nằm ngoài MVP.
 

@@ -1,8 +1,8 @@
 # 10 — CanDoKu: nguyên tắc suy luận và chứng minh
 
-**Phiên bản tài liệu 1.0 · 2026-09-28.** Tài liệu nền cho thiết kế level, bộ giải theo cách con người, Hint và bộ kiểm chứng. Luật thắng vẫn do [GDD 02](02-luat-choi-va-trang-thai.md) quy định. Quy trình tạo nội dung và đo độ khó ở [GDD 11](11-sinh-level-va-danh-gia-do-kho.md).
+**Phiên bản tài liệu 1.1 · 2026-10-09.** Tài liệu nền cho thiết kế level, bộ giải theo cách con người, Hint và bộ kiểm chứng. Luật thắng vẫn do [GDD 02](02-luat-choi-va-trang-thai.md) quy định. Quy trình tạo nội dung và đo độ khó ở [GDD 11](11-sinh-level-va-danh-gia-do-kho.md).
 
-“Đầy đủ” ở đây gồm mô hình toán, kỹ thuật cơ bản/nâng cao, điều kiện đúng, phản ví dụ, chứng cứ và phương pháp giải tổng quát. Không khẳng định một danh sách hữu hạn mẹo nhìn hình có thể giải mọi bàn. Phần mở rộng là đặc tả để phát triển sau; chưa được đưa vào schema hoặc runtime chỉ vì có mặt trong tài liệu.
+“Đầy đủ” ở đây gồm mô hình toán, kỹ thuật cơ bản/nâng cao, điều kiện đúng, phản ví dụ, chứng cứ và phương pháp giải tổng quát. Không khẳng định một danh sách hữu hạn mẹo nhìn hình có thể giải mọi bàn. S4–S7 đã được triển khai trong `solver_techniques.gd` và `board_solver.gd`; Hint Engine v2 hỗ trợ hint cho tất cả 7 kỹ thuật.
 
 ## 1. Hợp đồng hiện hành và phần mở rộng
 

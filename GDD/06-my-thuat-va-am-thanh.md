@@ -46,7 +46,25 @@ Các motif theo dải màn chỉ thay viền trang trí/backdrop, không thay ma
 
 Kẹo đã tìm luôn ở lại ô. Mốc “Giỏi lắm!” chỉ phát một lần khi đạt ít nhất nửa số kẹo cần tự tìm; kẹo cuối ưu tiên thắng. Có thể dùng giỏ đầy ở màn 30 của campaign playtest nhưng không thêm màn phải chờ. Hiệu ứng không tự cộng điểm, mất tim, lưu game hoặc xác định thắng.
 
-Âm X là tick nhẹ, clear là tick mềm hơn, đúng là tiếng giấy gói/chime ngắn, sai là tiếng trầm nhẹ, thắng là motif dưới hai giây. lock_tick: tiếng tick nhẹ cho mỗi ô auto-marked, phát theo stagger animation. SFX rate limiting: mỗi hiệu ứng có min_interval tối thiểu để tránh spam khi nhiều ô locked xuất hiện liên tiếp trong auto-mark cascade. Không dùng âm thanh động vật. Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. Nhạc nền chưa thuộc asset bắt buộc bản đầu. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
+Hệ thống âm thanh dùng **procedural PCM synthesis** (`pcm_synth.gd`) — tạo âm từ sóng cơ bản (sine, square, triangle, sawtooth), ADSR envelope, pitch curves, noise mixing, low-pass filter, pencil scratch và melody. Không phụ thuộc file audio ngoài cho SFX. `sfx_catalog.gd` định nghĩa 22 hiệu ứng âm thanh:
+
+| Nhóm | Hiệu ứng |
+| --- | --- |
+| Board | MARK, UNMARK, LOCK_TICK |
+| Gameplay | CANDY_YES, CANDY_NO, STAGE_CLEAR, STAGE_FAIL |
+| Hint | HINT_SHOW, HINT_APPLY, HINT_DISMISS, HINT_WRONG_MARK |
+| UI | BTN_PRESS, BOARD_OPEN |
+| Khác | Các presets synth/melody/pencil bổ sung |
+
+`sfx_player.gd` dùng pool 8 AudioStreamPlayer voices với rate limiting (min_interval mỗi hiệu ứng) để tránh spam khi nhiều ô locked xuất hiện liên tiếp. Auto-bind UI buttons cho SFX. `bgm_player.gd` phát nhạc nền WAV với loop fix và mute support.
+
+Rung haptic qua `vibration.gd`: SOFT (15ms), NORMAL (30ms), FIRM (60ms). Âm và rung tắt riêng; phản hồi vẫn hiểu khi tắt cả hai. App nền dừng âm/animation và không tự phát lại toàn bộ hiệu ứng khi resume.
+
+Animation qua `tween_fx.gd`: scale_pop, shake, flash_color, bounce, fade_in, fade_out. `cell_animator.gd` quản lý cell state transitions với pre-baked mark textures. `board_entry_wave.gd` tạo board reveal animation.
+
+### Typography
+
+Font đã chuyển sang **BeVietnamPro** (Bold/Regular) cho heading và **Nunito** (Regular/SemiBold/Bold) cho body text (`font_tokens.gd`). BeVietnamPro hỗ trợ đầy đủ tiếng Việt có dấu.
 
 ## 4. Bàn giao asset và pipeline
 
