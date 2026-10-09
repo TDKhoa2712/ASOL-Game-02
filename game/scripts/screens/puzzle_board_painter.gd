@@ -6,19 +6,30 @@ const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const OVERLAY_CHARS = ["", "★", "◆", "♥", "▲", "✕", "●"]
 
-static var _sb_cache: Dictionary = {}
+static var _cell_bg_tex: Texture2D = null
+static var _border_tex: Texture2D = null
 static var _card_sb: StyleBoxFlat = null
 static var _card_cr: int = -1
 
-static func _get_cell_sb(bg: Color, cr: int) -> StyleBoxFlat:
-	var key := bg.to_html() + str(cr)
-	if _sb_cache.has(key):
-		return _sb_cache[key]
-	var sb := StyleBoxFlat.new()
-	sb.bg_color = bg
-	sb.set_corner_radius_all(cr)
-	_sb_cache[key] = sb
-	return sb
+static func get_cell_bg_tex() -> Texture2D:
+	if _cell_bg_tex != null:
+		return _cell_bg_tex
+	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="0" y="0" width="128" height="128" rx="18" ry="18" fill="#FFFFFF"/></svg>'
+	var img := Image.new()
+	var err := img.load_svg_from_string(svg, 2.0)
+	if err == OK:
+		_cell_bg_tex = ImageTexture.create_from_image(img)
+	return _cell_bg_tex
+
+static func get_border_tex() -> Texture2D:
+	if _border_tex != null:
+		return _border_tex
+	var svg := '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><rect x="3" y="3" width="122" height="122" rx="16" ry="16" fill="none" stroke="#FFFFFF" stroke-width="6"/></svg>'
+	var img := Image.new()
+	var err := img.load_svg_from_string(svg, 2.0)
+	if err == OK:
+		_border_tex = ImageTexture.create_from_image(img)
+	return _border_tex
 
 static func _get_card_sb(cr: int) -> StyleBoxFlat:
 	if _card_sb != null and _card_cr == cr:
@@ -42,26 +53,17 @@ static func draw(board: Variant) -> void:
 	var gap: float = board._cell_gap(br.size.x)
 	var cell_w := (br.size.x - gap * float(count - 1)) / float(count)
 	var cr := int(cell_w * LayoutTokens.CELL_CORNER_RATIO)
+	var bg_tex := get_cell_bg_tex()
+	if bg_tex == null:
+		return
 
+	# Pre-resolve cell kinds taking previews into account
+	var kinds: Array = []
+	kinds.resize(count)
 	for r in range(count):
+		var row_kinds: Array = []
+		row_kinds.resize(count)
 		for c in range(count):
-			var cell_rect: Rect2 = board._cell_rect(r, c)
-			var cell_scale: float = board.cell_entry_scale(r, c)
-			if cell_scale <= 0.0: continue
-			board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
-			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
-			var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
-			board.draw_style_box(_get_cell_sb(base_col, cr), cell_rect)
-
-			if board._high_contrast:
-				board._draw_border(cell_rect, Palette.MARK_STROKE, 2, cr)
-			var icon_val: int = board._zone_overlays.get(zone, 0)
-			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
-				var is_dark := base_col.get_luminance() < 0.5
-				var tint := RegionPainter.overlay_tint(base_col, is_dark)
-				var icon_size := int(cell_w * LayoutTokens.OVERLAY_ICON_RATIO)
-				board.draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
-
 			var kind: int = board._session.board[r][c]
 			var cell_coord := Vector2i(r, c)
 			if board._preview_set.has(cell_coord):
@@ -69,28 +71,121 @@ static func draw(board: Variant) -> void:
 					kind = CellModel.CellKind.MARK
 				elif not board._preview_mark and kind == CellModel.CellKind.MARK:
 					kind = CellModel.CellKind.BLANK
-			var ov: Color = Palette.cell_state_overlay(kind)
+			row_kinds[c] = kind
+		kinds[r] = row_kinds
+
+	# Pass 1: Cell backgrounds
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var cell_rect: Rect2 = board._cell_rect(r, c)
+			if cell_scale != 1.0:
+				board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
+			var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
+			board.draw_texture_rect(bg_tex, cell_rect, false, base_col)
+			if cell_scale != 1.0:
+				board.draw_set_transform(Vector2.ZERO)
+
+	# Pass 2: State overlays
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var ov: Color = Palette.cell_state_overlay(int(kinds[r][c]))
 			if ov.a > 0.0:
-				board.draw_style_box(_get_cell_sb(ov, cr), cell_rect)
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+				board.draw_texture_rect(bg_tex, cell_rect, false, ov)
+				if cell_scale != 1.0:
+					board.draw_set_transform(Vector2.ZERO)
 
-			if kind != CellModel.CellKind.MARK and kind != CellModel.CellKind.ERROR and board._mark_anims.has(cell_coord):
-				board._mark_anims.erase(cell_coord)
-				if board._mark_tweens.has(cell_coord) and is_instance_valid(board._mark_tweens[cell_coord]): board._mark_tweens[cell_coord].kill()
-				board._mark_tweens.erase(cell_coord)
+	# Pass 3: Zone accessibility icons (a11y)
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var zone := str(board._zone_grid[r][c]) if board._zone_grid.size() > r and board._zone_grid[r].size() > c else ""
+			var icon_val: int = board._zone_overlays.get(zone, 0)
+			if icon_val > 0 and icon_val < OVERLAY_CHARS.size():
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+				var base_col: Color = board._zone_colors.get(zone, Palette.BG_CREAM)
+				var is_dark := base_col.get_luminance() < 0.5
+				var tint := RegionPainter.overlay_tint(base_col, is_dark)
+				var icon_size := int(cell_w * LayoutTokens.OVERLAY_ICON_RATIO)
+				board.draw_string(ThemeDB.fallback_font, cell_rect.position + Vector2(0.0, cell_rect.size.y * 0.65), OVERLAY_CHARS[icon_val], HORIZONTAL_ALIGNMENT_CENTER, cell_rect.size.x, icon_size, tint)
+				if cell_scale != 1.0:
+					board.draw_set_transform(Vector2.ZERO)
 
-			match kind:
-				CellModel.CellKind.MARK: board._draw_cell_x(cell_rect, false, r, c)
-				CellModel.CellKind.CANDY: board._draw_cell_candy(cell_rect, false)
-				CellModel.CellKind.ERROR: board._draw_cell_x(cell_rect, true, r, c)
-				CellModel.CellKind.GIVEN: board._draw_cell_candy(cell_rect, true)
+	# Pass 4a: Static candy (placed and givens)
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var k: int = int(kinds[r][c])
+			if k == CellModel.CellKind.CANDY or k == CellModel.CellKind.GIVEN:
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+				board._draw_cell_candy(cell_rect, k == CellModel.CellKind.GIVEN)
+				if cell_scale != 1.0:
+					board.draw_set_transform(Vector2.ZERO)
 
-			if board._show_solution and board._session != null:
-				var sol: Array = board._session.level.get("solution", [])
-				if r < sol.size() and int(sol[r]) == c and kind != CellModel.CellKind.CANDY and kind != CellModel.CellKind.GIVEN:
-					board._draw_solution_hint(cell_rect)
+	# Pass 4b: Static marks (MARK and ERROR not currently animating)
+	for r in range(count):
+		for c in range(count):
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			if board.has_mark_anim(r, c): continue
+			var k: int = int(kinds[r][c])
+			if k == CellModel.CellKind.MARK or k == CellModel.CellKind.ERROR:
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+				board._draw_cell_x(cell_rect, k == CellModel.CellKind.ERROR, r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(Vector2.ZERO)
 
-			if board._highlight_set.has(cell_coord):
-				var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(board._highlight_pulse_phase))
-				board._draw_border(cell_rect, Color(Palette.ACCENT_ORANGE, pulse_alpha), 3, cr)
+	# Pass 5: Animating marks
+	for r in range(count):
+		for c in range(count):
+			if not board.has_mark_anim(r, c): continue
+			var cell_scale: float = board.cell_entry_scale(r, c)
+			if cell_scale <= 0.0: continue
+			var k: int = int(kinds[r][c])
+			if k == CellModel.CellKind.MARK or k == CellModel.CellKind.ERROR:
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
+				board._draw_cell_x(cell_rect, k == CellModel.CellKind.ERROR, r, c)
+				if cell_scale != 1.0:
+					board.draw_set_transform(Vector2.ZERO)
 
-	board.draw_set_transform(Vector2.ZERO)
+	# Pass 6: Borders (High contrast, solution hint, active highlights)
+	if board._high_contrast:
+		for r in range(count):
+			for c in range(count):
+				var cell_rect: Rect2 = board._cell_rect(r, c)
+				board._draw_border(cell_rect, Palette.MARK_STROKE, 2, cr)
+
+	if board._show_solution and board._session != null:
+		var sol: Array = board._session.level.get("solution", [])
+		for r in range(count):
+			if r < sol.size():
+				var sol_c: int = int(sol[r])
+				var k: int = int(kinds[r][sol_c])
+				if k != CellModel.CellKind.CANDY and k != CellModel.CellKind.GIVEN:
+					board._draw_solution_hint(board._cell_rect(r, sol_c))
+
+	if not board._highlight_set.is_empty():
+		var pulse_alpha: float = 0.35 + 0.65 * (0.5 + 0.5 * sin(board._highlight_pulse_phase))
+		var highlight_col := Color(Palette.ACCENT_ORANGE, pulse_alpha)
+		for cell_coord in board._highlight_set.keys():
+			var r: int = cell_coord.x
+			var c: int = cell_coord.y
+			if r >= 0 and r < count and c >= 0 and c < count:
+				board._draw_border(board._cell_rect(r, c), highlight_col, 3, cr)
