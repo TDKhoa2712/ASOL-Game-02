@@ -23,6 +23,14 @@ func _init() -> void:
 	config.reset_defaults()
 	check(config.get_option("audio") == true, "reset defaults")
 	check(changes.back() == ["", null], "reset signal")
+	check(config.get_option("music") == true, "default music")
+	config.set_option("music", false)
+	check(Config.new(dir).get_option("music") == false, "persist music")
+	check(Config.new(dir).get_option("audio") == true, "music independent of sound")
+	_write_legacy(dir, {"audio": false})
+	check(Config.new(dir).get_option("music") == false, "legacy muted profile keeps music off")
+	_write_legacy(dir, {"audio": false, "music": true})
+	check(Config.new(dir).get_option("music") == true, "saved music wins over legacy fallback")
 	DirAccess.remove_absolute(dir.path_join("config.json"))
 	DirAccess.remove_absolute(dir)
 	if failures.is_empty():
@@ -32,6 +40,11 @@ func _init() -> void:
 		for failure in failures:
 			printerr(failure)
 		quit(1)
+
+func _write_legacy(dir: String, options: Dictionary) -> void:
+	var file := FileAccess.open(dir.path_join("config.json"), FileAccess.WRITE)
+	file.store_string(JSON.stringify({"version": 1, "options": options}))
+	file.close()
 
 func check(condition: bool, label: String) -> void:
 	if not condition:

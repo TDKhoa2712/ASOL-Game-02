@@ -78,7 +78,7 @@ func _test_all_7_locales_switch() -> void:
 func _test_csv_key_coverage_all_7_locales() -> void:
 	var expected_keys := [
 		"title.name", "title.play", "title.replay",
-		"settings.audio", "settings.haptic",
+		"settings.audio", "settings.music", "settings.haptic",
 		"result.win.title", "result.lose.title",
 		"puzzle.rule_row", "puzzle.rule_region", "puzzle.rule_diagonal",
 		"hint.wrong_mark", "hint.mark_neighbors", "hint.single_row", "hint.single_col",

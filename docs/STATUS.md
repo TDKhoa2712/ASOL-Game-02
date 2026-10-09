@@ -27,6 +27,12 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 Kẹo trên board là linh vật động từ atlas `game/assets/candy/anim/mascot_atlas.png` (sinh bằng `game/tools/build_mascot_atlas.gd`): appear/idle/error/sad/win; tối đa 6 ô idle đồng thời, chỉ redraw khi khung đổi. Headless verify pass (`scratch/verification/20261009T191635.275269Z.txt`); chưa QA thiết bị.
 
+## Tách Nhạc nền / Âm thanh (2026-10-10, `feat/v1.0.1/music-setting`)
+
+- RST-025: hai công tắc độc lập trong Settings; profile cũ được giữ trạng thái tắt. Headless gate PASS; QA trên thiết bị chưa thực hiện.
+
+---
+
 ## Tối ưu hiệu năng gần nhất (2026-10-08)
 
 ### RST-023 — Mark X GPU Batching & O(1) Sets

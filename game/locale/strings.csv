@@ -18,6 +18,7 @@ help.control_swipe,"Swipe to mark multiple cells.","スワイプで複数のマ�
 help.hearts_title,Hearts (❤️),ハート (❤️),Tim (❤️),Nyawa (❤️),Vidas (❤️),Vidas (❤️),하트 (❤️)
 help.hearts_body,"You have 3 hearts. Each wrong candy placement costs one heart. Lose all hearts and you fail.","ハートは3個あります。配置を間違えるたびに1個減り、ゼロになるとゲームオーバーです。","Bạn có 3 tim. Mỗi lần đặt kẹo sai sẽ mất một tim. Hết tim thì thua.","Kamu memiliki 3 nyawa. Setiap salah menempatkan permen akan mengurangi satu nyawa. Kehilangan semua nyawa berarti gagal.","Você tem 3 vidas. Cada doce colocado errado custa uma vida. Perca todas e você falha.","Tienes 3 vidas. Cada dulce mal colocado cuesta una vida. Si pierdes todas, fallarás.","하트는 3개입니다. 사탕을 잘못 놓을 때마다 하나씩 줄어들며, 모두 잃으면 실패합니다."
 settings.title,SETTINGS,設定,CÀI ĐẶT,PENGATURAN,CONFIGURAÇÕES,AJUSTES,설정
+settings.music,Music,音楽,Nhạc nền,Musik,Música,Música,음악
 settings.audio,Sound,サウンド,Âm thanh,Suara,Som,Sonido,소리
 settings.haptic,Haptic Feedback,振動,Rung phản hồi,Getaran,Vibração,Vibración,진동
 settings.reduced_motion,Reduce Motion,視覚効果を減らす,Giảm chuyển động,Kurangi Gerakan,Reduzir Movimento,Reducir Movimiento,동작 줄이기
