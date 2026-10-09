@@ -28,6 +28,7 @@ var _config: Variant = null
 var _built: bool = false
 var _layout_ready: bool = false
 
+var title_label: Label
 var back_btn: Button
 var restart_btn: Button
 var vbox: VBoxContainer
@@ -71,17 +72,13 @@ func _ensure_nodes() -> void:
 
 	var title_bar := HBoxContainer.new()
 	stack.add_child(title_bar)
-	var spacer_l := Control.new()
-	spacer_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_bar.add_child(spacer_l)
-	var title := Label.new()
-	title.text = tr("settings.title")
-	title.add_theme_font_size_override("font_size", 36)
-	title.add_theme_color_override("font_color", Palette.INK)
-	title_bar.add_child(title)
-	var spacer_r := Control.new()
-	spacer_r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_bar.add_child(spacer_r)
+	var spacer_l := Control.new(); spacer_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL; title_bar.add_child(spacer_l)
+	title_label = Label.new()
+	title_label.text = tr("settings.title")
+	title_label.add_theme_font_size_override("font_size", 36)
+	title_label.add_theme_color_override("font_color", Palette.INK)
+	title_bar.add_child(title_label)
+	var spacer_r := Control.new(); spacer_r.size_flags_horizontal = Control.SIZE_EXPAND_FILL; title_bar.add_child(spacer_r)
 
 	vbox = VBoxContainer.new()
 	vbox.name = "OptionsList"
@@ -114,19 +111,15 @@ func _ensure_nodes() -> void:
 	restart_btn.add_theme_font_size_override("font_size", 24)
 	restart_btn.visible = false
 	var restart_style := StyleBoxFlat.new()
-	restart_style.bg_color = Color.TRANSPARENT
-	restart_style.border_color = Palette.INK_LIGHT
-	restart_style.set_border_width_all(2)
-	restart_style.set_corner_radius_all(16)
-	restart_style.set_content_margin_all(10)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		restart_btn.add_theme_stylebox_override(state, restart_style)
+	restart_style.bg_color = Color.TRANSPARENT; restart_style.border_color = Palette.INK_LIGHT
+	restart_style.set_border_width_all(2); restart_style.set_corner_radius_all(16); restart_style.set_content_margin_all(10)
+	for state in ["normal", "hover", "pressed", "focus"]: restart_btn.add_theme_stylebox_override(state, restart_style)
 	restart_btn.add_theme_color_override("font_color", Palette.INK)
 	btn_row.add_child(restart_btn)
 
 	var body_font := FontTokens.body()
 	if body_font != null:
-		title.add_theme_font_override("font", FontTokens.body_semibold())
+		title_label.add_theme_font_override("font", FontTokens.body_semibold())
 		back_btn.add_theme_font_override("font", body_font)
 		restart_btn.add_theme_font_override("font", body_font)
 
@@ -140,14 +133,21 @@ func setup(config: Variant) -> void:
 	_config = config
 	_built = false
 	_ensure_nodes()
+	_update_static_texts()
 	_build_rows()
 	if _config != null and _config.has_signal("option_changed") and not _config.option_changed.is_connected(_on_config_changed):
 		_config.option_changed.connect(_on_config_changed)
 
-func _on_config_changed(key: String, _value: Variant) -> void:
+func _on_config_changed(key: String, value: Variant) -> void:
 	if key == "language":
-		_built = false
-		_build_rows()
+		if value is String and not str(value).is_empty():
+			TranslationServer.set_locale(str(value))
+		_update_static_texts(); _built = false; _build_rows()
+
+func _update_static_texts() -> void:
+	if title_label != null: title_label.text = tr("settings.title")
+	if back_btn != null: back_btn.text = tr("settings.back")
+	if restart_btn != null: restart_btn.text = tr("settings.restart")
 
 func show_restart(visible_flag: bool) -> void:
 	if restart_btn != null:

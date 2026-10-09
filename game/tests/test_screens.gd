@@ -269,6 +269,15 @@ func _test_options_screen() -> void:
 	_assert(selected_lang[0] == "ja", "language selected signal emitted")
 	dlg.free()
 
+	# Test language switch immediately updates header and button texts without reopening
+	config.set_option("language", "ja")
+	_assert(options.title_label != null and options.title_label.text == "設定", "options header updated to Japanese immediately")
+	_assert(options.back_btn != null and options.back_btn.text == "戻る", "back button updated to Japanese immediately")
+
+	config.set_option("language", "vi")
+	_assert(options.title_label != null and options.title_label.text == "CÀI ĐẶT", "options header updated to Vietnamese immediately")
+	_assert(options.back_btn != null and options.back_btn.text == "Quay lại", "back button updated to Vietnamese immediately")
+
 	options.free()
 	DirAccess.remove_absolute(temp_dir.path_join("config.json"))
 	DirAccess.remove_absolute(temp_dir)
