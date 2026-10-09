@@ -266,13 +266,10 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 func _on_level_won(hold: bool = true) -> void:
 	if board != null:
 		board.play_win_bounce()
-	if sfx != null:
-		sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
 func _on_level_failed(hold: bool = true) -> void:
 	if board != null: board.play_sad()
-	if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_FAIL)
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.
 	if not _is_custom and runtime != null and runtime.sessions != null:

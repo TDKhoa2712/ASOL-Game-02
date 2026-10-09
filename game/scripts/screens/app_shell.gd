@@ -11,6 +11,7 @@ const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
+const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
@@ -123,6 +124,9 @@ func _instantiate_screen(to_name: String) -> void:
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
 	if screen_host != null: screen_host.add_child(screen)
+	# Result melodies start with the result screen, not when the board resolves.
+	if sfx != null and to_name in ["win", "fail"]:
+		sfx.play(SfxCatalog.Effect.STAGE_CLEAR if to_name == "win" else SfxCatalog.Effect.STAGE_FAIL)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 	_debug_mode = true; _debug_lvl = level_data.duplicate(true); _debug_label = label
