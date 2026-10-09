@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="CanDoKu"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://splash/splash_screen.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Godot/app_userdata/ASOL Game 02"
 config/features=PackedStringArray("4.7")

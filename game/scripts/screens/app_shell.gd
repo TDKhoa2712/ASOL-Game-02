@@ -17,7 +17,6 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
-const SplashScreen = preload("res://scripts/screens/splash_screen.gd")
 
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
@@ -73,18 +72,7 @@ func _ready() -> void:
 	if screen_host == null:
 		screen_host = Control.new(); screen_host.name = "ScreenHost"
 		screen_host.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); add_child(screen_host)
-	_show_splash()
-
-func _show_splash() -> void:
-	if DisplayServer.get_name() == "headless":
-		_start_bgm(); _swap_screen("", nav.current_name()); return
-	var splash := SplashScreen.new()
-	splash.name = "SplashOverlay"
-	splash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	add_child(splash)
-	splash.finished.connect(func():
-		splash.queue_free(); _start_bgm(); _swap_screen("", nav.current_name())
-	)
+	_start_bgm(); _swap_screen("", nav.current_name())
 
 func _start_bgm() -> void:
 	if bgm != null and is_inside_tree() and ResourceLoader.exists(BGM_TRACK):
