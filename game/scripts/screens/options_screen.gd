@@ -9,6 +9,8 @@ const PillToggle = preload("res://scripts/screens/pill_toggle.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
+const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
 
 const LABEL_KEYS := {
 	"audio": "settings.audio",
@@ -265,26 +267,36 @@ func _make_language_tile() -> PanelContainer:
 
 	var lang_btn := Button.new()
 	lang_btn.name = "LangBtn"
-	var current: String = str(_config.get_option("language")) if _config != null else "vi"
-	lang_btn.text = tr("settings.language.vi") if current == "vi" else tr("settings.language.en")
-	lang_btn.custom_minimum_size = Vector2(160, 44)
+	var current: String = str(_config.get_option("language")) if _config != null else ""
+	if current == "":
+		current = LocaleResolver.resolve_locale("", OS.get_locale())
+	lang_btn.text = LocaleResolver.get_native_name(current)
+	lang_btn.custom_minimum_size = Vector2(180, 52)
 	lang_btn.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
 	var btn_style := StyleBoxFlat.new()
 	btn_style.bg_color = Palette.SURFACE_HOVER
 	btn_style.set_corner_radius_all(12)
 	btn_style.set_content_margin_all(8)
+	btn_style.content_margin_top = 10
+	btn_style.content_margin_bottom = 10
 	for state in ["normal", "hover", "pressed", "focus"]:
 		lang_btn.add_theme_stylebox_override(state, btn_style)
-	lang_btn.pressed.connect(func():
-		var cur: String = str(_config.get_option("language")) if _config != null else "vi"
-		var next: String = "en" if cur == "vi" else "vi"
-		if _config != null:
-			_config.set_option("language", next)
-	)
+	lang_btn.pressed.connect(_on_open_language_dialog)
 	row.add_child(lang_btn)
 
 	tile.add_child(row)
 	return tile
+
+func _on_open_language_dialog() -> void:
+	var current: String = str(_config.get_option("language")) if _config != null else ""
+	if current == "":
+		current = LocaleResolver.resolve_locale("", OS.get_locale())
+	var dlg := LanguageSelectDialog.new(current)
+	dlg.language_selected.connect(func(loc: String):
+		if _config != null:
+			_config.set_option("language", loc)
+	)
+	add_child(dlg)
 
 func set_large_text(_enabled: bool) -> void:
 	_built = false; _build_rows()

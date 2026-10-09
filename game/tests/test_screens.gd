@@ -13,6 +13,7 @@ const PlaySession = preload("res://scripts/input/play_session.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const CellAnimator = preload("res://scripts/screens/cell_animator.gd")
+const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
 
 class MockRuntime extends RefCounted:
 	var label: String = "1-2"
@@ -258,6 +259,15 @@ func _test_options_screen() -> void:
 	options.back_pressed.connect(func(): back_box[0] = true)
 	options._on_back()
 	_assert(back_box[0], "back_pressed emitted")
+
+	var dlg := LanguageSelectDialog.new("en")
+	dlg._build_ui()
+	_assert(dlg._options_container != null and dlg._options_container.get_child_count() == 7, "language dialog shows 7 options")
+	var selected_lang := [""]
+	dlg.language_selected.connect(func(loc: String): selected_lang[0] = loc)
+	dlg._on_option_selected("ja")
+	_assert(selected_lang[0] == "ja", "language selected signal emitted")
+	dlg.free()
 
 	options.free()
 	DirAccess.remove_absolute(temp_dir.path_join("config.json"))
