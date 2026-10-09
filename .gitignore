@@ -13,6 +13,7 @@ htmlcov/
 
 # Tool snapshots and indexers
 meowdoku-clone.xml
+docs_analysis/
 *.repomix.xml
 .codegraph/
 .codex-remote-attachments/

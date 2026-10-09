@@ -14,7 +14,7 @@ const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
-const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.wav"
+const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
 const SplashScreen = preload("res://scripts/screens/splash_screen.gd")
 
