@@ -5,6 +5,10 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const HeartDisplay = preload("res://scripts/ui/heart_display.gd")
+const RibbonBanner = preload("res://scripts/ui/ribbon_banner.gd")
+const StatCard = preload("res://scripts/ui/stat_card.gd")
+const ConfettiLayer = preload("res://scripts/ui/confetti_layer.gd")
+const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
 
 var _fails: Array[String] = []
 
@@ -16,6 +20,10 @@ func _init() -> void:
 	_test_gradient_bg()
 	_test_action_button()
 	_test_heart_display()
+	_test_ribbon_banner()
+	_test_stat_card()
+	_test_confetti_layer()
+	_test_sunburst_rays()
 	if _fails.is_empty():
 		print("WIDGETS_PASS"); quit(0)
 	else:
@@ -72,3 +80,33 @@ func _test_heart_display() -> void:
 	var d3 := HeartDisplay.new(3, 0, "lose")
 	_assert(d3.get_child_count() == 3, "heart_display has 3 children (lose/0)")
 	d3.free()
+
+func _test_ribbon_banner() -> void:
+	var r1 := RibbonBanner.new("HOÀN THÀNH!", "win")
+	_assert(r1 is Control, "ribbon_banner win is Control")
+	r1.free()
+	var r2 := RibbonBanner.new("HẾT TIM RỒI!", "lose")
+	_assert(r2 is Control, "ribbon_banner lose is Control")
+	r2.free()
+
+func _test_stat_card() -> void:
+	var stats: Array[Dictionary] = [
+		{"label": "Thời gian", "value": "02:41", "icon": "clock"},
+		{"label": "Lỗi sai", "value": "1", "icon": "error"},
+	]
+	var card := StatCard.new(stats)
+	_assert(card is PanelContainer, "stat_card 2-col is PanelContainer")
+	card.free()
+	var card2 := StatCard.new([{"label": "Thời gian", "value": "03:12", "icon": "clock"}])
+	_assert(card2 is PanelContainer, "stat_card 1-col is PanelContainer")
+	card2.free()
+
+func _test_confetti_layer() -> void:
+	var confetti := ConfettiLayer.new(40)
+	_assert(confetti is Control, "confetti_layer is Control")
+	confetti.free()
+
+func _test_sunburst_rays() -> void:
+	var rays := SunburstRays.new()
+	_assert(rays is Control, "sunburst_rays is Control")
+	rays.free()
