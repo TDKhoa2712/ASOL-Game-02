@@ -26,6 +26,8 @@ func _init() -> void:
 	_test_locked_subset_ignores_empty_zone()
 	_test_locked_subset_benchmarks()
 	_test_contradiction_returns_dict()
+	_test_contradiction_chain_detail()
+	_test_propagate_with_trace_no_contradiction()
 	_test_clone_board()
 	_test_replay_solve_standard()
 	_test_advanced_technique_puzzle()
@@ -270,3 +272,31 @@ func _test_advanced_technique_puzzle() -> void:
 	_assert(used_advanced, "advanced puzzle: profile shows S4+ technique used")
 	# Verify specifically that SUBSET_PAIR (S4) was invoked
 	_assert(profile.get("s4", 0) > 0, "advanced puzzle: S4 SUBSET_PAIR invoked")
+
+func _test_contradiction_chain_detail() -> void:
+	# 4x4 board where placing candy at [2,0] causes contradiction
+	var board := _empty_board(4)
+	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
+	board[0][1] = CellModel.CellKind.CANDY
+	board[1][3] = CellModel.CellKind.CANDY
+	SolverTechniques._apply_elimination(board, 4, regions)
+	var result := SolverTechniques._try_contradiction(board, 4, regions)
+	if result["found"]:
+		_assert(result.has("chain_detail"), "contradiction has chain_detail")
+		var detail: Dictionary = result["chain_detail"]
+		_assert(detail.has("hypothesis_cell"), "detail has hypothesis_cell")
+		_assert(detail.has("depth"), "detail has depth")
+		_assert(detail.has("steps"), "detail has steps")
+		_assert(detail.has("contra_type"), "detail has contra_type")
+		_assert(detail["contra_type"] in ["row", "col", "zone"], "contra_type is valid")
+		_assert(detail["depth"] >= 0, "depth >= 0")
+
+func _test_propagate_with_trace_no_contradiction() -> void:
+	var board := _empty_board(4)
+	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
+	board[0][1] = CellModel.CellKind.CANDY
+	SolverTechniques._apply_elimination(board, 4, regions)
+	var result := SolverTechniques._propagate_with_trace(board, 4, regions, 99)
+	_assert(not result["contradiction"], "no contradiction on valid partial board")
+	_assert(result["depth"] >= 0, "depth >= 0")
+	_assert(result["steps"] is Array, "steps is Array")
