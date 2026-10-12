@@ -10,6 +10,7 @@ func _init() -> void:
 	_test_setup_last_level()
 	_test_signals()
 	_test_format_time()
+	_test_next_button()
 	if _fails.is_empty():
 		print("WIN_SCREEN_PASS"); quit(0)
 	else:
@@ -55,3 +56,14 @@ func _test_format_time() -> void:
 	_assert(screen._format_time(0) == "00:00", "format 0 -> 00:00")
 	_assert(screen._format_time(3600000) == "60:00", "format 3600000 -> 60:00")
 	screen.free()
+
+func _test_next_button() -> void:
+	var screen := WinScreen.new()
+	screen.setup(true, 161000, "L5", false, 2, 1, "L06", 5, "medium")
+	_assert(screen.next_btn != null, "next_btn exists")
+	_assert(screen.next_btn.text == tr("result.win.next"), "next_btn.text equals tr(result.win.next)")
+	_assert(not screen.next_btn.text.contains("➔"), "next_btn text does not contain ➔")
+	_assert(not screen.next_btn.text.contains("2794"), "next_btn text does not contain 2794")
+	_assert(screen.next_btn.find_child("ActionLabel") != null, "next_btn has ActionLabel child")
+	screen.free()
+

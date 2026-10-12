@@ -1,4 +1,4 @@
-﻿# win_screen.gd — Victory screen with animated mascot, hearts, ribbon, stats, and next-level preview.
+# win_screen.gd — Victory screen with animated mascot, hearts, ribbon, stats, and next-level preview.
 extends Control
 
 signal next_pressed()
@@ -239,8 +239,9 @@ func _create_next_card() -> PanelContainer:
 	if bold != null: size_lbl.add_theme_font_override("font", bold)
 	meta_row.add_child(size_lbl)
 
-	next_btn = ActionButton.create(tr("result.win.next") + " ➔", Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 52, 128)
+	next_btn = ActionButton.create(tr("result.win.next"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 52, 128)
 	next_btn.clip_contents = true
+	ActionButton.set_trailing_icon(next_btn, "res://assets/ui/result/icon_next_white.svg", Vector2(40, 40))
 	next_btn.pressed.connect(_on_next); inner.add_child(next_btn)
 
 	var glint := ColorRect.new()
