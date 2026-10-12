@@ -213,12 +213,12 @@ func _board_rect() -> Rect2:
 	if inner.size.x <= 0.0 or inner.size.y <= 0.0:
 		return Rect2(card.get_center(), Vector2.ZERO)
 	var n := maxi(1, int(_session.level.get("size", 1)) if _session != null else 1)
-	var depth_k := LayoutTokens.CELL_DEPTH_RATIO * (1.0 - LayoutTokens.CELL_GAP_RATIO * float(n - 1)) / float(n)
+	var depth_k := LayoutTokens.CELL_DEPTH_RATIO * (1.0 - LayoutTokens.cell_gap_ratio(n) * float(n - 1)) / float(n)
 	var side := minf(inner.size.x, inner.size.y / (1.0 + depth_k))
 	var block := Vector2(side, side * (1.0 + depth_k))
 	return Rect2(inner.position + (inner.size - block) * 0.5, Vector2.ONE * side)
 
-func _cell_gap(board_w: float) -> float: return maxf(3.0, board_w * LayoutTokens.CELL_GAP_RATIO)
+func _cell_gap(board_w: float) -> float: return maxf(3.0, board_w * LayoutTokens.cell_gap_ratio(int(_session.level.get("size", 1)) if _session != null else 1))
 
 func _invalidate_rects() -> void:
 	_cached_rects.clear()

@@ -6,6 +6,7 @@ signal back_pressed()
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const BackButton = preload("res://scripts/screens/back_button.gd")
 
 const RULES := [
 	{"icon": "1️⃣", "title_key": "help.rule1_title", "body_key": "help.rule1_body"},
@@ -53,28 +54,33 @@ func _build() -> void:
 	card.add_theme_stylebox_override("panel", card_style)
 	center.add_child(card)
 
+	var outer := VBoxContainer.new()
+	outer.add_theme_constant_override("separation", 20)
+	card.add_child(outer)
+
+	var body_font: Font = FontTokens.body()
+	var bold_font: Font = FontTokens.body_semibold()
+
+	# Title + back stay pinned above the scroll so closing never needs scrolling.
+	var title := Label.new()
+	title.text = tr("help.title")
+	title.add_theme_font_size_override("font_size", 40)
+	title.add_theme_color_override("font_color", Palette.INK)
+	if bold_font != null:
+		title.add_theme_font_override("font", bold_font)
+	var back_btn := BackButton.make()
+	back_btn.pressed.connect(func(): back_pressed.emit())
+	outer.add_child(BackButton.make_header(back_btn, title))
+
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(0, 700)
+	scroll.custom_minimum_size = Vector2(0, 640)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	card.add_child(scroll)
+	outer.add_child(scroll)
 
 	var stack := VBoxContainer.new()
 	stack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stack.add_theme_constant_override("separation", 24)
 	scroll.add_child(stack)
-
-	var body_font: Font = FontTokens.body()
-	var bold_font: Font = FontTokens.body_semibold()
-
-	# Title
-	var title := Label.new()
-	title.text = tr("help.title")
-	title.add_theme_font_size_override("font_size", 40)
-	title.add_theme_color_override("font_color", Palette.INK)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	if bold_font != null:
-		title.add_theme_font_override("font", bold_font)
-	stack.add_child(title)
 
 	# Rules
 	for rule in RULES:
@@ -105,27 +111,6 @@ func _build() -> void:
 		Palette.CORAL, body_font, bold_font
 	)
 	stack.add_child(hearts_card)
-
-	# Close button
-	var btn_row := HBoxContainer.new()
-	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	stack.add_child(btn_row)
-
-	var close_btn := Button.new()
-	close_btn.text = tr("settings.back")
-	close_btn.custom_minimum_size = Vector2(200, 56)
-	close_btn.add_theme_font_size_override("font_size", 24)
-	var btn_style := StyleBoxFlat.new()
-	btn_style.bg_color = Palette.CORAL
-	btn_style.set_corner_radius_all(16)
-	btn_style.set_content_margin_all(10)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		close_btn.add_theme_stylebox_override(state, btn_style)
-	close_btn.add_theme_color_override("font_color", Palette.TEXT_ON_ACCENT)
-	if body_font != null:
-		close_btn.add_theme_font_override("font", body_font)
-	close_btn.pressed.connect(func(): back_pressed.emit())
-	btn_row.add_child(close_btn)
 
 func _make_rule_card(rule: Dictionary, body_font: Font, bold_font: Font) -> PanelContainer:
 	var tile := PanelContainer.new()
