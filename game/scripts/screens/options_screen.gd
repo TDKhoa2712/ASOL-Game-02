@@ -10,6 +10,7 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
+const BackButton = preload("res://scripts/screens/back_button.gd")
 const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
 
 const LABEL_KEYS := {
@@ -71,15 +72,12 @@ func _ensure_nodes() -> void:
 	stack.add_theme_constant_override("separation", 20)
 	card.add_child(stack)
 
-	var title_bar := HBoxContainer.new()
-	stack.add_child(title_bar)
-	var spacer_l := Control.new(); spacer_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL; title_bar.add_child(spacer_l)
 	title_label = Label.new()
 	title_label.text = tr("settings.title")
 	title_label.add_theme_font_size_override("font_size", 36)
 	title_label.add_theme_color_override("font_color", Palette.INK)
-	title_bar.add_child(title_label)
-	var spacer_r := Control.new(); spacer_r.size_flags_horizontal = Control.SIZE_EXPAND_FILL; title_bar.add_child(spacer_r)
+	back_btn = BackButton.make()
+	stack.add_child(BackButton.make_header(back_btn, title_label))
 
 	vbox = VBoxContainer.new()
 	vbox.name = "OptionsList"
@@ -90,20 +88,6 @@ func _ensure_nodes() -> void:
 	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	btn_row.add_theme_constant_override("separation", 16)
 	stack.add_child(btn_row)
-
-	back_btn = Button.new()
-	back_btn.name = "BackBtn"
-	back_btn.text = tr("settings.back")
-	back_btn.custom_minimum_size = Vector2(200, 56)
-	back_btn.add_theme_font_size_override("font_size", 24)
-	var back_style := StyleBoxFlat.new()
-	back_style.bg_color = Palette.CORAL
-	back_style.set_corner_radius_all(16)
-	back_style.set_content_margin_all(10)
-	for state in ["normal", "hover", "pressed", "focus"]:
-		back_btn.add_theme_stylebox_override(state, back_style)
-	back_btn.add_theme_color_override("font_color", Palette.TEXT_ON_ACCENT)
-	btn_row.add_child(back_btn)
 
 	restart_btn = Button.new()
 	restart_btn.name = "RestartBtn"
@@ -121,7 +105,6 @@ func _ensure_nodes() -> void:
 	var body_font := FontTokens.body()
 	if body_font != null:
 		title_label.add_theme_font_override("font", FontTokens.body_semibold())
-		back_btn.add_theme_font_override("font", body_font)
 		restart_btn.add_theme_font_override("font", body_font)
 
 func _ready() -> void:
@@ -147,7 +130,7 @@ func _on_config_changed(key: String, value: Variant) -> void:
 
 func _update_static_texts() -> void:
 	if title_label != null: title_label.text = tr("settings.title")
-	if back_btn != null: back_btn.text = tr("settings.back")
+	if back_btn != null: back_btn.tooltip_text = tr("settings.back")
 	if restart_btn != null: restart_btn.text = tr("settings.restart")
 
 func show_restart(visible_flag: bool) -> void:

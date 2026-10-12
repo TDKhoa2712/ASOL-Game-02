@@ -58,4 +58,12 @@ func _check(lvl: Dictionary, n: int, area: Vector2) -> void:
 	var limit := cr - LayoutTokens.BOARD_BORDER_WIDTH
 	if probe.x > arc_center.x and probe.y > arc_center.y and probe.distance_to(arc_center) > limit:
 		_fails.append("%dx%d @%s corner cell crosses rounded border" % [n, n, area])
+	# Gaps scale with the cell pitch so large boards keep finger-sized cells.
+	var br: Rect2 = board._board_rect()
+	var pitch := br.size.x / float(n)
+	var gap: float = board._cell_gap(br.size.x)
+	if gap > maxf(3.0, pitch * LayoutTokens.CELL_GAP_PITCH_MAX) + 0.01:
+		_fails.append("%dx%d @%s gap %.2f too wide for pitch %.2f" % [n, n, area, gap, pitch])
+	if n == 12 and board._cell_rect(0, 0).size.x < br.size.x * 0.074:
+		_fails.append("12x12 @%s cell %.2f too small for board %.2f" % [area, board._cell_rect(0, 0).size.x, br.size.x])
 	board.free()

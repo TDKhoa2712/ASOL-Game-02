@@ -3,12 +3,18 @@ extends RefCounted
 # Board.
 const BOARD_PADDING := 16
 const CELL_GAP_RATIO := 0.024
+# Gap never exceeds this fraction of one cell pitch, so 9x9-12x12 boards keep large cells.
+const CELL_GAP_PITCH_MAX := 0.10
 const CELL_CORNER_RATIO := 0.20
 const CARD_CORNER_RATIO := 0.07
 const CARD_GROW := 14.0
 const BOARD_BORDER_WIDTH := 4.0
 const BOARD_INNER_PAD_RATIO := 0.022
 const CELL_DEPTH_RATIO := 0.065
+
+# Gap as a fraction of board width for an N x N board.
+static func cell_gap_ratio(board_size: int) -> float:
+	return minf(CELL_GAP_RATIO, CELL_GAP_PITCH_MAX / float(maxi(1, board_size)))
 
 # Typography.
 const TITLE_SIZE := 32
