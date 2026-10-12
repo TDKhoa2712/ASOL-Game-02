@@ -19,6 +19,7 @@ func _init() -> void:
 	_test_animation_constants()
 	_test_gradient_bg()
 	_test_action_button()
+	_test_action_button_trailing_icon()
 	_test_heart_display()
 	_test_ribbon_banner()
 	_test_stat_card()
@@ -67,6 +68,14 @@ func _test_action_button() -> void:
 	var style = btn.get_theme_stylebox("normal")
 	_assert(style is StyleBoxFlat, "action_button has StyleBoxFlat")
 	_assert((style as StyleBoxFlat).bg_color == Color.GREEN, "action_button bg_color matches")
+	btn.free()
+
+func _test_action_button_trailing_icon() -> void:
+	var btn := ActionButton.create("Next", Color.GREEN, Color.DARK_GREEN, Color.BLACK, 36)
+	var lbl := ActionButton.set_trailing_icon(btn, "res://assets/ui/result/icon_next_white.svg")
+	_assert(lbl != null, "set_trailing_icon returns label")
+	_assert(lbl.text == "Next", "label text matches")
+	_assert(btn.find_child("ActionLabel") != null, "button contains ActionLabel")
 	btn.free()
 
 func _test_heart_display() -> void:
