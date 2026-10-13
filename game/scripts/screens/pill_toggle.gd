@@ -5,8 +5,11 @@ signal toggled_value(on: bool)
 
 const Palette = preload("res://scripts/theme/palette.gd")
 
-const PILL_SIZE := Vector2(72, 38)
-const FONT_SIZE_PILL := 13
+const PILL_SIZE := Vector2(104, 52)
+const FONT_SIZE_PILL := 20
+# Both track colours keep the white ON/OFF label at >= 3:1 contrast.
+const TRACK_OFF := Color("#7A6E69")
+const TRACK_ON := Color("#B8501F")
 
 var _on: bool = false
 var _t: float = 0.0
@@ -52,6 +55,9 @@ func _on_toggled(pressed_val: bool) -> void:
 	var target_t := 1.0 if pressed_val else 0.0
 	_tween.tween_method(_set_t, _t, target_t, 0.15)
 
+func track_color(on: bool) -> Color:
+	return TRACK_ON if on else TRACK_OFF
+
 func _set_t(v: float) -> void:
 	_t = v
 	queue_redraw()
@@ -63,7 +69,7 @@ func _update_icon_tint(is_on_val: bool) -> void:
 func _draw() -> void:
 	var r := Rect2((size - PILL_SIZE) * 0.5, PILL_SIZE)
 	var sb := StyleBoxFlat.new()
-	sb.bg_color = Palette.DIVIDER.lerp(Palette.BTN_PRIMARY, _t)
+	sb.bg_color = TRACK_OFF.lerp(TRACK_ON, _t)
 	sb.set_corner_radius_all(int(PILL_SIZE.y * 0.5))
 	draw_style_box(sb, r)
 

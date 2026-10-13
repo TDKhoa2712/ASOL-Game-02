@@ -12,6 +12,7 @@ const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const BackButton = preload("res://scripts/screens/back_button.gd")
 const LanguageSelectDialog = preload("res://scripts/screens/language_select_dialog.gd")
+const OverlayStyle = preload("res://scripts/theme/overlay_style.gd")
 
 const LABEL_KEYS := {
 	"music": "settings.music",
@@ -57,15 +58,8 @@ func _ensure_nodes() -> void:
 
 	var card := PanelContainer.new()
 	card.name = "OptionsCard"
-	card.custom_minimum_size = Vector2(720, 0)
-	var card_style := StyleBoxFlat.new()
-	card_style.bg_color = Palette.SURFACE_WARM
-	card_style.set_corner_radius_all(34)
-	card_style.set_content_margin_all(32)
-	card_style.shadow_color = Palette.CARD_SHADOW
-	card_style.shadow_size = 16
-	card_style.shadow_offset = Vector2(0, 6)
-	card.add_theme_stylebox_override("panel", card_style)
+	card.custom_minimum_size = Vector2(OverlayStyle.CARD_WIDTH, 0)
+	card.add_theme_stylebox_override("panel", OverlayStyle.card())
 	center.add_child(card)
 
 	var stack := VBoxContainer.new()
@@ -74,7 +68,7 @@ func _ensure_nodes() -> void:
 
 	title_label = Label.new()
 	title_label.text = tr("settings.title")
-	title_label.add_theme_font_size_override("font_size", 36)
+	title_label.add_theme_font_size_override("font_size", OverlayStyle.TITLE_FONT)
 	title_label.add_theme_color_override("font_color", Palette.INK)
 	back_btn = BackButton.make()
 	stack.add_child(BackButton.make_header(back_btn, title_label))
@@ -92,14 +86,10 @@ func _ensure_nodes() -> void:
 	restart_btn = Button.new()
 	restart_btn.name = "RestartBtn"
 	restart_btn.text = tr("settings.restart")
-	restart_btn.custom_minimum_size = Vector2(200, 56)
-	restart_btn.add_theme_font_size_override("font_size", 24)
+	restart_btn.custom_minimum_size = Vector2(240, OverlayStyle.BUTTON_HEIGHT)
+	restart_btn.add_theme_font_size_override("font_size", OverlayStyle.BODY_FONT)
 	restart_btn.visible = false
-	var restart_style := StyleBoxFlat.new()
-	restart_style.bg_color = Color.TRANSPARENT; restart_style.border_color = Palette.INK_LIGHT
-	restart_style.set_border_width_all(2); restart_style.set_corner_radius_all(16); restart_style.set_content_margin_all(10)
-	for state in ["normal", "hover", "pressed", "focus"]: restart_btn.add_theme_stylebox_override(state, restart_style)
-	restart_btn.add_theme_color_override("font_color", Palette.INK)
+	OverlayStyle.paint_button(restart_btn, Palette.SURFACE_WARM, Palette.INK, Palette.INK_LIGHT)
 	btn_row.add_child(restart_btn)
 
 	var body_font := FontTokens.body()
@@ -123,6 +113,7 @@ func setup(config: Variant) -> void:
 		_config.option_changed.connect(_on_config_changed)
 
 func _on_config_changed(key: String, value: Variant) -> void:
+	if key == "": _built = false; _build_rows(); return # reset: redraw every toggle
 	if key == "language":
 		if value is String and not str(value).is_empty():
 			TranslationServer.set_locale(str(value))
@@ -145,8 +136,8 @@ func _build_rows() -> void:
 
 	var grid := GridContainer.new()
 	grid.columns = 2
-	grid.add_theme_constant_override("h_separation", 12)
-	grid.add_theme_constant_override("v_separation", 12)
+	grid.add_theme_constant_override("h_separation", 16)
+	grid.add_theme_constant_override("v_separation", 16)
 	vbox.add_child(grid)
 
 	for key in TILE_KEYS_GRID:
@@ -159,11 +150,7 @@ func _build_rows() -> void:
 
 func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	var tile := PanelContainer.new()
-	var tile_style := StyleBoxFlat.new()
-	tile_style.bg_color = Palette.SURFACE_TILE
-	tile_style.set_corner_radius_all(20)
-	tile_style.set_content_margin_all(14)
-	tile.add_theme_stylebox_override("panel", tile_style)
+	tile.add_theme_stylebox_override("panel", OverlayStyle.tile())
 	if is_square:
 		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
@@ -183,7 +170,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	if icon_path != "":
 		icon_tex = TextureRect.new()
 		icon_tex.texture = load(icon_path) as Texture2D
-		icon_tex.custom_minimum_size = Vector2(44, 44)
+		icon_tex.custom_minimum_size = Vector2(64, 64)
 		icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		col.add_child(icon_tex)
@@ -192,6 +179,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	lbl.text = tr(LABEL_KEYS.get(key, key))
 	lbl.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
 	lbl.add_theme_color_override("font_color", Palette.INK)
+	lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	if is_square:
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	else:
@@ -224,11 +212,7 @@ func _get_setting_icon(key: String, on: bool) -> String:
 
 func _make_language_tile() -> PanelContainer:
 	var tile := PanelContainer.new()
-	var tile_style := StyleBoxFlat.new()
-	tile_style.bg_color = Palette.SURFACE_TILE
-	tile_style.set_corner_radius_all(20)
-	tile_style.set_content_margin_all(14)
-	tile.add_theme_stylebox_override("panel", tile_style)
+	tile.add_theme_stylebox_override("panel", OverlayStyle.tile())
 
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
@@ -247,15 +231,10 @@ func _make_language_tile() -> PanelContainer:
 	if current == "":
 		current = LocaleResolver.resolve_locale("", OS.get_locale())
 	lang_btn.text = LocaleResolver.get_native_name(current)
-	lang_btn.custom_minimum_size = Vector2(180, 52)
+	lang_btn.custom_minimum_size = Vector2(260, OverlayStyle.BUTTON_HEIGHT)
 	lang_btn.add_theme_font_size_override("font_size", LayoutTokens.tile_font_size())
-	var btn_style := StyleBoxFlat.new()
-	btn_style.bg_color = Palette.SURFACE_HOVER
-	btn_style.set_corner_radius_all(12)
-	btn_style.content_margin_left = 8; btn_style.content_margin_right = 8
-	btn_style.content_margin_top = 10; btn_style.content_margin_bottom = 10
-	for state in ["normal", "hover", "pressed", "focus"]:
-		lang_btn.add_theme_stylebox_override(state, btn_style)
+	OverlayStyle.paint_button(lang_btn, Color.WHITE, Palette.INK, Palette.ACCENT_ORANGE)
+	if FontTokens.body_semibold() != null: lang_btn.add_theme_font_override("font", FontTokens.body_semibold())
 	lang_btn.pressed.connect(_on_open_language_dialog)
 	row.add_child(lang_btn)
 

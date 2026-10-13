@@ -8,6 +8,7 @@ signal closed()
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
+const OverlayStyle = preload("res://scripts/theme/overlay_style.gd")
 
 var _current_locale: String = ""
 var _options_container: VBoxContainer
@@ -39,25 +40,18 @@ func _build_ui() -> void:
 
 	var card := PanelContainer.new()
 	card.name = "LanguageCard"
-	card.custom_minimum_size = Vector2(620, 0)
-	var card_style := StyleBoxFlat.new()
-	card_style.bg_color = Palette.SURFACE_WARM
-	card_style.set_corner_radius_all(28)
-	card_style.set_content_margin_all(24)
-	card_style.shadow_color = Palette.CARD_SHADOW
-	card_style.shadow_size = 16
-	card_style.shadow_offset = Vector2(0, 6)
-	card.add_theme_stylebox_override("panel", card_style)
+	card.custom_minimum_size = Vector2(OverlayStyle.CARD_WIDTH, 0)
+	card.add_theme_stylebox_override("panel", OverlayStyle.card(32, 32))
 	center.add_child(card)
 
 	var stack := VBoxContainer.new()
-	stack.add_theme_constant_override("separation", 16)
+	stack.add_theme_constant_override("separation", 24)
 	card.add_child(stack)
 
 	var title := Label.new()
 	title.text = tr("settings.language")
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 30)
+	title.add_theme_font_size_override("font_size", OverlayStyle.TITLE_FONT)
 	title.add_theme_color_override("font_color", Palette.INK)
 	var h_font := FontTokens.heading()
 	if h_font != null:
@@ -65,14 +59,14 @@ func _build_ui() -> void:
 	stack.add_child(title)
 
 	var scroll := ScrollContainer.new()
-	scroll.custom_minimum_size = Vector2(0, 420)
+	scroll.custom_minimum_size = Vector2(0, 760)
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	stack.add_child(scroll)
 
 	_options_container = VBoxContainer.new()
 	_options_container.name = "OptionsContainer"
 	_options_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_options_container.add_theme_constant_override("separation", 8)
+	_options_container.add_theme_constant_override("separation", 12)
 	scroll.add_child(_options_container)
 
 	_populate_options()
@@ -80,16 +74,10 @@ func _build_ui() -> void:
 	var close_btn := Button.new()
 	close_btn.name = "CloseBtn"
 	close_btn.text = tr("settings.back")
-	close_btn.custom_minimum_size = Vector2(180, 52)
+	close_btn.custom_minimum_size = Vector2(280, OverlayStyle.BUTTON_HEIGHT)
 	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	close_btn.add_theme_font_size_override("font_size", 22)
-	var close_style := StyleBoxFlat.new()
-	close_style.bg_color = Palette.CORAL
-	close_style.set_corner_radius_all(14)
-	close_style.set_content_margin_all(10)
-	for st in ["normal", "hover", "pressed", "focus"]:
-		close_btn.add_theme_stylebox_override(st, close_style)
-	close_btn.add_theme_color_override("font_color", Palette.TEXT_ON_ACCENT)
+	close_btn.add_theme_font_size_override("font_size", OverlayStyle.BODY_FONT)
+	OverlayStyle.paint_button(close_btn, OverlayStyle.SELECTED_BG, Palette.TEXT_ON_ACCENT)
 	close_btn.pressed.connect(_on_close)
 	stack.add_child(close_btn)
 
@@ -101,32 +89,13 @@ func _populate_options() -> void:
 		var native_title: String = opt.native
 		var btn := Button.new()
 		btn.name = "LangBtn_" + loc
-		btn.custom_minimum_size = Vector2(0, 54) # Safe vertical padding for CJK
-		btn.add_theme_font_size_override("font_size", 22)
+		btn.custom_minimum_size = Vector2(0, OverlayStyle.BUTTON_HEIGHT) # Safe vertical padding for CJK
+		btn.add_theme_font_size_override("font_size", OverlayStyle.BODY_FONT)
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		var b_font := FontTokens.body()
 		if b_font != null:
 			btn.add_theme_font_override("font", b_font)
 
-		var normal_style := StyleBoxFlat.new()
-		normal_style.bg_color = Palette.SURFACE_TILE
-		normal_style.set_corner_radius_all(14)
-		normal_style.content_margin_left = 20
-		normal_style.content_margin_right = 20
-		normal_style.content_margin_top = 10
-		normal_style.content_margin_bottom = 10
-
-		var hover_style := normal_style.duplicate() as StyleBoxFlat
-		hover_style.bg_color = Palette.SURFACE_HOVER
-
-		var pressed_style := normal_style.duplicate() as StyleBoxFlat
-		pressed_style.bg_color = Palette.SURFACE_PRESSED
-
-		btn.add_theme_stylebox_override("normal", normal_style)
-		btn.add_theme_stylebox_override("hover", hover_style)
-		btn.add_theme_stylebox_override("pressed", pressed_style)
-		btn.add_theme_stylebox_override("focus", hover_style)
-		btn.add_theme_color_override("font_color", Palette.INK)
 
 		btn.pressed.connect(func(): _on_option_selected(loc))
 		_options_container.add_child(btn)
@@ -138,12 +107,13 @@ func _refresh_selection() -> void:
 	for loc in _buttons:
 		var btn: Button = _buttons[loc]
 		var native_title: String = LocaleResolver.get_native_name(loc)
+		# The current language is a filled row, not just tinted text.
 		if loc == _current_locale:
 			btn.text = "%s  ✓" % native_title
-			btn.add_theme_color_override("font_color", Palette.ACCENT_ORANGE)
+			OverlayStyle.paint_button(btn, OverlayStyle.SELECTED_BG, Palette.TEXT_ON_ACCENT)
 		else:
 			btn.text = native_title
-			btn.add_theme_color_override("font_color", Palette.INK)
+			OverlayStyle.paint_button(btn, Palette.SURFACE_TILE, Palette.INK, OverlayStyle.TILE_BORDER)
 
 func _on_option_selected(loc: String) -> void:
 	_current_locale = loc

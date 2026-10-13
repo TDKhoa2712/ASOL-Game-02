@@ -244,12 +244,12 @@ func _show_options_overlay() -> void:
 
 func _hide_options_overlay() -> void:
 	if _options_overlay != null: _options_overlay.queue_free(); _options_overlay = null
-
 func _on_options_back() -> void:
 	_previous_screen_name = "options"; _hide_options_overlay()
 
 func _apply_setting(key: String, value: Variant) -> void:
 	match key:
+		"": _apply_all_settings() # reset_defaults changes every option at once
 		"audio":
 			if sfx != null: sfx.set_muted(not bool(value))
 		"music":
