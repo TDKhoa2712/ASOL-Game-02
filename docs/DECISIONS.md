@@ -9,8 +9,10 @@ Ngày 2026-10-13. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-
 - **Bàn cố định:** L01/L02 dùng bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank và không qua `board_transform`. Script trỏ mục tiêu theo nghĩa (vùng, bước trace, tập loại S3); runtime đổi ra tọa độ.
 - **Chỉ báo trục:** làm sáng số hàng/cột ở viền bàn và icon luật **không** vi phạm RST-004 (không tô sáng bề mặt ô). Chỉ dùng trong tutorial L01/L02.
 - **Bỏ qua hướng dẫn:** có nút từ bước L1-1. Bấm thì ghi mọi mốc vào `tutorialSeenIds`, tắt miễn phạt và ẩn bong bóng.
-- **Miễn phạt:** chỉ ô được gọi rõ tọa độ ở L1-1; thử sai ô đó không đặt `x_error`, không trừ tim, không tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
-- **Kỹ thuật:** bong bóng không chặn input bàn (chỉ nút nhận chạm); mọi chuỗi qua khóa `tr()`; guide khởi tạo từ `app_shell`, không autoload; mỗi file ≤ 300 dòng.
+- **Miễn phạt:** chỉ các ô L01 được gọi rõ tọa độ (L1-1 và L1-3/L1-4), đến khi xong hoặc bỏ qua tutorial; thử sai ô đó không đặt `x_error`, không trừ tim, không tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
+- **Auto-mark:** GR-34 chưa có trong code. L1-2 vẽ X mờ minh họa riêng cho tutorial (overlay, không đổi state/save/undo); auto-mark thật là việc riêng.
+- **L02 4×4, không given:** 4×4 có 1 given không bao giờ cần S3; giữ 4×4 để đường cong 10 màn 4×4 đầu không bị đứt. Bài học given chuyển thành gợi ý C-given.
+- **Kỹ thuật:** bong bóng không chặn input bàn (chỉ nút nhận chạm); mọi chuỗi qua khóa `tr()`; guide do `CampaignRuntime` tạo từ progress được inject (composition root `app_shell`), không autoload; mỗi file ≤ 300 dòng.
 
 ## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
 

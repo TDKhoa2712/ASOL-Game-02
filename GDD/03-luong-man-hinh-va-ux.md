@@ -36,7 +36,7 @@ Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` m�
 | UX-00 | Splash | Logo CanDoKu, animation khởi động; tự chuyển sang Home |
 | UX-01 | Home | Chơi/Tiếp tục, Endless, tên/số level hiện tại, Trợ giúp, Settings, Debug (dev); trạng thái hết nội dung |
 | UX-03 | Puzzle | Tên level, tim, **vùng luật bốn icon + chữ luôn nhìn thấy**, bàn, **hàng N vị trí tiến độ có màu/nhãn/họa tiết vùng**, Undo, Restart có xác nhận, Back To Home, một Hint/lượt, Trợ giúp, Settings |
-| UX-04 | Tutorial | L01 (luật, chạm đôi, X/xóa X, S2) và L02 (given, kéo X, S3, Hint) trên bàn viết tay; từ L03 là gợi ý theo ngữ cảnh; tiến theo hành động (§4) |
+| UX-04 | Tutorial | L01 (luật, chạm đôi, X/xóa X, S2) và L02 (kéo X, S3, Hint) trên bàn viết tay; từ L03 là gợi ý theo ngữ cảnh; tiến theo hành động (§4) |
 | UX-05 | Kết quả thắng | Câu khích lệ, điểm, sticker chúc mừng/hoạt ảnh kẹo, nút “Level tiếp theo” và Home |
 | UX-06 | Kết quả thua riêng | Thông điệp hết 3 tim, điểm lượt, “Thử lại” và Home; không dùng giao diện thắng đổi chữ |
 | UX-07 | Trợ giúp/Luật | Ví dụ hàng/cột/vùng/chạm chéo; chạm/kéo X, chạm đôi kẹo, X đỏ khóa, hint; trở lại màn trước |
@@ -73,7 +73,7 @@ Cửa sổ 350 ms đo từ lần nhấc thứ nhất đến lần chạm xuống
 
 Quyết định: RST-027 trong [DECISIONS](../docs/DECISIONS.md). Nguyên tắc: dạy luật qua hậu quả (auto-mark GR-34 sau kẹo đầu tiên), mỗi bước một câu ≤ 60 ký tự và một hành động, không tô sáng ô (RST-004).
 
-**Bàn:** L01/L02 là bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank, không transform. L01 không có given, có một vùng 1 ô (vùng B); sau kẹo B còn một vùng S2 thuần. L02 có 1 given và một bước S3 cần thiết theo GR-07. Script trỏ mục tiêu theo nghĩa (`{"region":"B"}`, `{"trace_step":n}`, `{"s3_eliminated":k}`); runtime đổi ra (r,c). `{r}`/`{c}` trong lời nhắc là số 1-based.
+**Bàn:** L01/L02 là bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank, không transform. L01 (`ABCC/AACC/AADD/DDDD`) không có given, có một vùng 1 ô (vùng B); sau kẹo B còn vùng C là S2 thuần. L02 (`ADDD/ADDD/CDBB/CCBB`) không có given; bước đầu là S3 cần thiết theo GR-07: vùng A nằm gọn trong cột 1 nên hai ô liền nhau ở hàng 3–4 cột 1 bị loại, kéo một nét là đủ. 4×4 với 1 given không bao giờ cần S3, nên bài học given chuyển thành gợi ý C-given. Dữ liệu: `game/data/tutorial/tutorial.json`. Script trỏ mục tiêu theo nghĩa (`{"region":"B"}`, `{"trace_step":n}`, `{"s3_eliminated":k}`); runtime đổi ra (r,c). `{r}`/`{c}` trong lời nhắc là số 1-based.
 
 **Tiến trình:** bước hiện tại được **suy ra** từ trạng thái bàn + `tutorialSeenIds`, không phải chuỗi cứng. Hoàn thành `done_when` trước khi bước hiện ra thì bỏ qua bước đó. Mỗi bước đạt được lưu vào progress. Đóng app giữa chừng: khôi phục board/`tutorialSeenIds` rồi suy lại bước, không phát sinh thao tác ảo.
 
@@ -83,21 +83,20 @@ Quyết định: RST-027 trong [DECISIONS](../docs/DECISIONS.md). Nguyên tắc:
 | --- | --- | --- | --- | --- |
 | L1-0 | Vào bàn | Thẻ mascot “Tìm 4 viên kẹo giấu trong vườn!”, 4 icon luật nháy lần lượt | Chạm “Bắt đầu” | Mục tiêu |
 | L1-1 | Sau L1-0 | “Luống B chỉ có 1 ô — kẹo ở đó! Chạm nhanh 2 lần: hàng {r}, cột {c}.” | Kẹo vùng B đúng | Chạm đôi, luật vùng |
-| L1-2 | Sau CandyFound, hết stagger auto-mark | “Ô mờ cùng hàng, cột, luống và sát chéo không thể có kẹo.” Icon luật sáng | “Hiểu rồi” hoặc 4 s | Bốn luật |
+| L1-2 | Sau CandyFound | “Ô mờ cùng hàng, cột, luống và sát chéo không thể có kẹo.” X mờ minh họa (chỉ vẽ, không đổi state) + icon luật sáng | “Hiểu rồi” hoặc 4 s | Bốn luật |
 | L1-3 | Sau L1-2 | “Chạm 1 lần để đánh X ô chắc không có kẹo: hàng {r}, cột {c}.” | MarkX đúng ô (ô loại được, chưa locked) | Chạm đơn = X |
 | L1-4 | Sau L1-3 | “Chạm lần nữa để xóa X.” | ClearX ô đó | Xóa X |
 | L1-5 | Sau L1-4 | “Luống {region} chỉ còn 1 ô trống. Tìm kẹo đi!” (không nêu tọa độ) | Kẹo vùng đó đúng | S2 tự tìm |
 | L1-6 | — | Không nhắc | Thắng | Tự chơi |
 
-Miễn phạt chỉ áp dụng ô ở L1-1: thử sai ô đó không đặt `x_error`, không trừ tim/tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
+Miễn phạt chỉ áp dụng các ô được gọi tọa độ (L1-1, L1-3/L1-4), đến khi xong hoặc bỏ qua tutorial: thử sai ô đó không đặt `x_error`, không trừ tim/tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
 
 ### L02
 
 | Bước | Kích hoạt | Lời nhắc | Qua khi | Dạy |
 | --- | --- | --- | --- | --- |
-| L2-1 | Vào bàn | “Kẹo có sẵn cũng làm mờ ô xung quanh.” | Tự tắt 3 s | Given, GR-35 |
-| L2-2 | Sau L2-1 | “Luống {region} nằm gọn trong cột {c} → ô khác của cột {c} không có kẹo. Giữ và kéo để đánh X.” | MarkStroke ≥ 2 ô thuộc tập loại S3 | Kéo X, S3 |
-| L2-3 | Sau L2-2 hoặc đứng yên 15 s | “Bí? Bấm Gợi ý — nó chỉ dần từng bước.” Nút Hint nảy | Mở rồi đóng/áp dụng Hint | Hint |
+| L2-1 | Vào bàn | “Luống trên cùng nằm gọn trong cột {c}, nên kẹo của cột {c} thuộc luống đó. Giữ và kéo từ hàng {r} xuống để đánh X phần còn lại.” | Một nét đánh X ≥ 2 ô thuộc tập loại S3; bỏ qua nếu đã đặt kẹo | Kéo X, S3 |
+| L2-2 | Sau L2-1 | “Bí? Bấm Gợi ý, nó chỉ dần từng bước.” Nút Hint nảy | Mở rồi đóng/áp dụng Hint | Hint |
 
 ### Gợi ý theo ngữ cảnh (L03 trở đi, mỗi loại một lần)
 
@@ -106,6 +105,7 @@ Miễn phạt chỉ áp dụng ô ở L1-1: thử sai ô đó không đặt `x_e
 | C-err | TryCandy sai đầu tiên | “X đỏ: ô này không có kẹo. Mất 1 tim, còn {n}.” |
 | C-heart1 | Lần đầu còn 1 tim | “Còn 1 tim! Dùng Gợi ý nếu chưa chắc.” |
 | C-undo | Lần đầu Undo bị chặn sau thử sai | “Không thể hoàn tác qua lần thử kẹo sai.” |
+| C-given | Lần đầu gặp bàn có given | “Kẹo có sẵn cũng tính: các ô quanh nó không thể có kẹo.” |
 | C-size5 | Lần đầu bàn 5×5 | “Bàn lớn hơn, luật vẫn vậy.” |
 | C-s3 | Lần đầu level order 19 | Nhắc mẹo luống gọn trong một hàng/cột |
 | C-idle | Đứng yên 30 s, chưa dùng Hint trong lượt | Nút Hint nảy, không chữ |

@@ -4,6 +4,7 @@ extends Control
 signal play_pressed()
 signal endless_pressed()
 signal options_pressed()
+signal tutorial_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
@@ -279,6 +280,7 @@ func _on_help() -> void:
 	_help_overlay = HelpScreen.new()
 	_help_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_help_overlay.back_pressed.connect(_close_help)
+	_help_overlay.replay_tutorial_pressed.connect(func() -> void: _close_help(); tutorial_pressed.emit())
 	add_child(_help_overlay)
 
 func _close_help() -> void:

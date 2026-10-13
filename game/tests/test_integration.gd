@@ -167,6 +167,7 @@ func _test_screen_flow_fail_and_retry() -> void:
 	var session: PlaySession = shell.runtime.current_session
 	var level: Dictionary = session.level
 	var solution: Array = level["solution"]
+	session.protect_fn = Callable() # L01 forgives the cells its lesson names; this flow needs real misses
 
 	# Make 3 mistakes on 3 distinct rows to fail level
 	for r in range(3):

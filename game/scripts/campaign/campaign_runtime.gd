@@ -9,12 +9,10 @@ const PlaySession = preload("res://scripts/input/play_session.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const PaceAdjuster = preload("res://scripts/campaign/pace_adjuster.gd")
 const SnapshotBuilder = preload("res://scripts/campaign/snapshot_builder.gd")
-
+const TutorialGuide = preload("res://scripts/campaign/tutorial_guide.gd")
 const PLAYLIST_PATH := "res://data/campaigns/demo_30.json"
 const CAMPAIGN_VERSION := 1
-
 var playlist_path: String = PLAYLIST_PATH
-
 signal level_started(level_id: String)
 signal level_won(level_id: String, next_id: String)
 signal level_lost(level_id: String)
@@ -32,6 +30,7 @@ var _current_snapshot: Dictionary = {}
 var pace_adjuster: PaceAdjuster = PaceAdjuster.new()
 var _rank_context: Dictionary = {}
 var _rank_selection: int = 0
+var tutorial: TutorialGuide = null # built on loaded progress in boot()
 
 func _init(bank_reader: BankReader, pace_reader: PaceReader, progress_manager: ProgressManager, session_store: SessionStore) -> void:
 	bank = bank_reader
@@ -69,6 +68,7 @@ func boot() -> Dictionary:
 			save_failed.emit("initial_progress")
 			return _boot_error("cannot save progress")
 	if progress.current.get("dda") is Dictionary: pace_adjuster.from_dict(progress.current.dda)
+	tutorial = TutorialGuide.new(progress)
 	if not playlist_order().has(progress.current.currentLevelId):
 		return _boot_error("progress level outside playlist")
 	if not is_campaign_done() and progress.current.completedLevelIds.has(progress.current.currentLevelId):
@@ -101,6 +101,7 @@ func start_level(label: String = "") -> PlaySession:
 		snapshot["puzzle_hash"] = level.hash
 	_current_snapshot = snapshot
 	var session := PlaySession.new(level)
+	if tutorial != null: tutorial.protect(session, target_label)
 	var save_data := session.to_save_data()
 	save_data["snapshot"] = snapshot.duplicate(true)
 	if not sessions.save_session(save_data):
@@ -125,6 +126,7 @@ func resume_level() -> PlaySession:
 		_current_snapshot = saved.data.snapshot.duplicate(true)
 		_current_snapshot["puzzle_hash"] = level.hash
 	current_session = PlaySession.from_save_data(saved.data, level)
+	if tutorial != null: tutorial.protect(current_session, current_level_label())
 	if saved.data.get("status") == "won" and saved.data.get("pendingScoreData") is Dictionary:
 		_pending_win = {"label": current_level_label(), "score": saved.data.pendingScoreData.duplicate(true)}
 	return current_session
@@ -205,7 +207,7 @@ func current_level_data() -> Dictionary:
 		pinned.hash = str(_current_snapshot.get("puzzle_hash", progress.puzzle_fingerprint(pinned)))
 		return pinned
 	var rank := _dda_adjusted_rank(entry)
-	var level := _fetch_level(entry.size, rank, entry.index, int(entry.get("transform", 0)))
+	var level := tutorial.level_for(entry.label) if tutorial != null and tutorial.has_level(entry.label) else _fetch_level(entry.size, rank, entry.index, int(entry.get("transform", 0)))
 	if level.is_empty():
 		return {}
 	level.id = current_level_label()

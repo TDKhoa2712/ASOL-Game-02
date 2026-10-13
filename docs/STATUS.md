@@ -23,6 +23,13 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Tutorial L01/L02 + gợi ý ngữ cảnh (2026-10-14, `feat/v1.0.1/tutorial`)
+
+- RST-027 / GDD 03 §4: bàn viết tay `game/data/tutorial/tutorial.json` (L01 `ABCC/AACC/AADD/DDDD`, L02 `ADDD/ADDD/CDBB/CCBB`), guide suy bước từ bàn, miễn phạt ô được gọi tọa độ, Bỏ qua, gợi ý C-err/heart1/undo/given/size5/s3/idle, Trợ giúp → Chơi lại hướng dẫn. Chuỗi 7 ngôn ngữ.
+- Suite mới PASS: `test_tutorial_targets`, `test_tutorial_guide`, `test_tutorial_tips`, `test_tutorial_campaign`, `test_tutorial_screen`; cập nhật `test_play_session`, `test_campaign_runtime`, `test_integration`.
+- Full verify: 98 PASS, 1 FAIL `test_settings_apply` do sửa đổi chưa commit có sẵn trong working tree (hàm `_test_reduced_motion_live` khai báo trùng); bản đã commit của file PASS. Evidence `scratch/verification/20261013T172356.416515Z.txt`.
+- Còn lại: auto-mark GR-34 chưa có trong code (L1-2 chỉ minh họa); QA thiết bị/playtest 10 người theo chỉ tiêu GDD 03 §4 chưa làm; bản dịch ja/id/pt_BR/es/ko cần người bản ngữ duyệt.
+
 ## Combo feedback (2026-10-10, `feat/v1.0.1/combo-feedback`)
 
 - RST-026: voice 12 cấp + chữ nghệ thuật cho chuỗi đặt kẹo đúng. Headless suites combo/feedback/screens/integration PASS.

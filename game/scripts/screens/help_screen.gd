@@ -2,12 +2,14 @@
 extends Control
 
 signal back_pressed()
+signal replay_tutorial_pressed()
 
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const BackButton = preload("res://scripts/screens/back_button.gd")
 const OverlayStyle = preload("res://scripts/theme/overlay_style.gd")
+const ActionButton = preload("res://scripts/ui/action_button.gd")
 
 const RULES := [
 	{"icon": "1", "title_key": "help.rule1_title", "body_key": "help.rule1_body"},
@@ -65,6 +67,10 @@ func _build() -> void:
 	var back_btn := BackButton.make()
 	back_btn.pressed.connect(func(): back_pressed.emit())
 	outer.add_child(BackButton.make_header(back_btn, title))
+	var replay := ActionButton.create(tr("help.replay_tutorial"), Palette.BOARD_HINT_BG, Palette.BOARD_HINT_EDGE, Color(0, 0, 0, 0), 30, 76, 6)
+	replay.name = "ReplayTutorialButton"
+	replay.pressed.connect(func() -> void: replay_tutorial_pressed.emit())
+	outer.add_child(replay)
 
 	var scroll := ScrollContainer.new()
 	scroll.custom_minimum_size = Vector2(0, 1180)

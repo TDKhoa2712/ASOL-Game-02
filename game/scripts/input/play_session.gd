@@ -9,6 +9,8 @@ signal heart_lost(remaining: int)
 signal mistake_made(row: int, col: int, reason: String)
 signal level_won()
 signal level_failed()
+# Tutorial: a wrong try on a cell the lesson named is forgiven (GR-20).
+signal protected_miss(row: int, col: int)
 
 enum Phase {
 	ACTIVE = 0,
@@ -24,6 +26,7 @@ var hints_used: int = 0
 var elapsed_ms: int = 0
 var phase: int = Phase.ACTIVE
 var _undo_cells: Array = []
+var protect_fn: Callable = Callable()
 
 func _init(level_data: Dictionary, initial_hearts: int = 3) -> void:
 	level = level_data
@@ -101,10 +104,12 @@ func try_candy(row: int, col: int) -> void:
 	var current: int = board[row][col]
 	if not CellModel.is_available(current):
 		return
-	_undo_cells = []
-
 	var regions: Array = level.get("regions", [])
 	var solution: Array = level.get("solution", [])
+	if row < solution.size() and int(solution[row]) != col and protect_fn.is_valid() and protect_fn.call(row, col):
+		protected_miss.emit(row, col)
+		return
+	_undo_cells = []
 	var res: Dictionary = CandyRules.attempt_candy(board, regions, solution, hearts, mistake_count, row, col)
 
 	hearts = int(res.get("hearts", hearts))

@@ -19,7 +19,6 @@ const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const TextScaler = preload("res://scripts/theme/text_scaler.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
-
 const SCENE_MAP := {
 	"title": "res://scenes/title.tscn",
 	"puzzle": "res://scenes/puzzle.tscn",
@@ -108,6 +107,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("play_pressed"): screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("endless_pressed"): screen.connect("endless_pressed", _on_title_endless)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
+			if screen.has_signal("tutorial_pressed") and runtime != null and runtime.tutorial != null: screen.connect("tutorial_pressed", func() -> void: _on_debug_level_selected(runtime.tutorial.practice_level("L01"), "Tutorial"))
 			if screen.has_method("setup"): screen.call("setup", runtime, endless_runtime)
 		"puzzle":
 			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)

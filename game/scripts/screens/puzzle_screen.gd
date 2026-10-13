@@ -18,6 +18,7 @@ static var hold_results := true
 const RESULT_HOLD_WIN := 1.5
 const RESULT_HOLD_LOSE := 1.2
 const ComboFeedback = preload("res://scripts/screens/combo_feedback.gd")
+const PuzzleTutorial = preload("res://scripts/screens/puzzle_tutorial.gd")
 var runtime: Variant = null; var sfx: Variant = null; var config: Variant = null
 var session: Variant = null; var _is_custom: bool = false
 var board: PuzzleBoard; var hearts_display: Control; var hint_btn: Button
@@ -102,6 +103,7 @@ func _connect_session() -> void:
 	_sig_conn(session.level_won, _on_level_won)
 	_sig_conn(session.level_failed, _on_level_failed)
 	_sig_conn(session.state_changed, _on_session_state_changed)
+	PuzzleTutorial.ensure(self)
 
 static func _sig_conn(sig: Signal, target: Callable) -> void:
 	if not sig.is_connected(target): sig.connect(target)

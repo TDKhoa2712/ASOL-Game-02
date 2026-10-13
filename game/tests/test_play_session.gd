@@ -21,6 +21,7 @@ func _init() -> void:
 	_test_apply_marks()
 	_test_apply_marks_skips_non_blank()
 	_test_clear_mark_inactive_phase()
+	_test_protected_miss_is_free()
 	if _fails.is_empty():
 		print("INPUT_PLAY_SESSION_PASS")
 		quit(0)
@@ -150,6 +151,21 @@ func _test_clear_mark_inactive_phase() -> void:
 	s.phase = PlaySession.Phase.WON
 	s.clear_mark(0, 0)
 	_assert(s.cell_at(0, 0) == CellModel.CellKind.MARK, "no clear in WON phase")
+
+func _test_protected_miss_is_free() -> void:
+	var session := PlaySession.new(_make_level(), 3)
+	var missed: Array = []
+	session.protected_miss.connect(func(r: int, c: int) -> void: missed.append([r, c]))
+	session.protect_fn = func(r: int, c: int) -> bool: return r == 0 and c == 0
+	session.mark_x(0, 0)
+	session.try_candy(0, 0)
+	_assert(session.hearts == 3 and session.mistake_count == 0, "protected miss costs nothing")
+	_assert(session.cell_at(0, 0) == CellModel.CellKind.MARK, "protected miss leaves the cell as it was")
+	_assert(missed == [[0, 0]], "protected miss is signalled")
+	session.try_candy(2, 2)
+	_assert(session.hearts == 2 and session.cell_at(2, 2) == CellModel.CellKind.ERROR, "unprotected miss still costs a heart")
+	session.try_candy(0, 1)
+	_assert(session.cell_at(0, 1) == CellModel.CellKind.CANDY, "protection never blocks a correct candy")
 
 func _make_level() -> Dictionary:
 	return {
