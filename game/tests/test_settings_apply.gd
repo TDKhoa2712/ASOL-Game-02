@@ -118,6 +118,10 @@ func _test_overlay_readability() -> void:
 	for btn in options.find_children("LangBtn_*", "Button", true, false):
 		_check_button(btn, "language option " + btn.name, 4.5)
 		_assert(btn.get_theme_font_size("font_size") >= 28, "language option text is large")
+		var normal := btn.get_theme_stylebox("normal") as StyleBoxFlat
+		for st in ["hover", "focus", "pressed"]:
+			var other := btn.get_theme_stylebox(st) as StyleBoxFlat
+			_assert(other.bg_color != normal.bg_color and other.border_width_left >= 4, "%s %s state stands out" % [btn.name, st])
 	shell.queue_free(); await process_frame
 	var help = load("res://scripts/screens/help_screen.gd").new()
 	root.add_child(help)

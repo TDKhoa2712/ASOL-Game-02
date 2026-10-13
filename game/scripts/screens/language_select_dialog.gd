@@ -110,10 +110,10 @@ func _refresh_selection() -> void:
 		# The current language is a filled row, not just tinted text.
 		if loc == _current_locale:
 			btn.text = "%s  ✓" % native_title
-			OverlayStyle.paint_button(btn, OverlayStyle.SELECTED_BG, Palette.TEXT_ON_ACCENT)
+			OverlayStyle.paint_option(btn, true)
 		else:
 			btn.text = native_title
-			OverlayStyle.paint_button(btn, Palette.SURFACE_TILE, Palette.INK, OverlayStyle.TILE_BORDER)
+			OverlayStyle.paint_option(btn, false)
 
 func _on_option_selected(loc: String) -> void:
 	_current_locale = loc
