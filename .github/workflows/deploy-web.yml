@@ -50,8 +50,13 @@ jobs:
         run: |
           mkdir -p build/web
           ~/godot/godot --headless --path game --import || true
-          ~/godot/godot --headless --path game --export-release "Web" "$GITHUB_WORKSPACE/build/web/index.html"
-          test -f build/web/index.html
+          # Name every build after its commit so browsers never reuse a stale
+          # .pck/.wasm from an earlier deploy; index.html itself is short-cached.
+          BUILD="candoku-${GITHUB_SHA::7}"
+          ~/godot/godot --headless --path game --export-release "Web" "$GITHUB_WORKSPACE/build/web/${BUILD}.html"
+          cp "build/web/${BUILD}.html" build/web/index.html
+          grep -q "\"executable\":\"${BUILD}\"" build/web/index.html
+          test -f "build/web/${BUILD}.pck" && test -f "build/web/${BUILD}.wasm"
 
       - uses: actions/configure-pages@v5
 
