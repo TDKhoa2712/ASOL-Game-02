@@ -10,9 +10,9 @@ const BackButton = preload("res://scripts/screens/back_button.gd")
 const OverlayStyle = preload("res://scripts/theme/overlay_style.gd")
 
 const RULES := [
-	{"icon": "1️⃣", "title_key": "help.rule1_title", "body_key": "help.rule1_body"},
-	{"icon": "2️⃣", "title_key": "help.rule2_title", "body_key": "help.rule2_body"},
-	{"icon": "3️⃣", "title_key": "help.rule3_title", "body_key": "help.rule3_body"},
+	{"icon": "1", "title_key": "help.rule1_title", "body_key": "help.rule1_body"},
+	{"icon": "2", "title_key": "help.rule2_title", "body_key": "help.rule2_body"},
+	{"icon": "3", "title_key": "help.rule3_title", "body_key": "help.rule3_body"},
 ]
 
 const CONTROLS := [
@@ -116,9 +116,20 @@ func _make_rule_card(rule: Dictionary, body_font: Font, bold_font: Font) -> Pane
 	var header := HBoxContainer.new()
 	header.add_theme_constant_override("separation", 10)
 
+	# Numbered badge drawn with bundled fonts (emoji keycaps do not render on Web).
 	var icon := Label.new()
 	icon.text = rule.icon
-	icon.add_theme_font_size_override("font_size", OverlayStyle.HEADING_FONT)
+	icon.custom_minimum_size = Vector2(52, 52)
+	icon.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	icon.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	icon.add_theme_font_size_override("font_size", OverlayStyle.BODY_FONT)
+	icon.add_theme_color_override("font_color", Palette.TEXT_ON_ACCENT)
+	var badge := StyleBoxFlat.new()
+	badge.bg_color = OverlayStyle.SELECTED_BG
+	badge.set_corner_radius_all(26)
+	icon.add_theme_stylebox_override("normal", badge)
+	if bold_font != null:
+		icon.add_theme_font_override("font", bold_font)
 	header.add_child(icon)
 
 	var title := Label.new()
@@ -155,13 +166,22 @@ func _make_section_card(title_text: String, body_text: String, accent: Color, bo
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 8)
 
+	var head := HBoxContainer.new()
+	head.add_theme_constant_override("separation", 10)
+	var heart := TextureRect.new()
+	heart.texture = load("res://assets/ui/board/heart.svg")
+	heart.custom_minimum_size = Vector2(40, 40)
+	heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	head.add_child(heart)
 	var t := Label.new()
 	t.text = title_text
 	t.add_theme_font_size_override("font_size", OverlayStyle.HEADING_FONT)
 	t.add_theme_color_override("font_color", Palette.INK)
 	if bold_font != null:
 		t.add_theme_font_override("font", bold_font)
-	col.add_child(t)
+	head.add_child(t)
+	col.add_child(head)
 
 	var b := Label.new()
 	b.text = body_text

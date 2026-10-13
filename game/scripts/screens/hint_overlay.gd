@@ -125,7 +125,7 @@ func show_hint(hint: Dictionary) -> void:
 	else:
 		_label_text.text = raw_text
 	_apply_btn.text = _apply_label_for(strategy)
-	_dismiss_btn.text = "✕"
+	_dismiss_btn.text = "×"
 	_detail_btn.text = tr("hint.detail")
 	_detail_btn.visible = strategy == "CONTRA_CHAIN" and hint.has("chain_detail")
 	_showing = true
@@ -155,9 +155,9 @@ func _on_detail() -> void:
 static func _icon_for(strategy: String) -> String:
 	match strategy:
 		"WRONG_MARK": return "⚠"
-		"MARK_NEIGHBORS", "LOCK_INTERSECTION", "LOCKED_SUBSET": return "✕"
-		"SINGLE_CANDIDATE", "FALLBACK": return "🍬"
-		"CONTRA_CHAIN": return "🔗"
+		"MARK_NEIGHBORS", "LOCK_INTERSECTION", "LOCKED_SUBSET": return "×"
+		"SINGLE_CANDIDATE", "FALLBACK": return "★"
+		"CONTRA_CHAIN": return "↔"
 	return ""
 
 func _apply_label_for(strategy: String) -> String:

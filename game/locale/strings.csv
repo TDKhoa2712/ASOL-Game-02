@@ -15,7 +15,7 @@ help.controls_title,Controls,操作方法,Cách điều khiển,Kontrol,Controle
 help.control_tap,"Tap once to mark X (eliminate a cell).","1回タップでXマーク（マスを除外）。","Chạm một lần để đánh dấu X (loại trừ ô).","Ketuk sekali untuk menandai X (mengeliminasi kotak).","Toque uma vez para marcar X (eliminar uma casa).","Toca una vez para marcar X (eliminar una casilla).","한 번 탭하여 X 표시(칸 제외)."
 help.control_double,"Double-tap to place a candy.","ダブルタップでキャンディを配置。","Chạm hai lần để đặt kẹo.","Ketuk dua kali untuk menempatkan permen.","Toque duas vezes para colocar um doce.","Toca dos veces para colocar un dulce.","두 번 탭하여 사탕 배치."
 help.control_swipe,"Swipe to mark multiple cells.","スワイプで複数のマスにXマーク。","Kéo ngang/dọc để đánh dấu X nhiều ô.","Geser untuk menandai X banyak kotak.","Deslize para marcar X em várias casas.","Desliza para marcar X en varias casillas.","스와이프하여 여러 칸에 X 표시."
-help.hearts_title,Hearts (❤️),ハート (❤️),Tim (❤️),Nyawa (❤️),Vidas (❤️),Vidas (❤️),하트 (❤️)
+help.hearts_title,Hearts,ハート,Tim,Nyawa,Vidas,Vidas,하트
 help.hearts_body,"You have 3 hearts. Each wrong candy placement costs one heart. Lose all hearts and you fail.","ハートは3個あります。配置を間違えるたびに1個減り、ゼロになるとゲームオーバーです。","Bạn có 3 tim. Mỗi lần đặt kẹo sai sẽ mất một tim. Hết tim thì thua.","Kamu memiliki 3 nyawa. Setiap salah menempatkan permen akan mengurangi satu nyawa. Kehilangan semua nyawa berarti gagal.","Você tem 3 vidas. Cada doce colocado errado custa uma vida. Perca todas e você falha.","Tienes 3 vidas. Cada dulce mal colocado cuesta una vida. Si pierdes todas, fallarás.","하트는 3개입니다. 사탕을 잘못 놓을 때마다 하나씩 줄어들며, 모두 잃으면 실패합니다."
 settings.title,SETTINGS,設定,CÀI ĐẶT,PENGATURAN,CONFIGURAÇÕES,AJUSTES,설정
 settings.music,Music,音楽,Nhạc nền,Musik,Música,Música,음악
