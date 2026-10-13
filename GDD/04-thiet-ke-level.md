@@ -33,7 +33,7 @@ Uniqueness không chứng minh người chơi giải được bằng S1/S2. Nế
 
 | Nhãn | Đặc trưng mong muốn | Mục tiêu playtest |
 | --- | --- | --- |
-| `tutorial` | Chỉ Level 1, chứa mốc T1–T6 và bước S2 rõ | 1–3 phút |
+| `tutorial` | L01/L02, bàn viết tay theo GDD 03 §4 (L01: vùng 1 ô + S2; L02: 1 given + S3 cần thiết) | 1–3 phút |
 | `easy` | Nhiều focus S2 rõ, kẹo cho sẵn nếu cần | 2–4 phút |
 | `medium` | Chuỗi S2 dài hơn, giao nhau hàng/cột/vùng | 3–6 phút |
 

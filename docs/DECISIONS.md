@@ -2,6 +2,16 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-027 — Làm lại tutorial: bàn viết tay, dạy luật qua auto-mark, trải trên L01/L02
+
+Ngày 2026-10-13. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial). Thay bảng T1–T6 cũ.
+
+- **Bàn cố định:** L01/L02 dùng bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank và không qua `board_transform`. Script trỏ mục tiêu theo nghĩa (vùng, bước trace, tập loại S3); runtime đổi ra tọa độ.
+- **Chỉ báo trục:** làm sáng số hàng/cột ở viền bàn và icon luật **không** vi phạm RST-004 (không tô sáng bề mặt ô). Chỉ dùng trong tutorial L01/L02.
+- **Bỏ qua hướng dẫn:** có nút từ bước L1-1. Bấm thì ghi mọi mốc vào `tutorialSeenIds`, tắt miễn phạt và ẩn bong bóng.
+- **Miễn phạt:** chỉ ô được gọi rõ tọa độ ở L1-1; thử sai ô đó không đặt `x_error`, không trừ tim, không tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
+- **Kỹ thuật:** bong bóng không chặn input bàn (chỉ nút nhận chạm); mọi chuỗi qua khóa `tr()`; guide khởi tạo từ `app_shell`, không autoload; mỗi file ≤ 300 dòng.
+
 ## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
 
 Ngày 2026-10-10.

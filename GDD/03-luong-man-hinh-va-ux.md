@@ -36,7 +36,7 @@ Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` m�
 | UX-00 | Splash | Logo CanDoKu, animation khởi động; tự chuyển sang Home |
 | UX-01 | Home | Chơi/Tiếp tục, Endless, tên/số level hiện tại, Trợ giúp, Settings, Debug (dev); trạng thái hết nội dung |
 | UX-03 | Puzzle | Tên level, tim, **vùng luật bốn icon + chữ luôn nhìn thấy**, bàn, **hàng N vị trí tiến độ có màu/nhãn/họa tiết vùng**, Undo, Restart có xác nhận, Back To Home, một Hint/lượt, Trợ giúp, Settings |
-| UX-04 | Tutorial | Chỉ có ở Level 1; chỉ dẫn ngắn trên bàn cho X, clear, kéo X, chạm đôi, bốn luật, X đỏ khóa và Hint; tiến theo hành động |
+| UX-04 | Tutorial | L01 (luật, chạm đôi, X/xóa X, S2) và L02 (given, kéo X, S3, Hint) trên bàn viết tay; từ L03 là gợi ý theo ngữ cảnh; tiến theo hành động (§4) |
 | UX-05 | Kết quả thắng | Câu khích lệ, điểm, sticker chúc mừng/hoạt ảnh kẹo, nút “Level tiếp theo” và Home |
 | UX-06 | Kết quả thua riêng | Thông điệp hết 3 tim, điểm lượt, “Thử lại” và Home; không dùng giao diện thắng đổi chữ |
 | UX-07 | Trợ giúp/Luật | Ví dụ hàng/cột/vùng/chạm chéo; chạm/kéo X, chạm đôi kẹo, X đỏ khóa, hint; trở lại màn trước |
@@ -71,18 +71,52 @@ Cửa sổ 350 ms đo từ lần nhấc thứ nhất đến lần chạm xuống
 
 ## 4. Tutorial
 
-Tutorial chỉ gắn Level 1, script theo ID level và điều kiện bàn; không cần chương. Mốc đã thấy lưu vào progress. Làm nước đúng khác thứ tự phải bỏ qua mốc đã thỏa. Từ Level 2 không còn miễn phạt tutorial. Mở lại hướng dẫn từ Trợ giúp dùng bản thực hành riêng, không thay đổi campaign.
+Quyết định: RST-027 trong [DECISIONS](../docs/DECISIONS.md). Nguyên tắc: dạy luật qua hậu quả (auto-mark GR-34 sau kẹo đầu tiên), mỗi bước một câu ≤ 60 ký tự và một hành động, không tô sáng ô (RST-004).
 
-| Mốc | Bài học | Hành động để qua |
+**Bàn:** L01/L02 là bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank, không transform. L01 không có given, có một vùng 1 ô (vùng B); sau kẹo B còn một vùng S2 thuần. L02 có 1 given và một bước S3 cần thiết theo GR-07. Script trỏ mục tiêu theo nghĩa (`{"region":"B"}`, `{"trace_step":n}`, `{"s3_eliminated":k}`); runtime đổi ra (r,c). `{r}`/`{c}` trong lời nhắc là số 1-based.
+
+**Tiến trình:** bước hiện tại được **suy ra** từ trạng thái bàn + `tutorialSeenIds`, không phải chuỗi cứng. Hoàn thành `done_when` trước khi bước hiện ra thì bỏ qua bước đó. Mỗi bước đạt được lưu vào progress. Đóng app giữa chừng: khôi phục board/`tutorialSeenIds` rồi suy lại bước, không phát sinh thao tác ảo.
+
+### L01
+
+| Bước | Kích hoạt | Lời nhắc | Qua khi | Dạy |
+| --- | --- | --- | --- | --- |
+| L1-0 | Vào bàn | Thẻ mascot “Tìm 4 viên kẹo giấu trong vườn!”, 4 icon luật nháy lần lượt | Chạm “Bắt đầu” | Mục tiêu |
+| L1-1 | Sau L1-0 | “Luống B chỉ có 1 ô — kẹo ở đó! Chạm nhanh 2 lần: hàng {r}, cột {c}.” | Kẹo vùng B đúng | Chạm đôi, luật vùng |
+| L1-2 | Sau CandyFound, hết stagger auto-mark | “Ô mờ cùng hàng, cột, luống và sát chéo không thể có kẹo.” Icon luật sáng | “Hiểu rồi” hoặc 4 s | Bốn luật |
+| L1-3 | Sau L1-2 | “Chạm 1 lần để đánh X ô chắc không có kẹo: hàng {r}, cột {c}.” | MarkX đúng ô (ô loại được, chưa locked) | Chạm đơn = X |
+| L1-4 | Sau L1-3 | “Chạm lần nữa để xóa X.” | ClearX ô đó | Xóa X |
+| L1-5 | Sau L1-4 | “Luống {region} chỉ còn 1 ô trống. Tìm kẹo đi!” (không nêu tọa độ) | Kẹo vùng đó đúng | S2 tự tìm |
+| L1-6 | — | Không nhắc | Thắng | Tự chơi |
+
+Miễn phạt chỉ áp dụng ô ở L1-1: thử sai ô đó không đặt `x_error`, không trừ tim/tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
+
+### L02
+
+| Bước | Kích hoạt | Lời nhắc | Qua khi | Dạy |
+| --- | --- | --- | --- | --- |
+| L2-1 | Vào bàn | “Kẹo có sẵn cũng làm mờ ô xung quanh.” | Tự tắt 3 s | Given, GR-35 |
+| L2-2 | Sau L2-1 | “Luống {region} nằm gọn trong cột {c} → ô khác của cột {c} không có kẹo. Giữ và kéo để đánh X.” | MarkStroke ≥ 2 ô thuộc tập loại S3 | Kéo X, S3 |
+| L2-3 | Sau L2-2 hoặc đứng yên 15 s | “Bí? Bấm Gợi ý — nó chỉ dần từng bước.” Nút Hint nảy | Mở rồi đóng/áp dụng Hint | Hint |
+
+### Gợi ý theo ngữ cảnh (L03 trở đi, mỗi loại một lần)
+
+| ID | Kích hoạt | Lời nhắc |
 | --- | --- | --- |
-| T1 | Một chạm đặt X | Đánh X vào ô (2,2) được gọi rõ bằng tọa độ, không tô sáng |
-| T2 | Một chạm nữa xóa X | Xóa X ở ô (2,2) sau khi chỉ dẫn T2 xuất hiện |
-| T3 | Kéo để đánh/xóa nhiều X | Kéo qua ít nhất hai ô hợp lệ; chế độ do ô đầu quyết định |
-| T4 | Hai chạm xác nhận kẹo | Đặt đúng kẹo tại ô S2 được gọi rõ bằng tọa độ, không tô sáng |
-| T5 | Bốn luật và X đỏ | Xem minh họa hàng/cột/vùng/không chạm và một minh họa X đỏ an toàn |
-| T6 | Hint | Mở Hint miễn phí của lượt và đóng phần giải thích |
+| C-err | TryCandy sai đầu tiên | “X đỏ: ô này không có kẹo. Mất 1 tim, còn {n}.” |
+| C-heart1 | Lần đầu còn 1 tim | “Còn 1 tim! Dùng Gợi ý nếu chưa chắc.” |
+| C-undo | Lần đầu Undo bị chặn sau thử sai | “Không thể hoàn tác qua lần thử kẹo sai.” |
+| C-size5 | Lần đầu bàn 5×5 | “Bàn lớn hơn, luật vẫn vậy.” |
+| C-s3 | Lần đầu level order 19 | Nhắc mẹo luống gọn trong một hàng/cột |
+| C-idle | Đứng yên 30 s, chưa dùng Hint trong lượt | Nút Hint nảy, không chữ |
 
-Trong Level 1, thử kẹo sai **trên ô tutorial được gọi rõ bằng tọa độ** chỉ được nhắc và không mất tim; thao tác khác theo luật thường. Tutorial không tô sáng hay làm nổi ô. Script phải được QA kiểm trên level thật. Khi app đóng giữa mốc, khôi phục board, `hintCount` và `tutorialSeenIds`, rồi suy lại mốc chưa đạt; không phát sinh thao tác ảo hoặc cấp lại Hint.
+### Giao diện
+
+Bong bóng mascot nằm giữa thanh luật và bàn, không che bàn; chỉ các nút “Hiểu rồi”/“Bỏ qua” nhận chạm, phần còn lại cho input đi qua bàn. Hiện bằng fade + slide 150 ms; giảm chuyển động chỉ đổi alpha. Chỉ chỗ bằng làm sáng số hàng/cột ở viền bàn và icon luật (chỉ L01/L02). Nút “Bỏ qua hướng dẫn” từ L1-1: ghi mọi mốc đã thấy, tắt miễn phạt, ẩn bong bóng. Trợ giúp có “Chơi lại hướng dẫn”: mở bàn L01 chế độ thực hành, không ghi progress/session. Mọi chuỗi là khóa localization.
+
+### Đo bằng playtest
+
+Log cục bộ mỗi bước: thời gian, số thao tác sai trước khi qua, có bỏ qua không. Mục tiêu 10 người: ≥ 90% xong L01 < 2 phút; ≥ 70% làm L1-5 không cần nhắc thêm; lỗi trung bình ở L03 ≤ 1; không ai chạm đôi dò nghiệm.
 
 ## 5. Tiếp cận, màu và chuyển động
 
