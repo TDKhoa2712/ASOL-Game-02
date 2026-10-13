@@ -66,11 +66,17 @@ func _init(done: int = 0, total: int = 30) -> void:
 	_bar_bg.clip_contents = true
 	stack.add_child(_bar_bg)
 
+	# Containers reset child scale/size on every layout pass, so the fill lives
+	# in a plain Control and is sized by its right anchor instead.
+	var track := Control.new()
+	track.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_bar_bg.add_child(track)
 	_fill_rect = ColorRect.new()
 	_fill_rect.color = Palette.HOME_PROGRESS_FILL
-	_fill_rect.custom_minimum_size = Vector2(0, 32)
 	_fill_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_bar_bg.add_child(_fill_rect)
+	_fill_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	track.add_child(_fill_rect)
+	_update_fill()
 
 func _update_label() -> void:
 	if _count_label == null: return
@@ -88,18 +94,20 @@ func set_progress(done: int, total: int) -> void:
 	_update_fill()
 
 func _update_fill() -> void:
-	if _fill_rect == null or _bar_bg == null: return
-	var pct := float(_done) / float(_total)
-	_fill_rect.size.x = _bar_bg.size.x * pct
+	if _fill_rect == null: return
+	_set_fill(float(_done) / float(_total))
+
+func _set_fill(pct: float) -> void:
+	_fill_rect.anchor_right = pct
+	_fill_rect.offset_right = 0.0
 
 func animate() -> void:
 	if _fill_rect == null: return
 	var pct := float(_done) / float(_total)
 	if not LayoutTokens.motion_enabled:
-		_fill_rect.scale.x = pct
+		_set_fill(pct)
 		return
-	_fill_rect.scale.x = 0.0
-	_fill_rect.pivot_offset = Vector2.ZERO
+	_set_fill(0.0)
 	var tw := _fill_rect.create_tween()
 	tw.tween_interval(0.6)
-	tw.tween_property(_fill_rect, "scale:x", pct, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_method(_set_fill, 0.0, pct, 0.8).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

@@ -14,6 +14,8 @@ func _run() -> void:
 	await _test_toggles_through_ui()
 	await _test_overlay_readability()
 	await _test_reduced_motion_live()
+	await _test_progress_bar_static()
+	await _test_error_shake_follows_haptic()
 	if _failures.is_empty():
 		print("SETTINGS_APPLY_PASS"); quit(0)
 	else:
@@ -154,3 +156,34 @@ func _test_reduced_motion_live() -> void:
 	box.queue_free()
 	shell.queue_free(); await process_frame
 	LayoutTokens.set_motion(true)
+
+func _test_progress_bar_static() -> void:
+	LayoutTokens.set_motion(false)
+	var holder := VBoxContainer.new()
+	holder.size = Vector2(600, 200)
+	root.add_child(holder)
+	var bar = load("res://scripts/ui/progress_bar.gd").new(10, 30)
+	holder.add_child(bar)
+	bar.animate()
+	for i in 3: await process_frame
+	var track: Control = bar._bar_bg
+	var fill: Control = bar._fill_rect
+	var shown: float = fill.size.x * fill.scale.x
+	_assert(absf(shown - track.size.x / 3.0) < 2.0, "reduced-motion progress shows 1/3 (shown %.0f of %.0f)" % [shown, track.size.x])
+	bar.set_progress(30, 30)
+	for i in 2: await process_frame
+	shown = fill.size.x * fill.scale.x
+	_assert(absf(shown - track.size.x) < 2.0, "progress updates to full")
+	holder.queue_free(); await process_frame
+	LayoutTokens.set_motion(true)
+
+func _test_error_shake_follows_haptic() -> void:
+	var board := Control.new()
+	board.position = Vector2(100, 0)
+	root.add_child(board)
+	var Screen = load("res://scripts/screens/puzzle_screen.gd")
+	Vibration.set_on(false)
+	_assert(not Screen.should_shake_board(), "no board shake with haptic off")
+	Vibration.set_on(true)
+	_assert(Screen.should_shake_board(), "board shakes with haptic on")
+	board.queue_free(); await process_frame
