@@ -255,7 +255,7 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"music":
 			if bgm != null: bgm.set_muted(not bool(value))
 		"haptic": Vibration.set_on(bool(value))
-		"reduced_motion": LayoutTokens.set_motion(not bool(value))
+		"reduced_motion": LayoutTokens.set_motion(not bool(value)); _rebuild_current_screen(true)
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
 		"large_text": LayoutTokens.set_large_text(bool(value)); TextScaler.apply(self, bool(value))
 		"colorblind": _refresh_puzzle_colorblind()
@@ -270,8 +270,8 @@ func _on_node_added(n: Node) -> void:
 func _scale_later(n: Node) -> void:
 	if is_instance_valid(n) and n.is_inside_tree(): TextScaler.apply(n, LayoutTokens.large_text_enabled)
 
-func _rebuild_current_screen() -> void:
-	if nav != null: _swap_screen("", nav.current_name())
+func _rebuild_current_screen(keep_puzzle: bool = false) -> void: # the board checks motion per frame
+	if nav != null and not (keep_puzzle and nav.current() == NavController.Screen.PUZZLE): _swap_screen("", nav.current_name())
 
 func _refresh_screen(method: String, val: Variant) -> void:
 	if screen_host == null: return

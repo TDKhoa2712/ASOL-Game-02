@@ -13,6 +13,7 @@ func _initialize() -> void:
 func _run() -> void:
 	await _test_toggles_through_ui()
 	await _test_overlay_readability()
+	await _test_reduced_motion_live()
 	if _failures.is_empty():
 		print("SETTINGS_APPLY_PASS"); quit(0)
 	else:
@@ -125,3 +126,31 @@ func _test_overlay_readability() -> void:
 		_assert(lbl.get_theme_font_size("font_size") >= 28, "help text '%s' is large" % lbl.text.left(20))
 		_assert(_contrast(lbl.get_theme_color("font_color"), Palette.SURFACE_TILE) >= 4.5 or lbl.text.length() <= 3, "help text '%s' has contrast" % lbl.text.left(20))
 	help.queue_free(); await process_frame
+
+func _test_reduced_motion_live() -> void:
+	var pdir := OS.get_user_data_dir().path_join("test_settings_motion_%s" % Time.get_ticks_usec())
+	DirAccess.make_dir_recursive_absolute(pdir)
+	var shell = load("res://scenes/main.tscn").instantiate()
+	shell.profile_dir = pdir
+	root.add_child(shell)
+	await process_frame
+	var title_before: Node = shell.screen_host.get_child(0)
+	shell._show_options_overlay()
+	shell.config.set_option("reduced_motion", true)
+	await process_frame
+	_assert(not is_instance_valid(title_before) or title_before.is_queued_for_deletion() or title_before.get_parent() == null, "title rebuilt so its looping animations stop")
+	_assert(shell._options_overlay != null, "settings overlay stays open after motion change")
+	var mascot = load("res://scenes/components/candy_character.tscn").instantiate()
+	mascot.expression = "sad"; mascot.idle_style = "hop"
+	root.add_child(mascot)
+	await process_frame
+	for t in [mascot._flap, mascot._idle, mascot._tears, mascot._fx_tw, mascot._wave]:
+		_assert(t == null or not t.is_valid(), "mascot runs no looping tween with reduced motion")
+	mascot.queue_free()
+	var box := Control.new(); root.add_child(box)
+	load("res://scripts/feedback/tween_fx.gd").scale_pop(box, 0.25)
+	await create_timer(0.05).timeout
+	_assert(box.scale.is_equal_approx(Vector2.ONE), "pop finishes instantly with reduced motion")
+	box.queue_free()
+	shell.queue_free(); await process_frame
+	LayoutTokens.set_motion(true)

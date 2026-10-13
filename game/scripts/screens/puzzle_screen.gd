@@ -143,6 +143,7 @@ func _on_board_tap(row: int, col: int) -> void:
 func _on_board_stroke_step(_row: int, _col: int, is_mark: bool) -> void:
 	if sfx != null and session != null and session.phase == 0:
 		sfx.play(SfxCatalog.Effect.MARK if is_mark else SfxCatalog.Effect.UNMARK, true)
+	if session != null and session.phase == 0: Vibration.pulse(Vibration.Strength.SOFT)
 func _on_board_double_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
 	if hint_coordinator.is_hint_showing():
