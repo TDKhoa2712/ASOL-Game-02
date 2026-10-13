@@ -64,6 +64,6 @@ func _test_next_button() -> void:
 	_assert(screen.next_btn.text == tr("result.win.next"), "next_btn.text equals tr(result.win.next)")
 	_assert(not screen.next_btn.text.contains("➔"), "next_btn text does not contain ➔")
 	_assert(not screen.next_btn.text.contains("2794"), "next_btn text does not contain 2794")
-	_assert(screen.next_btn.find_child("ActionLabel") != null, "next_btn has ActionLabel child")
+	_assert(screen.next_btn.find_child("ActionLabel", true, false) != null, "next_btn has ActionLabel child")
 	screen.free()
 

@@ -75,7 +75,7 @@ func _test_action_button_trailing_icon() -> void:
 	var lbl := ActionButton.set_trailing_icon(btn, "res://assets/ui/result/icon_next_white.svg")
 	_assert(lbl != null, "set_trailing_icon returns label")
 	_assert(lbl.text == "Next", "label text matches")
-	_assert(btn.find_child("ActionLabel") != null, "button contains ActionLabel")
+	_assert(btn.find_child("ActionLabel", true, false) != null, "button contains ActionLabel")
 	btn.free()
 
 func _test_heart_display() -> void:
