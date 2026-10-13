@@ -86,4 +86,4 @@ static func set_large_text(on: bool) -> void:
 	large_text_enabled = on
 
 static func tile_font_size() -> int:
-	return 22  # large text is applied globally by TextScaler
+	return 30  # large text is applied globally by TextScaler

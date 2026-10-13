@@ -24,4 +24,7 @@ static func is_on() -> bool:
 	return _on
 
 static func has_hardware() -> bool:
-	return OS.has_feature("mobile") or OS.has_feature("android") or OS.has_feature("ios")
+	# Mobile browsers expose vibration through the Web export too.
+	for feature in ["mobile", "android", "ios", "web_android", "web_ios"]:
+		if OS.has_feature(feature): return true
+	return false

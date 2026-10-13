@@ -41,6 +41,11 @@ class AndroidExportSettingsTests(unittest.TestCase):
             msg=f"Android export settings probe failed:\nSTDOUT:\n{result.stdout}\nSTDERR:\n{result.stderr}",
         )
 
+    def test_android_presets_request_vibrate_permission(self) -> None:
+        presets = (GAME_DIR / "export_presets.cfg").read_text(encoding="utf-8")
+        self.assertNotIn("permissions/vibrate=false", presets)
+        self.assertEqual(presets.count("permissions/vibrate=true"), 2)
+
 
 if __name__ == "__main__":
     unittest.main()

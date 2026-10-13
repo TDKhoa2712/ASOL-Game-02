@@ -9,6 +9,7 @@ extends Node2D
 signal celebrated
 
 const ART := "res://assets/candy/"
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const BLINKABLE := ["normal", "surprised", "heart"]
 const AUTO_ARMS := {
 	"normal": "down",
@@ -152,18 +153,18 @@ func _apply_expression() -> void:
 	_arm_r.rotation_degrees = p[3]
 	if Engine.is_editor_hint():
 		return
-	_kill(_wave)
+	_kill(_wave); _kill(_fx_tw); _kill(_tears)
+	if not LayoutTokens.motion_enabled:
+		return
 	if pose == "wave":
 		_wave = create_tween().set_loops()
 		_wave.tween_property(_arm_pivot, "rotation_degrees", 22.0, 0.4).set_trans(Tween.TRANS_SINE)
 		_wave.tween_property(_arm_pivot, "rotation_degrees", -18.0, 0.4).set_trans(Tween.TRANS_SINE)
-	_kill(_fx_tw)
 	if _fx.visible:
 		_fx.scale = Vector2.ONE
 		_fx_tw = create_tween().set_loops()
 		_fx_tw.tween_property(_fx, "scale", Vector2(1.1, 1.1), 0.7).set_trans(Tween.TRANS_SINE)
 		_fx_tw.tween_property(_fx, "scale", Vector2.ONE, 0.7).set_trans(Tween.TRANS_SINE)
-	_kill(_tears)
 	if e == "sad":
 		_tears = create_tween().set_loops()
 		for tear in [_tear_l, _tear_r]:
@@ -191,6 +192,8 @@ func _start_flap() -> void:
 	_kill(_flap)
 	var amp := 3.0 if wing_droop != 0.0 else 10.5
 	var base_l := -wing_droop
+	if not LayoutTokens.motion_enabled:
+		return
 	_flap = create_tween().set_loops()
 	_flap.tween_property(_wing_l, "rotation_degrees", base_l - amp, 0.45).set_trans(Tween.TRANS_SINE)
 	_flap.parallel().tween_property(_wing_r, "rotation_degrees", -base_l + amp, 0.45).set_trans(Tween.TRANS_SINE)
@@ -202,6 +205,8 @@ func _start_idle() -> void:
 	_squash.scale = Vector2.ONE
 	_squash.rotation = 0.0
 	_set_height(0.0)
+	if not LayoutTokens.motion_enabled:
+		return
 	match idle_style:
 		"hop":
 			_idle = create_tween().set_loops()
@@ -229,7 +234,7 @@ func drop_in(delay: float = 0.0) -> void:
 	var target := position
 	position.y -= 500.0 * scale.y
 	modulate.a = 0.0
-	var t := create_tween()
+	var t := _one_shot()
 	t.tween_interval(delay)
 	t.tween_property(self, "modulate:a", 1.0, 0.15)
 	t.parallel().tween_property(self, "position:y", target.y, 0.45).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
@@ -243,7 +248,7 @@ func celebrate() -> void:
 	_kill(_idle)
 	_apply_expression()
 	_set_height(0.0)
-	var t := create_tween()
+	var t := _one_shot()
 	t.tween_property(_squash, "scale", Vector2(1.14, 0.86), 0.15)
 	t.tween_callback(_burst.restart)
 	t.tween_method(_set_height, 0.0, 260.0, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -253,6 +258,11 @@ func celebrate() -> void:
 	t.tween_property(_squash, "scale", Vector2(1.16, 0.84), 0.08)
 	t.tween_property(_squash, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	t.tween_callback(_end_celebrate)
+
+func _one_shot() -> Tween:
+	var t := create_tween()
+	if not LayoutTokens.motion_enabled: t.set_speed_scale(1000.0)
+	return t
 
 func _flip(p: float) -> void:
 	_art.scale.x = cos(p * TAU)

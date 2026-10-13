@@ -45,7 +45,7 @@ static func play_error_shake(board: Control) -> void:
 	TweenFx.shake(board, 4.0, 0.25)
 
 static func play_win_bounce(board: Control, session: Variant, cell_rect_fn: Callable) -> void:
-	if session == null:
+	if session == null or not LayoutTokens.motion_enabled:
 		return
 	var n: int = int(session.level.get("size", 0))
 	var delay: float = 0.0

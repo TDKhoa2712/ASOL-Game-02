@@ -143,6 +143,7 @@ func _on_board_tap(row: int, col: int) -> void:
 func _on_board_stroke_step(_row: int, _col: int, is_mark: bool) -> void:
 	if sfx != null and session != null and session.phase == 0:
 		sfx.play(SfxCatalog.Effect.MARK if is_mark else SfxCatalog.Effect.UNMARK, true)
+	if session != null and session.phase == 0: Vibration.pulse(Vibration.Strength.SOFT)
 func _on_board_double_tap(row: int, col: int) -> void:
 	if session == null or session.phase != 0: return
 	if hint_coordinator.is_hint_showing():
@@ -249,9 +250,13 @@ func _on_candy_found(row: int, col: int, region: String) -> void:
 		board.clear_highlight()
 		board.redraw()
 
+# The board shake reads as vibration feedback, so it follows the haptic switch too.
+static func should_shake_board() -> bool:
+	return Vibration.is_on() and LayoutTokens.motion_enabled
+
 func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	combo.reset()
-	if board != null:
+	if board != null and should_shake_board():
 		board.play_error_shake()
 	if sfx != null:
 		sfx.play(SfxCatalog.Effect.CANDY_NO)
