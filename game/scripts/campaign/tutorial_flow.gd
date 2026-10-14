@@ -45,6 +45,7 @@ func _init() -> void:
 		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe",
 			"demo": [[[2, 1], [2, 2], [2, 3], [3, 3]]]},
 		{"id": "lone", "text": "tutorial.s_lone", "lit": lone, "targets": [[1, 3]], "gesture": "double"},
+		{"id": "hearts", "text": "tutorial.s_hearts", "lit": all, "button": "tutorial.ok", "hearts": true},
 		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0]], "gesture": "double", "hint": true, "free": true},
 		{"id": "done", "text": "tutorial.s_done", "lit": all, "button": "tutorial.continue", "confetti": true},
 	]
@@ -63,6 +64,14 @@ func step() -> Dictionary:
 		if not s.has(key): s[key] = ""
 	s["hint"] = bool(s.get("hint", false))
 	s["free"] = bool(s.get("free", false))
+	s["hearts"] = bool(s.get("hearts", false))
+	# Demo strokes start on the first cell still to cross, never on an X.
+	var demo: Array = []
+	for path in s.demo:
+		var start := 0
+		while start < path.size() and not open.has(path[start]): start += 1
+		if start < path.size(): demo.append(path.slice(start))
+	s["demo"] = demo
 	s["confetti"] = bool(s.get("confetti", false))
 	return s
 

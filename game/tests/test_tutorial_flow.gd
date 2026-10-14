@@ -39,11 +39,16 @@ func _test_full_walkthrough() -> void:
 		_assert(flow.tap(cell[0], cell[1]), "tap crosses %s" % str(cell))
 	s = flow.step()
 	_assert(s.id == "touch" and flow.session.cell_at(3, 2) == CellModel.CellKind.CANDY, "step 4 drops a second candy")
+	_assert(s.demo == [[[2, 2], [2, 3], [3, 3]]], "the demo stroke starts on the first cell without an X")
 	_assert(s.gesture == "swipe" and s.targets == [[2, 2], [2, 3], [3, 3]], "step 4 targets the open touching cells")
 	_assert(flow.stroke([[2, 2], [2, 3], [3, 3]]), "one swipe crosses the touching cells")
 	s = flow.step()
 	_assert(s.id == "lone" and s.targets == [[1, 3]] and s.lit.size() == 4, "step 5 lights the region with one cell left")
 	_assert(flow.double_tap(1, 3), "candy in the last open cell")
+	s = flow.step()
+	_assert(s.id == "hearts" and s.hearts and s.button == "tutorial.ok" and s.gesture.is_empty(), "step 6 explains hearts with OK only")
+	_assert(not flow.tap(2, 0) and not flow.double_tap(2, 0) and not flow.stroke([[2, 0]]), "OK steps take no board input")
+	flow.press_button()
 	s = flow.step()
 	_assert(s.id == "last" and s.hint and s.targets == [[2, 0]], "step 6 asks for the last candy with a hint")
 	_assert(flow.double_tap(2, 0), "last candy placed")
@@ -77,7 +82,7 @@ func _test_swipe_marks_only_targets() -> void:
 func _reach_last(flow: TutorialFlow) -> void:
 	flow.double_tap(0, 1); flow.press_button()
 	for cell in flow.step().targets.duplicate(): flow.tap(cell[0], cell[1])
-	flow.stroke([[2, 2], [2, 3], [3, 3]]); flow.double_tap(1, 3)
+	flow.stroke([[2, 2], [2, 3], [3, 3]]); flow.double_tap(1, 3); flow.press_button()
 
 func _test_last_step_is_free_play() -> void:
 	var flow := TutorialFlow.new()

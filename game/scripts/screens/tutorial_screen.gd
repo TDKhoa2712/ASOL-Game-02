@@ -16,6 +16,8 @@ const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 signal completed()
 
 const DONE_ID := "ONBOARD"
+const HEART_ON := "res://assets/ui/board/heart.svg"
+const HEART_OFF := "res://assets/ui/board/heart_off.svg"
 const DIM_BG := Color("#3E3936")
 const LIT_BG := Color("#FFF6E2")
 const EMPHASIS := "#3D8BEB"
@@ -31,6 +33,8 @@ var overlay: TutorialOverlay
 var hand: TutorialHand
 var action_button: Button
 var hint_button: Button
+var hearts_row: HBoxContainer
+var _hearts_tween: Tween = null
 var _hint_shown: bool = false
 var _shown_id: String = ""
 var _busy: bool = false
@@ -86,8 +90,15 @@ func _build() -> void:
 	board = PuzzleBoard.new(); board.name = "Board"; board.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); holder.add_child(board)
 	overlay = TutorialOverlay.new(); overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT); holder.add_child(overlay)
 	overlay.bind(board.get_cell_rect)
+	hearts_row = HBoxContainer.new(); hearts_row.name = "Hearts"; hearts_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	hearts_row.add_theme_constant_override("separation", 28); hearts_row.visible = false
+	for i in 3:
+		var h := TextureRect.new(); h.texture = load(HEART_ON); h.custom_minimum_size = Vector2(112, 112)
+		h.expand_mode = TextureRect.EXPAND_IGNORE_SIZE; h.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED; hearts_row.add_child(h)
 	var actions := CenterContainer.new(); actions.custom_minimum_size = Vector2(0, 160); col.add_child(actions)
-	var row := HBoxContainer.new(); actions.add_child(row)
+	var stack := VBoxContainer.new(); stack.add_theme_constant_override("separation", 36); actions.add_child(stack)
+	stack.add_child(hearts_row) # below the board, so the board never shifts
+	var row := HBoxContainer.new(); row.alignment = BoxContainer.ALIGNMENT_CENTER; stack.add_child(row)
 	action_button = ActionButton.create("", Color("#41C34B"), Color("#239A35"), Color(0, 0, 0, 0), 56, 150, 12)
 	action_button.name = "ActionButton"; action_button.custom_minimum_size = Vector2(640, 150); action_button.pressed.connect(_on_action)
 	row.add_child(action_button)
@@ -138,11 +149,35 @@ func _refresh() -> void:
 	action_button.text = tr(s.button) if not s.button.is_empty() else ""
 	hint_button.visible = s.hint and not _hint_shown
 	hint_button.text = tr("tutorial.hint")
+	_show_hearts(s.hearts)
 	board.redraw()
 	if s.confetti:
 		var c := ConfettiLayer.new(); add_child(c); c.start()
 		if sfx != null: sfx.play(SfxCatalog.Effect.STAGE_CLEAR)
 	_point_hand(s)
+
+# Hearts step: three hearts, then the last one breaks to show what a wrong candy costs.
+func _show_hearts(on: bool) -> void:
+	if _hearts_tween != null: _hearts_tween.kill()
+	hearts_row.visible = on
+	if not on:
+		return
+	for h in hearts_row.get_children(): h.texture = load(HEART_ON); h.scale = Vector2.ONE
+	var last: TextureRect = hearts_row.get_child(2)
+	if not LayoutTokens.motion_enabled or not is_inside_tree():
+		last.texture = load(HEART_OFF)
+		return
+	last.pivot_offset = last.custom_minimum_size * 0.5
+	var t := create_tween().set_loops()
+	_hearts_tween = t
+	t.tween_interval(0.9)
+	t.tween_property(last, "scale", Vector2(1.25, 1.25), 0.16).set_trans(Tween.TRANS_SINE)
+	t.tween_callback(func() -> void: last.texture = load(HEART_OFF))
+	t.tween_property(last, "scale", Vector2(0.85, 0.85), 0.14).set_trans(Tween.TRANS_SINE)
+	t.tween_property(last, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	t.tween_interval(1.2)
+	t.tween_callback(func() -> void: last.texture = load(HEART_ON))
+	t.tween_interval(0.3)
 
 func _point_hand(s: Dictionary) -> void:
 	hand.stop()
@@ -181,8 +216,8 @@ func _input_result(ok: bool, r: int, c: int, placed: bool) -> void:
 	if ok:
 		if placed: board.play_candy_pop(r, c)
 		if sfx != null: sfx.play(SfxCatalog.Effect.CANDY_YES if placed else SfxCatalog.Effect.MARK)
-	elif not flow.step().get("free", false):
-		board.play_error_shake() # guided steps: only the lit cells take input
+	elif not flow.step().get("free", false) and not flow.step().get("gesture", "").is_empty():
+		board.play_error_shake() # guided steps: only the lit cells take input; OK steps stay silent
 	board.redraw()
 
 # Free play: a wrong candy is just refused with a gentle note, then the step text returns.
