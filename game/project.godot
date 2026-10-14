@@ -17,7 +17,7 @@ config/custom_user_dir_name="Godot/app_userdata/ASOL Game 02"
 config/features=PackedStringArray("4.7")
 boot_splash/bg_color=Color(1, 0.992157, 0.960784, 1)
 boot_splash/show_image=false
-config/icon="res://assets/icons/app_icon.png"
+config/icon="res://assets/icons/candoku-logo-1024.png"
 config/custom_user_dir_name.linux="godot/app_userdata/ASOL Game 02"
 
 [display]

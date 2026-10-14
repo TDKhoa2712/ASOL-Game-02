@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bblbd13ebn0sc"
-path="res://.godot/imported/icon_1024.png-74edfb33d14fccdbae5e2d4b02bd4e4c.ctex"
+uid="uid://dtjh3s5chok0l"
+path="res://.godot/imported/candoku-logo-512.png-17c172fe85d9aefba402b94eb147a430.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/ios/icon_1024.png"
-dest_files=["res://.godot/imported/icon_1024.png-74edfb33d14fccdbae5e2d4b02bd4e4c.ctex"]
+source_file="res://assets/icons/candoku-logo-512.png"
+dest_files=["res://.godot/imported/candoku-logo-512.png-17c172fe85d9aefba402b94eb147a430.ctex"]
 
 [params]
 
