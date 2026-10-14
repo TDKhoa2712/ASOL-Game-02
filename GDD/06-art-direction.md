@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-06 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-04](04-ux-ui.md), [GDD-07](07-audio.md), [GDD-08](08-technical-design.md), [GDD-09](09-qa-acceptance.md) |
@@ -87,8 +87,8 @@ Màu là theme mapping, không nằm trong level JSON. Đổi màu không đổi
 | Nút Play (Home) | `HOME_BUTTON_BG` / shadow | `#D9620F` / `#9A3A08` |
 | Tim đầy | `HEART_FILLED` / dark / stroke | `#F5414F` / `#C9212F` / `#7A1018` |
 | Tim rỗng | `HEART_EMPTY` / stroke | `#F1ECE0` / `#A89E88` |
-| Nét X | `MARK_STROKE` | `#344054` trên nền `MARK_WHITE` (trắng 88%) |
-| Lỗi | `ERROR_X` (`candy_palette.gd`) | `#D94040` |
+| Nét X | `MARK_WHITE` / `MARK_STROKE` | Thường: nét vẽ `MARK_WHITE` (trắng 88%); texture tĩnh `assets/ui/board/x_mark.svg` nét `#5A3410` opacity 0,55. High contrast: `MARK_STROKE` `#344054` |
+| Lỗi | `ERROR_RED` (`palette.gd`) cho X lỗi và badge | `#E53935` |
 | Hint highlight | `hint_highlight_layer.gd` | `#F59E0B`, scrim nâu ấm 32% |
 | Contradiction chain | giả thiết / bước / mâu thuẫn | `#EF4444` / `#F59E0B` / `#DC2626` |
 | Màn thắng | ribbon / nút | `#FF9533` / `#1F9A4B`, nền vàng tỏa `#FFE08A` |
@@ -98,7 +98,7 @@ Màu là theme mapping, không nằm trong level JSON. Đổi màu không đổi
 | ID | Yêu cầu | Tiêu chí kiểm |
 | --- | --- | --- |
 | ART-20 | Chữ thân đạt tương phản ≥ 4.5:1 trên nền; dấu X, viền vùng và icon trạng thái ≥ 3:1 | Đo bằng công cụ contrast trên screenshot thật; ghi vào evidence QA |
-| ART-21 | Chế độ high contrast tăng nét X (`X_STROKE_RATIO_HC 0.12` thay `0.09`) và dùng texture X riêng | Bật high contrast, X dày hơn rõ trên mọi màu vùng |
+| ART-21 | Chế độ high contrast tăng nét X (`X_STROKE_RATIO_HC 0.12` thay `0.09`) và dùng texture X nét `#344054` sinh lúc chạy từ chuỗi SVG trong `cell_animator.gd` (không phải asset riêng) | Bật high contrast, X dày hơn rõ trên mọi màu vùng |
 
 ## 4. Kẹo (candy visuals)
 
@@ -129,9 +129,9 @@ Bốn trạng thái ô theo `CellKind` ([GDD-02](02-core-gameplay.md)). Không c
 | Trạng thái | Hiển thị | Ghi chú |
 | --- | --- | --- |
 | `BLANK` | Ô màu vùng, bo góc `CELL_CORNER_RATIO 0.20`, có độ dày dưới | Nền vùng là kênh nhận diện chính |
-| `MARK` | X vẽ tay (hand-drawn), padding 28% ô, nét 9% ô (tối thiểu 4 px), cong nhẹ `X_BOW_RATIO`; nét `#344054` trên lót trắng | Texture pre-baked cho X tĩnh ([RST-023](../docs/DECISIONS.md)) |
+| `MARK` | X vẽ tay (hand-drawn), padding 28% ô, nét 9% ô (tối thiểu 4 px), cong nhẹ `X_BOW_RATIO`; nét `MARK_WHITE` ở chế độ thường, `#344054` (`MARK_STROKE`) ở high contrast | Texture pre-baked cho X tĩnh ([RST-023](../docs/DECISIONS.md)) |
 | `CANDY` | Sprite kẹo 74% ô | Pop khi đặt |
-| `ERROR` | X đỏ `#D94040` + badge cảnh báo tròn ở góc trên phải (bán kính 9%/7% ô) | Phân biệt với X thường bằng màu **và** badge, đọc được ở thang xám |
+| `ERROR` | X đỏ `#E53935` (`Palette.ERROR_RED`) + badge cảnh báo tròn ở góc trên phải (bán kính 9%/7% ô) | Phân biệt với X thường bằng màu **và** badge, đọc được ở thang xám |
 
 | ID | Yêu cầu | Tiêu chí kiểm |
 | --- | --- | --- |
@@ -204,7 +204,7 @@ Trạng thái: **Done** = có trong `game/assets/` và đang dùng; **Needed** =
 | ART-A02 | Logo chữ Home `assets/ui/home/logo/letter_*.png`, `sparkle.svg`, `swirl_candy.svg` | Done |
 | ART-A03 | Splash (`splash/splash_screen.tscn`, nền `#FFFDF5`, shader shine) | Done |
 | ART-A04 | Adaptive icon Android (foreground/background tách lớp) và bộ icon iOS đủ cỡ | Needed |
-| ART-A05 | Store assets: screenshot 5–8 tấm/ngôn ngữ chính, feature graphic 1024×500 | Needed |
+| ART-A05 | Store assets: screenshot 5–8 tấm/ngôn ngữ chính, feature graphic 1024×500 (yêu cầu cho store asset, chưa có file) | Needed |
 
 ### 9.2 Gameplay
 
@@ -243,7 +243,7 @@ Trạng thái: **Done** = có trong `game/assets/` và đang dùng; **Needed** =
 
 | ID | Yêu cầu | Tiêu chí kiểm |
 | --- | --- | --- |
-| ART-05 | Mọi asset có nguồn gốc, tác giả/công cụ, giấy phép và file nguồn truy được | Có dòng trong `docs/CREDITS.md` hoặc README của thư mục nguồn |
+| ART-05 | Mọi asset có nguồn gốc, tác giả/công cụ, giấy phép và file nguồn truy được | README của thư mục nguồn (vd `game/assets/ui/source/README.md`); file credits tổng (`docs/CREDITS.md`) chưa có |
 | ART-04 | Trang trí (mascot, confetti, sparkle) không che lưới, tim, nút hay luật | Screenshot review mỗi màn |
 | ART-12 | Không có skin bán, bộ sưu tập ngoại hình hoặc `appearanceId` trong v1 | Không có field liên quan trong save |
 
@@ -251,7 +251,7 @@ Trạng thái: **Done** = có trong `game/assets/` và đang dùng; **Needed** =
 
 | Hạng mục | Quy cách |
 | --- | --- |
-| Raster | PNG RGBA, sRGB, cạnh lề trong suốt đồng nhất; kẹo xuất ≥ 256×256 |
+| Raster | PNG RGBA, sRGB, cạnh lề trong suốt đồng nhất; kẹo xuất ≥ 256×256 (yêu cầu bàn giao; PNG kẹo hiện có trong `assets/candy/` là 512×512) |
 | Vector | SVG phẳng (không filter, không font nhúng) cho icon và shape đơn giản |
 | Atlas | PNG + JSON khung; build bằng script trong `tools/` khi có |
 | Nén GPU | Project bật ETC2/ASTC (`textures/vram_compression/import_etc2_astc`) |
@@ -266,7 +266,7 @@ Trạng thái: **Done** = có trong `game/assets/` và đang dùng; **Needed** =
 - [ ] Đọc được ở bàn 12×12 trên màn 360 dp và ở thang xám.
 - [ ] Godot tạo lại file `.import`; build không cảnh báo thiếu resource.
 - [ ] Chạy `test_candy_renderer.gd`, `test_colorblind.gd`, `test_region_contrast.gd`, `test_screens.gd`.
-- [ ] Ghi credit/giấy phép vào `docs/CREDITS.md`.
+- [ ] Ghi credit/giấy phép vào README của thư mục nguồn (file credits tổng `docs/CREDITS.md` chưa có).
 
 ## 11. ID đã hủy
 

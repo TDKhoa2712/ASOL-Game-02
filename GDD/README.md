@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-00 (Master index) |
 | Phiên bản bộ GDD | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Nhánh nền | `release/v1.0.1` |

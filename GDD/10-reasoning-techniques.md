@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-10 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design · Level Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-05](05-level-design.md), [GDD-08](08-technical-design.md), [GDD-09](09-qa-acceptance.md), [GDD-11](11-level-generation.md), [GDD-12](12-glossary.md) |
@@ -269,9 +269,9 @@ Work board của bước 3–6: giữ kẹo đã đặt, giữ MARK không trùn
 | Dương | Trạng thái có kết luận hợp lệ → kỹ thuật tìm đúng tập | `test_board_solver.gd`, `test_hint_engine.gd` |
 | Âm | Thêm ứng viên phá khóa, bỏ tiền đề → không kết luận | `test_board_solver.gd` |
 | No-op | Không trả kết luận rỗng hoặc trùng mark sẵn có | `test_hint_engine.gd` |
-| Metamorphic | Xoay/lật/đổi nhãn (`board_transform`) giữ tính hợp lệ và độ khó | `test_board_solver.gd`, validator |
-| Oracle | Trên bàn nhỏ, mọi nghiệm EXACT thỏa kết luận | `GDD/tools/test_validate_levels.py` |
-| Isolation | S7 chạy trên bản sao; không đổi session/Undo/tim | `test_hint_engine.gd`, `test_play_session.gd` |
+| Metamorphic | Xoay/lật/đổi nhãn (`board_transform`) giữ tính hợp lệ và độ khó | **Chưa có** test metamorphic |
+| Oracle | Trên bàn nhỏ, mọi nghiệm EXACT thỏa kết luận | **Chưa có** test oracle |
+| Isolation | S7 chạy trên bản sao; không đổi session/Undo/tim | **Chưa có** test isolation riêng |
 | No-answer-leak | Đổi `solution` trong bản sao không đổi kết luận S2–S7 | `level_reasoning.py` (không nhận tham số solution) |
 | Trace | Trace bank chỉ S2/S3; bước sai bị chặn | `validate_levels.py`, `validate_content.py` |
 

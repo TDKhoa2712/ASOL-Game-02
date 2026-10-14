@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-03 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-01](01-game-overview.md), [GDD-02](02-core-gameplay.md), [GDD-04](04-ux-ui.md), [GDD-05](05-level-design.md), [GDD-07](07-audio.md), [GDD-08](08-technical-design.md), [GDD-10](10-reasoning-techniques.md) |
@@ -173,9 +173,9 @@ Phạm vi dự kiến: kho assist (stock) cho Hint và assist "đặt kẹo" (ch
 
 | ID | Vấn đề | Tác động | Hướng xử lý |
 | --- | --- | --- | --- |
-| OQ-03-1 | Hint không giới hạn có thể làm giảm cảm giác thành tựu | KPI-06/07 | Đo playtest; Assist inventory là phương án |
+| OQ-03-1 | Hint không giới hạn có thể làm giảm cảm giác thành tựu | Cảm giác thành tựu giảm | Đo playtest; Assist inventory là phương án |
 | OQ-03-2 | `hintCosts` tồn tại trong data nhưng không dùng | Dữ liệu thừa | Dùng cho Assist inventory hoặc bỏ |
-| OQ-03-3 | DDA tăng rank có thể vượt kỳ vọng ở bàn lớn | Fail rate tăng | Theo dõi KPI-04 |
+| OQ-03-3 | DDA tăng rank có thể vượt kỳ vọng ở bàn lớn | Fail rate tăng | Theo dõi tỷ lệ fail trong playtest |
 
 ## 10. ID đã hủy
 

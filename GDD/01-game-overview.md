@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-01 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-00](README.md), [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-05](05-level-design.md), [GDD-06](06-art-direction.md), [GDD-12](12-glossary.md) |
@@ -24,7 +24,6 @@ Chương là one-pager cho mọi bộ phận: quyết định *game là gì, cho
 | Thể loại | Logic puzzle (region placement / star-battle-like), single-player |
 | High concept | "Tìm kẹo ẩn sau ô màu, bằng từng suy luận nhỏ." |
 | Elevator pitch | Một bàn N×N gồm các ô màu chia thành vùng màu; kẹo ẩn sau một số ô. Tìm đúng một viên kẹo vào mỗi hàng, mỗi cột, mỗi vùng; hai viên không bao giờ chạm nhau, kể cả chéo. Đánh X để loại trừ, chạm đôi để thử kẹo, ba tim cho ba lần đoán sai. Mỗi bàn có đúng một lời giải đạt được bằng suy luận — không cần đoán. |
-| Session | 1–6 phút/level (định hướng, chờ số liệu playtest) |
 | Nền tảng | Android (chính), iOS; portrait; offline hoàn toàn |
 | Engine | Godot 4.7 / GDScript |
 
@@ -55,19 +54,7 @@ Không có câu chuyện bối cảnh: chủ đề đơn giản là tìm những
 
 | Thuộc tính | Mô tả |
 | --- | --- |
-| Phân khúc | Casual-to-midcore puzzle player trên mobile |
-| Độ tuổi | 18–55 (không nhắm trẻ em làm đối tượng chính) |
-| Thói quen | Chơi phiên ngắn lúc chờ, đi lại, trước khi ngủ; thích Sudoku, nonogram, logic grid |
-| Động lực | Mastery (tự tìm ra lời giải), completion (đi hết campaign), thư giãn |
 | Ngôn ngữ | 7 ngôn ngữ: en, ja, vi, id, pt_BR, es, ko (auto theo hệ thống) |
-
-### 5.1 Player persona
-
-| Persona | Mô tả | Nhu cầu chính |
-| --- | --- | --- |
-| **Linh, 29, nhân viên văn phòng** | Chơi 5–10 phút trên xe buýt, một tay, thường tắt tiếng. | Resume đúng chỗ, thao tác một tay, đọc được khi tắt âm. |
-| **Minh, 45, fan Sudoku** | Muốn bàn lớn, kỹ thuật khó, ghét bị "mớm" đáp án. | Nội dung N=7–12, Hint có lý do chứ không chỉ lộ ô. |
-| **An, 22, người mới thể loại** | Chưa biết luật, dễ bỏ cuộc khi sai liên tục. | Tutorial bắt buộc, tips theo ngữ cảnh, Retry miễn phí. |
 
 ## 6. Nền tảng và mô hình kinh doanh
 
@@ -83,9 +70,6 @@ Không có câu chuyện bối cảnh: chủ đề đơn giản là tìm những
 
 | Tham số | Giá trị đích | Nguồn |
 | --- | --- | --- |
-| Thời lượng level 4×4–6×6 | 1–4 phút | Định hướng biên tập |
-| Thời lượng level 7×7–12×12 | 4–10 phút | Định hướng biên tập |
-| Thời lượng một session | 5–15 phút (2–5 level) | Persona |
 | Gián đoạn | Resume chính xác board/tim/lỗi/thời gian | [GDD-08](08-technical-design.md) |
 
 ## 8. Quy mô nội dung
@@ -136,20 +120,12 @@ Chi tiết kiến trúc nội dung ở [GDD-05](05-level-design.md).
 
 - Thể loại tham khảo: họ puzzle đặt quân theo hàng/cột/vùng không chạm nhau (Star Battle, các biến thể "queens" trên mobile). Chỉ tham khảo **luật thể loại** — luật logic không thuộc sở hữu riêng.
 - Mọi asset, level, câu chữ, âm thanh, mã nguồn của CanDoKu là tác phẩm gốc. Không sao chép tên thương mại, giao diện, nhân vật, âm thanh hoặc cấu trúc level của game thương mại.
-- Thư mục `extracted_reusable/` chỉ dùng để đối chiếu hành vi; không sao chép code, tên hay enum. Gate clean-room trong [GDD-09](09-qa-acceptance.md).
+- Mọi tài liệu tham khảo hành vi chỉ dùng để đối chiếu; không sao chép code, tên hay enum. Gate clean-room trong [GDD-09](09-qa-acceptance.md).
 - Chi tiết pháp lý và thuật ngữ: [GDD-12](12-glossary.md).
 
 ## 12. Chỉ số thành công (playtest)
 
-| ID | KPI | Ngưỡng đích | Cách đo |
-| --- | --- | --- | --- |
-| KPI-01 | Hoàn thành tutorial | ≥ 8/10 người mới | Quan sát playtest |
-| KPI-02 | Hiểu X đỏ và mất tim | ≥ 8/10 giải thích đúng sau L03 | Phỏng vấn sau phiên |
-| KPI-03 | Hoàn thành 10 level đầu trong phiên đầu | ≥ 70% | Quan sát + save `completedLevelIds` |
-| KPI-04 | Tỷ lệ fail trung bình L01–L30 | ≤ 15% lượt chơi | Ghi tay / save `results` |
-| KPI-05 | Thời gian/level 4×4–6×6 | trung vị 1–4 phút | `results.time_ms` |
-| KPI-06 | Cảm nhận "phải đoán" | ≤ 2/10 người báo | Phỏng vấn |
-| KPI-07 | Muốn chơi tiếp | ≥ 7/10 | Khảo sát cuối phiên |
+Chưa chốt chỉ số và ngưỡng đích cho playtest.
 
 Không có analytics: số liệu lấy từ quan sát, phỏng vấn và đọc save trên thiết bị thử (kế hoạch ở [GDD-09](09-qa-acceptance.md)).
 

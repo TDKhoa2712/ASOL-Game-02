@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-09 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design · QA |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-04](04-ux-ui.md), [GDD-05](05-level-design.md), [GDD-08](08-technical-design.md), [GDD-10](10-reasoning-techniques.md), [GDD-11](11-level-generation.md) |
@@ -29,7 +29,7 @@
 | L3 — Data validators (Python) | `tools/validate_content.py`, `tools/validate_full_content.py`, `tools/playlist_checks.py`, `GDD/tools/validate_levels.py` | Schema bank/pace/playlist, uniqueness, trace, givens rỗng, coverage campaign | Mỗi thay đổi nội dung |
 | L4 — Tool unit tests | `python -m unittest` trên `game/tests`, `GDD/tools`, `tools/tests` | Generator, converter, campaign builder, export settings | Trước bàn giao |
 | L5 — Full gate | `tools/verify.py` | Tổng hợp L1–L4 + evidence log | Trước merge/bàn giao |
-| L6 — Clean-room gate | `rg` theo [AGENTS](../AGENTS.md) §3 | Không tên/enum từ reference, không import `extracted_reusable` | Trước merge |
+| L6 — Clean-room gate | `tools/clean_room.py` (được `tools/verify.py` gọi ở check `clean-room`) | Không tên/enum từ code tham khảo trong `game/scripts/` | Trước merge (tự động trong L5) |
 | L7 — Manual device QA | Thiết bị Android/iOS thật, ma trận §6 | Gesture, safe area, hiệu năng, âm thanh/haptic, accessibility | Mỗi release candidate |
 | L8 — Playtest | Người chơi chưa đọc GDD, §5 | Hiểu luật, cảm nhận độ khó, nhầm cử chỉ, retention ngắn hạn | Theo mốc |
 
@@ -74,15 +74,15 @@ Cột **Tầng** chỉ nơi kiểm chính (L1–L8 theo §2.1). Trạng thái th
 | QA-03 | `solution` khai báo khác nghiệm độc lập | Chặn | L3 |
 | QA-04 | Vùng không liên thông 4 hướng | Chặn, nêu nhãn vùng | L3 |
 | QA-05 | Trace S2/S3 sai focus/đích/tập loại | Chặn tại bước lỗi; bước thiếu/thừa/no-op/lặp hoặc dựa trên nghiệm/X đều bị từ chối; trace đủ N kẹo | L3 |
-| QA-06 | Hình vùng lặp trong cửa sổ 8 level liền kề (sau xoay/lật/đổi nhãn) | Cảnh báo; chặn trong playlist phát hành | L3 |
+| QA-06 | Hình vùng lặp trong cửa sổ 8 level liền kề (sau xoay/lật/đổi nhãn) | Chỉ `GDD/tools/validate_levels.py` kiểm (cảnh báo; chặn khi chạy `--release`). Validator playlist của game (`validate_content.py`, `playlist_checks.py`) chưa kiểm | L3 |
 | QA-07 | Fixture `GDD/data/levels.sample.json` (T01/E01/E02/S301/N12) | Nghiệm/trace hợp lệ; S301 kiểm S3→S2; N12 kiểm nhãn A–L | L3/L4 |
 | QA-32 | Schema sai: thừa/thiếu trường, bool giả int, ID trùng | Báo rõ, không chấp nhận âm thầm | L3 |
 | QA-35 | Biên kích thước N=4..12 và N=13 | N=4–12 đọc/kiểm được; N=13 bị từ chối | L1/L3 |
 | QA-49 | Level mốc L10, L20 của `demo_30` | Được biên tập duyệt nhịp; qua cùng cổng uniqueness/trace | L3 + review |
-| QA-57 | Logic band `demo_30` | L01–L18 giải được bằng S1/S2; L19–L24 cần S3 (closure S2-only STUCK); L25–L30 chỉ dùng S1–S3 | L3 |
-| QA-65 | Givens bị loại bỏ | Bank/validator GDScript và Python từ chối `givens` không rỗng; `pidHash` không phụ thuộc given | L1/L3 |
-| QA-66 | Solver S4–S7 | Fixture dương/âm cho locked subset k=2,3,≥4 và contradiction chain; không loại ô là nghiệm; `replay_solve` trả `profile` và `max_technique` đúng | L1 |
-| QA-67 | Bank toàn bộ (36.573 level) và `full_998` | `validate_full_content` PASS; mỗi bộ ba bank xuất hiện đúng một lần trong `full_998` | L3 |
+| QA-57 | Logic band `demo_30` | L01–L18 giải được bằng S1/S2; L19–L24 cần S3 (closure S2-only STUCK); L25–L30 chỉ dùng S1–S3. Kiểm closure S2-only cho `demo_30` **chưa tự động hóa** — review thủ công | L3 + review |
+| QA-65 | Givens bị loại bỏ | `tools/validate_content.py` và `level_validator.gd` từ chối `givens` không rỗng; `pidHash` không phụ thuộc given. **Lỗi đã biết:** `GDD/tools/validate_levels.py` vẫn chấp nhận givens (và `GDD/tools/generate_levels.py` vẫn sinh được), chưa sửa | L1/L3 |
+| QA-66 | Solver S4–S7 | Fixture dương/âm cho locked subset k=2,3 (chưa có fixture k≥4) và contradiction chain; không loại ô là nghiệm; `replay_solve` trả `profile` và `max_technique` đúng | L1 |
+| QA-67 | Bank 4×4–6×6 (998 level) và `full_998` | `validate_full_content` PASS; mỗi bộ ba bank xuất hiện đúng một lần trong `full_998`. Bank 7×7–12×12 và typed bank **chưa** được tool này kiểm | L3 |
 
 ### 3.2. Board, cử chỉ, phiên chơi
 
@@ -216,7 +216,7 @@ Mỗi hàng ghi model, OS, build revision và kết quả trong log QA.
 
 | ID | Vấn đề | Tác động | Hướng xử lý |
 | --- | --- | --- | --- |
-| R-09-01 | Logic band QA-57 hiện là yêu cầu biên tập; cần xác nhận validator nào thực thi tự động cho `demo_30` | Có thể lọt level sai band | Bổ sung check vào `validate_content` hoặc ghi rõ vào STATUS |
+| R-09-01 | Logic band QA-57 hiện là yêu cầu biên tập; chưa validator nào kiểm closure S2-only cho `demo_30` | Có thể lọt level sai band | Bổ sung check vào `validate_content` hoặc ghi rõ vào STATUS |
 | R-09-02 | Chưa có thiết bị iOS cố định cho QA | G3 iOS chưa thể đạt | Quyết định phạm vi nền tảng cho bản đầu |
 | R-09-03 | Campaign hoạt động là `campaign_100` (tới 12×12) trong khi playtest chuẩn dùng 30 level đầu | Kết quả playtest không phủ bàn lớn | Lên vòng playtest riêng cho N≥7 |
 

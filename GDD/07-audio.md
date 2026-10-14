@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-07 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-04](04-ux-ui.md), [GDD-06](06-art-direction.md), [GDD-08](08-technical-design.md) |
@@ -78,7 +78,7 @@ Combo đếm số kẹo đúng liên tiếp do người chơi đặt, cap cấp 
 | 7 | Delicious | `7-delicious.ogg` |
 | 8 | Incredible | `8-incredible.ogg` |
 | 9 | Fantastic | `9-fantastic.ogg` |
-| 10 | Divine | `10-devine.ogg` (tên file viết sai chính tả, giữ để không vỡ đường dẫn) |
+| 10 | Divine | `10-divine.ogg` |
 | 11 | Unstoppable | `11-unstoppable.ogg` |
 | 12 | Legendary | `12-legendary.ogg` |
 
@@ -106,9 +106,9 @@ Backlog: biến thể menu tối giản và track ambient cho phiên dài; chỉ
 | Hạng mục | Spec |
 | --- | --- |
 | SFX procedural | Mono, 16-bit, 22.050 Hz; volume preset 0,11–0,30 (tuyến tính trước encode); sample clamp trước encode |
-| SFX/voice file | OGG Vorbis, mono hoặc stereo, 44,1 hoặc 48 kHz |
-| BGM | OGG Vorbis stereo, 44,1 kHz trở lên, mục tiêu −14 LUFS integrated, true peak ≤ −1 dBTP |
-| Đỉnh SFX | ≤ −10 dBFS; không clipping khi 8 voice chồng nhau |
+| SFX/voice file | OGG Vorbis, mono hoặc stereo, 44,1 hoặc 48 kHz (mẫu đã kiểm: `1-nice.ogg` 44,1 kHz mono; `settings-whoosh.ogg` 44,1 kHz stereo; `win-melody.ogg` 48 kHz stereo) |
+| BGM | OGG Vorbis stereo, 44,1 kHz trở lên (`bgm-candoku-melody.ogg` hiện là 48 kHz stereo); mục tiêu −14 LUFS integrated, true peak ≤ −1 dBTP — **mục tiêu, chưa đo** |
+| Đỉnh SFX | Mục tiêu ≤ −10 dBFS; không clipping khi 8 voice chồng nhau — **chưa đo** |
 | Cân bằng | Combo voice và melody thắng/thua nổi hơn BGM rõ ràng; `MARK` là âm nhỏ nhất trong nhóm gameplay |
 | Bus | Toàn bộ qua `Master`; chưa tách bus SFX/Music (mute bằng cờ trong player) |
 
@@ -171,8 +171,8 @@ Công cụ `game/scenes/sfx_tuner.tscn` (`game/scripts/feedback/sfx_tuner.gd`), 
 - [ ] Đạt spec §6: không clipping, đỉnh SFX ≤ −10 dBFS, BGM đo LUFS.
 - [ ] BGM loop liền mạch (tail khớp head).
 - [ ] Godot tạo lại `.ogg.import`; preset trong `sfx_catalog.gd` trỏ đúng đường dẫn.
-- [ ] Event phát đúng, độ trễ cảm nhận < 50 ms trên thiết bị.
-- [ ] Ghi nguồn/giấy phép vào `docs/CREDITS.md`.
+- [ ] Event phát đúng, độ trễ cảm nhận < 50 ms trên thiết bị (mục tiêu, chưa đo).
+- [ ] Ghi nguồn/giấy phép vào file credits (repo chưa có `docs/CREDITS.md`; cần tạo).
 
 ## 11. Câu hỏi mở và rủi ro
 

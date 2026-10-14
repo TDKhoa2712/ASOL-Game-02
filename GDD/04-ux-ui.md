@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-04 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-06](06-art-direction.md), [GDD-07](07-audio.md), [GDD-08](08-technical-design.md), [GDD-09](09-qa-acceptance.md) |
@@ -77,15 +77,15 @@ Bố cục từ trên xuống (theo `puzzle_layout.gd`):
 | --- | --- | --- |
 | Header (safe area) | Back, “Màn n”, Help, Restart, Options | Số màn lấy từ session thật |
 | Hàng trạng thái | Hàng kẹo theo vùng (N vị trí, sáng khi vùng đã có kẹo) + 3 tim | Không hiện điểm trong lúc chơi |
-| Thẻ luật | 3 thẻ icon + chữ luôn hiện: “1 kẹo mỗi hàng và cột”, “1 kẹo mỗi vùng màu”, “Kẹo không chạm nhau” | `RULE_ICON_SIZE`=96, `RULE_FONT_SIZE`=21 |
+| Thẻ luật | 3 thẻ icon + chữ luôn hiện: “1 kẹo mỗi hàng và cột”, “1 kẹo mỗi vùng màu”, “Kẹo không chạm nhau, kể cả chéo” | `RULE_ICON_SIZE`=96, `RULE_FONT_SIZE`=21 |
 | Bàn | Ô kẹo 3D, màu vùng trơn, không viền vùng | Ưu tiên diện tích; không zoom/pan |
 | Dock | Undo, Hint | Nút Undo luôn hiện (RST-021); Hint không có badge vì không giới hạn |
 
 | ID | Yêu cầu | Tiêu chí kiểm |
 | --- | --- | --- |
 | UX-03 | HUD gồm đủ các vùng trên; dữ liệu lấy từ session, không số liệu giả. | `test_screens.gd`, QA giao diện. |
-| UX-18 | Ô/nút đạt vùng chạm ≥ 44×44 pt ở N ≤ 6 trên thiết bị mục tiêu; N ≥ 7 cần đo chính xác chạm trước phát hành. | Đo trên thiết bị (Track E). |
-| UX-21 | Mọi chuỗi qua khóa localization; layout chịu chữ dài +30%, chữ lớn và safe area không chồng lấn. | QA 7 ngôn ngữ. |
+| UX-18 | Mục tiêu, chưa kiểm chứng: ô/nút đạt vùng chạm ≥ 44×44 pt trên thiết bị mục tiêu; chưa đo ở mọi N. | Đo trên thiết bị (Track E). |
+| UX-21 | Mọi chuỗi qua khóa localization; mục tiêu (chưa kiểm chứng) layout chịu chữ dài +30%, chữ lớn và safe area không chồng lấn. | QA 7 ngôn ngữ. |
 
 Thanh Cheats (`puzzle_debug_bar.gd`) chỉ có khi `OS.is_debug_build()`.
 
@@ -204,7 +204,7 @@ Màu vùng: tô màu đồ thị CIELAB, ΔE76 ≥ 20 giữa vùng kề (chi ti�
 | `title.mascot_bubble` | Giải đố cùng mình nhé! |
 | `puzzle.rule_row` | 1 kẹo mỗi hàng và cột |
 | `puzzle.rule_region` | 1 kẹo mỗi vùng màu |
-| `puzzle.rule_diagonal` | Kẹo không chạm nhau |
+| `puzzle.rule_diagonal` | Kẹo không chạm nhau, kể cả chéo |
 | `puzzle.restart_title` | Chơi lại màn này? |
 | `puzzle.restart_body` | Các ô đã đánh dấu và số lỗi của lượt chơi sẽ được đặt lại. |
 | `hint.place_candy` / `hint.mark_x` / `hint.detail` | Đặt kẹo / Đánh dấu X / Xem các bước |
@@ -239,10 +239,8 @@ Các yêu cầu cũ về chữ “Tìm thấy rồi!”, hiển thị lý do l�
 | ID | Vấn đề | Tác động | Hướng xử lý |
 | --- | --- | --- | --- |
 | Q-04-1 | Chạm ô ở N ≥ 7 chưa đo trên thiết bị | Mis-tap ở campaign_100 | Đo trong Track E QA thiết bị |
-| Q-04-2 | Nhiều chuỗi `vi` trong `strings.csv` còn để tiếng Nhật/Anh (vd `tutorial.s_touch`, `tutorial.tip_s3`, `hint.single_row`) | Sai ngôn ngữ trong FTUE | Rà và dịch lại toàn bộ cột `vi` |
 | Q-04-3 | Toggle `large_text` còn trong config nhưng layout luôn dùng chữ lớn | Toggle không có tác dụng rõ | Quyết định giữ/bỏ tile |
 | Q-04-4 | UX-17 screen reader chưa triển khai | Hạn chế accessibility | Backlog |
-| Q-04-5 | Một số chuỗi trong `strings.csv` (vd `tutorial.l1_0` ở mọi ngôn ngữ) và Help còn dùng bối cảnh cũ trước RST-029 | Copy lệch chủ đề "kẹo ẩn sau ô màu" | Task copy riêng: cập nhật strings/Help sang "vùng màu" |
 
 ## Lịch sử thay đổi
 
