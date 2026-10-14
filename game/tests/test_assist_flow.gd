@@ -61,8 +61,10 @@ func _init() -> void:
 	screen3.assist_ctl.bind(inv3, screen3.hint_coordinator)
 	screen3._is_custom = false
 	screen3._on_level_failed(false)
+	check(inv3.data.totalStreak == 0, "restored finished round is not counted again")
+	screen3._on_level_failed(true)
 	check(inv3.data.totalStreak == 1, "failed round counts for streak")
-	screen3._on_level_failed(false)
+	screen3._on_level_failed(true)
 	check(inv3.data.totalStreak == 1, "failed twice same day counts once")
 	screen3.queue_free()
 	inv3._store.remove_all()

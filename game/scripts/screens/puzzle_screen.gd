@@ -271,12 +271,11 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	if board != null:
 		board.redraw()
 func _on_level_won(hold: bool = true) -> void:
-	assist_ctl.on_round_finished(session, _is_custom)
+	if hold: assist_ctl.on_round_finished(session, _is_custom)  # hold == false: restored round, already counted
 	if board != null: board.play_win_bounce()
 	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
 func _on_level_failed(hold: bool = true) -> void:
-	assist_ctl.on_round_finished(session, _is_custom)
 	if board != null: board.play_sad()
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.
@@ -286,6 +285,7 @@ func _on_level_failed(hold: bool = true) -> void:
 		var failed_session: Variant = session
 		await hearts_display.loss_animation_finished
 		if not is_inside_tree() or session != failed_session: return
+	if hold: assist_ctl.on_round_finished(session, _is_custom)  # after the hearts break, not over them
 	if hold and not await _hold_result(RESULT_HOLD_LOSE): return
 	level_done.emit(false)
 
