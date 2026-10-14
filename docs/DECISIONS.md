@@ -2,6 +2,15 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-031 — Xem chuỗi ngày chơi trên Home
+
+Ngày 2026-10-14. Bổ sung RST-030. Đặc tả: [streak view](superpowers/specs/2026-10-14-streak-view-design.md).
+
+- **Viên lửa** ở giữa phía trên Home: số ngày liên tiếp (`totalStreak`, không reset khi nhận gói 7 ngày); cam khi đã giữ hôm nay, xám khi chưa, nhấp nháy khi sắp mất.
+- **Bảng chuỗi** khi chạm: số ngày, kỷ lục (`bestStreak`), 7 ô chu kỳ với ô quà, trạng thái hôm nay.
+- **Hiệu ứng +1** trên bàn chơi ở lần thắng đầu tiên trong ngày; toast gói 7 ngày hiện sau.
+- Popup "Hết lượt" vẫn không hiển thị streak.
+
 ## RST-030 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày
 
 Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc tả: [assist inventory](superpowers/specs/2026-10-14-assist-inventory-design.md).

@@ -25,6 +25,7 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ## Kho trợ giúp và streak (2026-10-14, `feat/v1.0.1/assist-inventory`)
 
+- Home có viên lửa chuỗi ở giữa phía trên, bảng chuỗi và hiệu ứng +1 (RST-030).
 - Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-029).
 - Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
 - Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).
