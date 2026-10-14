@@ -21,6 +21,7 @@ def build_checks(root, godot):
     checks = [("python:" + folder, [sys.executable, "-B", "-m", "unittest",
                "discover", folder, "-p", "test_*.py"])
               for folder in ("game/tests", "GDD/tools", "tools/tests")]
+    checks += [("clean-room", [sys.executable, "-B", "tools/clean_room.py"])]
     checks += [("levels:GDD/data/levels.sample.json", [sys.executable, "-B",
                 "GDD/tools/validate_levels.py", "GDD/data/levels.sample.json"])]
     checks += [("content:bank_4x4", [sys.executable, "-B", "tools/validate_content.py",
