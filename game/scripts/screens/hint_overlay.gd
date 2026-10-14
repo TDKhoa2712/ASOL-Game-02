@@ -7,6 +7,7 @@ signal detail_requested()
 const Palette = preload("res://scripts/theme/palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const FitLabel = preload("res://scripts/ui/fit_label.gd")
 
 var _showing: bool = false
 var _label_icon: Label = null
@@ -30,18 +31,19 @@ func _setup_ui() -> void:
 
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color.WHITE
-	sb.set_corner_radius_all(20)
+	sb.set_corner_radius_all(32)
 	sb.border_width_bottom = 5
 	sb.border_color = Palette.BOARD_GOLD_EDGE
-	sb.content_margin_left = 20.0
-	sb.content_margin_right = 20.0
-	sb.content_margin_top = 14.0
-	sb.content_margin_bottom = 16.0
+	sb.content_margin_left = 36.0
+	sb.content_margin_right = 24.0
+	sb.content_margin_top = 20.0
+	sb.content_margin_bottom = 20.0
 	sb.shadow_color = Palette.BOARD_SHADOW
 	sb.shadow_size = 8
 	add_theme_stylebox_override("panel", sb)
 
 	var vbox := VBoxContainer.new()
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	vbox.add_theme_constant_override("separation", 8)
 	add_child(vbox)
 
@@ -50,11 +52,15 @@ func _setup_ui() -> void:
 	vbox.add_child(banner)
 
 	_label_icon = Label.new()
-	_label_icon.add_theme_font_size_override("font_size", 28)
+	_label_icon.add_theme_font_size_override("font_size", 34)
 	banner.add_child(_label_icon)
 
-	_label_text = Label.new()
-	_label_text.add_theme_font_size_override("font_size", 22)
+	# Text shrinks to fit so the card always stays inside its fixed slot above the board.
+	var fit := FitLabel.new()
+	fit.max_font_size = 38
+	fit.min_font_size = 16
+	fit.max_lines = 3
+	_label_text = fit
 	_label_text.add_theme_color_override("font_color", Palette.BOARD_NAVY)
 	var bf := FontTokens.body_bold()
 	if bf != null: _label_text.add_theme_font_override("font", bf)
@@ -63,14 +69,20 @@ func _setup_ui() -> void:
 	_label_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	banner.add_child(_label_text)
 
-	var btn_row := HBoxContainer.new()
-	btn_row.add_theme_constant_override("separation", 12)
-	btn_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_child(btn_row)
+	# Detail and close sit beside the text so the card stays as short as the rule row.
+	var btn_row := banner
 
+	# Big apply pill; the layout moves it into the dock area under the board.
 	_apply_btn = Button.new()
-	_apply_btn.custom_minimum_size = Vector2(150, 56)
-	_style_button(_apply_btn, Palette.BOARD_HINT_BG, Palette.BOARD_HINT_EDGE, Palette.BOARD_HINT_ICON)
+	_apply_btn.name = "HintApplyBtn"
+	_apply_btn.custom_minimum_size = Vector2(600, 120)
+	_apply_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_apply_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_style_button(_apply_btn, Palette.ACCENT_ORANGE, Palette.ACCENT_ORANGE.darkened(0.3), Color.WHITE)
+	for state in ["normal", "hover", "pressed"]:
+		_apply_btn.get_theme_stylebox(state).set_corner_radius_all(60)
+	_apply_btn.add_theme_font_size_override("font_size", 46)
+	_apply_btn.visible = false
 	_apply_btn.pressed.connect(_on_apply)
 	btn_row.add_child(_apply_btn)
 
@@ -83,8 +95,11 @@ func _setup_ui() -> void:
 	btn_row.add_child(_detail_btn)
 
 	_dismiss_btn = Button.new()
-	_dismiss_btn.custom_minimum_size = Vector2(72, 56)
-	_style_button(_dismiss_btn, Color.WHITE, Palette.BOARD_BTN_EDGE, Palette.BOARD_NAVY_SOFT)
+	_dismiss_btn.custom_minimum_size = Vector2(64, 64)
+	_dismiss_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	# Solid blue so the close button reads clearly against the white card.
+	_style_button(_dismiss_btn, Palette.BOARD_BLUE, Palette.BOARD_BLUE_EDGE, Color.WHITE)
+	_dismiss_btn.add_theme_font_size_override("font_size", 34)
 	_dismiss_btn.pressed.connect(_on_dismiss)
 	btn_row.add_child(_dismiss_btn)
 
@@ -114,6 +129,10 @@ static func _style_button(btn: Button, face: Color, edge: Color, ink: Color) -> 
 	if bf != null: btn.add_theme_font_override("font", bf)
 	btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 
+func attach_apply_button(host: Control) -> void:
+	_setup_ui()
+	_apply_btn.reparent(host, false)
+
 func show_hint(hint: Dictionary) -> void:
 	_setup_ui()
 	var strategy: String = hint.get("strategy", "")
@@ -124,12 +143,14 @@ func show_hint(hint: Dictionary) -> void:
 		_label_text.text = raw_text % params
 	else:
 		_label_text.text = raw_text
+	_label_text.refit.call_deferred()  # setting text does not re-measure on its own
 	_apply_btn.text = _apply_label_for(strategy)
 	_dismiss_btn.text = "×"
 	_detail_btn.text = tr("hint.detail")
 	_detail_btn.visible = strategy == "CONTRA_CHAIN" and hint.has("chain_detail")
 	_showing = true
 	visible = true
+	_apply_btn.visible = true
 	modulate.a = 1.0
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
@@ -139,6 +160,7 @@ func dismiss() -> void:
 		return
 	_showing = false
 	visible = false
+	if _apply_btn != null: _apply_btn.visible = false
 
 func is_showing() -> bool:
 	return _showing

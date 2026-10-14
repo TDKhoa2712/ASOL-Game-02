@@ -17,7 +17,7 @@ static func _is_text(c: Control) -> bool:
 	return c is Label or c is Button or c is LineEdit or c is RichTextLabel or c is ItemList or c is TextEdit
 
 static func _apply_one(c: Control, enabled: bool) -> void:
-	if not _is_text(c):
+	if not _is_text(c) or c.has_meta("_fit_text"):
 		return
 	var current := c.get_theme_font_size("font_size")
 	var has_meta := c.has_meta(META_BASE)

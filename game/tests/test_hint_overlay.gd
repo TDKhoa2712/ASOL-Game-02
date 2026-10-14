@@ -13,6 +13,7 @@ func _init() -> void:
 	_test_formatted_text_with_params()
 	_test_buttons_match_board_style()
 	_test_hint_badge_hidden_without_limit()
+	_test_close_button_stands_out_from_card()
 	if _fails.is_empty():
 		print("HINT_OVERLAY_PASS")
 		quit(0)
@@ -90,6 +91,14 @@ func _test_buttons_match_board_style() -> void:
 	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
 	for btn in [overlay._apply_btn, overlay._dismiss_btn, overlay._detail_btn]:
 		_assert(btn.has_theme_stylebox_override("normal"), "hint button uses board 3D style")
+	overlay.free()
+
+func _test_close_button_stands_out_from_card() -> void:
+	var overlay := HintOverlay.new()
+	overlay.show_hint(_make_hint("SINGLE_CANDIDATE", "PLACE_CANDY"))
+	var card_bg: Color = (overlay.get_theme_stylebox("panel") as StyleBoxFlat).bg_color
+	var close_bg: Color = (overlay._dismiss_btn.get_theme_stylebox("normal") as StyleBoxFlat).bg_color
+	_assert(absf(card_bg.get_luminance() - close_bg.get_luminance()) > 0.3, "close button contrasts with the card")
 	overlay.free()
 
 func _test_hint_badge_hidden_without_limit() -> void:
