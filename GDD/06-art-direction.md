@@ -200,7 +200,7 @@ Trạng thái: **Done** = có trong `game/assets/` và đang dùng; **Needed** =
 
 | ID asset | File | Trạng thái |
 | --- | --- | --- |
-| ART-A01 | App icon `assets/icons/candoku-logo-{1024,512,192}.png` + `.svg` | Done |
+| ART-A01 | App icon `assets/icons/candoku-logo-{1024,512,192}.png` | Done |
 | ART-A02 | Logo chữ Home `assets/ui/home/logo/letter_*.png`, `sparkle.svg`, `swirl_candy.svg` | Done |
 | ART-A03 | Splash (`splash/splash_screen.tscn`, nền `#FFFDF5`, shader shine) | Done |
 | ART-A04 | Adaptive icon Android (foreground/background tách lớp) và bộ icon iOS đủ cỡ | Needed |
