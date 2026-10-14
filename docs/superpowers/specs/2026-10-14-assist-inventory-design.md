@@ -52,7 +52,7 @@ Ngoài phạm vi: tích hợp quảng cáo, IAP, analytics, hiển thị streak 
 | 2–4 | 3 |
 | ≥ 5 | 4 |
 
-Cộng vào kho, cắt ở 10. Thông báo bằng toast trên màn thắng ("+N Hint, +M Đặt kẹo").
+Cộng vào kho, cắt ở 10. Thông báo bằng toast trên bàn chơi trong lúc giữ kết quả thắng ("+N Hint, +M Đặt kẹo"); không sửa `win_screen.gd` (đã 357 dòng).
 
 ## 3. Kiến trúc
 
