@@ -15,6 +15,7 @@ func _init() -> void:
 	screen.assists = inv
 	root.add_child(screen)
 	screen.setup(null, null, null, LEVEL, false)
+	screen.assist_ctl.bind(inv, screen.hint_coordinator)  # simulate a campaign level
 	check(screen.place_btn.get_node("Badge/PlaceCount").text == "10", "place badge bound")
 	check(screen.hint_btn.get_node("Badge").visible, "hint badge visible when bound")
 	for i in 3:
@@ -26,6 +27,15 @@ func _init() -> void:
 	screen.place_btn.pressed.emit()
 	check(inv.count("place") == 6, "no charge after win")
 	check(inv.data.streakDays == 0, "custom win does not count for streak")
+	# Custom/debug levels never touch the real stock
+	var custom := PuzzleScreen.new()
+	custom.assists = inv
+	root.add_child(custom)
+	custom.setup(null, null, null, LEVEL, false)
+	check(not custom.place_btn.visible, "place hidden on custom level")
+	custom.hint_coordinator.request_hint(custom.session)
+	check(inv.count("hint") == 3, "custom hint does not charge")
+	custom.queue_free()
 	# Empty stock opens popup
 	var screen2 := PuzzleScreen.new()
 	var inv2 := Inventory.new(dir + "_b")
@@ -33,6 +43,7 @@ func _init() -> void:
 	screen2.assists = inv2
 	root.add_child(screen2)
 	screen2.setup(null, null, null, LEVEL, false)
+	screen2.assist_ctl.bind(inv2, screen2.hint_coordinator)  # simulate a campaign level
 	screen2.place_btn.pressed.emit()
 	check(screen2.assist_ctl.popup.visible, "empty place opens popup")
 	check(screen2.session.remaining_candies() == 4, "nothing placed when empty")
