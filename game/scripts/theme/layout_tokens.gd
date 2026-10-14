@@ -60,7 +60,6 @@ const X_MIN_STROKE := 4.0
 const X_BOW_RATIO := 0.022
 const CANDY_TEX_RATIO := 0.74
 const MASCOT_TEX_RATIO := 1.15 # atlas frames carry transparent margins, so they may overhang the cell
-const GIVEN_HALO_RATIO := 0.38
 const SOLUTION_HINT_RATIO := 0.32
 const ERROR_BADGE_OUTER_RATIO := 0.09
 const ERROR_BADGE_INNER_RATIO := 0.07
@@ -77,13 +76,16 @@ static func cell_content_scale(board_size: int) -> float:
 
 # Accessibility state (set by app_shell from config at startup and on change).
 static var motion_enabled: bool = true
-static var large_text_enabled: bool = false
+# Feature flag: false = large text is always on and its settings tile is hidden;
+# true = players can switch it in settings (saved "large_text" option applies).
+const LARGE_TEXT_TOGGLE := false
+static var large_text_enabled: bool = not LARGE_TEXT_TOGGLE
 
 static func set_motion(on: bool) -> void:
 	motion_enabled = on
 
 static func set_large_text(on: bool) -> void:
-	large_text_enabled = on
+	large_text_enabled = on or not LARGE_TEXT_TOGGLE
 
 static func tile_font_size() -> int:
 	return 30  # large text is applied globally by TextScaler

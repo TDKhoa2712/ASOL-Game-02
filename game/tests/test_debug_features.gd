@@ -146,7 +146,7 @@ func _run_tests() -> void:
 	for r in range(session.board.size()):
 		var c: int = int(sol[r])
 		var kind: int = session.board[r][c]
-		if kind != CellModel.CellKind.CANDY and kind != CellModel.CellKind.GIVEN:
+		if kind != CellModel.CellKind.CANDY:
 			all_solved = false
 	_assert(all_solved, "All solution candies placed on board during auto-solve")
 

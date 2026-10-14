@@ -23,6 +23,25 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Bỏ given toàn hệ thống (2026-10-14, `feat/v1.0.1/tutorial`)
+
+- Theo [plan](superpowers/plans/2026-10-14-remove-givens-system-wide.md): `CellKind` còn 4 trạng thái (bỏ GIVEN), xóa `pre_candy_decider` (DDA prefill), solver/session không còn đặt kẹo sẵn, bỏ halo và token GIVEN, bỏ gợi ý C-given (`tutorial.tip_given`) và target `excluded_by_given`.
+- Bank: `bank_4x4` rank 1 index 1 (L02 trong demo_30) bỏ given, trace 4 bước S2, pidHash `7948b573`, pace tái tạo. Validator GDScript/Python coi `givens` là tùy chọn và **từ chối danh sách không rỗng**; `GDD/tools/bank_expansion_rules.py` đặt trần given = 0.
+- Full verify rev `1ef16ee`: 99 PASS, 1 FAIL `test_settings_apply` do sửa đổi chưa commit có sẵn (`_test_reduced_motion_live` khai báo trùng); bản đã commit PASS. Evidence `scratch/verification/20261014T051607.600700Z.txt`.
+- Còn lại: GDD 03 (bảng gợi ý C-given) và DECISIONS (dòng L02 nhắc C-given) cần cập nhật câu chữ; tiến độ đã lưu của L02 (fingerprint gồm `givens`) sẽ không khớp bản cũ.
+
+## Tutorial bắt buộc (2026-10-14, `feat/v1.0.1/tutorial`)
+
+- RST-028: màn tutorial riêng phủ Home cho tới khi xong (`tutorial_flow.gd`, `tutorial_screen.gd`), 7 bước theo luồng tham khảo `scratch/img-tutor`; Trợ giúp chơi lại dạng thực hành. L01/L02 về bàn bank. Suite `test_tutorial_flow`, `test_tutorial_screen`, `test_tutorial_campaign` PASS; đã chụp màn chạy thật 540×960.
+- Còn lại: QA thiết bị (độ to chữ, nhịp tay, rung) và duyệt bản dịch.
+
+## Tutorial L01/L02 + gợi ý ngữ cảnh (2026-10-14, `feat/v1.0.1/tutorial`) — thay bởi mục trên, giữ phần gợi ý ngữ cảnh
+
+- RST-027 / GDD 03 §4: bàn viết tay `game/data/tutorial/tutorial.json` (L01 `ABCC/AACC/AADD/DDDD`, L02 `ADDD/ADDD/CDBB/CCBB`), guide suy bước từ bàn, miễn phạt ô được gọi tọa độ, Bỏ qua, gợi ý C-err/heart1/undo/given/size5/s3/idle, Trợ giúp → Chơi lại hướng dẫn. Chuỗi 7 ngôn ngữ.
+- Suite mới PASS: `test_tutorial_targets`, `test_tutorial_guide`, `test_tutorial_tips`, `test_tutorial_campaign`, `test_tutorial_screen`; cập nhật `test_play_session`, `test_campaign_runtime`, `test_integration`.
+- Full verify: 98 PASS, 1 FAIL `test_settings_apply` do sửa đổi chưa commit có sẵn trong working tree (hàm `_test_reduced_motion_live` khai báo trùng); bản đã commit của file PASS. Evidence `scratch/verification/20261013T172356.416515Z.txt`.
+- Còn lại: auto-mark GR-34 chưa có trong code (L1-2 chỉ minh họa); QA thiết bị/playtest 10 người theo chỉ tiêu GDD 03 §4 chưa làm; bản dịch ja/id/pt_BR/es/ko cần người bản ngữ duyệt.
+
 ## Combo feedback (2026-10-10, `feat/v1.0.1/combo-feedback`)
 
 - RST-026: voice 12 cấp + chữ nghệ thuật cho chuỗi đặt kẹo đúng. Headless suites combo/feedback/screens/integration PASS.

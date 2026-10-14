@@ -10,9 +10,9 @@ const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 const HelpScreen = preload("res://scripts/screens/help_screen.gd")
+const TutorialScreen = preload("res://scripts/screens/tutorial_screen.gd")
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
-const ProgressBarWidget = preload("res://scripts/ui/progress_bar.gd")
 const TitleLogo = preload("res://scripts/ui/title_logo.gd")
 const TitleHeroMascot = preload("res://scripts/ui/title_hero_mascot.gd")
 const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
@@ -34,7 +34,6 @@ var debug_btn: Button
 var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
 var _hero_mascot: TitleHeroMascot = null
-var _progress_bar: ProgressBarWidget = null
 var _play_label: Label = null
 
 func _ensure_nodes() -> void:
@@ -116,9 +115,6 @@ func _ensure_nodes() -> void:
 	actions.add_theme_constant_override("separation", 18); actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	frame.add_child(actions)
 
-	_progress_bar = ProgressBarWidget.new(0, 30)
-	actions.add_child(_progress_bar)
-
 	campaign_box = VBoxContainer.new()
 	campaign_box.name = "CampaignBox"; campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	campaign_box.add_theme_constant_override("separation", 0); campaign_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -177,7 +173,6 @@ func _ready() -> void:
 		if btn != null and not btn.pressed.is_connected(pair[1]):
 			btn.pressed.connect(pair[1])
 	_update_ui()
-	if _progress_bar != null: _progress_bar.animate()
 	_animate_entrance()
 
 func setup(rt: Variant, endless_rt: Variant = null) -> void:
@@ -185,6 +180,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	endless_runtime = endless_rt
 	_ensure_nodes()
 	_update_ui()
+	TutorialScreen.attach(self, rt) # mandatory until finished once (RST-028)
 	if debug_picker != null and rt != null:
 		var pl: Array = rt._playlist if "_playlist" in rt else []
 		var b: Variant = rt.bank if "bank" in rt else null
@@ -215,10 +211,6 @@ func _update_ui() -> void:
 		if campaign_subtitle != null and runtime.has_method("playlist_order"):
 			var order: Array = runtime.playlist_order()
 			if not order.is_empty(): campaign_subtitle.text = "1->%d" % order.size()
-		if _progress_bar != null:
-			var done_cnt: int = runtime.completed_count() if runtime.has_method("completed_count") else 0
-			var total_cnt: int = runtime.playlist_order().size() if runtime.has_method("playlist_order") else 30
-			_progress_bar.set_progress(done_cnt, total_cnt)
 	if endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:
@@ -260,9 +252,6 @@ func _animate_entrance() -> void:
 		if _hero_mascot.mascot != null:
 			_hero_mascot.mascot.drop_in(0.4)
 
-	if _progress_bar != null:
-		TweenHelpers.rise_in(_progress_bar, 0.8)
-
 	if play_btn != null:
 		TweenHelpers.rise_in(play_btn, 1.0)
 		get_tree().create_timer(1.9).timeout.connect(func():
@@ -279,6 +268,7 @@ func _on_help() -> void:
 	_help_overlay = HelpScreen.new()
 	_help_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_help_overlay.back_pressed.connect(_close_help)
+	_help_overlay.replay_tutorial_pressed.connect(func() -> void: _close_help(); TutorialScreen.attach(self, runtime, true))
 	add_child(_help_overlay)
 
 func _close_help() -> void:

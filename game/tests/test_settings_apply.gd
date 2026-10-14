@@ -40,22 +40,23 @@ func _test_toggles_through_ui() -> void:
 	await process_frame
 	var list: Array = []
 	_toggles(shell._options_overlay, list)
-	_assert(list.size() == 7, "seven toggles, got %d" % list.size())
-	# Order: music, audio, haptic, reduced_motion, large_text, colorblind, high_contrast
+	_assert(list.size() == 6, "six toggles, got %d" % list.size())
+	# Order: music, audio, haptic, reduced_motion, colorblind, high_contrast (large text is always on)
 	for t in list: t.button_pressed = not t.button_pressed
 	await process_frame
 	_assert(shell.bgm.is_muted(), "music toggle mutes bgm")
 	_assert(shell.sfx.is_muted(), "sound toggle mutes sfx")
 	_assert(not Vibration.is_on(), "haptic toggle disables vibration")
 	_assert(not LayoutTokens.motion_enabled, "reduced motion toggle disables motion")
-	_assert(LayoutTokens.large_text_enabled, "large text toggle enables large text")
+	_assert(LayoutTokens.large_text_enabled, "large text is on by default")
 	_assert(shell.config.get_option("colorblind") == true, "colorblind saved")
 	_assert(shell.config.get_option("high_contrast") == true, "high contrast saved")
 	shell.config.reset_defaults()
 	_assert(Vibration.is_on() and not shell.sfx.is_muted() and LayoutTokens.motion_enabled, "reset re-applies defaults")
+	_assert(LayoutTokens.large_text_enabled, "large text stays on after reset")
 	await process_frame
 	list.clear(); _toggles(shell._options_overlay, list)
-	_assert(list.size() == 7, "toggles rebuilt after reset")
+	_assert(list.size() == 6, "toggles rebuilt after reset")
 	_assert(list[2].is_on() and not list[3].is_on(), "toggles redrawn with default values after reset")
 	for t in list: t.button_pressed = not t.button_pressed
 	await process_frame

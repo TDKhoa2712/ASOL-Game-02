@@ -6,10 +6,11 @@ import statistics
 from level_reasoning import puzzle_key, solve
 from validate_levels import validate_level
 
+# (rating ceilings per rank, max givens per rank); givens stay 0: every level is player-solved.
 BANDS = {
-    4: ((10, 14, 19, 26), (0, 1, 0, 0)),
-    5: ((10, 14, 28, 34), (0, 1, 2, 0)),
-    6: ((10, 14, 24, 31), (0, 0, 1, 3)),
+    4: ((10, 14, 19, 26), (0, 0, 0, 0)),
+    5: ((10, 14, 28, 34), (0, 0, 0, 0)),
+    6: ((10, 14, 24, 31), (0, 0, 0, 0)),
 }
 
 

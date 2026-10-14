@@ -60,8 +60,7 @@ func _test_new_level_and_resume() -> void:
 	_assert(not _entering(puzzle.board), "saved unfinished level after reboot skips the wave")
 	var sess = puzzle.session
 	for r in range(int(sess.level.size)):
-		if sess.cell_at(r, int(sess.level.solution[r])) != CellModel.CellKind.GIVEN:
-			puzzle._on_board_double_tap(r, int(sess.level.solution[r]))
+		puzzle._on_board_double_tap(r, int(sess.level.solution[r]))
 	shell._on_next_level()
 	puzzle = shell.screen_host.get_child(0)
 	_assert(_entering(puzzle.board), "next level after a win starts another wave")
@@ -75,7 +74,7 @@ func _test_wave_sizes() -> void:
 	for n in [4, 5, 6, 9]:
 		var regions: Array = []; var solution: Array = []
 		for r in range(n): regions.append(String.chr(65 + r).repeat(n)); solution.append(r)
-		var sess := PlaySession.new({"id": "test", "size": n, "regions": regions, "solution": solution, "givens": [{"r": n - 1, "c": 0}]})
+		var sess := PlaySession.new({"id": "test", "size": n, "regions": regions, "solution": solution, "givens": []})
 		var board := PuzzleBoard.new()
 		board.size = Vector2(500, 500)
 		root.add_child(board)

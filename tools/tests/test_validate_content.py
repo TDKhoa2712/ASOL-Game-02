@@ -56,6 +56,15 @@ class ValidateContentTests(unittest.TestCase):
             ]
         }
 
+    def test_level_without_givens_key_is_valid(self):
+        del self.valid_level["givens"]
+        self.assertEqual(validate_bank(self.valid_bank), [])
+
+    def test_nonempty_givens_rejected(self):
+        self.valid_level["givens"] = [{"r": 0, "c": 1}]
+        errors = validate_bank(self.valid_bank)
+        self.assertTrue(any("givens are no longer supported" in e for e in errors), errors)
+
     def test_valid_bank(self):
         errors = validate_bank(self.valid_bank)
         self.assertEqual(errors, [])

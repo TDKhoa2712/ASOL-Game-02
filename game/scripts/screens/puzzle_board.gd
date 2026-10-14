@@ -277,8 +277,8 @@ func _draw_border(rect: Rect2, color: Color, width: int, radius: int) -> void:
 func _content_scale() -> float:
 	return 1.0 if _session == null else LayoutTokens.cell_content_scale(int(_session.level.get("size", 0)))
 
-func _draw_cell_candy(rect: Rect2, is_given: bool, r: int = -1, c: int = -1) -> void:
-	CandyCellDrawer.draw(self, rect, is_given, _content_scale(), _candy_tex, candy_frame(r, c) if r >= 0 else [], _candy_anim.progress_of(Vector2i(r, c)) if _candy_anim != null and r >= 0 else 0.0)
+func _draw_cell_candy(rect: Rect2, r: int = -1, c: int = -1) -> void:
+	CandyCellDrawer.draw(self, rect, _content_scale(), _candy_tex, candy_frame(r, c) if r >= 0 else [], _candy_anim.progress_of(Vector2i(r, c)) if _candy_anim != null and r >= 0 else 0.0)
 
 func _draw_cell_x(rect: Rect2, is_error: bool, r: int = -1, c: int = -1) -> void:
 	if r >= 0 and c >= 0 and _mark_anims.has(Vector2i(r, c)):

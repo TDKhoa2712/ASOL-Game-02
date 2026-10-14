@@ -2,7 +2,6 @@
 extends RefCounted
 
 const Palette = preload("res://scripts/theme/palette.gd")
-const CandyPalette = preload("res://scripts/theme/candy_palette.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const CandyAtlas = preload("res://scripts/screens/candy_atlas.gd")
 const MascotMotion = preload("res://scripts/screens/mascot_motion.gd")
@@ -10,9 +9,7 @@ const MascotMotion = preload("res://scripts/screens/mascot_motion.gd")
 const FOOT_Y := 94.0 / 128.0 # mascot feet inside an atlas frame (see tools/build_mascot_atlas.gd)
 const SHADOW_COLOR := Color(0.66, 0.36, 0.04, 0.25)
 
-static func draw(canvas: CanvasItem, rect: Rect2, is_given: bool, cs: float, static_tex: Texture2D, frame: Array, progress: float = 0.0) -> void:
-	if is_given:
-		canvas.draw_circle(rect.get_center(), rect.size.x * minf(LayoutTokens.GIVEN_HALO_RATIO * cs, 0.48), Color(CandyPalette.GIVEN_HALO, CandyPalette.GIVEN_HALO_OPACITY))
+static func draw(canvas: CanvasItem, rect: Rect2, cs: float, static_tex: Texture2D, frame: Array, progress: float = 0.0) -> void:
 	var candy_size := rect.size * minf(LayoutTokens.CANDY_TEX_RATIO * cs, 0.95)
 	var dst := Rect2(rect.position + (rect.size - candy_size) * 0.5, candy_size)
 	var src := CandyAtlas.frame_rect(frame[0], frame[1]) if not frame.is_empty() else Rect2()

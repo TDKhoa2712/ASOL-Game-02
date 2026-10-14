@@ -38,7 +38,7 @@ def _proof_level(level: dict, size: int, rank: str, index: int) -> dict:
         "order": 31,
         "size": size,
         "regions": level["regions"],
-        "givens": level["givens"],
+        "givens": level.get("givens", []),
         "solution": level["solution"],
         "difficulty": "medium",
         "tags": [],
@@ -75,7 +75,7 @@ def validate_full_banks(banks: dict[int, dict], paces: dict[int, dict],
                     previous = seen_geometry.get(geometry)
                     if previous is not None:
                         exception = LEGACY_5X5_REPEATS.get((previous, (rank, index)))
-                        key = puzzle_key(level['regions'], level['givens'])
+                        key = puzzle_key(level['regions'], level.get('givens', []))
                         if size != 5 or exception != key:
                             errors.append(f"{label}: duplicate geometry")
                     else:

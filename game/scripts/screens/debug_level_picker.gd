@@ -112,9 +112,9 @@ func confirm_selection() -> void:
 	if not _selected_level.is_empty(): level_selected.emit(_selected_level, _selected_label)
 
 func _update_info_display(lbl: String, s: int, diff: String, rank: int, lvl: Dictionary) -> void:
-	var reg_cnt: int = lvl.get("regions", []).size(); var giv_cnt: int = lvl.get("givens", []).size()
-	_info_label.text = "Màn: %s | Size: %dx%d | %s (Rank %d)\nSố vùng: %d | Ô kẹo cho sẵn: %d" % [
-		lbl, s, s, diff, rank, reg_cnt, giv_cnt
+	var reg_cnt: int = lvl.get("regions", []).size()
+	_info_label.text = "Màn: %s | Size: %dx%d | %s (Rank %d)\nSố vùng: %d" % [
+		lbl, s, s, diff, rank, reg_cnt
 	]
 	_play_btn.disabled = lvl.is_empty()
 

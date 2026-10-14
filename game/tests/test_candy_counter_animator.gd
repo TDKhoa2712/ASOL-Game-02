@@ -19,23 +19,24 @@ func _create_test_level() -> Dictionary:
 		"size": 4,
 		"regions": ["AAAA", "BBBB", "CCCC", "DDDD"],
 		"solution": [0, 1, 2, 3],
-		"givens": [{"r": 1, "c": 1}], # Zone B is given
+		"givens": [],
 		"id": "T04"
 	}
 
 func _run_tests() -> void:
 	var level := _create_test_level()
 	var session := PlaySession.new(level)
+	session.try_candy(1, 1) # Zone B found before the first sync
 	var row := HBoxContainer.new()
 	row.size = Vector2(400, 80)
 	root.add_child(row)
 	await process_frame
 
-	# 1. Initial sync: Zone B is given, should be in front (index 0)
+	# 1. Initial sync: Zone B is found, should be in front (index 0)
 	CandyCounterAnimator.sync_status(session, row)
 	_assert(row.get_child_count() == 4, "Row has 4 children after initial sync")
 	var c0: TextureRect = row.get_child(0) as TextureRect
-	_assert(c0 != null and c0.get_meta("zone_id") == "B", "Given zone B is at index 0")
+	_assert(c0 != null and c0.get_meta("zone_id") == "B", "Found zone B is at index 0")
 	_assert(c0.modulate != Palette.ICON_MUTED, "Zone B is revealed (found)")
 
 	# Other children are unfound

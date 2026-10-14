@@ -22,4 +22,4 @@ func _init() -> void:
 		quit(1)
 
 func _level(label: String) -> Dictionary:
-	return {"id": label, "size": 4, "regions": ["AABB", "ABBB", "CCBB", "CCDB"], "solution": [1, 3, 0, 2], "givens": [{"r": 0, "c": 1}], "hash": "test_candy_board"}
+	return {"id": label, "size": 4, "regions": ["AABB", "ABBB", "CCBB", "CCDB"], "solution": [1, 3, 0, 2], "givens": [], "hash": "test_candy_board"}

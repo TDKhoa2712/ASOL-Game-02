@@ -36,7 +36,7 @@ Không có màn bản đồ/chương/chọn level (UX-02 bỏ). Home `Chơi` m�
 | UX-00 | Splash | Logo CanDoKu, animation khởi động; tự chuyển sang Home |
 | UX-01 | Home | Chơi/Tiếp tục, Endless, tên/số level hiện tại, Trợ giúp, Settings, Debug (dev); trạng thái hết nội dung |
 | UX-03 | Puzzle | Tên level, tim, **vùng luật bốn icon + chữ luôn nhìn thấy**, bàn, **hàng N vị trí tiến độ có màu/nhãn/họa tiết vùng**, Undo, Restart có xác nhận, Back To Home, một Hint/lượt, Trợ giúp, Settings |
-| UX-04 | Tutorial | Chỉ có ở Level 1; chỉ dẫn ngắn trên bàn cho X, clear, kéo X, chạm đôi, bốn luật, X đỏ khóa và Hint; tiến theo hành động |
+| UX-04 | Tutorial | L01 (luật, chạm đôi, X/xóa X, S2) và L02 (kéo X, S3, Hint) trên bàn viết tay; từ L03 là gợi ý theo ngữ cảnh; tiến theo hành động (§4) |
 | UX-05 | Kết quả thắng | Câu khích lệ, điểm, sticker chúc mừng/hoạt ảnh kẹo, nút “Level tiếp theo” và Home |
 | UX-06 | Kết quả thua riêng | Thông điệp hết 3 tim, điểm lượt, “Thử lại” và Home; không dùng giao diện thắng đổi chữ |
 | UX-07 | Trợ giúp/Luật | Ví dụ hàng/cột/vùng/chạm chéo; chạm/kéo X, chạm đôi kẹo, X đỏ khóa, hint; trở lại màn trước |
@@ -71,18 +71,45 @@ Cửa sổ 350 ms đo từ lần nhấc thứ nhất đến lần chạm xuống
 
 ## 4. Tutorial
 
-Tutorial chỉ gắn Level 1, script theo ID level và điều kiện bàn; không cần chương. Mốc đã thấy lưu vào progress. Làm nước đúng khác thứ tự phải bỏ qua mốc đã thỏa. Từ Level 2 không còn miễn phạt tutorial. Mở lại hướng dẫn từ Trợ giúp dùng bản thực hành riêng, không thay đổi campaign.
+Quyết định: RST-028 (thay phần L01/L02 của RST-027) trong [DECISIONS](../docs/DECISIONS.md).
 
-| Mốc | Bài học | Hành động để qua |
+**Bắt buộc, màn riêng:** lần đầu mở app, lớp tutorial phủ Home, chặn mọi thao tác, không có Bỏ qua. Xong ghi `ONBOARD` vào progress và không hiện lại. Trợ giúp → “Chơi lại hướng dẫn” mở bản thực hành, không ghi progress. Campaign L01/L02 dùng bàn bank, luật thường.
+
+**Bàn:** 4×4 `ABCC/AACC/AADD/DDDD`, nghiệm `[1,3,0,2]`, một nghiệm duy nhất (`tutorial_flow.gd`, `test_tutorial_flow.gd`). Mọi viên kẹo do người chơi tự đặt; game không tự thả kẹo.
+
+| Bước | Ô sáng | Lời nhắc | Qua khi |
+| --- | --- | --- | --- |
+| 1 | ô (1,2) — vùng 1 ô | “**Chạm nhanh 2 lần** vào ô để đặt kẹo.” + tay chạm đôi | đặt kẹo |
+| 2 | cả bàn | “Mỗi **vùng màu** có đúng một viên kẹo.” | OK (bàn không nhận thao tác) |
+| 3 | kẹo đầu + 5 ô quanh nó | “Kẹo không bao giờ chạm nhau, **kể cả chạm góc**. Vuốt qua các ô sáng để gạch bỏ.” + tay vuốt vòng quanh kẹo | gạch hết 5 ô chạm |
+| 4 | hàng 1 + cột 2 | “Mỗi **hàng và cột** cũng chỉ có một viên. Chạm hoặc vuốt qua các ô sáng để gạch bỏ.” + tay vuốt từ ô trống đầu tiên | gạch hết ô còn trống |
+| 5 | vùng C | “Vùng này **chỉ còn một ô**. Kẹo phải ở đó!” | đặt kẹo (2,4) |
+| 6 | cả bàn + 3 tim dưới bàn (tim cuối vỡ minh họa) | “Bạn có **3 tim**. Đặt kẹo sai mất 1 tim, hết tim phải chơi lại màn. Gạch X thì không bao giờ mất tim.” | OK (bàn không nhận thao tác) |
+| 7 | cả bàn, chơi tự do | “Tìm **những viên kẹo còn lại**.” + nút “Chạm để xem gợi ý” | đặt kẹo (3,1) và (4,3); X/xoá X/vuốt tự do; kẹo sai bị từ chối nhẹ, không phạt |
+| 8 | cả bàn | “Giỏi lắm! Bạn đã sẵn sàng chơi thật rồi.” + pháo giấy | Tiếp tục |
+
+Xong một bước: giữ kết quả 1,1 s (khoá thao tác) rồi chữ mờ sang bước mới. Bàn tay: lơ lửng nghiêng → ấn xuống (tâm ở đầu ngón) + gợn sóng; đánh dấu hàng loạt diễn bằng nét vuốt để lại X mờ.
+Ô không sáng bị làm tối; ô đích có vòng sáng nhịp; nền tối khi chỉ sáng một phần (ngoại lệ RST-004, chỉ tutorial). Chỉ ô đích nhận thao tác; thao tác khác bị bỏ qua, bàn rung nhẹ; không tim, không lỗi. Giảm chuyển động: tay đứng yên, không pháo giấy.
+
+### Gợi ý theo ngữ cảnh (L03 trở đi, mỗi loại một lần)
+
+| ID | Kích hoạt | Lời nhắc |
 | --- | --- | --- |
-| T1 | Một chạm đặt X | Đánh X vào ô (2,2) được gọi rõ bằng tọa độ, không tô sáng |
-| T2 | Một chạm nữa xóa X | Xóa X ở ô (2,2) sau khi chỉ dẫn T2 xuất hiện |
-| T3 | Kéo để đánh/xóa nhiều X | Kéo qua ít nhất hai ô hợp lệ; chế độ do ô đầu quyết định |
-| T4 | Hai chạm xác nhận kẹo | Đặt đúng kẹo tại ô S2 được gọi rõ bằng tọa độ, không tô sáng |
-| T5 | Bốn luật và X đỏ | Xem minh họa hàng/cột/vùng/không chạm và một minh họa X đỏ an toàn |
-| T6 | Hint | Mở Hint miễn phí của lượt và đóng phần giải thích |
+| C-err | TryCandy sai đầu tiên | “X đỏ: ô này không có kẹo. Mất 1 tim, còn {n}.” |
+| C-heart1 | Lần đầu còn 1 tim | “Còn 1 tim! Dùng Gợi ý nếu chưa chắc.” |
+| C-undo | Lần đầu Undo bị chặn sau thử sai | “Không thể hoàn tác qua lần thử kẹo sai.” |
+| C-given | Lần đầu gặp bàn có given | “Kẹo có sẵn cũng tính: các ô quanh nó không thể có kẹo.” |
+| C-size5 | Lần đầu bàn 5×5 | “Bàn lớn hơn, luật vẫn vậy.” |
+| C-s3 | Lần đầu level order 19 | Nhắc mẹo luống gọn trong một hàng/cột |
+| C-idle | Đứng yên 30 s, chưa dùng Hint trong lượt | Nút Hint nảy, không chữ |
 
-Trong Level 1, thử kẹo sai **trên ô tutorial được gọi rõ bằng tọa độ** chỉ được nhắc và không mất tim; thao tác khác theo luật thường. Tutorial không tô sáng hay làm nổi ô. Script phải được QA kiểm trên level thật. Khi app đóng giữa mốc, khôi phục board, `hintCount` và `tutorialSeenIds`, rồi suy lại mốc chưa đạt; không phát sinh thao tác ảo hoặc cấp lại Hint.
+### Giao diện
+
+Bong bóng mascot nằm giữa thanh luật và bàn, không che bàn; chỉ các nút “Hiểu rồi”/“Bỏ qua” nhận chạm, phần còn lại cho input đi qua bàn. Hiện bằng fade + slide 150 ms; giảm chuyển động chỉ đổi alpha. Chỉ chỗ bằng làm sáng số hàng/cột ở viền bàn và icon luật (chỉ L01/L02). Nút “Bỏ qua hướng dẫn” từ L1-1: ghi mọi mốc đã thấy, tắt miễn phạt, ẩn bong bóng. Trợ giúp có “Chơi lại hướng dẫn”: mở bàn L01 chế độ thực hành, không ghi progress/session. Mọi chuỗi là khóa localization.
+
+### Đo bằng playtest
+
+Log cục bộ mỗi bước: thời gian, số thao tác sai trước khi qua, có bỏ qua không. Mục tiêu 10 người: ≥ 90% xong L01 < 2 phút; ≥ 70% làm L1-5 không cần nhắc thêm; lỗi trung bình ở L03 ≤ 1; không ai chạm đôi dò nghiệm.
 
 ## 5. Tiếp cận, màu và chuyển động
 

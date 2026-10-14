@@ -110,8 +110,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	var solution: Array = level["solution"]
 	for r in range(solution.size()):
 		var c: int = int(solution[r])
-		if session.cell_at(r, c) != CellModel.CellKind.GIVEN:
-			session.try_candy(r, c)
+		session.try_candy(r, c)
 
 	_assert(session.phase == PlaySession.Phase.WON, "session phase is WON")
 	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen")
@@ -134,8 +133,7 @@ func _test_screen_flow_win_and_progression() -> void:
 	var sol2: Array = level2["solution"]
 	for r in range(sol2.size()):
 		var c: int = int(sol2[r])
-		if session2.cell_at(r, c) != CellModel.CellKind.GIVEN:
-			session2.try_candy(r, c)
+		session2.try_candy(r, c)
 
 	_assert(session2.phase == PlaySession.Phase.WON, "session2 phase is WON")
 	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen for campaign complete")
@@ -167,6 +165,7 @@ func _test_screen_flow_fail_and_retry() -> void:
 	var session: PlaySession = shell.runtime.current_session
 	var level: Dictionary = session.level
 	var solution: Array = level["solution"]
+	session.protect_fn = Callable() # L01 forgives the cells its lesson names; this flow needs real misses
 
 	# Make 3 mistakes on 3 distinct rows to fail level
 	for r in range(3):

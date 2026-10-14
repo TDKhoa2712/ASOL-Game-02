@@ -1,0 +1,33 @@
+{
+  "tutorialVersion": 1,
+  "levels": {
+    "L01": {
+      "level": {
+        "size": 4,
+        "regions": ["ABCC", "AACC", "AADD", "DDDD"],
+        "solution": [1, 3, 0, 2],
+        "givens": []
+      },
+      "steps": [
+        {"id": "L1-0", "text": "tutorial.l1_0", "button": "tutorial.start", "rules": ["rowcol", "region", "touch"], "done": {"type": "button"}},
+        {"id": "L1-1", "text": "tutorial.l1_1", "target": {"type": "candy_of_region", "region": "B"}, "axis": true, "protect": true, "done": {"type": "candy_of_region", "region": "B"}},
+        {"id": "L1-2", "text": "tutorial.l1_2", "button": "tutorial.ack", "auto_ms": 4000, "overlay": {"type": "excluded_by_region", "region": "B"}, "rules": ["rowcol", "region", "touch"], "done": {"type": "button"}},
+        {"id": "L1-3", "text": "tutorial.l1_3", "target": {"type": "diagonal_of_region", "region": "B"}, "axis": true, "protect": true, "done": {"type": "mark"}},
+        {"id": "L1-4", "text": "tutorial.l1_4", "target": {"type": "diagonal_of_region", "region": "B"}, "axis": true, "protect": true, "done": {"type": "clear"}},
+        {"id": "L1-5", "text": "tutorial.l1_5", "rules": ["region"], "done": {"type": "candy_of_region", "region": "C"}}
+      ]
+    },
+    "L02": {
+      "level": {
+        "size": 4,
+        "regions": ["ADDD", "ADDD", "CDBB", "CCBB"],
+        "solution": [2, 0, 3, 1],
+        "givens": []
+      },
+      "steps": [
+        {"id": "L2-1", "text": "tutorial.l2_1", "target": {"type": "region_column_lock", "region": "A"}, "axis": true, "rules": ["region"], "done": {"type": "stroke", "min": 2}, "skip_when": {"type": "any_candy"}},
+        {"id": "L2-2", "text": "tutorial.l2_2", "bounce_hint": true, "done": {"type": "hint_closed"}}
+      ]
+    }
+  }
+}

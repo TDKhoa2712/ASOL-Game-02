@@ -53,15 +53,8 @@ def check_level_candy_rules(level: dict, size: int) -> list[str]:
             if abs(c - prev_c) <= 1:
                 errors.append(f"adjacent candies between row {r-1} (col {prev_c}) and row {r} (col {c})")
 
-    for i, g in enumerate(givens):
-        if not isinstance(g, dict) or "r" not in g or "c" not in g:
-            errors.append(f"given {i} must be dict with 'r' and 'c'")
-            continue
-        gr, gc = g["r"], g["c"]
-        if gr < 0 or gr >= size or gc < 0 or gc >= size:
-            errors.append(f"given {i} coordinates ({gr}, {gc}) out of bounds")
-        elif gr < len(solution) and solution[gr] != gc:
-            errors.append(f"given {i} at ({gr}, {gc}) contradicts solution ({gr}, {solution[gr]})")
+    if givens:
+        errors.append("givens are no longer supported; omit them or leave the list empty")
 
     return errors
 

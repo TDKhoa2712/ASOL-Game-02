@@ -48,8 +48,6 @@ const CANDY_COLORS := {
 	},
 }
 
-const GIVEN_HALO := Color("#FFF7E8")
-const GIVEN_HALO_OPACITY := 0.4
 const ERROR_TINT := Color("#D94040")
 const ERROR_X := Color("#D94040")
 const ERROR_OPACITY := 0.4

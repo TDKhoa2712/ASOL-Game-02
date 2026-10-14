@@ -36,7 +36,7 @@ func _puzzle(hearts: int = 3) -> Control:
 	puzzle.session = PlaySession.new({
 		"size": 4, "id": "heart-test", "hash": "heart-test",
 		"regions": ["AABB", "ABBB", "CCBB", "CCDB"],
-		"solution": [1, 3, 0, 2], "givens": [{"r": 0, "c": 1}],
+		"solution": [1, 3, 0, 2], "givens": [],
 	}, hearts)
 	puzzle._is_custom = true
 	root.add_child(puzzle)
@@ -126,17 +126,23 @@ func _test_failed_resume() -> void:
 	_check(results == [false], "reopening after final fall restores failure result")
 	restored.free()
 
+func _with_candy(session: PlaySession) -> PlaySession:
+	session.try_candy(0, 1)
+	return session
+
 func _check(ok: bool, label: String) -> void:
 	if not ok: failures.append("FAIL: " + label)
 
 func _test_mascot_reactions() -> void:
 	var puzzle := _puzzle()
 	await process_frame
+	puzzle.board.configure(_with_candy(puzzle.session))
 	puzzle.session.try_candy(0, 0)
 	_check(puzzle.board.candy_frame(0, 1)[0] == "error", "mistake with hearts left makes mascots flinch")
 	puzzle.queue_free()
 	var last := _puzzle(1)
 	await process_frame
+	last.board.configure(_with_candy(last.session))
 	last.session.try_candy(0, 0)
 	await process_frame
 	_check(last.board.candy_frame(0, 1)[0] == "sad", "losing the last heart makes mascots cry")

@@ -144,7 +144,7 @@ static func solve_sequence(size: int, regions: Array, solution: Array) -> Array[
 	return seq
 
 static func compute_cell_ranks(size: int, regions: Array, solution: Array,
-		givens: Array) -> Array:
+		_givens: Array = []) -> Array:
 	var ranks: Array = []
 	var work_board: Array = _empty_board(size)
 	for r in range(size):
@@ -152,13 +152,6 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 		for c in range(size):
 			row_ranks.append(0)
 		ranks.append(row_ranks)
-
-	for g in givens:
-		var gr: int = int(g.get("r", g.get("row", -1))) if g is Dictionary else int(g[0])
-		var gc: int = int(g.get("c", g.get("col", -1))) if g is Dictionary else int(g[1])
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			work_board[gr][gc] = CellModel.CellKind.GIVEN
-			ranks[gr][gc] = 1
 
 	var current_max: int = 1
 	while true:
@@ -184,17 +177,12 @@ static func compute_cell_ranks(size: int, regions: Array, solution: Array,
 			ranks[r][sc] = 4
 	return ranks
 
-static func replay_solve(size: int, regions: Array, _solution: Array, givens: Array) -> Dictionary:
+static func replay_solve(size: int, regions: Array, _solution: Array, _givens: Array = []) -> Dictionary:
 	var board := _empty_board(size)
-	for g in givens:
-		var gr: int = int(g.get("r", g.get("row", -1))) if g is Dictionary else int(g[0])
-		var gc: int = int(g.get("c", g.get("col", -1))) if g is Dictionary else int(g[1])
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			board[gr][gc] = CellModel.CellKind.GIVEN
 	var profile := {"s1": 0, "s2": 0, "s3": 0, "s4": 0, "s5": 0, "s6": 0, "s7": 0}
 	var max_tech: int = 0
 	var steps: int = 0
-	var placed_count: int = givens.size()
+	var placed_count: int = 0
 	for _outer in range(size * size * 2):
 		if placed_count >= size:
 			break

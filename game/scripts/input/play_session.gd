@@ -9,6 +9,8 @@ signal heart_lost(remaining: int)
 signal mistake_made(row: int, col: int, reason: String)
 signal level_won()
 signal level_failed()
+# Tutorial: a wrong try on a cell the lesson named is forgiven (GR-20).
+signal protected_miss(row: int, col: int)
 
 enum Phase {
 	ACTIVE = 0,
@@ -24,6 +26,7 @@ var hints_used: int = 0
 var elapsed_ms: int = 0
 var phase: int = Phase.ACTIVE
 var _undo_cells: Array = []
+var protect_fn: Callable = Callable()
 
 func _init(level_data: Dictionary, initial_hearts: int = 3) -> void:
 	level = level_data
@@ -40,12 +43,6 @@ func _init(level_data: Dictionary, initial_hearts: int = 3) -> void:
 		for c in range(size):
 			row_arr.append(CellModel.CellKind.BLANK)
 		board.append(row_arr)
-
-	for g in level.get("givens", []):
-		var gr: int = int(g.get("r", -1))
-		var gc: int = int(g.get("c", -1))
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			board[gr][gc] = CellModel.CellKind.GIVEN
 
 
 func mark_x(row: int, col: int) -> void:
@@ -101,10 +98,12 @@ func try_candy(row: int, col: int) -> void:
 	var current: int = board[row][col]
 	if not CellModel.is_available(current):
 		return
-	_undo_cells = []
-
 	var regions: Array = level.get("regions", [])
 	var solution: Array = level.get("solution", [])
+	if row < solution.size() and int(solution[row]) != col and protect_fn.is_valid() and protect_fn.call(row, col):
+		protected_miss.emit(row, col)
+		return
+	_undo_cells = []
 	var res: Dictionary = CandyRules.attempt_candy(board, regions, solution, hearts, mistake_count, row, col)
 
 	hearts = int(res.get("hearts", hearts))
@@ -161,8 +160,8 @@ func cell_at(row: int, col: int) -> int:
 		return CellModel.CellKind.BLANK
 	return board[row][col]
 
-func is_preset(row: int, col: int) -> bool:
-	return cell_at(row, col) == CellModel.CellKind.GIVEN
+func is_preset(_row: int, _col: int) -> bool:
+	return false
 
 func remaining_candies() -> int:
 	var size: int = board.size()
@@ -171,7 +170,7 @@ func remaining_candies() -> int:
 	for r in range(size):
 		if r < solution.size():
 			var c: int = int(solution[r])
-			if board[r][c] != CellModel.CellKind.CANDY and board[r][c] != CellModel.CellKind.GIVEN:
+			if board[r][c] != CellModel.CellKind.CANDY:
 				count += 1
 	return count
 
@@ -187,7 +186,7 @@ func to_save_data() -> Dictionary:
 					flat_cells.append("candy")
 				CellModel.CellKind.ERROR:
 					flat_cells.append("error")
-				CellModel.CellKind.GIVEN, CellModel.CellKind.BLANK, _:
+				CellModel.CellKind.BLANK, _:
 					flat_cells.append("empty")
 
 	var status_str: String = "playing"
@@ -240,11 +239,5 @@ static func from_save_data(data: Dictionary, level_data: Dictionary) -> RefCount
 						session.board[r][c] = CellModel.CellKind.ERROR
 					"empty", "locked", _:
 						session.board[r][c] = CellModel.CellKind.BLANK
-
-	for g in level_data.get("givens", []):
-		var gr: int = int(g.get("r", -1))
-		var gc: int = int(g.get("c", -1))
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			session.board[gr][gc] = CellModel.CellKind.GIVEN
 
 	return session

@@ -2,6 +2,29 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-028 — Tutorial bắt buộc trên màn riêng trước khi chơi
+
+Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ cảnh. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial).
+
+- **Bắt buộc:** lần đầu mở app, lớp tutorial phủ Home và chặn mọi thao tác cho tới khi xong; không có Bỏ qua. Xong thì ghi `ONBOARD` vào `tutorialSeenIds`, không hiện lại. Trợ giúp → Chơi lại hướng dẫn mở bản thực hành, không ghi progress.
+- **Bàn riêng 4×4** `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]` (`tutorial_flow.gd`), 7 bước: đặt kẹo ô duy nhất → luật luống (OK) → gạch hàng/cột → kẹo thứ 2 xuất hiện, vuốt gạch ô chạm → luống còn 1 ô → kẹo cuối (nút Gợi ý) → pháo giấy + Tiếp tục.
+- **Hiệu ứng:** ô ngoài bước bị làm tối, ô đích có vòng sáng nhịp và bàn tay động; nền tối khi chỉ sáng một phần. Đây là ngoại lệ của RST-004, chỉ trong tutorial.
+- **Không phạt:** chỉ ô đích nhận thao tác; thao tác khác bị bỏ qua và bàn rung nhẹ. Không tim, không lỗi.
+- **L01/L02 campaign** trở lại bàn từ bank với luật thường; kịch bản trong màn cũ chuyển thành fixture test.
+- **Nguồn tham khảo:** luồng/hiệu ứng tham khảo từ ảnh trong `scratch/img-tutor` (game khác); hình, câu chữ, bàn là của CanDoKu.
+
+## RST-027 — Làm lại tutorial: bàn viết tay, dạy luật qua auto-mark, trải trên L01/L02
+
+Ngày 2026-10-13. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial). Thay bảng T1–T6 cũ.
+
+- **Bàn cố định:** L01/L02 dùng bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank và không qua `board_transform`. Script trỏ mục tiêu theo nghĩa (vùng, bước trace, tập loại S3); runtime đổi ra tọa độ.
+- **Chỉ báo trục:** làm sáng số hàng/cột ở viền bàn và icon luật **không** vi phạm RST-004 (không tô sáng bề mặt ô). Chỉ dùng trong tutorial L01/L02.
+- **Bỏ qua hướng dẫn:** có nút từ bước L1-1. Bấm thì ghi mọi mốc vào `tutorialSeenIds`, tắt miễn phạt và ẩn bong bóng.
+- **Miễn phạt:** chỉ các ô L01 được gọi rõ tọa độ (L1-1 và L1-3/L1-4), đến khi xong hoặc bỏ qua tutorial; thử sai ô đó không đặt `x_error`, không trừ tim, không tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
+- **Auto-mark:** GR-34 chưa có trong code. L1-2 vẽ X mờ minh họa riêng cho tutorial (overlay, không đổi state/save/undo); auto-mark thật là việc riêng.
+- **L02 4×4, không given:** 4×4 có 1 given không bao giờ cần S3; giữ 4×4 để đường cong 10 màn 4×4 đầu không bị đứt. Bài học given chuyển thành gợi ý C-given.
+- **Kỹ thuật:** bong bóng không chặn input bàn (chỉ nút nhận chạm); mọi chuỗi qua khóa `tr()`; guide do `CampaignRuntime` tạo từ progress được inject (composition root `app_shell`), không autoload; mỗi file ≤ 300 dòng.
+
 ## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
 
 Ngày 2026-10-10.

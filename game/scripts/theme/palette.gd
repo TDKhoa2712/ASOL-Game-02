@@ -178,11 +178,6 @@ const CANDY_LIGHT := Color("#F7CFA8")
 const ERROR_RED := Color("#E53935")
 const ERROR_BG := Color("#FFEBEE")
 
-# GIVEN (4): pre-placed candy from level data.
-const GIVEN_CANDY := Color("#7D4E2A")
-const GIVEN_HALO := Color("#FFF7D6")
-const GIVEN_BG_TINT := Color(1.0, 0.97, 0.88, 0.3)
-
 # Button colors.
 const BTN_PRIMARY := Color("#E8723C")
 const BTN_PRIMARY_HOVER := Color("#D4652F")
@@ -192,7 +187,5 @@ static func cell_state_overlay(kind: int) -> Color:
 	match kind:
 		3: # ERROR
 			return ERROR_BG
-		4: # GIVEN
-			return GIVEN_BG_TINT
 		_:
 			return Color.TRANSPARENT
