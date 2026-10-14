@@ -338,7 +338,7 @@ git commit -m "feat(streak): layered flickering flame with rising embers"
 Trong `test_streak_burst.gd`, ngay sau assert `"reduced motion shows final count"` thêm:
 
 ```gdscript
-	check(burst.get_meta("sparks", null) == null, "reduced motion: no sparks")
+	check(not burst.has_meta("sparks"), "reduced motion: no sparks")
 	check(burst.has_node("FlameFx"), "burst uses the layered flame")
 	LayoutTokens.motion_enabled = true
 	var big := StreakBurst.play(host, 5)

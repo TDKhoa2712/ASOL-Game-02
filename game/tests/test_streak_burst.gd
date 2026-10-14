@@ -16,7 +16,7 @@ func _initialize() -> void:
 	var burst := StreakBurst.play(host, 12)
 	check(burst.name == "StreakBurst" and burst.get_parent() == host, "burst added")
 	check((burst.get_meta("label") as Label).text == "12", "reduced motion shows final count")
-	check(burst.get_meta("sparks", null) == null, "reduced motion: no sparks")
+	check(not burst.has_meta("sparks"), "reduced motion: no sparks")
 	check(burst.has_node("FlameFx"), "burst uses the layered flame")
 	LayoutTokens.motion_enabled = true
 	var big := StreakBurst.play(host, 5)
