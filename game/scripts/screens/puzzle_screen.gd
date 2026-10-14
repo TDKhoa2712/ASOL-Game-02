@@ -5,7 +5,7 @@ signal level_done(won: bool)
 signal options_pressed()
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const Vibration = preload("res://scripts/feedback/vibration.gd")
-const PuzzleHintCoordinator = preload("res://scripts/screens/puzzle_hint_coordinator.gd")
+const PuzzleHintCoordinator = preload("res://scripts/screens/puzzle_hint_coordinator.gd"); const PuzzleAssistController = preload("res://scripts/screens/puzzle_assist_controller.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
@@ -28,24 +28,25 @@ var region_display: HBoxContainer; var rules_card: PanelContainer
 var undo_btn: Button; var restart_confirm: ConfirmationDialog; var hint_overlay: HintOverlay; var debug_bar: Variant = null
 var hint_highlight: Variant = null
 var hint_coordinator: PuzzleHintCoordinator = PuzzleHintCoordinator.new()
-var combo := ComboFeedback.new()
+var combo := ComboFeedback.new(); var assist_ctl := PuzzleAssistController.new(); var assists: Variant = null; var place_btn: Button
 func _ensure_nodes() -> void:
 	if board != null: return
 	var n: Dictionary = PuzzleLayout.build(self)
 	board = n["board"]; hearts_display = n["lives"]; region_display = n["regions"]
-	hint_btn = n["hint"]; restart_btn = n["restart"]; home_btn = n["back"]
+	hint_btn = n["hint"]; place_btn = n.get("place"); restart_btn = n["restart"]; home_btn = n["back"]
 	help_btn = n["help"]; settings_btn = n["settings"]; level_label = n["level"]
 	rules_card = n["rules"]; undo_btn = n["undo"]; restart_confirm = n["confirm"]
 	hint_overlay = n.get("hint_overlay"); hint_highlight = n.get("hint_highlight")
 	debug_bar = n.get("debug_bar")
 	hint_coordinator.setup(board, hint_overlay, hint_highlight, sfx)
+	assist_ctl.setup(self, hint_btn, place_btn)
 func _ready() -> void:
 	_ensure_nodes()
 	_connect_ui()
 
 func _connect_ui() -> void:
 	_ensure_nodes()
-	_btn_conn(hint_btn, _on_hint)
+	_btn_conn(hint_btn, _on_hint); _btn_conn(place_btn, _on_place)
 	_btn_conn(restart_btn, _on_restart)
 	_btn_conn(undo_btn, _on_undo)
 	_btn_conn(home_btn, _on_home)
@@ -76,7 +77,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 			session = runtime.start_level(runtime.current_level_label())
 			new_level = session != null
 	_ensure_nodes()
-	if board != null: combo.bind(board, sfx)
+	if board != null: combo.bind(board, sfx); assist_ctl.bind(assists, hint_coordinator)
 	if session != previous_session: combo.reset()
 	if board != null and session != null:
 		if config != null:
@@ -180,6 +181,9 @@ func _on_hint() -> void:
 	combo.reset()
 	hint_coordinator.request_hint(session)
 
+func _on_place() -> void:
+	combo.reset(); assist_ctl.on_place(session, hint_coordinator)
+
 func _on_restart() -> void:
 	if board != null:
 		board.settle_input()
@@ -267,8 +271,8 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	if board != null:
 		board.redraw()
 func _on_level_won(hold: bool = true) -> void:
-	if board != null:
-		board.play_win_bounce()
+	assist_ctl.on_level_won(session, _is_custom)
+	if board != null: board.play_win_bounce()
 	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
 func _on_level_failed(hold: bool = true) -> void:

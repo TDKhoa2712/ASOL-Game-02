@@ -6,7 +6,7 @@ const EndlessRuntimeClass = preload("res://scripts/endless/endless_runtime.gd")
 const CampaignSelector = preload("res://scripts/campaign/campaign_selector.gd")
 const BankReader = preload("res://scripts/content/bank_reader.gd")
 const PaceReader = preload("res://scripts/content/pace_reader.gd")
-const ProgressManager = preload("res://scripts/state/progress_manager.gd")
+const ProgressManager = preload("res://scripts/state/progress_manager.gd"); const AssistInventory = preload("res://scripts/state/assist_inventory.gd")
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
@@ -34,7 +34,7 @@ var config: ConfigStore
 var nav: NavController
 var sfx: SfxPlayer
 var bgm: BgmPlayer
-var profile_dir: String = "user://profile"
+var profile_dir: String = "user://profile"; var assists: Variant = null
 var selector_path: String = "res://data/campaigns/active_campaign.json"
 var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
@@ -53,6 +53,7 @@ func _ready() -> void:
 	var sel := CampaignSelector.load_config(selector_path, profile_dir)
 	if not sel.ok: _on_boot_error(str(sel.error)); return
 	if config == null: config = ConfigStore.new(profile_dir); config.option_changed.connect(_apply_setting)
+	if assists == null: assists = AssistInventory.new(profile_dir); assists.save_failed.connect(_on_save_failed)
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
@@ -112,7 +113,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
 			if screen.has_signal("level_done"): screen.connect("level_done", _on_level_done)
-			if screen.has_method("setup"): screen.call("setup", cur_rt, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
+			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", cur_rt, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
 		"win":
 			if screen.has_signal("next_pressed"): screen.connect("next_pressed", _on_next_level)
 			if screen.has_signal("replay_pressed"): screen.connect("replay_pressed", _on_replay_campaign)
