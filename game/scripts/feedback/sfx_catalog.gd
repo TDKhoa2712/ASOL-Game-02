@@ -130,7 +130,7 @@ const PRESETS := {
 	Effect.COMBO_7: {"type": "file", "path": COMBO_DIR + "7-delicious.ogg"},
 	Effect.COMBO_8: {"type": "file", "path": COMBO_DIR + "8-incredible.ogg"},
 	Effect.COMBO_9: {"type": "file", "path": COMBO_DIR + "9-fantastic.ogg"},
-	Effect.COMBO_10: {"type": "file", "path": COMBO_DIR + "10-devine.ogg"},
+	Effect.COMBO_10: {"type": "file", "path": COMBO_DIR + "10-divine.ogg"},
 	Effect.COMBO_11: {"type": "file", "path": COMBO_DIR + "11-unstoppable.ogg"},
 	Effect.COMBO_12: {"type": "file", "path": COMBO_DIR + "12-legendary.ogg"},
 }
