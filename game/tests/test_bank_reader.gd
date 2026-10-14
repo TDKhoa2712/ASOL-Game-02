@@ -14,6 +14,7 @@ func _init() -> void:
 	_test_validate_good_level()
 	_test_reject_bad_size()
 	_test_reject_bad_solution()
+	_test_givens_optional_and_rejected()
 	_test_level_validator_id()
 	_test_level_validator_bank_level()
 	_test_load_bank_4x4()
@@ -52,6 +53,13 @@ func _test_reject_bad_solution() -> void:
 	level["solution"] = [1, 1, 0, 2]  # duplicate column
 	var result := LevelValidator.check(level)
 	_assert(not result["ok"], "duplicate column rejected")
+
+func _test_givens_optional_and_rejected() -> void:
+	var level := _sample_bank_level()
+	level.erase("givens")
+	_assert(LevelValidator.check(level)["ok"], "level without givens passes")
+	level["givens"] = [{"r": 0, "c": 1}]
+	_assert(not LevelValidator.check(level)["ok"], "non-empty givens rejected")
 
 func _test_level_validator_id() -> void:
 	_assert(LevelValidator.check_id("L01"), "valid id L01")

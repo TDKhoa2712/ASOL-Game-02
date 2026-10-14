@@ -53,8 +53,8 @@ static func _check_schema(level: Dictionary) -> Array[String]:
 		errors.append("Missing or non-array 'regions'")
 	if not level.has("solution") or not (level["solution"] is Array):
 		errors.append("Missing or non-array 'solution'")
-	if not level.has("givens") or not (level["givens"] is Array):
-		errors.append("Missing or non-array 'givens'")
+	if level.has("givens") and not (level["givens"] is Array and level["givens"].is_empty()):
+		errors.append("'givens' is no longer supported; omit it or leave it empty")
 	return errors
 
 static func _check_geometry(level: Dictionary) -> Array[String]:
@@ -94,19 +94,6 @@ static func _check_geometry(level: Dictionary) -> Array[String]:
 		if col_seen.has(col):
 			errors.append("Duplicate solution column %d at row %d" % [col, r])
 		col_seen[col] = true
-
-	var givens: Array = level["givens"]
-	for i in range(givens.size()):
-		var g: Variant = givens[i]
-		if not (g is Dictionary):
-			errors.append("Given %d is not a Dictionary" % i)
-			continue
-		var r: int = int(g.get("r", g.get("row", -1)))
-		var c: int = int(g.get("c", g.get("col", -1)))
-		if r < 0 or r >= size or c < 0 or c >= size:
-			errors.append("Given %d cell (%d, %d) out of bounds" % [i, r, c])
-		elif r < solution.size() and int(solution[r]) != c:
-			errors.append("Given %d at (%d, %d) contradicts solution col %d" % [i, r, c, int(solution[r])])
 
 	return errors
 

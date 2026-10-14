@@ -95,20 +95,15 @@
           0,
           2
         ],
-        "givens": [
-          {
-            "r": 2,
-            "c": 0
-          }
-        ],
-        "steps": 3,
+        "givens": [],
+        "steps": 4,
         "profile": [
-          3,
+          4,
           0,
           0
         ],
         "rating": 8,
-        "pidHash": "78eae3b0",
+        "pidHash": "7948b573",
         "logicTrace": [
           {
             "rule": "S2",
@@ -122,6 +117,19 @@
               "c": 2
             },
             "textKey": "hint.single.region"
+          },
+          {
+            "rule": "S2",
+            "focus": {
+              "type": "row",
+              "id": 2
+            },
+            "conclusion": {
+              "type": "place",
+              "r": 2,
+              "c": 0
+            },
+            "textKey": "hint.single.row"
           },
           {
             "rule": "S2",
