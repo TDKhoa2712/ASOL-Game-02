@@ -256,7 +256,7 @@ func _apply_setting(key: String, value: Variant) -> void:
 		"haptic": Vibration.set_on(bool(value))
 		"reduced_motion": LayoutTokens.set_motion(not bool(value)); _rebuild_current_screen(true)
 		"high_contrast": _refresh_screen("set_high_contrast_and_redraw", bool(value))
-		"large_text": LayoutTokens.set_large_text(bool(value)); TextScaler.apply(self, bool(value))
+		"large_text": LayoutTokens.set_large_text(bool(value)); TextScaler.apply(self, LayoutTokens.large_text_enabled)
 		"colorblind": _refresh_puzzle_colorblind()
 		"language":
 			if value is String:

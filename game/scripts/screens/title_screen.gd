@@ -13,7 +13,6 @@ const HelpScreen = preload("res://scripts/screens/help_screen.gd")
 const TutorialScreen = preload("res://scripts/screens/tutorial_screen.gd")
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
-const ProgressBarWidget = preload("res://scripts/ui/progress_bar.gd")
 const TitleLogo = preload("res://scripts/ui/title_logo.gd")
 const TitleHeroMascot = preload("res://scripts/ui/title_hero_mascot.gd")
 const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
@@ -35,7 +34,6 @@ var debug_btn: Button
 var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
 var _hero_mascot: TitleHeroMascot = null
-var _progress_bar: ProgressBarWidget = null
 var _play_label: Label = null
 
 func _ensure_nodes() -> void:
@@ -117,9 +115,6 @@ func _ensure_nodes() -> void:
 	actions.add_theme_constant_override("separation", 18); actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	frame.add_child(actions)
 
-	_progress_bar = ProgressBarWidget.new(0, 30)
-	actions.add_child(_progress_bar)
-
 	campaign_box = VBoxContainer.new()
 	campaign_box.name = "CampaignBox"; campaign_box.alignment = BoxContainer.ALIGNMENT_CENTER
 	campaign_box.add_theme_constant_override("separation", 0); campaign_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -178,7 +173,6 @@ func _ready() -> void:
 		if btn != null and not btn.pressed.is_connected(pair[1]):
 			btn.pressed.connect(pair[1])
 	_update_ui()
-	if _progress_bar != null: _progress_bar.animate()
 	_animate_entrance()
 
 func setup(rt: Variant, endless_rt: Variant = null) -> void:
@@ -217,10 +211,6 @@ func _update_ui() -> void:
 		if campaign_subtitle != null and runtime.has_method("playlist_order"):
 			var order: Array = runtime.playlist_order()
 			if not order.is_empty(): campaign_subtitle.text = "1->%d" % order.size()
-		if _progress_bar != null:
-			var done_cnt: int = runtime.completed_count() if runtime.has_method("completed_count") else 0
-			var total_cnt: int = runtime.playlist_order().size() if runtime.has_method("playlist_order") else 30
-			_progress_bar.set_progress(done_cnt, total_cnt)
 	if endless_btn != null:
 		var endless_num: int = 1
 		if endless_runtime != null and endless_runtime.progress != null:
@@ -261,9 +251,6 @@ func _animate_entrance() -> void:
 			btw.tween_property(bubble, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		if _hero_mascot.mascot != null:
 			_hero_mascot.mascot.drop_in(0.4)
-
-	if _progress_bar != null:
-		TweenHelpers.rise_in(_progress_bar, 0.8)
 
 	if play_btn != null:
 		TweenHelpers.rise_in(play_btn, 1.0)

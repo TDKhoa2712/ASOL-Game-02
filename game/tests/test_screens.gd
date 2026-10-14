@@ -180,6 +180,7 @@ func _test_title_screen() -> void:
 	_assert(title.campaign_subtitle != null and title.campaign_subtitle.text == "1->30", "campaign subtitle shows 1->30")
 	_assert(title.endless_btn != null and title.endless_btn.text == "Level 1", "endless button shows default level 1")
 	_assert(title.find_child("LevelLabel", true, false) == null, "progress count is absent from home")
+	_assert(title.get("_progress_bar") == null, "progress bar removed from title screen")
 	_assert(title.title_label.get_parent().name == "HeroBlock", "home separates top branding")
 	mock_rt.pending = true
 	title._update_ui()
@@ -257,7 +258,8 @@ func _test_options_screen() -> void:
 	var options := packed.instantiate() as OptionsScreen
 	options.setup(config)
 
-	_assert(options.vbox != null and options.vbox.get_child_count() == 3 and options.vbox.get_child(0).get_child_count() == 6, "settings grid of six, one wide row, and language row generated")
+	_assert(options.vbox != null and options.vbox.get_child_count() == 4 and options.vbox.get_child(0).get_child_count() == 4, "settings 2x2 grid, two wide rows, and language row generated")
+	_assert(options.find_child("Tile_large_text", true, false) == null, "large text tile hidden while the feature flag is off")
 	options._on_toggle("music", false)
 	_assert(not bool(config.get_option("music")) and bool(config.get_option("audio")), "music toggles independently of sound")
 	_assert(options.find_child("OptionsCard", true, false) != null, "settings use a centered card")

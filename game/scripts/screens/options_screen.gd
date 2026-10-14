@@ -24,8 +24,11 @@ const LABEL_KEYS := {
 	"colorblind": "settings.colorblind",
 }
 
+# With the large-text toggle on: a 2x3 grid; without it: a 2x2 grid plus wide rows.
 const TILE_KEYS_GRID := ["music", "audio", "haptic", "reduced_motion", "large_text", "colorblind"]
+const TILE_KEYS_GRID_COMPACT := ["music", "audio", "haptic", "reduced_motion"]
 const WIDE_KEYS: Array[String] = ["high_contrast"]
+const WIDE_KEYS_COMPACT: Array[String] = ["colorblind", "high_contrast"]
 
 var _config: Variant = null
 var _built: bool = false
@@ -140,16 +143,18 @@ func _build_rows() -> void:
 	grid.add_theme_constant_override("v_separation", 16)
 	vbox.add_child(grid)
 
-	for key in TILE_KEYS_GRID:
+	var toggle_on := LayoutTokens.LARGE_TEXT_TOGGLE
+	for key in (TILE_KEYS_GRID if toggle_on else TILE_KEYS_GRID_COMPACT):
 		grid.add_child(_make_tile(key, true))
 
-	for key in WIDE_KEYS:
+	for key in (WIDE_KEYS if toggle_on else WIDE_KEYS_COMPACT):
 		vbox.add_child(_make_tile(key, false))
 	vbox.add_child(_make_language_tile())
 	_built = true
 
 func _make_tile(key: String, is_square: bool) -> PanelContainer:
 	var tile := PanelContainer.new()
+	tile.name = "Tile_" + key
 	tile.add_theme_stylebox_override("panel", OverlayStyle.tile())
 	if is_square:
 		tile.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -164,13 +169,13 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 		col.alignment = BoxContainer.ALIGNMENT_CENTER
 
 	var is_on: bool = bool(_config.get_option(key))
-	var icon_path: String = _get_setting_icon(key, is_on) if is_square else ""
+	var icon_path: String = _get_setting_icon(key, is_on)
 
 	var icon_tex: TextureRect = null
 	if icon_path != "":
 		icon_tex = TextureRect.new()
 		icon_tex.texture = load(icon_path) as Texture2D
-		icon_tex.custom_minimum_size = Vector2(64, 64)
+		icon_tex.custom_minimum_size = Vector2(64, 64) if is_square else Vector2(52, 52)
 		icon_tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon_tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		col.add_child(icon_tex)
@@ -189,6 +194,7 @@ func _make_tile(key: String, is_square: bool) -> PanelContainer:
 
 	var toggle := PillToggle.new()
 	toggle.set_on(is_on)
+	if not is_square: toggle.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	if icon_tex != null:
 		toggle.icon_target = icon_tex
 	toggle.toggled_value.connect(func(on: bool):
