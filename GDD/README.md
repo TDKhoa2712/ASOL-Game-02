@@ -1,53 +1,106 @@
 # CanDoKu — Game Design Document
 
-**Phiên bản 0.9.0 · 2026-10-09 · Thiết kế đích cho bản playtest trước phát hành.** CanDoKu là game suy luận tìm kẹo bị đánh rơi trong vườn. Bản này phản ánh kiến trúc và tính năng đã triển khai: 10 module rebuild, solver S1–S7, Hint Engine v2, Endless mode, DDA, 36.500+ level trong bank N=4–12, campaign playtest 30 level và chế độ Advanced (7×7–12×12). Tiến độ duy nhất ở [STATUS](../docs/STATUS.md).
-
-## Điểm bắt đầu
-
-Người chơi dùng hàng, cột và các luống vườn để suy ra vị trí kẹo. Một chạm ghi chú X, kéo đánh/xóa nhiều X, hai chạm xác nhận tìm kẹo. Đúng thì hé lộ viên kẹo; sai mất một tim. Mục tiêu là tìm đủ kẹo bằng suy luận, không tìm vật thể bằng thị lực hay thử từng ô.
-
-| Tài liệu | Nội dung |
+| Thuộc tính | Giá trị |
 | --- | --- |
-| [01 — Tầm nhìn](01-tam-nhin-va-pham-vi.md) | Bối cảnh, người chơi, vòng lặp và phạm vi |
-| [02 — Luật chuẩn](02-luat-choi-va-trang-thai.md) | GR, trạng thái, input, tim, điểm, Hint và save |
-| [03 — UX](03-luong-man-hinh-va-ux.md) | Màn hình, bố cục, tutorial và câu chữ |
-| [04 — Level](04-thiet-ke-level.md) | Campaign playtest 30 màn, đường cong học, trace và biên tập |
-| [05 — Kỹ thuật](05-kien-truc-va-du-lieu.md) | Module, schema/API hiện có, tương thích save và chuyển chủ đề |
-| [06 — Mỹ thuật/âm thanh](06-my-thuat-va-am-thanh.md) | Kẹo, vườn, asset, chuyển động và âm |
-| [07 — Nghiệm thu](07-kiem-thu-va-tieu-chi-nghiem-thu.md) | QA gameplay, chủ đề, nội dung và thiết bị |
-| [09 — Rà soát CanDoKu](09-ra-soat-thiet-ke.md) | Những điểm sửa, rủi ro còn lại và thứ tự triển khai |
-| [10 — Nguyên tắc suy luận](10-nghien-cuu-quy-tac-suy-luan.md) | Mô hình toán, S1–S7 (Elimination → ContraChain), chứng minh, phản ví dụ, trace và Hint; S1–S3 hiện hành, S4–S7 đã triển khai trong solver |
-| [11 — Sinh level và độ khó](11-sinh-level-va-danh-gia-do-kho.md) | Profile/seed, sinh nghiệm/vùng/givens, kiểm nghiệm, thang độ khó thử nghiệm, playtest và mẫu giao việc |
+| Dự án | CanDoKu |
+| Mã tài liệu | GDD-00 (Master index) |
+| Phiên bản bộ GDD | 1.0.0 |
+| Trạng thái | Approved · Living document |
+| Cập nhật | 2026-10-14 |
+| Phụ trách | Game Design |
+| Nhánh nền | `release/v1.0.1` |
 
-Kế hoạch thực hiện nằm ở [ROADMAP](../docs/ROADMAP.md). Các tài liệu 08/12 cũ đã được tinh gọn khỏi GDD theo yêu cầu; cách khôi phục từ Git ở [09](09-ra-soat-thiet-ke.md#6-tinh-gọn-và-truy-vết). File 11 mới chuyên về sinh level/độ khó. Generator pilot offline đã tạo 36.500+ level cho bank N=4–12; Endless mode đã triển khai với 4-tier selection và DDA (PreCandyDecider).
+> **Tóm tắt:** CanDoKu là game puzzle suy luận 2D, chơi offline, một người, cầm dọc trên di động. Người chơi tìm những viên kẹo ẩn sau các ô màu trên bàn N×N. Mỗi hàng, mỗi cột và mỗi vùng màu có đúng một kẹo, và hai kẹo không bao giờ chạm nhau, kể cả chạm góc. Bộ GDD này là nguồn chuẩn duy nhất cho thiết kế sản phẩm.
 
-## Quyết định hiện hành
+## 1. Cấu trúc bộ tài liệu
 
-| ID | Thiết kế |
+| Mã | Chương | Nội dung chính | Người đọc chính |
+| --- | --- | --- | --- |
+| GDD-01 | [Game Overview](01-game-overview.md) | High concept, pillars, đối tượng, phạm vi, tính năng | Toàn đội, đối tác |
+| GDD-02 | [Core Gameplay](02-core-gameplay.md) | Luật chuẩn GR, trạng thái ô, điều khiển, tim, thắng/thua | Design, Dev, QA |
+| GDD-03 | [Game Systems](03-game-systems.md) | Hint, Undo, Combo, Campaign, DDA, Endless, Assist | Design, Dev |
+| GDD-04 | [UX/UI](04-ux-ui.md) | Screen flow, HUD, FTUE/tutorial, settings, accessibility, localization | UX, Dev, QA |
+| GDD-05 | [Level Design](05-level-design.md) | Bank/pace/playlist, campaign, đường cong độ khó, cổng chất lượng level | Level design, Dev |
+| GDD-06 | [Art Direction](06-art-direction.md) | Phong cách hình ảnh, màu, typography, animation, danh sách asset | Art, Dev |
+| GDD-07 | [Audio](07-audio.md) | SFX, BGM, combo voice, haptics, đặc tả asset âm thanh | Audio, Dev |
+| GDD-08 | [Technical Design](08-technical-design.md) | Kiến trúc, schema dữ liệu, save, hiệu năng, build, toolchain | Dev |
+| GDD-09 | [QA & Acceptance](09-qa-acceptance.md) | Chiến lược kiểm thử, test case, cổng nghiệm thu, playtest | QA, PM |
+| GDD-10 | [Appendix A — Reasoning Techniques](10-reasoning-techniques.md) | Mô hình toán, kỹ thuật S1–S7 kèm chứng minh, mở rộng nghiên cứu | Level design, Dev |
+| GDD-11 | [Appendix B — Level Generation](11-level-generation.md) | Pipeline sinh level, mô hình độ khó, công cụ | Level design, Tools |
+| GDD-12 | [Glossary & References](12-glossary.md) | Thuật ngữ, quy ước ID, tài liệu tham khảo | Toàn đội |
+
+**Thứ tự đọc gợi ý:**
+
+- Người mới: 01 → 02 → 04 → 03.
+- Dev: thêm 08.
+- QA: thêm 09.
+- Level designer: 05 → 10 → 11.
+
+## 2. Phạm vi GDD và tài liệu liên quan
+
+GDD mô tả **thiết kế đích và hành vi hiện hành** của sản phẩm. Các nội dung sau nằm ngoài GDD:
+
+| Nội dung | Tài liệu |
 | --- | --- |
-| D-01 | Playtest trước phát hành có 30 level liên tiếp, N=4–6, không chọn màn/chương; schema giữ N=4–12 |
-| D-02 | Order 1–18 dùng S1/S2; từng level 19–24 cần S3; profile 25–30 phải duyệt riêng nhưng chỉ dùng S1–S3; không yêu cầu đoán |
-| D-03 | Năm trạng thái kỹ thuật `empty/x/x_error/candy/locked`; `locked` là auto-mark X do hệ thống; `given` là cờ hiển thị |
-| D-04 | Chạm/kéo X; chạm đôi thử kẹo; Undo một action X, grouped undo (candy + auto-marks = 1 nhóm); Restart có xác nhận |
-| D-05 | Hint Engine v2 với progressive reveal (unit → cell), spotlight scrim, bobbing pulse glow; budget hint từ pace data; ba tim, Retry miễn phí; điểm chỉ hiện ở Result |
-| D-06 | Godot 4.x/GDScript, runtime 2D; kẹo bọc giấy gốc và hiệu ứng 2D, không bắt buộc model/rig kẹo |
-| D-07 | Offline, Android/iOS, tiếng Việt; không tài khoản, quảng cáo, IAP hoặc analytics mạng trong bản đầu |
-| D-08 | X đỏ khóa trong lượt; ghi chú X không là chứng cứ của solver/Hint |
-| D-09 | Level 10/20 có motif vườn riêng; Endless mode đã triển khai (4-tier selection, DDA); generator offline đã có; kinh tế và bộ sưu tập để sau |
-| D-10 | Tên sản phẩm **CanDoKu**; chủ đề tìm kẹo đánh rơi, không có nuôi thú hoặc xây vườn |
+| Tiến độ, blocker, evidence | [STATUS](../docs/STATUS.md) — nguồn tiến độ duy nhất |
+| Quyết định sản phẩm (RST-xxx) | [DECISIONS](../docs/DECISIONS.md) |
+| Lộ trình và track còn lại | [ROADMAP](../docs/ROADMAP.md), [REMAINING_TASKS](../docs/REMAINING_TASKS.md) |
+| Version, nhánh, release | [VERSIONING](../docs/VERSIONING.md) |
+| Quy trình làm việc cho agent | [AGENTS](../AGENTS.md) |
+| Lịch sử dự án | [HISTORY](../docs/HISTORY.md) |
 
-GDD 02 giữ luật chuẩn; [DECISIONS](../docs/DECISIONS.md) ghi ngoại lệ/quyết định mới. Replay L01 của bản kiểm thử bốn level theo RST-003 không phải tính năng của campaign phát hành. Đổi tên hiển thị không đổi schema level v4, progress v2, session v3, ID level hoặc hash puzzle.
+Khi GDD và code không khớp nhau:
 
-## Tham khảo có giới hạn
+- Nếu code đúng, sửa GDD.
+- Nếu thiết kế đúng, mở task sửa code.
 
-Đã đối chiếu ngày 2026-09-28 với [Meowdoku của Oakever trên Google Play](https://play.google.com/store/apps/details?id=com.oakever.meowdoku) và [App Store](https://apps.apple.com/us/app/meowdoku/id6761760135). Mô tả nhà phát hành xác nhận nền suy luận hàng/cột/vùng, không chạm, chạm đôi và ba cơ hội sai. Đây là nguồn tham khảo cơ chế; chưa phải khảo sát trực tiếp toàn bộ phiên bản game. Không dùng các website trùng tên làm nguồn chính thức.
+Khi có quyết định mới làm thay đổi luật, ghi quyết định vào DECISIONS trước, rồi mới cập nhật chương liên quan và tăng phiên bản.
 
-CanDoKu tự thiết kế bối cảnh, level, layout, câu chữ, logo và asset. Tham khảo không đồng nghĩa đưa daily challenge, leaderboard, quảng cáo hoặc bộ sưu tập vào phạm vi. Chi tiết đối chiếu và các điểm cần kiểm ở [09](09-ra-soat-thiet-ke.md).
+## 3. Quy ước
 
-## Kiểm chứng
+### 3.1. Mã yêu cầu
 
-[data/levels.sample.json](data/levels.sample.json) là fixture kỹ thuật, không phải campaign playtest 30 level. [Vector tương tác](data/interactions.sample.json) dùng hoàn toàn token CanDoKu; test migration riêng kiểm save cũ. [Validator](tools/validate_levels.py) kiểm schema/nghiệm/trace; `--release` hiện vẫn là gate legacy 24 level và phải được thay bằng gate playtest 30 level có tên/phạm vi rõ trước nghiệm thu nội dung mới.
+| Tiền tố | Chương | Ý nghĩa |
+| --- | --- | --- |
+| `GR-` | GDD-02 | Game Rule — luật chơi chuẩn |
+| `UX-` | GDD-04 | Yêu cầu UX/UI |
+| `LV-` | GDD-05 | Cổng chất lượng level |
+| `ART-` | GDD-06 | Yêu cầu hình ảnh và animation |
+| `AUD-` | GDD-07 | Yêu cầu âm thanh và haptics |
+| `TECH-` | GDD-08 | Yêu cầu kỹ thuật |
+| `QA-` | GDD-09 | Test case nghiệm thu |
+| `S1–S7`, `X1–X4` | GDD-10 | Kỹ thuật suy luận |
 
-Tài liệu dành cho cả nội bộ và người ngoài gồm [tổng quan game](../docs/GAME_OVERVIEW.md), [technical stack](../docs/TECH_STACK.md) và [architecture](../docs/ARCHITECTURE.md). RST-011 trong [DECISIONS](../docs/DECISIONS.md) là quyết định mới nhất về mốc 30 level và phát hành chính thức sau playtest.
+Mỗi mã chỉ mang một nghĩa trong suốt vòng đời dự án. Yêu cầu bị bỏ được chuyển vào mục **"ID đã hủy"** của chương, và mã của nó không được dùng lại. Yêu cầu mới lấy số kế tiếp của tiền tố.
 
-Sửa tài liệu: kiểm diff, link và tính nhất quán. Triển khai code: theo runner và GUI/device của [AGENTS](../AGENTS.md). Không lấy GDD hoàn chỉnh hoặc test headless làm bằng chứng game đã hoàn tất.
+### 3.2. Trạng thái tính năng
+
+| Nhãn | Ý nghĩa |
+| --- | --- |
+| **Live** | Có trong build và đang bật |
+| **Off** | Có code nhưng đang tắt bằng feature flag |
+| **Planned** | Đã thiết kế hoặc đang làm trên nhánh, chưa vào nhánh nền |
+| **Backlog** | Ý tưởng đã ghi nhận, chưa lên kế hoạch |
+
+### 3.3. Tọa độ và ngôn ngữ
+
+- Dữ liệu và code dùng tọa độ `(r, c)` bắt đầu từ 0.
+- UI hiển thị hàng và cột bắt đầu từ 1.
+- "Vùng" (region) trong thuật toán là "vùng màu" (hoặc "vùng") khi nói với người chơi.
+- Token trong code giữ nguyên: `candy`, `try_candy`, `CellKind`.
+
+## 4. Dữ liệu và công cụ đi kèm
+
+| Đường dẫn | Vai trò |
+| --- | --- |
+| [data/levels.sample.json](data/levels.sample.json) | Fixture kỹ thuật cho validator; không phải nội dung phát hành |
+| [data/interactions.sample.json](data/interactions.sample.json) | Vector hành vi tương tác dùng cho test hợp đồng |
+| [tools/](tools/) | Validator, công cụ sinh và mở rộng bank, báo cáo pilot (xem [GDD-11](11-level-generation.md)) |
+| `tools/reports/generate_game_design_report.py` | Xuất bộ GDD ra `.docx`. Script đọc `README.md` và các file `GDD/NN-*.md`, nên chương mới phải giữ tiền tố hai chữ số. |
+
+## 5. Lịch sử thay đổi
+
+| Phiên bản | Ngày | Thay đổi |
+| --- | --- | --- |
+| 1.0.0 | 2026-10-14 | Viết lại toàn bộ theo chuẩn GDD studio, đối chiếu với code tại `release/v1.0.1`. Gộp `docs/GAME_OVERVIEW`, `ARCHITECTURE`, `TECH_STACK` và `ASSET_BACKLOG_VISUAL/AUDIO` vào GDD; bỏ bản rà soát 09 cũ. Đưa ra khỏi luật các mục không còn trong code: givens, auto-mark, Hint giới hạn theo budget và hiển thị điểm. |
+| 0.9.0 | 2026-10-09 | Bản GDD trước khi viết lại (xem Git history). |

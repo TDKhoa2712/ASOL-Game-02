@@ -2,9 +2,18 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-029 — Bỏ bối cảnh vườn, chủ đề là tìm kẹo ẩn sau ô màu
+
+Ngày 2026-10-14. Thay phần bối cảnh vườn của RST-008/D-10. Đặc tả: [GDD-01 §2.1](../GDD/01-game-overview.md).
+
+- **Concept:** không còn câu chuyện kẹo bị đánh rơi trong vườn; chủ đề đơn giản là tìm kẹo ẩn sau các ô màu. Kẹo hé lộ dưới ô màu là phần thưởng cho suy luận.
+- **Thuật ngữ:** người chơi gọi region là "vùng màu" (hoặc "vùng"); thuật ngữ kỹ thuật giữ region/vùng.
+- **Theo dõi riêng:** cập nhật `strings.csv`, Help/tutorial copy và backlog art (bỏ motif/backdrop vườn) là các task riêng, không nằm trong thay đổi GDD này.
+- **Thay thế:** các phần nói về vườn/luống/giỏ của RST-008 và D-10 không còn hiệu lực.
+
 ## RST-028 — Tutorial bắt buộc trên màn riêng trước khi chơi
 
-Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ cảnh. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial).
+Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ cảnh. Đặc tả: [GDD-04](../GDD/04-ux-ui.md).
 
 - **Bắt buộc:** lần đầu mở app, lớp tutorial phủ Home và chặn mọi thao tác cho tới khi xong; không có Bỏ qua. Xong thì ghi `ONBOARD` vào `tutorialSeenIds`, không hiện lại. Trợ giúp → Chơi lại hướng dẫn mở bản thực hành, không ghi progress.
 - **Bàn riêng 4×4** `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]` (`tutorial_flow.gd`), 7 bước: đặt kẹo ô duy nhất → luật luống (OK) → gạch hàng/cột → kẹo thứ 2 xuất hiện, vuốt gạch ô chạm → luống còn 1 ô → kẹo cuối (nút Gợi ý) → pháo giấy + Tiếp tục.
@@ -15,7 +24,7 @@ Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ c
 
 ## RST-027 — Làm lại tutorial: bàn viết tay, dạy luật qua auto-mark, trải trên L01/L02
 
-Ngày 2026-10-13. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial). Thay bảng T1–T6 cũ.
+Ngày 2026-10-13. Đặc tả: [GDD-04](../GDD/04-ux-ui.md). Thay bảng T1–T6 cũ.
 
 - **Bàn cố định:** L01/L02 dùng bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank và không qua `board_transform`. Script trỏ mục tiêu theo nghĩa (vùng, bước trace, tập loại S3); runtime đổi ra tọa độ.
 - **Chỉ báo trục:** làm sáng số hàng/cột ở viền bàn và icon luật **không** vi phạm RST-004 (không tô sáng bề mặt ô). Chỉ dùng trong tutorial L01/L02.
