@@ -8,6 +8,7 @@ func _init() -> void:
 	_test_consume_and_add()
 	_test_reward_thresholds()
 	_test_streak()
+	_test_total_and_view()
 	if failures.is_empty():
 		print("ASSIST_RULES_PASS")
 		quit(0)
@@ -77,3 +78,26 @@ func _test_streak() -> void:
 		var res2 := Rules.record_win(full, "2026-11-%02d" % day)
 		full = res2.data
 		if day == 7: check(res2.reward.place == 0 and full.place == 10, "reward clipped at cap")
+
+func _test_total_and_view() -> void:
+	var d := Rules.new_data()
+	check(d.totalStreak == 0 and d.bestStreak == 0, "start total/best 0")
+	var cur := d
+	for day in range(1, 10):
+		cur = Rules.record_win(cur, "2026-05-%02d" % day).data
+	check(cur.totalStreak == 9, "total keeps counting across the 7-day pack")
+	check(cur.bestStreak == 9, "best follows total")
+	check(cur.streakDays == 2, "cycle restarted after day 7")
+	var v := Rules.streak_view(cur, "2026-05-09")
+	check(v == {"count": 9, "best": 9, "kept_today": true, "at_risk": false, "cycle_done": 2}, "view kept today")
+	v = Rules.streak_view(cur, "2026-05-10")
+	check(v.count == 9 and not v.kept_today and v.at_risk, "view at risk next day")
+	v = Rules.streak_view(cur, "2026-05-12")
+	check(v.count == 0 and not v.at_risk and v.cycle_done == 0 and v.best == 9, "view broken streak")
+	check(Rules.streak_view(cur, "2026-04-01").count == 0, "future date view")
+	var restarted: Dictionary = Rules.record_win(cur, "2026-05-12").data
+	check(restarted.totalStreak == 1 and restarted.bestStreak == 9, "missed day restarts total, keeps best")
+	var s := Rules.sanitize({"totalStreak": 4, "bestStreak": 2})
+	check(s.totalStreak == 4 and s.bestStreak == 4, "sanitize best >= total")
+	check(Rules.sanitize({"totalStreak": -3}).totalStreak == 0, "sanitize negative total")
+	check(Rules.streak_view(Rules.new_data(), "2026-05-01").count == 0, "fresh view zero")

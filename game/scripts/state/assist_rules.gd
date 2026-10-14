@@ -10,7 +10,7 @@ const INVALID_GAP := -999999
 
 static func new_data() -> Dictionary:
 	return {"version": 1, "hint": START.hint, "place": START.place,
-		"streakDays": 0, "lastStreakDate": "", "usedHint": 0, "usedPlace": 0}
+		"streakDays": 0, "lastStreakDate": "", "usedHint": 0, "usedPlace": 0, "totalStreak": 0, "bestStreak": 0}
 
 static func sanitize(raw: Variant) -> Dictionary:
 	var out := new_data()
@@ -22,6 +22,8 @@ static func sanitize(raw: Variant) -> Dictionary:
 	out.streakDays = _int_in(raw.get("streakDays"), 0, CYCLE_DAYS - 1, 0)
 	var date := str(raw.get("lastStreakDate", ""))
 	out.lastStreakDate = date if _unix(date) != INVALID_GAP else ""
+	out.totalStreak = _int_in(raw.get("totalStreak"), 0, 100000, 0)
+	out.bestStreak = maxi(_int_in(raw.get("bestStreak"), 0, 100000, 0), out.totalStreak)
 	return out
 
 static func consume(data: Dictionary, kind: String) -> Dictionary:
@@ -52,10 +54,13 @@ static func record_win(data: Dictionary, today_date: String) -> Dictionary:
 	next.lastStreakDate = today_date
 	if gap == 1:
 		next.streakDays = int(next.streakDays) + 1
+		next.totalStreak = int(next.get("totalStreak", 0)) + 1
 	else:
 		next.streakDays = 1
+		next.totalStreak = 1
 		next.usedHint = 0
 		next.usedPlace = 0
+	next.bestStreak = maxi(int(next.get("bestStreak", 0)), int(next.totalStreak))
 	if int(next.streakDays) < CYCLE_DAYS:
 		return {"data": next, "reward": {}}
 	var reward := {}
@@ -67,6 +72,14 @@ static func record_win(data: Dictionary, today_date: String) -> Dictionary:
 	next.usedHint = 0
 	next.usedPlace = 0
 	return {"data": next, "reward": reward}
+
+static func streak_view(data: Dictionary, today_date: String) -> Dictionary:
+	var last: String = data.get("lastStreakDate", "")
+	var gap := day_gap(last, today_date) if last != "" else INVALID_GAP
+	var alive := gap == 0 or gap == 1
+	var count := int(data.get("totalStreak", 0)) if alive else 0
+	return {"count": count, "best": int(data.get("bestStreak", 0)), "kept_today": gap == 0,
+		"at_risk": count > 0 and gap != 0, "cycle_done": int(data.get("streakDays", 0)) if alive else 0}
 
 static func day_gap(from_date: String, to_date: String) -> int:
 	var a := _unix(from_date)

@@ -22,6 +22,16 @@ func _init() -> void:
 	check(recovered.count("hint") == 10, "recover from other slot")
 	recovered._store.remove_all()
 	check(Inventory.new(dir).count("hint") == 3, "missing files -> defaults")
+	var sdir := dir + "_streak"
+	var s_inv := Inventory.new(sdir)
+	var totals: Array = []
+	s_inv.streak_extended.connect(func(t): totals.append(t))
+	s_inv.on_level_won("2026-06-01")
+	s_inv.on_level_won("2026-06-01")
+	s_inv.on_level_won("2026-06-03")
+	check(totals == [1, 1], "restart from 1 emits; same day silent")
+	check(s_inv.streak_view("2026-06-03").kept_today, "inventory view")
+	s_inv._store.remove_all()
 	DirAccess.remove_absolute(dir)
 	if failures.is_empty():
 		print("ASSIST_INVENTORY_PASS")

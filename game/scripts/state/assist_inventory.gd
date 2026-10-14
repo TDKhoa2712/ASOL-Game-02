@@ -6,6 +6,7 @@ const AssistRules = preload("res://scripts/state/assist_rules.gd")
 
 signal changed(kind: String, count: int)
 signal save_failed(reason: String)
+signal streak_extended(total: int)
 
 var data: Dictionary = AssistRules.new_data()
 var _store: DualSlotStore
@@ -35,7 +36,11 @@ func on_level_won(today: String = "") -> Dictionary:
 	if res.data == data:
 		return {}
 	_commit(res.data, res.reward.keys())
+	streak_extended.emit(int(data.get("totalStreak", 0)))
 	return res.reward
+
+func streak_view(today: String = "") -> Dictionary:
+	return AssistRules.streak_view(data, today if today != "" else AssistRules.today())
 
 func _commit(next: Dictionary, kinds: Array) -> void:
 	data = next
