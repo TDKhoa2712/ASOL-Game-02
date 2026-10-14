@@ -19,6 +19,8 @@ func _init() -> void:
 	_test_all_7_locales_switch()
 	_test_csv_key_coverage_all_7_locales()
 	_test_parameter_format_accuracy()
+	_test_csv_rows_have_all_columns()
+	_test_no_garden_theme_copy()
 
 	DirAccess.remove_absolute(_tmp_dir.path_join("config.json"))
 	DirAccess.remove_absolute(_tmp_dir)
@@ -119,3 +121,24 @@ func _test_parameter_format_accuracy() -> void:
 class _MockRuntime extends RefCounted:
 	func current_level_label() -> String: return "L01"
 	func is_campaign_done() -> bool: return false
+
+# Every row must split into exactly one cell per header column (unquoted commas shift locales).
+func _test_csv_rows_have_all_columns() -> void:
+	var f := FileAccess.open("res://locale/strings.csv", FileAccess.READ)
+	var header := f.get_csv_line()
+	while not f.eof_reached():
+		var row := f.get_csv_line()
+		if row.size() <= 1: continue
+		if row.size() != header.size():
+			_fails.append("csv row '%s' has %d cells, expected %d" % [row[0], row.size(), header.size()])
+
+# RST-029: candies hide behind colored cells; no garden fiction in any locale.
+func _test_no_garden_theme_copy() -> void:
+	var banned := ["garden", "vườn", "庭", "kebun", "jardim", "jardín", "정원"]
+	var f := FileAccess.open("res://locale/strings.csv", FileAccess.READ)
+	while not f.eof_reached():
+		var row := f.get_csv_line()
+		for cell in row:
+			for word in banned:
+				if word in cell.to_lower():
+					_fails.append("csv row '%s' still uses garden copy '%s'" % [row[0], word])
