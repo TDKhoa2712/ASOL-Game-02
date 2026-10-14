@@ -2,6 +2,7 @@
 extends Button
 
 const StreakSheet = preload("res://scripts/screens/streak_sheet.gd")
+const FlameFx = preload("res://scripts/screens/flame_fx.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const ON_COLOR := StreakSheet.ON_COLOR
@@ -12,7 +13,7 @@ var inventory: Variant = null
 var sheet: StreakSheet = null
 var at_risk := false
 var count_label: Label
-var icon_rect: TextureRect
+var flame: Control
 var _pulse: Tween = null
 
 static func attach(screen: Control, safe: Control) -> Button:
@@ -45,13 +46,8 @@ func _init() -> void:
 	row.add_theme_constant_override("separation", 8)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	center.add_child(row)
-	icon_rect = TextureRect.new()
-	icon_rect.texture = load("res://assets/ui/home/icon_flame.svg") as Texture2D
-	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon_rect.custom_minimum_size = Vector2(48, 48)
-	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(icon_rect)
+	flame = FlameFx.new(52, 6)
+	row.add_child(flame)
 	count_label = Label.new()
 	count_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	count_label.add_theme_font_size_override("font_size", 36)
@@ -71,7 +67,7 @@ func refresh(today: String = "") -> void:
 	var v: Dictionary = inventory.streak_view(today)
 	var color: Color = ON_COLOR if v.kept_today else OFF_COLOR
 	count_label.text = str(v.count)
-	icon_rect.modulate = color
+	flame.set_lit(v.kept_today)
 	count_label.add_theme_color_override("font_color", color.darkened(0.25))
 	at_risk = v.at_risk
 	_set_pulse(at_risk)

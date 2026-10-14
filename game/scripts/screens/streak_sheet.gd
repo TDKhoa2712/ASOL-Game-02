@@ -2,13 +2,14 @@
 extends Control
 
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const FlameFx = preload("res://scripts/screens/flame_fx.gd")
 const FLAME := "res://assets/ui/home/icon_flame.svg"
 const GIFT := "res://assets/candy/candy_icon.png"
 const ON_COLOR := Color("#FF7A1A")
 const OFF_COLOR := Color("#B9B4AC")
 const INK := Color("#23365E")
 
-var flame: TextureRect
+var flame: Control
 var count_label: Label
 var days_label: Label
 var best_label: Label
@@ -42,7 +43,7 @@ func _init() -> void:
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 14)
 	card.add_child(col)
-	flame = _icon(FLAME, 132)
+	flame = FlameFx.new(140, 18)
 	col.add_child(_centered(flame))
 	count_label = _label(96, FontTokens.heading()); col.add_child(count_label)
 	days_label = _label(30, FontTokens.body_bold()); col.add_child(days_label)
@@ -66,7 +67,7 @@ func open(view: Dictionary) -> void:
 	var kept: bool = view.get("kept_today", false)
 	var count: int = int(view.get("count", 0))
 	var done: int = int(view.get("cycle_done", 0))
-	flame.modulate = ON_COLOR if kept else OFF_COLOR
+	flame.set_lit(kept)
 	count_label.text = str(count)
 	count_label.add_theme_color_override("font_color", ON_COLOR if kept else INK)
 	days_label.text = tr("streak.days")

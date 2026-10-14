@@ -22,7 +22,7 @@ func _init() -> void:
 	check(chip != null and chip.visible, "chip on home")
 	check(chip.get_parent() is CenterContainer, "chip centered horizontally")
 	check(chip.count_label.text == "1", "chip shows count")
-	check(chip.icon_rect.modulate == StreakChip.OFF_COLOR, "grey before today's win")
+	check(not chip.flame.lit, "grey before today's play")
 	check(chip.at_risk, "at risk flagged")
 	chip.pressed.emit()
 	var sheet: Control = chip.sheet
@@ -36,7 +36,7 @@ func _init() -> void:
 
 	inv.on_round_finished(today)
 	chip.refresh()
-	check(chip.count_label.text == "2" and chip.icon_rect.modulate == StreakChip.ON_COLOR, "orange after today's win")
+	check(chip.count_label.text == "2" and chip.flame.lit, "lit after today's play")
 	check(not chip.at_risk, "not at risk once kept")
 	chip.pressed.emit()
 	check(sheet.status_label.text == title.tr("streak.kept"), "kept status")

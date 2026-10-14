@@ -139,7 +139,8 @@ const FlameFx = preload("res://scripts/screens/flame_fx.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 var failures: Array[String] = []
 
-func _init() -> void:
+func _initialize() -> void:
+	await process_frame  # root joins the tree only after the first frame
 	LayoutTokens.motion_enabled = true
 	var fx := FlameFx.new(64, 6)
 	fx.set_lit(true)
