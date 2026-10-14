@@ -7,6 +7,7 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const AssistDock = preload("res://scripts/screens/assist_dock.gd")
 const HintHighlightLayer = preload("res://scripts/screens/hint_highlight_layer.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const HeartsDisplay = preload("res://scripts/screens/hearts_display.gd")
@@ -211,25 +212,10 @@ static func build(root: Control) -> Dictionary:
 	dock.add_child(undo)
 
 	var hint := BoardButtons.make_3d_btn("HintBtn", "res://assets/ui/board/icon_hint.svg", Palette.BOARD_HINT_BG, Palette.BOARD_HINT_EDGE, Palette.BOARD_HINT_ICON, Vector2(DOCK_BTN_SIZE, DOCK_BTN_SIZE), 30, 8, Vector2(58, 58))
-	var badge := PanelContainer.new()
-	badge.name = "Badge"
-	badge.add_theme_stylebox_override("panel", BoardButtons.card_sb(Palette.BOARD_BLUE, Palette.BOARD_BLUE_EDGE, 999, 2, 8, 2))
-	badge.position = Vector2(DOCK_BTN_SIZE - 32, -8)
-	badge.custom_minimum_size = Vector2(34, 34)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.visible = false  # Hints are unlimited; show only once a real hint quota exists.
-	var bl := Label.new()
-	bl.name = "HintCount"
-	bl.text = "3"
-	bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	bl.add_theme_font_size_override("font_size", 18)
-	bl.add_theme_color_override("font_color", Color.WHITE)
-	var hbf := FontTokens.body_bold()
-	if hbf != null: bl.add_theme_font_override("font", hbf)
-	badge.add_child(bl)
-	hint.add_child(badge)
+	AssistDock.attach_badge(hint, "HintCount")
 	dock.add_child(hint)
+	var place := AssistDock.make_place_button()
+	dock.add_child(place)
 
 	var ad_slot := Control.new()
 	ad_slot.name = "AdSlot"
@@ -254,7 +240,7 @@ static func build(root: Control) -> Dictionary:
 	root.add_child(confirm)
 
 	return {"board": board, "back": back, "help": help, "restart": restart,
-		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
+		"settings": settings, "hint": hint, "place": place, "undo": undo, "confirm": confirm, "level": level_value,
 		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay,
 		"hint_highlight": hint_highlight, "debug_bar": debug_bar, "ad_slot": ad_slot, "dock_area": dock_area}
 

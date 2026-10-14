@@ -12,8 +12,8 @@ func _init() -> void:
 	_test_apply_label_varies()
 	_test_formatted_text_with_params()
 	_test_buttons_match_board_style()
-	_test_hint_badge_hidden_without_limit()
 	_test_close_button_stands_out_from_card()
+	_test_hint_badge_hidden_until_bound()
 	if _fails.is_empty():
 		print("HINT_OVERLAY_PASS")
 		quit(0)
@@ -101,9 +101,9 @@ func _test_close_button_stands_out_from_card() -> void:
 	_assert(absf(card_bg.get_luminance() - close_bg.get_luminance()) > 0.3, "close button contrasts with the card")
 	overlay.free()
 
-func _test_hint_badge_hidden_without_limit() -> void:
+func _test_hint_badge_hidden_until_bound() -> void:
 	var root := Control.new()
 	var n: Dictionary = PuzzleLayout.build(root)
 	var badge: Node = n["hint"].get_node_or_null("Badge")
-	_assert(badge == null or not badge.visible, "hint badge hidden while hints are unlimited")
+	_assert(badge == null or not badge.visible, "hint badge hidden until a stock is bound")
 	root.free()
