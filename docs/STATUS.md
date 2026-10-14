@@ -23,6 +23,12 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
+## Kho trợ giúp và streak (2026-10-14, `feat/v1.0.1/assist-inventory`)
+
+- Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-029).
+- Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
+- Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).
+
 ## Bỏ given toàn hệ thống (2026-10-14, `feat/v1.0.1/tutorial`)
 
 - Theo [plan](superpowers/plans/2026-10-14-remove-givens-system-wide.md): `CellKind` còn 4 trạng thái (bỏ GIVEN), xóa `pre_candy_decider` (DDA prefill), solver/session không còn đặt kẹo sẵn, bỏ halo và token GIVEN, bỏ gợi ý C-given (`tutorial.tip_given`) và target `excluded_by_given`.

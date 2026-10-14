@@ -138,7 +138,7 @@ func _test_streak() -> void:
 	check(same.data == r.data and same.reward.is_empty(), "same day twice no change")
 	var back := Rules.record_win(r.data, "2026-09-20")
 	check(back.data == r.data, "clock rollback ignored")
-	var used := Rules.consume(r.data, "hint").data
+	var used: Dictionary = Rules.consume(r.data, "hint").data
 	var missed := Rules.record_win(used, "2026-10-03")
 	check(missed.data.streakDays == 1 and missed.data.usedHint == 0, "missed day resets streak and counters")
 	# 7 consecutive days: hint used 5 times, place 0 times
@@ -577,18 +577,18 @@ func _init() -> void:
 	coord.request_hint(session)
 	check(inv.count("hint") == 2, "showing a hint costs one")
 	check(session.hints_used == 1, "session still counts hint")
-	coord.dismiss_hint(false)
+	coord.force_release()
 	# Wrong X on a solution cell -> WRONG_MARK hint is free
 	session.mark_x(0, 1)
 	coord.request_hint(session)
 	check(inv.count("hint") == 2, "wrong-mark hint is free")
-	coord.dismiss_hint(false)
+	coord.force_release()
 	session.mark_x(0, 1)
 	# Pressing hint again while showing only dismisses (no extra cost)
 	coord.request_hint(session)
 	coord.request_hint(session)
 	check(inv.count("hint") == 1, "toggle-close does not charge")
-	coord.dismiss_hint(false)
+	coord.force_release()
 	inv.try_consume("hint")
 	coord.request_hint(session)
 	check(empties == ["hint"] and inv.count("hint") == 0, "empty stock emits stock_empty")
@@ -714,7 +714,7 @@ extends SceneTree
 
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const AssistDock = preload("res://scripts/screens/assist_dock.gd")
-const Popup = preload("res://scripts/screens/assist_empty_popup.gd")
+const EmptyPopup = preload("res://scripts/screens/assist_empty_popup.gd")
 var failures: Array[String] = []
 
 func _init() -> void:
@@ -730,7 +730,7 @@ func _init() -> void:
 	check(hb.visible and n["hint"].get_node("Badge/HintCount").text == "0", "badge shows zero")
 	AssistDock.set_badge(place, 4)
 	check(place.get_node("Badge/PlaceCount").text == "4", "place badge")
-	var popup := Popup.new()
+	var popup := EmptyPopup.new()
 	root.add_child(popup)
 	check(not popup.visible, "popup starts hidden")
 	popup.open("place")

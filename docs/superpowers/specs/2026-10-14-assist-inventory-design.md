@@ -64,7 +64,7 @@ Cộng vào kho, cắt ở 10. Thông báo bằng toast trên bàn chơi trong l
 | `assist_empty_popup.gd` | `game/scripts/screens/` | Popup "Hết lượt": tiêu đề, mô tả cách nhận (chơi đủ 7 ngày), nút quảng cáo đỏ ▶ (badge góc ẩn), nút Đóng. Bấm nút đỏ → toast "Sắp có". |
 | `puzzle_hint_coordinator.gd` | sửa | Kiểm/trừ kho trước khi hiện gợi ý; kho 0 → phát signal mở popup. |
 | Dock màn chơi | sửa | Thêm nút Đặt kẹo cạnh Hint; bật badge số lượt cả hai nút, cập nhật theo signal `changed`. |
-| `app_shell.gd` | sửa | Tạo `AssistInventory`, inject vào màn chơi; gọi `on_level_won(today)` khi thắng, chuyển gói cho màn thắng hiển thị toast. |
+| `app_shell.gd` | sửa | Tạo `AssistInventory`, inject vào màn chơi. Màn chơi (qua `puzzle_assist_controller.gd`) gọi `on_level_won()` khi thắng và hiện toast gói thưởng; level custom/debug không gắn kho. |
 
 Không autoload, không global bus; dữ liệu đi qua injection và signal. Mỗi file ≤ 300 dòng.
 

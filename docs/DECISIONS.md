@@ -2,6 +2,16 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-030 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày
+
+Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc tả: [assist inventory](superpowers/specs/2026-10-14-assist-inventory-design.md).
+
+- **Kho:** Hint và Đặt kẹo lưu bền, khởi đầu 3/1, tối đa 10 mỗi loại.
+- **Hint:** trừ 1 khi gợi ý hiện ra; `WRONG_MARK` miễn phí; hết lượt → popup.
+- **Đặt kẹo:** đặt ngay một kẹo đúng (ưu tiên ô suy luận duy nhất, sau đó vùng ít ô trống nhất); viên cuối thắng level; reset combo.
+- **Streak:** ngày tính khi thắng ≥1 level (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
+- **Quảng cáo:** chỉ có nút đỏ ▶ giữ chỗ trong popup, chưa cộng lượt; badge góc ẩn tới khi có tính năng.
+
 ## RST-029 — Bỏ bối cảnh vườn, chủ đề là tìm kẹo ẩn sau ô màu
 
 Ngày 2026-10-14. Thay phần bối cảnh vườn của RST-008/D-10. Đặc tả: [GDD-01 §2.1](../GDD/01-game-overview.md).
@@ -51,7 +61,7 @@ Ngày 2026-10-10.
 - **Phân phối màu vùng — tô màu đồ thị tham lam (greedy graph coloring) theo CIELAB:** vùng là đỉnh, biên chung là cạnh; xếp vùng theo bậc giảm dần; màu chỉ hợp lệ khi ΔE76 tới mọi vùng kề đã tô ≥ `MIN_ADJACENT_CONTRAST` = 20; trong các màu hợp lệ chọn màu tối đa hóa ΔE nhỏ nhất tới láng giềng (ưu tiên màu chưa dùng). Bàn ≤ 9 vùng chỉ dùng `PRIMARY_COLOR_COUNT` = 9 màu chủ đạo của mockup; 3 màu dự phòng chỉ dùng khi thiếu. Kiểm bằng `test_region_contrast.gd` trên mẫu mọi bank 4×4–12×12.
 - **Ô màu trơn:** mặc định ô chỉ có màu, không họa tiết. Chế độ hỗ trợ mù màu giữ nguyên màu và chỉ phủ thêm họa tiết lên nửa số vùng tối hơn (vùng kề không trùng họa tiết).
 - **Thẻ luật:** icon 96, chữ 21 (`RULE_ICON_SIZE`, `RULE_FONT_SIZE` trong `puzzle_layout.gd`).
-- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.
+- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-029).
 - **Thanh Cheats** chỉ có trong bản debug (`OS.is_debug_build()`).
 
 ## RST-025 — Tách cài đặt Nhạc nền khỏi Âm thanh
