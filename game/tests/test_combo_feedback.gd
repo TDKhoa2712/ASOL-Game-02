@@ -21,6 +21,7 @@ func _run() -> void:
 	_test_hint_candy_resets()
 	_test_reset_restarts_at_one()
 	_test_popup_clamped_to_board()
+	_test_voice_files_named_by_word()
 	if _fails.is_empty():
 		print("COMBO_FEEDBACK_PASS"); quit(0)
 	else:
@@ -74,3 +75,13 @@ func _test_popup_clamped_to_board() -> void:
 
 func _assert(cond: bool, msg: String) -> void:
 	if not cond: _fails.append("FAIL: " + msg)
+
+# Each combo voice file is "<level>-<word>.ogg", spelled like the word art, and exists.
+func _test_voice_files_named_by_word() -> void:
+	var words := ["nice", "great", "sweet", "awesome", "excellent", "amazing",
+		"delicious", "incredible", "fantastic", "divine", "unstoppable", "legendary"]
+	for i in range(words.size()):
+		var path: String = SfxCatalog.PRESETS[SfxCatalog.Effect.COMBO_1 + i]["path"]
+		var expected: String = "%d-%s.ogg" % [i + 1, words[i]]
+		_assert(path.get_file() == expected, "combo %d voice is %s, expected %s" % [i + 1, path.get_file(), expected])
+		_assert(ResourceLoader.exists(path), "combo voice missing: %s" % path)
