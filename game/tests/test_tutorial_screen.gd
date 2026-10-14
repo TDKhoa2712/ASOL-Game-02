@@ -9,11 +9,13 @@ var _fails: Array[String] = []
 
 func _init() -> void:
 	PuzzleScreenScript.hold_results = false
+	TutorialScreen.step_pause = 0.0
 	LayoutTokens.motion_enabled = false
 	TranslationServer.set_locale("vi")
 	await process_frame
 	await _test_mandatory_onboarding()
 	await _test_help_replay()
+	await _test_pacing_and_free_play()
 	if _fails.is_empty():
 		print("TUTORIAL_SCREEN_PASS")
 		quit(0)
@@ -83,6 +85,30 @@ func _test_help_replay() -> void:
 	_assert(tut != null and tut.practice, "help replays the onboarding as practice")
 	tut._finish()
 	_assert(not shell.runtime.progress.current.tutorialSeenIds.has(TutorialScreen.DONE_ID), "practice writes no progress")
+	shell.queue_free()
+	await process_frame
+
+func _test_pacing_and_free_play() -> void:
+	var shell := await _shell("pace")
+	var tut: Control = shell.screen_host.get_child(0).get_node("TutorialScreen")
+	var b: Control = tut.board
+	TutorialScreen.step_pause = 0.3
+	b.cell_double_tapped.emit(0, 1)
+	_assert(tut.flow.step().id == "regions" and tut._busy and not tut.action_button.visible, "finished step is held before the next appears")
+	b.cell_tapped.emit(0, 0)
+	_assert(tut.flow.session.cell_at(0, 0) == 0, "input is locked during the pause")
+	await create_timer(0.8).timeout
+	_assert(not tut._busy and tut.action_button.visible and tut.bubble_text.text == TutorialScreen.emphasize(tr("tutorial.s_regions")), "next step fades in after the pause")
+	TutorialScreen.step_pause = 0.0
+	tut.action_button.pressed.emit()
+	for cell in tut.flow.step().targets.duplicate(): b.cell_tapped.emit(cell[0], cell[1])
+	b.cell_swiped.emit([[2, 2], [2, 3], [3, 3]])
+	b.cell_double_tapped.emit(1, 3)
+	_assert(tut.flow.step().id == "last", "reached free play")
+	b.cell_tapped.emit(1, 0)
+	_assert(tut.flow.session.cell_at(1, 0) == 1, "free play: any empty cell can be crossed")
+	b.cell_double_tapped.emit(3, 0)
+	_assert(tut.bubble_text.text == TutorialScreen.emphasize(tr("tutorial.s_miss")) and tut.flow.session.mistake_count == 0, "free play: wrong candy gets a gentle note, no penalty")
 	shell.queue_free()
 	await process_frame
 

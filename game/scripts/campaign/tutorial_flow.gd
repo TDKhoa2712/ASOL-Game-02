@@ -1,6 +1,6 @@
 # Mandatory onboarding puzzle (RST-028): one rule per step on a fixed 4x4
-# board. Only the lit target cells accept input, so the player cannot fail or
-# lose hearts; anything else is ignored and the screen nudges them back.
+# board. Guided steps accept input only on their lit targets; the last step is
+# free play (X anywhere, wrong candies refused softly). Nothing costs hearts.
 extends RefCounted
 
 const PlaySession = preload("res://scripts/input/play_session.gd")
@@ -9,6 +9,8 @@ const TutorialTargets = preload("res://scripts/campaign/tutorial_targets.gd")
 
 signal changed()
 signal finished()
+# Free play: a candy tried on a wrong cell; nothing changes on the board.
+signal missed(row: int, col: int)
 
 const LEVEL := {
 	"id": "TUT", "size": 4,
@@ -41,7 +43,7 @@ func _init() -> void:
 		{"id": "rowcol", "text": "tutorial.s_rowcol", "lit": rowcol + [[0, 1]], "targets": rowcol, "gesture": "tap"},
 		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe"},
 		{"id": "lone", "text": "tutorial.s_lone", "lit": lone, "targets": [[1, 3]], "gesture": "double"},
-		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0]], "hint": true},
+		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0]], "gesture": "double", "hint": true, "free": true},
 		{"id": "done", "text": "tutorial.s_done", "lit": all, "button": "tutorial.continue", "confetti": true},
 	]
 
@@ -57,12 +59,21 @@ func step() -> Dictionary:
 	for key in ["button", "gesture"]:
 		if not s.has(key): s[key] = ""
 	s["hint"] = bool(s.get("hint", false))
+	s["free"] = bool(s.get("free", false))
 	s["confetti"] = bool(s.get("confetti", false))
 	return s
 
 func tap(r: int, c: int) -> bool:
 	var s := step()
-	if s.is_empty() or s.gesture not in ["tap", "swipe"] or not s.targets.has([r, c]):
+	if s.is_empty():
+		return false
+	if s.free:
+		if not CellModel.is_available(session.cell_at(r, c)):
+			return false
+		session.mark_x(r, c)
+		changed.emit()
+		return true
+	if s.gesture not in ["tap", "swipe"] or not s.targets.has([r, c]):
 		return false
 	session.mark_x(r, c)
 	_after_input()
@@ -70,7 +81,11 @@ func tap(r: int, c: int) -> bool:
 
 func double_tap(r: int, c: int) -> bool:
 	var s := step()
-	if s.is_empty() or s.gesture != "double" and not s.hint or not s.targets.has([r, c]):
+	if s.is_empty() or s.gesture != "double":
+		return false
+	if not s.targets.has([r, c]):
+		if s.free and CellModel.is_available(session.cell_at(r, c)):
+			missed.emit(r, c)
 		return false
 	session.try_candy(r, c)
 	_after_input()
@@ -78,7 +93,17 @@ func double_tap(r: int, c: int) -> bool:
 
 func stroke(cells: Array) -> bool:
 	var s := step()
-	if s.is_empty() or s.gesture not in ["tap", "swipe"]:
+	if s.is_empty():
+		return false
+	if s.free:
+		var first: Array = cells[0] if not cells.is_empty() and cells[0] is Array else []
+		if first.size() < 2 or not CellModel.is_available(session.cell_at(int(first[0]), int(first[1]))):
+			return false
+		# Like the real board: the first cell decides between marking and clearing.
+		session.mark_stroke(cells, session.cell_at(int(first[0]), int(first[1])) == CellModel.CellKind.BLANK)
+		changed.emit()
+		return true
+	if s.gesture not in ["tap", "swipe"]:
 		return false
 	var hits: Array = []
 	for cell in cells:

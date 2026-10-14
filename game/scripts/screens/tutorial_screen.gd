@@ -33,6 +33,12 @@ var action_button: Button
 var hint_button: Button
 var _hand_tween: Tween = null
 var _hint_shown: bool = false
+var _shown_id: String = ""
+var _busy: bool = false
+# Seconds the finished step stays on screen before the next one fades in.
+static var step_pause := 1.1
+const FADE_SEC := 0.25
+const MISS_SEC := 2.0
 
 # Adds the overlay to host unless the player already finished it.
 static func attach(host: Control, runtime: Variant, practice_run: bool = false, sfx_player: Variant = null) -> Control:
@@ -49,12 +55,13 @@ func _ready() -> void:
 	name = "TutorialScreen"
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_build()
-	flow.changed.connect(_refresh)
+	flow.changed.connect(_on_flow_changed)
+	flow.missed.connect(_on_missed)
 	flow.finished.connect(_finish)
 	board.configure(flow.session)
-	board.cell_double_tapped.connect(func(r: int, c: int) -> void: _input_result(flow.double_tap(r, c), r, c, true))
-	board.cell_tapped.connect(func(r: int, c: int) -> void: _input_result(flow.tap(r, c), r, c, false))
-	board.cell_swiped.connect(func(cells: Array) -> void: _input_result(flow.stroke(cells), -1, -1, false))
+	board.cell_double_tapped.connect(func(r: int, c: int) -> void: if not _busy: _input_result(flow.double_tap(r, c), r, c, true))
+	board.cell_tapped.connect(func(r: int, c: int) -> void: if not _busy: _input_result(flow.tap(r, c), r, c, false))
+	board.cell_swiped.connect(func(cells: Array) -> void: if not _busy: _input_result(flow.stroke(cells), -1, -1, false))
 	_refresh.call_deferred()
 
 func _build() -> void:
@@ -101,10 +108,31 @@ static func emphasize(text: String) -> String:
 		out += ("[color=%s]%s[/color]" % [EMPHASIS, parts[i]]) if i % 2 == 1 else parts[i]
 	return "[center]" + out + "[/center]"
 
+# Same step: update targets at once. New step: hold the result, then fade over.
+func _on_flow_changed() -> void:
+	var s := flow.step()
+	if s.is_empty() or s.id == _shown_id or _shown_id.is_empty() or step_pause <= 0.0 or not is_inside_tree():
+		_refresh()
+		return
+	_busy = true
+	hand.visible = false
+	if _hand_tween != null: _hand_tween.kill()
+	overlay.show_spotlight(overlay._lit, [])
+	await get_tree().create_timer(step_pause).timeout
+	if not is_inside_tree(): return
+	var fade := create_tween()
+	fade.tween_property(bubble_text, "modulate:a", 0.0, FADE_SEC)
+	await fade.finished
+	if not is_inside_tree(): return
+	_refresh()
+	create_tween().tween_property(bubble_text, "modulate:a", 1.0, FADE_SEC)
+	_busy = false
+
 func _refresh() -> void:
 	var s := flow.step()
 	if s.is_empty():
 		return
+	_shown_id = s.id
 	bubble_text.text = emphasize(tr(s.text))
 	var partial: bool = s.lit.size() < 16
 	_tween_bg(DIM_BG if partial else LIT_BG)
@@ -155,9 +183,17 @@ func _input_result(ok: bool, r: int, c: int, placed: bool) -> void:
 	if ok:
 		if placed: board.play_candy_pop(r, c)
 		if sfx != null: sfx.play(SfxCatalog.Effect.CANDY_YES if placed else SfxCatalog.Effect.MARK)
-	else:
-		board.play_error_shake()
+	elif not flow.step().get("free", false):
+		board.play_error_shake() # guided steps: only the lit cells take input
 	board.redraw()
+
+# Free play: a wrong candy is just refused with a gentle note, then the step text returns.
+func _on_missed(_r: int, _c: int) -> void:
+	bubble_text.text = emphasize(tr("tutorial.s_miss"))
+	var id := _shown_id
+	await get_tree().create_timer(MISS_SEC).timeout
+	if is_inside_tree() and id == _shown_id and not _busy:
+		bubble_text.text = emphasize(tr(flow.step().get("text", "")))
 
 func _on_action() -> void:
 	flow.press_button()

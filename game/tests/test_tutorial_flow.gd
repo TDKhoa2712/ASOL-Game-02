@@ -11,6 +11,7 @@ func _init() -> void:
 	_test_full_walkthrough()
 	_test_wrong_inputs_are_ignored()
 	_test_swipe_marks_only_targets()
+	_test_last_step_is_free_play()
 	if _fails.is_empty():
 		print("TUTORIAL_FLOW_PASS")
 		quit(0)
@@ -72,6 +73,25 @@ func _test_swipe_marks_only_targets() -> void:
 	flow.press_button()
 	_assert(flow.stroke([[0, 0], [1, 0], [2, 0]]), "swipe touching a target counts")
 	_assert(flow.session.cell_at(0, 0) == CellModel.CellKind.MARK and flow.session.cell_at(1, 0) == CellModel.CellKind.BLANK, "swipe marks only target cells")
+
+func _reach_last(flow: TutorialFlow) -> void:
+	flow.double_tap(0, 1); flow.press_button()
+	for cell in flow.step().targets.duplicate(): flow.tap(cell[0], cell[1])
+	flow.stroke([[2, 2], [2, 3], [3, 3]]); flow.double_tap(1, 3)
+
+func _test_last_step_is_free_play() -> void:
+	var flow := TutorialFlow.new()
+	_reach_last(flow)
+	_assert(flow.step().id == "last" and flow.step().free, "last step is free play")
+	_assert(flow.tap(1, 0) and flow.session.cell_at(1, 0) == CellModel.CellKind.MARK, "any empty cell can be crossed")
+	_assert(flow.tap(1, 0) and flow.session.cell_at(1, 0) == CellModel.CellKind.BLANK, "and un-crossed")
+	_assert(flow.stroke([[1, 0], [1, 1]]), "swipe works anywhere")
+	var missed := []
+	flow.missed.connect(func(r: int, c: int) -> void: missed.append([r, c]))
+	_assert(not flow.double_tap(3, 0), "a wrong candy is refused")
+	_assert(missed == [[3, 0]] and flow.session.mistake_count == 0 and flow.session.cell_at(3, 0) == CellModel.CellKind.BLANK, "refused softly: no X, no mistake")
+	_assert(not flow.tap(0, 1), "candies stay put")
+	_assert(flow.double_tap(2, 0) and flow.step().id == "done", "right cell finishes the puzzle")
 
 func _assert(condition: bool, label: String) -> void:
 	if not condition: _fails.append("FAIL: " + label)
