@@ -44,12 +44,6 @@ func _init(level_data: Dictionary, initial_hearts: int = 3) -> void:
 			row_arr.append(CellModel.CellKind.BLANK)
 		board.append(row_arr)
 
-	for g in level.get("givens", []):
-		var gr: int = int(g.get("r", -1))
-		var gc: int = int(g.get("c", -1))
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			board[gr][gc] = CellModel.CellKind.GIVEN
-
 
 func mark_x(row: int, col: int) -> void:
 	if phase != Phase.ACTIVE:
@@ -166,8 +160,8 @@ func cell_at(row: int, col: int) -> int:
 		return CellModel.CellKind.BLANK
 	return board[row][col]
 
-func is_preset(row: int, col: int) -> bool:
-	return cell_at(row, col) == CellModel.CellKind.GIVEN
+func is_preset(_row: int, _col: int) -> bool:
+	return false
 
 func remaining_candies() -> int:
 	var size: int = board.size()
@@ -176,7 +170,7 @@ func remaining_candies() -> int:
 	for r in range(size):
 		if r < solution.size():
 			var c: int = int(solution[r])
-			if board[r][c] != CellModel.CellKind.CANDY and board[r][c] != CellModel.CellKind.GIVEN:
+			if board[r][c] != CellModel.CellKind.CANDY:
 				count += 1
 	return count
 
@@ -192,7 +186,7 @@ func to_save_data() -> Dictionary:
 					flat_cells.append("candy")
 				CellModel.CellKind.ERROR:
 					flat_cells.append("error")
-				CellModel.CellKind.GIVEN, CellModel.CellKind.BLANK, _:
+				CellModel.CellKind.BLANK, _:
 					flat_cells.append("empty")
 
 	var status_str: String = "playing"
@@ -245,11 +239,5 @@ static func from_save_data(data: Dictionary, level_data: Dictionary) -> RefCount
 						session.board[r][c] = CellModel.CellKind.ERROR
 					"empty", "locked", _:
 						session.board[r][c] = CellModel.CellKind.BLANK
-
-	for g in level_data.get("givens", []):
-		var gr: int = int(g.get("r", -1))
-		var gc: int = int(g.get("c", -1))
-		if gr >= 0 and gr < size and gc >= 0 and gc < size:
-			session.board[gr][gc] = CellModel.CellKind.GIVEN
 
 	return session

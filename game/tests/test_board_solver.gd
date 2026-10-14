@@ -250,17 +250,12 @@ func _test_replay_solve_standard() -> void:
 	_assert(result.get("max_technique", 0) >= 1, "some technique used")
 
 func _test_advanced_technique_puzzle() -> void:
-	# 5x5 pentomino-style regions: S4 (SUBSET_PAIR) is required to solve
-	# Discovered via exploration: givens=[[1,4]] forces the solver to invoke
-	# _try_locked_subsets (S4) at least once before reaching a solution.
-	# Profile confirmed: s4=1, max_technique=7 (CONTRA_CHAIN also needed).
-	var size := 5
-	var regions := ["AABCC", "AABBC", "DABBC", "DDDBC", "DDEEE"]
-	var solution := [1, 4, 0, 3, 2]
-	# One given: row 1 col 4 (zone C)
-	var givens := [[1, 4]]
+	# 7x7 bank level that needs S4 (SUBSET_PAIR) from an empty board.
+	var size := 7
+	var regions := ["AAAAAAA", "BBBAAAA", "BCCCADA", "BCGGDDD", "BGEGGGD", "BGGGDFD", "BGGGDDD"]
+	var solution := [4, 0, 3, 6, 2, 5, 1]
 
-	var result := BoardSolver.replay_solve(size, regions, solution, givens)
+	var result := BoardSolver.replay_solve(size, regions, solution)
 	_assert(result.get("solved", false), "advanced puzzle: solved")
 	_assert(result.get("max_technique", 0) >= 4, "advanced puzzle: required S4+")
 	# Verify profile shows S4+ technique was actually used

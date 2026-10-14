@@ -16,7 +16,7 @@ func _init() -> void:
 	_test_fallback_on_empty()
 	_test_chain_returns_detail()
 	_test_hint_not_found_on_solved()
-	_test_given_not_wrong_mark()
+	_test_placed_candy_not_wrong_mark()
 	if _fails.is_empty():
 		print("HINT_ENGINE_PASS")
 		quit(0)
@@ -183,14 +183,14 @@ func _test_hint_not_found_on_solved() -> void:
 	var hint := HintEngine.find_hint(board, 4, regions, solution)
 	_assert(not hint["found"], "no hint on solved board")
 
-func _test_given_not_wrong_mark() -> void:
+func _test_placed_candy_not_wrong_mark() -> void:
 	var board := _empty_board(4)
 	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
 	var solution := [1, 3, 0, 2]
-	board[0][1] = CellModel.CellKind.GIVEN
+	board[0][1] = CellModel.CellKind.CANDY
 	var hint := HintEngine.find_hint(board, 4, regions, solution)
 	_assert(hint["found"], "hint found")
-	_assert(hint["strategy"] != "WRONG_MARK", "given is not wrong mark")
+	_assert(hint["strategy"] != "WRONG_MARK", "correct candy is not wrong mark")
 
 func _empty_board(n: int) -> Array:
 	var b: Array = []

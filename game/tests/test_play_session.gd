@@ -11,7 +11,6 @@ func _init() -> void:
 	_test_try_candy_correct()
 	_test_try_candy_wrong()
 	_test_error_immutable()
-	_test_given_without_generated_marks()
 	_test_double_tap_immutable()
 	_test_legacy_restore()
 	_test_serialize_restore()
@@ -70,14 +69,6 @@ func _test_error_immutable() -> void:
 	_assert(session.cell_at(0, 0) == CellModel.CellKind.ERROR, "error stays immutable")
 	_assert(session.hearts == 2, "repeat attempt does not cost heart")
 	_assert(session.to_save_data()["cells"][0] == "error", "error serialized")
-
-func _test_given_without_generated_marks() -> void:
-	var level := _make_level()
-	level["givens"] = [{"r": 0, "c": 1}]
-	var session := PlaySession.new(level, 3)
-	_assert(session.cell_at(0, 1) == CellModel.CellKind.GIVEN, "given cell is GIVEN")
-	_assert(session.is_preset(0, 1), "given is preset")
-	_assert(session.cell_at(0, 0) == CellModel.CellKind.BLANK, "same row remains blank")
 
 func _test_double_tap_immutable() -> void:
 	var session := PlaySession.new(_make_level(), 3)
