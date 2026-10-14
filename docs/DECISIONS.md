@@ -16,7 +16,7 @@ Ngày 2026-10-14. Thay phần bối cảnh vườn của RST-008/D-10. Đặc t�
 Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ cảnh. Đặc tả: [GDD-04](../GDD/04-ux-ui.md).
 
 - **Bắt buộc:** lần đầu mở app, lớp tutorial phủ Home và chặn mọi thao tác cho tới khi xong; không có Bỏ qua. Xong thì ghi `ONBOARD` vào `tutorialSeenIds`, không hiện lại. Trợ giúp → Chơi lại hướng dẫn mở bản thực hành, không ghi progress.
-- **Bàn riêng 4×4** `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]` (`tutorial_flow.gd`), 7 bước: đặt kẹo ô duy nhất → luật luống (OK) → gạch hàng/cột → kẹo thứ 2 xuất hiện, vuốt gạch ô chạm → luống còn 1 ô → kẹo cuối (nút Gợi ý) → pháo giấy + Tiếp tục.
+- **Bàn riêng 4×4** `ABCC/AACC/AADD/DDDD`, nghiệm `[1,3,0,2]`, không given (`tutorial_flow.gd`), 8 bước: đặt kẹo đầu tiên (chạm đôi) → luật vùng màu (OK) → vuốt gạch các ô chạm kẹo → gạch hàng/cột → vùng còn 1 ô, đặt kẹo → 3 tim (OK) → tự đặt hai kẹo cuối (có nút Gợi ý, không phạt) → pháo giấy + Tiếp tục. Mọi kẹo do người chơi tự đặt. *(Đính chính 2026-10-14 theo code.)*
 - **Hiệu ứng:** ô ngoài bước bị làm tối, ô đích có vòng sáng nhịp và bàn tay động; nền tối khi chỉ sáng một phần. Đây là ngoại lệ của RST-004, chỉ trong tutorial.
 - **Không phạt:** chỉ ô đích nhận thao tác; thao tác khác bị bỏ qua và bàn rung nhẹ. Không tim, không lỗi.
 - **L01/L02 campaign** trở lại bàn từ bank với luật thường; kịch bản trong màn cũ chuyển thành fixture test.
