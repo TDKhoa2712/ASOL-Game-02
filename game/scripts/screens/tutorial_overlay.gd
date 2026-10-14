@@ -21,6 +21,9 @@ var _cols: Array = []
 var _lit: Array = []
 var _rings: Array = []
 var _pulse: float = 0.0
+var _ripple_cell: Array = []
+var _ripple_t: float = 1.0
+const RIPPLE_SEC := 0.45
 const DIM_COLOR := Color(0.16, 0.13, 0.11, 0.72)
 const RING_COLOR := Color(1.0, 0.85, 0.4)
 
@@ -50,6 +53,14 @@ func show_spotlight(lit: Array, rings: Array) -> void:
 	set_process(not _rings.is_empty() and LayoutTokens.motion_enabled)
 	queue_redraw()
 
+# A one-shot ring that spreads from a cell when the guide hand touches down.
+func ripple(cell: Array) -> void:
+	if not LayoutTokens.motion_enabled:
+		return
+	_ripple_cell = cell
+	_ripple_t = 0.0
+	set_process(true)
+
 func dimmed_cells(size: int) -> Array:
 	var out: Array = []
 	if _lit.is_empty():
@@ -61,6 +72,8 @@ func dimmed_cells(size: int) -> Array:
 
 func _process(delta: float) -> void:
 	_pulse = fmod(_pulse + delta, 1.2)
+	_ripple_t = minf(1.0, _ripple_t + delta / RIPPLE_SEC)
+	if _ripple_t >= 1.0 and _rings.is_empty(): set_process(false)
 	queue_redraw()
 
 func faded_cells() -> Array: return _faded.duplicate()
@@ -79,6 +92,11 @@ func _draw() -> void:
 		var rect := _local(_cell_rect_fn.call(int(cell[0]), int(cell[1])))
 		var t := _pulse / 1.2
 		draw_arc(rect.get_center(), rect.size.x * (0.42 + 0.12 * t), 0.0, TAU, 48, Color(RING_COLOR, 1.0 - t), maxf(4.0, rect.size.x * 0.05), true)
+	if _ripple_t < 1.0 and not _ripple_cell.is_empty():
+		var rr := _local(_cell_rect_fn.call(int(_ripple_cell[0]), int(_ripple_cell[1])))
+		var e := 1.0 - pow(1.0 - _ripple_t, 2.0)
+		draw_circle(rr.get_center(), rr.size.x * (0.12 + 0.32 * e), Color(1, 1, 1, 0.45 * (1.0 - _ripple_t)))
+		draw_arc(rr.get_center(), rr.size.x * (0.18 + 0.36 * e), 0.0, TAU, 48, Color(RING_COLOR, 1.0 - _ripple_t), maxf(3.0, rr.size.x * 0.04), true)
 	for cell in _faded:
 		_draw_x(_local(_cell_rect_fn.call(int(cell[0]), int(cell[1]))))
 	for r in _rows:

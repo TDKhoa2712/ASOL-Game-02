@@ -5,6 +5,7 @@ extends Control
 const TutorialFlow = preload("res://scripts/campaign/tutorial_flow.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
 const TutorialOverlay = preload("res://scripts/screens/tutorial_overlay.gd")
+const TutorialHand = preload("res://scripts/screens/tutorial_hand.gd")
 const ConfettiLayer = preload("res://scripts/ui/confetti_layer.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
@@ -18,7 +19,6 @@ const DONE_ID := "ONBOARD"
 const DIM_BG := Color("#3E3936")
 const LIT_BG := Color("#FFF6E2")
 const EMPHASIS := "#3D8BEB"
-const HAND_SVG := '<svg width="56" height="64" viewBox="0 0 56 64" xmlns="http://www.w3.org/2000/svg"><path d="M20 4 c3 0 5 2 5 5 v19 l3 -1 c2.5 -0.6 5 1 5.5 3.5 l0.3 1 l2.4 -0.6 c2.6 -0.6 5 1 5.6 3.6 l0.2 0.8 l1.6 -0.4 c2.8 -0.6 5.4 1.4 5.8 4.2 l1.6 11.4 C55.6 60 50 64 43 64 H29 c-4.6 0 -8.8 -2.4 -11.1 -6.3 L6.6 39 c-1.5 -2.5 -0.8 -5.8 1.6 -7.4 c2.2 -1.4 5.1 -1 6.8 1 L15 34 V9 c0 -3 2 -5 5 -5 z" fill="#FFFFFF" stroke="#7A4A2A" stroke-width="3" stroke-linejoin="round"/></svg>'
 
 var flow: TutorialFlow = TutorialFlow.new()
 var practice: bool = false
@@ -28,10 +28,9 @@ var bg: ColorRect
 var bubble_text: RichTextLabel
 var board: PuzzleBoard
 var overlay: TutorialOverlay
-var hand: TextureRect
+var hand: TutorialHand
 var action_button: Button
 var hint_button: Button
-var _hand_tween: Tween = null
 var _hint_shown: bool = false
 var _shown_id: String = ""
 var _busy: bool = false
@@ -96,9 +95,7 @@ func _build() -> void:
 	hint_button.name = "HintButton"; hint_button.custom_minimum_size = Vector2(640, 130)
 	hint_button.add_theme_color_override("font_color", Color("#8A4F4A")); hint_button.pressed.connect(_on_hint)
 	row.add_child(hint_button)
-	hand = TextureRect.new(); hand.name = "Hand"; hand.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var img := Image.new(); img.load_svg_from_string(HAND_SVG, 3.2); hand.texture = ImageTexture.create_from_image(img)
-	hand.size = hand.texture.get_size(); hand.z_index = 5; add_child(hand)
+	hand = TutorialHand.new(); add_child(hand)
 
 # Turns **word** markers in the translated text into colored emphasis.
 static func emphasize(text: String) -> String:
@@ -115,8 +112,8 @@ func _on_flow_changed() -> void:
 		_refresh()
 		return
 	_busy = true
-	hand.visible = false
-	if _hand_tween != null: _hand_tween.kill()
+	hand.stop()
+	overlay.show_marks([], [], [])
 	overlay.show_spotlight(overlay._lit, [])
 	await get_tree().create_timer(step_pause).timeout
 	if not is_inside_tree(): return
@@ -148,36 +145,37 @@ func _refresh() -> void:
 	_point_hand(s)
 
 func _point_hand(s: Dictionary) -> void:
-	if _hand_tween != null: _hand_tween.kill()
-	var cells: Array = s.targets
-	if cells.is_empty() or (s.hint and not _hint_shown):
-		hand.visible = false
+	hand.stop()
+	overlay.show_marks([], [], [])
+	if s.targets.is_empty() or (s.hint and not _hint_shown):
 		return
 	_start_hand.call_deferred(s) # board rects settle after layout
 
+# Taps press on the first open target; strokes slide through the demo paths
+# and leave faint X's behind the finger on the cells still to cross.
 func _start_hand(s: Dictionary) -> void:
-	var cells: Array = s.targets
-	hand.visible = true
-	var start := _cell_center(cells[0])
-	hand.position = start
-	if not LayoutTokens.motion_enabled:
+	if not is_inside_tree() or flow.step().get("id", "") != s.id:
 		return
-	_hand_tween = create_tween().set_loops()
-	if s.gesture == "swipe" and cells.size() > 1:
-		for cell in cells: _hand_tween.tween_property(hand, "position", _cell_center(cell), 0.45)
-		_hand_tween.tween_interval(0.4)
-		_hand_tween.tween_property(hand, "position", start, 0.0)
-	else:
-		var presses := 2 if s.gesture == "double" or s.hint else 1
-		for i in presses:
-			_hand_tween.tween_property(hand, "position", start + Vector2(0, 18), 0.12)
-			_hand_tween.tween_property(hand, "position", start, 0.12)
-		_hand_tween.tween_interval(0.8)
+	var paths: Array = []
+	for path in s.get("demo", []):
+		if path.any(func(cell: Array) -> bool: return s.targets.has(cell)): paths.append(path)
+	if paths.is_empty():
+		var presses := 2 if s.gesture == "double" else 1
+		hand.play_tap(_cell_center(s.targets[0]), presses, func() -> void: overlay.ripple(s.targets[0]))
+		return
+	var points: Array = []
+	for path in paths: points.append(path.map(func(cell: Array) -> Vector2: return _cell_center(cell)))
+	var ghost: Array = []
+	hand.play_strokes(points, func(p: int, i: int) -> void:
+		var cell: Array = paths[p][i]
+		if s.targets.has(cell) and not ghost.has(cell):
+			ghost.append(cell); overlay.show_marks(ghost, [], []),
+		func() -> void: ghost.clear(); overlay.show_marks([], [], []))
 
-# Fingertip of the hand sits at the cell center.
+# Cell center in this screen's space; the hand puts its fingertip there.
 func _cell_center(cell: Array) -> Vector2:
 	var rect: Rect2 = board.get_cell_rect(int(cell[0]), int(cell[1]))
-	return board.global_position - global_position + rect.get_center() - Vector2(hand.size.x * 0.34, hand.size.y * 0.08)
+	return board.global_position - global_position + rect.get_center()
 
 func _input_result(ok: bool, r: int, c: int, placed: bool) -> void:
 	if ok:

@@ -40,8 +40,10 @@ func _init() -> void:
 	_steps = [
 		{"id": "place", "text": "tutorial.s_place", "lit": [[0, 1]], "targets": [[0, 1]], "gesture": "double"},
 		{"id": "regions", "text": "tutorial.s_regions", "lit": all, "button": "tutorial.ok"},
-		{"id": "rowcol", "text": "tutorial.s_rowcol", "lit": rowcol + [[0, 1]], "targets": rowcol, "gesture": "tap"},
-		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe"},
+		{"id": "rowcol", "text": "tutorial.s_rowcol", "lit": rowcol + [[0, 1]], "targets": rowcol, "gesture": "tap",
+			"demo": [[[0, 0], [0, 1], [0, 2], [0, 3]], [[1, 1], [2, 1], [3, 1]]]},
+		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe",
+			"demo": [[[2, 1], [2, 2], [2, 3], [3, 3]]]},
 		{"id": "lone", "text": "tutorial.s_lone", "lit": lone, "targets": [[1, 3]], "gesture": "double"},
 		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0]], "gesture": "double", "hint": true, "free": true},
 		{"id": "done", "text": "tutorial.s_done", "lit": all, "button": "tutorial.continue", "confetti": true},
@@ -56,6 +58,7 @@ func step() -> Dictionary:
 	for cell in s.get("targets", []):
 		if _is_open(s, cell): open.append(cell)
 	s["targets"] = open
+	if not s.has("demo"): s["demo"] = []
 	for key in ["button", "gesture"]:
 		if not s.has(key): s[key] = ""
 	s["hint"] = bool(s.get("hint", false))
