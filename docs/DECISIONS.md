@@ -2,6 +2,14 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-032 — Chuỗi tính theo bàn chơi hoàn thành; lửa nhiều lớp
+
+Ngày 2026-10-14. Sửa RST-030 (luật ngày) và RST-031 (hiển thị). Đặc tả: [streak fire](superpowers/specs/2026-10-14-streak-fire-design.md).
+
+- **Luật:** một ngày được tính khi ≥1 bàn chơi kết thúc (thắng hoặc thua); áp cho tổng chuỗi, kỷ lục và gói 7 ngày. Chế độ chơi mới gọi `on_round_finished` khi một bàn kết thúc.
+- **Lửa:** 3 lớp đỏ/cam/vàng cháy liên tục, có tàn lửa bay lên; xám một lớp khi hôm nay chưa chơi.
+- **Burst +1:** quầng sáng, lửa bung, vòng sáng lan, nổ tia lửa, số nảy, rung nhẹ; chạy cả khi thua.
+
 ## RST-031 — Xem chuỗi ngày chơi trên Home
 
 Ngày 2026-10-14. Bổ sung RST-030. Đặc tả: [streak view](superpowers/specs/2026-10-14-streak-view-design.md).
@@ -18,7 +26,7 @@ Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc t�
 - **Kho:** Hint và Đặt kẹo lưu bền, khởi đầu 3/1, tối đa 10 mỗi loại.
 - **Hint:** trừ 1 khi gợi ý hiện ra; `WRONG_MARK` miễn phí; hết lượt → popup.
 - **Đặt kẹo:** đặt ngay một kẹo đúng (ưu tiên ô suy luận duy nhất, sau đó vùng ít ô trống nhất); viên cuối thắng level; reset combo.
-- **Streak:** ngày tính khi thắng ≥1 level (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
+- **Streak:** ngày tính khi ≥1 bàn kết thúc (RST-032) (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
 - **Quảng cáo:** chỉ có nút đỏ ▶ giữ chỗ trong popup, chưa cộng lượt; badge góc ẩn tới khi có tính năng.
 
 ## RST-029 — Bỏ bối cảnh vườn, chủ đề là tìm kẹo ẩn sau ô màu
