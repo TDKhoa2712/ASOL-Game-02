@@ -18,8 +18,6 @@ static func tip_for(event: String, ctx: Dictionary, guide: Variant) -> Dictionar
 		"level_start":
 			if str(ctx.get("label", "")) == S3_INTRO_LABEL and not guide.has_seen("C-s3"):
 				id = "C-s3"
-			elif int(ctx.get("givens", 0)) > 0 and not guide.has_seen("C-given"):
-				id = "C-given"
 			elif int(ctx.get("size", 0)) >= 5:
 				id = "C-size5"
 		"idle":

@@ -10,7 +10,6 @@ func _init() -> void:
 	_test_candy_and_diagonal_targets()
 	_test_excluded_by_region()
 	_test_region_column_lock()
-	_test_excluded_by_given()
 	if _fails.is_empty():
 		print("TUTORIAL_TARGETS_PASS")
 		quit(0)
@@ -54,12 +53,6 @@ func _test_region_column_lock() -> void:
 	var lvl: Dictionary = _levels().L02.level
 	var cells: Array = TutorialTargets.resolve(lvl, {"type": "region_column_lock", "region": "A"})
 	_assert(cells == [[2, 0], [3, 0]], "A locks column 1 rows 3-4, got %s" % str(cells))
-
-func _test_excluded_by_given() -> void:
-	var lvl: Dictionary = {"size": 5, "regions": ["AAEEE", "AEEEE", "CEDBB", "CDDBB", "CCDBB"], "solution": [1, 3, 0, 2, 4], "givens": [{"r": 4, "c": 4}]}
-	var cells: Array = TutorialTargets.resolve(lvl, {"type": "excluded_by_given"})
-	_assert(cells.has([3, 3]) and cells.has([4, 0]) and cells.has([0, 4]), "given excludes diagonal, row and column")
-	_assert(not cells.has([4, 4]), "given cell is not excluded")
 
 func _assert(condition: bool, label: String) -> void:
 	if not condition: _fails.append("FAIL: " + label)

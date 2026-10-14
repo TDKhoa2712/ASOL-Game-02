@@ -56,7 +56,7 @@ func bind(next_session: Variant) -> void:
 	_ensure_ui()
 	refresh()
 	if session.phase == 0 and not guide.is_active(label, session.board):
-		_show_tip(TutorialTips.tip_for("level_start", {"label": label, "size": int(session.level.get("size", 0)), "givens": session.level.get("givens", []).size()}, guide))
+		_show_tip(TutorialTips.tip_for("level_start", {"label": label, "size": int(session.level.get("size", 0))}, guide))
 
 func _pick_guide() -> void:
 	label = str(session.level.get("id", ""))

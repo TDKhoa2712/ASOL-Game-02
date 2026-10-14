@@ -125,8 +125,7 @@ func _on_solve_pressed() -> void:
 	for r in range(sz):
 		if r < sol.size():
 			var c: int = int(sol[r])
-			if _session.board[r][c] != CellModel.CellKind.GIVEN:
-				_session.board[r][c] = CellModel.CellKind.CANDY
+			_session.board[r][c] = CellModel.CellKind.CANDY
 	_session.state_changed.emit()
 	if _board != null:
 		_board.redraw()

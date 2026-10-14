@@ -57,9 +57,8 @@ func _run() -> void:
 	var session = puzzle.session
 	for row in range(session.level.solution.size()):
 		var col := int(session.level.solution[row])
-		if session.cell_at(row, col) == CellModel.CellKind.GIVEN: continue
 		puzzle._on_board_double_tap(row, col)
-		var total: int = int(session.level.size) - session.level.get("givens", []).size()
+		var total: int = int(session.level.size)
 		var found: int = total - session.remaining_candies()
 		if found == int((total + 1) / 2) and found < total:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.PROGRESS_COMPLETE, "halfway progress")

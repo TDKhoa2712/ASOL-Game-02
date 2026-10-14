@@ -16,7 +16,6 @@ func _init() -> void:
 	_assert(TutorialTips.tip_for("level_start", {"label": "L04", "size": 5}, guide).id == "C-size5", "first 5x5 board")
 	_assert(TutorialTips.tip_for("level_start", {"label": "L03", "size": 4}, guide).is_empty(), "4x4 needs no tip")
 	_assert(TutorialTips.tip_for("level_start", {"label": "L19", "size": 6}, TutorialGuide.new(null)).id == "C-s3", "first S3 level")
-	_assert(TutorialTips.tip_for("level_start", {"label": "L03", "size": 4, "givens": 1}, guide).id == "C-given", "first board with a given")
 	var idle := TutorialTips.tip_for("idle", {"hints_used": 0}, guide)
 	_assert(idle.id == "C-idle" and idle.bounce_hint and idle.text.is_empty(), "idle only bounces the hint button")
 	_assert(TutorialTips.tip_for("idle", {"hints_used": 1}, TutorialGuide.new(null)).is_empty(), "no idle nudge after a hint")

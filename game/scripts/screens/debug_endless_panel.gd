@@ -107,9 +107,8 @@ func _update_selection() -> void:
 	var rank: int = int(_selected_level.get("rank", 1))
 	var diff: String = str(_selected_level.get("difficulty", "normal"))
 	var reg_cnt: int = _selected_level.get("regions", []).size()
-	var giv_cnt: int = _selected_level.get("givens", []).size()
 
-	_info_label.text = "Endless Level #%d | Size: %dx%d | Rank %d (%s)\nSố vùng: %d | Ô cho sẵn: %d" % [
-		lvl_num, sz, sz, rank, diff, reg_cnt, giv_cnt
+	_info_label.text = "Endless Level #%d | Size: %dx%d | Rank %d (%s)\nSố vùng: %d" % [
+		lvl_num, sz, sz, rank, diff, reg_cnt
 	]
 	level_changed.emit(_selected_level, _selected_label)

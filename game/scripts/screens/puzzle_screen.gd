@@ -242,7 +242,7 @@ func _on_candy_found(row: int, col: int, region: String) -> void:
 		board.play_candy_pop(row, col)
 	combo.on_candy(row, col, hint_coordinator.is_applying())
 	if sfx != null:
-		var required: int = int(session.level.get("size", 0)) - session.level.get("givens", []).size()
+		var required: int = int(session.level.get("size", 0))
 		var found: int = required - session.remaining_candies()
 		if required > 1 and found == int((required + 1) / 2) and found < required:
 			sfx.play(SfxCatalog.Effect.PROGRESS_COMPLETE)

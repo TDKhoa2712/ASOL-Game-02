@@ -29,11 +29,6 @@ static func resolve(level: Dictionary, target: Dictionary) -> Array:
 		"excluded_by_region":
 			var cell := candy_of_region(level, str(target.get("region", "")))
 			return [] if cell.is_empty() else excluded_by(level, [cell])
-		"excluded_by_given":
-			var givens: Array = []
-			for g in level.get("givens", []):
-				givens.append([int(g.r), int(g.c)])
-			return excluded_by(level, givens)
 		"region_column_lock":
 			return region_column_lock(level, str(target.get("region", "")))
 	return []
@@ -73,17 +68,13 @@ static func excluded_by(level: Dictionary, candies: Array) -> Array:
 	return out
 
 # S3 pointing: when every open cell of a region sits in one column, the rest of
-# that column cannot hold a candy. Open means not ruled out by the givens.
+# that column cannot hold a candy (judged on the empty board).
 static func region_column_lock(level: Dictionary, region: String) -> Array:
-	var givens: Array = []
-	for g in level.get("givens", []):
-		givens.append([int(g.r), int(g.c)])
-	var blocked := excluded_by(level, givens)
 	var n := int(level.get("size", 0))
 	var column := -1
 	for r in range(n):
 		for c in range(n):
-			if region_at(level, r, c) != region or blocked.has([r, c]) or givens.has([r, c]):
+			if region_at(level, r, c) != region:
 				continue
 			if column >= 0 and column != c:
 				return []
@@ -93,7 +84,7 @@ static func region_column_lock(level: Dictionary, region: String) -> Array:
 	var out: Array = []
 	for r in range(n):
 		var cell := [r, column]
-		if region_at(level, r, column) != region and not blocked.has(cell) and not givens.has(cell):
+		if region_at(level, r, column) != region:
 			out.append(cell)
 	return out
 
@@ -101,10 +92,7 @@ static func region_column_lock(level: Dictionary, region: String) -> Array:
 # and the content check to prove the authored boards stay unique.
 static func count_solutions(level: Dictionary, limit: int = 2) -> int:
 	var n := int(level.get("size", 0))
-	var fixed: Dictionary = {}
-	for g in level.get("givens", []):
-		fixed[int(g.r)] = int(g.c)
-	return _count(level, n, 0, [], fixed, limit)
+	return _count(level, n, 0, [], {}, limit)
 
 static func _count(level: Dictionary, n: int, row: int, placed: Array, fixed: Dictionary, limit: int) -> int:
 	if row == n:
