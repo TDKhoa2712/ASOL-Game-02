@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://deus6sd1ese7h"
-path="res://.godot/imported/app_icon_opaque.png-aee9547455e270b36cc734e026f35c45.ctex"
+uid="uid://cyai7raabmd76"
+path="res://.godot/imported/candoku-logo-1024.svg-1a343e5bbd9ea8b3922d57fda603d885.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/app_icon_opaque.png"
-dest_files=["res://.godot/imported/app_icon_opaque.png-aee9547455e270b36cc734e026f35c45.ctex"]
+source_file="res://assets/icons/candoku-logo-1024.svg"
+dest_files=["res://.godot/imported/candoku-logo-1024.svg-1a343e5bbd9ea8b3922d57fda603d885.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

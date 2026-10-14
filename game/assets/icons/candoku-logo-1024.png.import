@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://f4tlsl3e88yg"
-path="res://.godot/imported/icon_512.png-25dcf21e769fd73004df44763527c975.ctex"
+uid="uid://ceypy2s6mvo1r"
+path="res://.godot/imported/candoku-logo-1024.png-f3d52a2c530e25fea0414a8e45d4253f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/android/icon_512.png"
-dest_files=["res://.godot/imported/icon_512.png-25dcf21e769fd73004df44763527c975.ctex"]
+source_file="res://assets/icons/candoku-logo-1024.png"
+dest_files=["res://.godot/imported/candoku-logo-1024.png-f3d52a2c530e25fea0414a8e45d4253f.ctex"]
 
 [params]
 
