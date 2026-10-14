@@ -46,6 +46,9 @@ func _init() -> void:
 	free_coord.stock_empty.connect(func(kind): empties.append("free"))
 	free_coord.request_hint(PlaySession.new(LEVEL))
 	check(not empties.has("free"), "null inventory never empty")
+	# Break session <-> lambda <-> coordinator cycles so nothing leaks at exit.
+	for c in session.candy_found.get_connections(): session.candy_found.disconnect(c.callable)
+	coord.force_release(); coord._session = null; free_coord._session = null
 	inv._store.remove_all(); DirAccess.remove_absolute(dir)
 	if failures.is_empty():
 		print("ASSIST_HINT_GATE_PASS")
