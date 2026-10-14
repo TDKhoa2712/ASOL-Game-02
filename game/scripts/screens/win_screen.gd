@@ -20,6 +20,7 @@ const CandyCharacterScene = preload("res://scenes/components/candy_character.tsc
 const CandyCharacter = preload("res://scripts/ui/candy_character.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
 const TwinkleStar = preload("res://scripts/ui/twinkle_star.gd")
+const WinNextPreview = preload("res://scripts/screens/win_next_preview.gd")
 
 var _is_last_level: bool = false
 var _level_id: String = ""
@@ -165,79 +166,9 @@ func _create_next_card() -> PanelContainer:
 	row.name = "PreviewRow"; row.add_theme_constant_override("separation", 28)
 	inner.add_child(row)
 
-	var mini_host := Control.new()
-	mini_host.custom_minimum_size = Vector2(148, 148)
-	mini_host.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	row.add_child(mini_host)
+	row.add_child(WinNextPreview.build_mini_board(_next_size))
 
-	var mini_wrap := PanelContainer.new()
-	mini_wrap.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mini_wrap.pivot_offset = Vector2(74, 74)
-	mini_wrap.rotation = deg_to_rad(-6.0)
-	var mg_style := StyleBoxFlat.new()
-	mg_style.bg_color = Palette.WIN_NEXT_BOARD_BG; mg_style.set_corner_radius_all(28)
-	mg_style.shadow_color = Palette.WIN_NEXT_BOARD_SHADOW; mg_style.shadow_size = 5; mg_style.shadow_offset = Vector2(0, 4)
-	mini_wrap.add_theme_stylebox_override("panel", mg_style)
-	mini_host.add_child(mini_wrap)
-
-	var mini_center := CenterContainer.new()
-	mini_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	mini_center.mouse_filter = Control.MOUSE_FILTER_IGNORE; mini_wrap.add_child(mini_center)
-
-	var mini_grid := GridContainer.new()
-	var cols: int = clampi(_next_size, 4, 12) if _next_size > 0 else 4
-	mini_grid.columns = cols
-	var gap: int = 3 if cols <= 6 else 2
-	mini_grid.add_theme_constant_override("h_separation", gap); mini_grid.add_theme_constant_override("v_separation", gap)
-	var cell_side: float = maxf(6.0, floor((120.0 - (cols - 1) * gap) / float(cols)))
-	var pcols: Array[Color] = [Color("#38BDF8"), Color("#FBBF24"), Color("#FB923C"), Color("#34D399"), Color("#F5E8C8")]
-	var pattern: Array[int] = [4, 0, 4, 4, 4, 3, 1, 4, 4, 4, 1, 2, 2, 4, 4, 1]
-	for ci in range(cols * cols):
-		var cell := PanelContainer.new()
-		cell.custom_minimum_size = Vector2(cell_side, cell_side)
-		var cs := StyleBoxFlat.new()
-		var col_idx: int = pattern[ci % 16] if cols == 4 else ((ci * 3 + 1) % 4)
-		cs.bg_color = pcols[col_idx]; cs.set_corner_radius_all(maxi(2, int(cell_side * 0.25)))
-		cell.add_theme_stylebox_override("panel", cs)
-		cell.mouse_filter = Control.MOUSE_FILTER_IGNORE; mini_grid.add_child(cell)
-	mini_center.add_child(mini_grid)
-
-	var info := VBoxContainer.new()
-	info.size_flags_horizontal = Control.SIZE_EXPAND_FILL; info.alignment = BoxContainer.ALIGNMENT_CENTER
-	info.add_theme_constant_override("separation", 4); row.add_child(info)
-
-	var next_hdr := Label.new()
-	next_hdr.name = "NextLabel"; next_hdr.text = tr("result.win.next_header")
-	next_hdr.add_theme_font_size_override("font_size", 28); next_hdr.add_theme_color_override("font_color", Color("#64748B"))
-	var bold := FontTokens.body_bold()
-	if bold != null: next_hdr.add_theme_font_override("font", bold)
-	info.add_child(next_hdr)
-
-	var title := Label.new()
-	title.name = "NextTitle"; title.text = _next_label
-	title.add_theme_font_size_override("font_size", 60); title.add_theme_color_override("font_color", Color("#1E293B"))
-	var hfont := FontTokens.heading()
-	if hfont != null: title.add_theme_font_override("font", hfont)
-	info.add_child(title)
-
-	var meta_row := HBoxContainer.new()
-	meta_row.add_theme_constant_override("separation", 12); info.add_child(meta_row)
-
-	var diff_lbl := Label.new()
-	diff_lbl.name = "NextDiff"; diff_lbl.text = _difficulty_display(_next_difficulty)
-	diff_lbl.add_theme_font_size_override("font_size", 26); diff_lbl.add_theme_color_override("font_color", Color.WHITE)
-	if bold != null: diff_lbl.add_theme_font_override("font", bold)
-	var dp_style := StyleBoxFlat.new()
-	dp_style.bg_color = _difficulty_color(_next_difficulty); dp_style.set_corner_radius_all(999)
-	dp_style.content_margin_left = 16; dp_style.content_margin_right = 16; dp_style.content_margin_top = 4; dp_style.content_margin_bottom = 4
-	diff_lbl.add_theme_stylebox_override("normal", dp_style); meta_row.add_child(diff_lbl)
-
-	var size_lbl := Label.new()
-	size_lbl.name = "NextSize"
-	size_lbl.text = "%dx%d" % [_next_size, _next_size] if _next_size > 0 else ""
-	size_lbl.add_theme_font_size_override("font_size", 28); size_lbl.add_theme_color_override("font_color", Color("#64748B"))
-	if bold != null: size_lbl.add_theme_font_override("font", bold)
-	meta_row.add_child(size_lbl)
+	row.add_child(WinNextPreview.build_info(tr("result.win.next_header"), _next_label, _difficulty_display(_next_difficulty), _next_difficulty, _next_size))
 
 	next_btn = ActionButton.create(tr("result.win.next"), Palette.WIN_BUTTON_BG, Palette.WIN_BUTTON_SHADOW, Palette.WIN_BUTTON_TEXT_SHADOW, 52, 128)
 	next_btn.clip_contents = true
@@ -271,10 +202,6 @@ func _format_time(ms: int) -> String:
 func _difficulty_display(d: String) -> String:
 	return tr("difficulty." + d) if d in ["tutorial", "easy", "medium", "hard"] else ""
 
-static func _difficulty_color(d: String) -> Color:
-	if d in ["tutorial", "easy"]: return Palette.WIN_DIFFICULTY_EASY
-	if d == "medium": return Palette.WIN_DIFFICULTY_MEDIUM
-	return Color("#BE185D") if d == "hard" else Palette.WIN_TEXT_SECONDARY
 
 func setup(won: bool, score: int, level_id: String, is_last: bool, hearts_left: int = 3, mistake_count: int = 0, next_label: String = "", next_size: int = 0, next_difficulty: String = "") -> void:
 	_is_last_level = is_last; _level_id = level_id.trim_prefix("L"); _elapsed_ms = score
@@ -305,7 +232,7 @@ func _update_ui() -> void:
 		if diff != null:
 			diff.text = _difficulty_display(_next_difficulty)
 			var dp: StyleBoxFlat = diff.get_theme_stylebox("normal") as StyleBoxFlat
-			if dp != null: dp.bg_color = _difficulty_color(_next_difficulty)
+			if dp != null: dp.bg_color = WinNextPreview.difficulty_color(_next_difficulty)
 		var sz: Label = _next_card.find_child("NextSize", true, false)
 		if sz != null:
 			var loc := TranslationServer.get_locale()
