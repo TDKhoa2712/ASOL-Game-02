@@ -24,7 +24,7 @@ Tìm đủ kẹo để hoàn thành màn. Điểm xuất hiện ở màn kết q
 
 Các màn được xếp thành một hành trình liên tiếp, từ những bước suy luận đầu tiên đến các thế cờ cần kết hợp nhiều manh mối. Mỗi màn có một lời giải duy nhất. Kẹo cho sẵn, hình dạng luống và các ô đã loại trừ đều có thể giúp bạn tìm bước tiếp theo.
 
-Xem thêm [luật chơi](GDD/02-luat-choi-va-trang-thai.md) và [nguyên tắc suy luận](GDD/10-nghien-cuu-quy-tac-suy-luan.md).
+Xem thêm [GDD](GDD/README.md), [luật chơi](GDD/02-core-gameplay.md) và [kỹ thuật suy luận](GDD/10-reasoning-techniques.md).
 
 ## Mở game
 

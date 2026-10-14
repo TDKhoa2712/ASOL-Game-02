@@ -6,7 +6,7 @@ CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã 
 
 **Đọc trước khi làm:**
 1. [STATUS](docs/STATUS.md) — tiến độ thực tế và vấn đề còn mở
-2. [DECISIONS](docs/DECISIONS.md) và [GDD 02](GDD/02-luat-choi-va-trang-thai.md) — quyết định và luật chuẩn
+2. [DECISIONS](docs/DECISIONS.md) và [GDD-02](GDD/02-core-gameplay.md) — quyết định và luật chuẩn
 3. [Completion Plan](docs/superpowers/plans/2026-10-03-completion-plan.md) — Track D/E/F còn lại (assets, QA, release)
 4. [VERSIONING](docs/VERSIONING.md) — quy tắc quản lý version, nhánh và release (bắt buộc)
 
