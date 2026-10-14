@@ -7,7 +7,6 @@ var _fails: Array[String] = []
 
 func _init() -> void:
 	_test_cell_model()
-	_test_cell_model_immutable()
 	_test_detect_clash()
 	_test_can_place()
 	_test_attempt_candy_correct()
@@ -25,21 +24,24 @@ func _init() -> void:
 		quit(1)
 
 func _test_cell_model() -> void:
+	_assert(CellModel.CellKind.size() == 4, "CellKind has 4 states")
+	_assert(not CellModel.CellKind.has("GIVEN"), "no GIVEN kind")
 	_assert(CellModel.is_empty(CellModel.CellKind.BLANK), "blank is empty")
 	_assert(not CellModel.is_empty(CellModel.CellKind.CANDY), "candy not empty")
 	_assert(not CellModel.is_empty(CellModel.CellKind.MARK), "mark not empty")
 	_assert(CellModel.is_placed(CellModel.CellKind.CANDY), "candy is placed")
-	_assert(CellModel.is_placed(CellModel.CellKind.GIVEN), "given is placed")
-	_assert(CellModel.label(CellModel.CellKind.ERROR) == "error", "error label")
-
-func _test_cell_model_immutable() -> void:
-	_assert(CellModel.is_locked(CellModel.CellKind.GIVEN), "given is locked")
-	_assert(not CellModel.is_available(CellModel.CellKind.GIVEN), "given not available")
+	_assert(not CellModel.is_placed(CellModel.CellKind.BLANK), "blank not placed")
+	_assert(CellModel.is_candy(CellModel.CellKind.CANDY), "candy is candy")
+	_assert(not CellModel.is_locked(CellModel.CellKind.CANDY), "candy not locked")
+	_assert(not CellModel.is_locked(CellModel.CellKind.BLANK), "blank not locked")
+	_assert(CellModel.is_available(CellModel.CellKind.BLANK), "blank available")
+	_assert(CellModel.is_available(CellModel.CellKind.MARK), "mark available")
+	_assert(not CellModel.is_available(CellModel.CellKind.CANDY), "candy not available")
 	_assert(not CellModel.is_available(CellModel.CellKind.ERROR), "error not available")
-	_assert(CellModel.is_available(CellModel.CellKind.BLANK), "blank is available")
-	_assert(CellModel.is_available(CellModel.CellKind.MARK), "mark is available")
 	_assert(CellModel.is_cross(CellModel.CellKind.ERROR), "error is cross")
-	_assert(CellModel.is_candy(CellModel.CellKind.GIVEN), "given is candy")
+	_assert(CellModel.is_cross(CellModel.CellKind.MARK), "mark is cross")
+	_assert(CellModel.label(CellModel.CellKind.CANDY) == "candy", "label candy")
+	_assert(CellModel.label(CellModel.CellKind.ERROR) == "error", "error label")
 
 func _test_detect_clash() -> void:
 	var regions := ["AABB", "ABBB", "CCBB", "CCDB"]
