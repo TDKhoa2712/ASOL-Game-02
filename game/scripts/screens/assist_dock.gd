@@ -37,7 +37,7 @@ static func make_place_button() -> Button:
 	attach_badge(btn, "PlaceCount")
 	return btn
 
-static func show_toast(parent: Control, text: String) -> Label:
+static func show_toast(parent: Control, text: String, delay: float = 0.0) -> Label:
 	var toast := Label.new()
 	toast.name = "AssistToast"
 	toast.text = text
@@ -52,6 +52,10 @@ static func show_toast(parent: Control, text: String) -> Label:
 	parent.add_child(toast)
 	if parent.is_inside_tree():
 		var tw := toast.create_tween()
+		if delay > 0.0:
+			toast.modulate.a = 0.0
+			tw.tween_interval(delay)
+			tw.tween_property(toast, "modulate:a", 1.0, 0.15)
 		tw.tween_interval(1.6)
 		tw.tween_property(toast, "modulate:a", 0.0, 0.4)
 		tw.tween_callback(toast.queue_free)

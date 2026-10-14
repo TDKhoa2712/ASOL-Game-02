@@ -27,6 +27,7 @@ func _init() -> void:
 	screen.place_btn.pressed.emit()
 	check(inv.count("place") == 6, "no charge after win")
 	check(inv.data.streakDays == 0, "custom win does not count for streak")
+	check(screen.get_node_or_null("StreakBurst") == null, "custom win shows no burst")
 	# Custom/debug levels never touch the real stock
 	var custom := PuzzleScreen.new()
 	custom.assists = inv
