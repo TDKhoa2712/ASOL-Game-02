@@ -8,13 +8,23 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const LEVEL := {"id": "T1", "size": 4, "regions": ["ABCC", "AAAC", "ADDC", "ADDD"], "solution": [1, 3, 0, 2]}
 var failures: Array[String] = []
 
-func _init() -> void:
+func _initialize() -> void:
+	await process_frame  # root joins the tree only after the first frame
 	LayoutTokens.motion_enabled = false
 	var host := Control.new()
 	root.add_child(host)
 	var burst := StreakBurst.play(host, 12)
 	check(burst.name == "StreakBurst" and burst.get_parent() == host, "burst added")
 	check((burst.get_meta("label") as Label).text == "12", "reduced motion shows final count")
+	check(burst.get_meta("sparks", null) == null, "reduced motion: no sparks")
+	check(burst.has_node("FlameFx"), "burst uses the layered flame")
+	LayoutTokens.motion_enabled = true
+	var big := StreakBurst.play(host, 5)
+	var sparks: CPUParticles2D = big.get_meta("sparks")
+	check(sparks != null and sparks.one_shot and sparks.emitting and sparks.amount == 28, "spark explosion")
+	check((big.get_meta("label") as Label).text == "4", "count starts at N-1")
+	big.free()
+	LayoutTokens.motion_enabled = false
 
 	var dir := OS.get_user_data_dir().path_join("streak_burst_%s" % Time.get_ticks_usec())
 	var inv := Inventory.new(dir)
