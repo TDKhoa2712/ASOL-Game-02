@@ -34,7 +34,7 @@
 - Produces: `CellModel.CellKind` with exactly 4 enum members: `BLANK = 0, MARK = 1, CANDY = 2, ERROR = 3`.
 - Produces: `CellModel.is_placed(kind) -> bool` (`kind == CellKind.CANDY`), `CellModel.is_candy(kind) -> bool` (`kind == CellKind.CANDY`), `CellModel.is_locked(kind) -> bool` (`return false`).
 
-- [ ] **Step 1: Update test in `game/tests/test_candy_rules.gd` for 4-state `CellModel`**
+- [x] **Step 1: Update test in `game/tests/test_candy_rules.gd` for 4-state `CellModel`**
 
 Remove checks expecting `CellModel.CellKind.GIVEN`:
 ```gdscript
@@ -50,11 +50,11 @@ _assert(not CellModel.is_available(CellModel.CellKind.CANDY), "candy not availab
 _assert(CellModel.label(CellModel.CellKind.CANDY) == "candy", "label candy")
 ```
 
-- [ ] **Step 2: Run test to verify failure**
+- [x] **Step 2: Run test to verify failure**
 
 Run: `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_candy_rules.gd`
 
-- [ ] **Step 3: Modify `game/scripts/core/cell_model.gd`**
+- [x] **Step 3: Modify `game/scripts/core/cell_model.gd`**
 
 ```gdscript
 # cell_model.gd
@@ -94,12 +94,12 @@ static func label(kind: int) -> String:
 	return "unknown"
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_candy_rules.gd`
 Expected: `CANDY_RULES_PASS`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add game/scripts/core/cell_model.gd game/tests/test_candy_rules.gd
@@ -120,7 +120,7 @@ git commit -m "refactor(core): remove GIVEN state from CellModel enum and predic
 - Removes: `PreCandyDecider` class completely.
 - Modifies: `EndlessRuntime.build_level` - no longer calls prefill on fail streak.
 
-- [ ] **Step 1: Remove `pre_candy_decider` references in `endless_runtime.gd`**
+- [x] **Step 1: Remove `pre_candy_decider` references in `endless_runtime.gd`**
 
 In `game/scripts/endless/endless_runtime.gd`:
 - Remove line 12: `const PreCandyDeciderClass = preload("res://scripts/core/pre_candy_decider.gd")`
@@ -130,28 +130,28 @@ In `game/scripts/endless/endless_runtime.gd`:
       level = PreCandyDeciderClass.apply_prefill(level)
   ```
 
-- [ ] **Step 2: Delete `pre_candy_decider.gd` and `test_pre_candy_decider.gd`**
+- [x] **Step 2: Delete `pre_candy_decider.gd` and `test_pre_candy_decider.gd`**
 
 ```bash
 git rm game/scripts/core/pre_candy_decider.gd
 git rm game/tests/test_pre_candy_decider.gd
 ```
 
-- [ ] **Step 3: Update `test_endless_runtime.gd` and `test_endless_integration.gd`**
+- [x] **Step 3: Update `test_endless_runtime.gd` and `test_endless_integration.gd`**
 
 In `game/tests/test_endless_runtime.gd`:
 - Update line 74: remove `if session.cell_at(r, c) != 4:` check.
 In `game/tests/test_endless_integration.gd`:
 - Line 142: remove `if session.cell_at(r, c) != CellModel.CellKind.GIVEN:`.
 
-- [ ] **Step 4: Run endless tests to verify they pass**
+- [x] **Step 4: Run endless tests to verify they pass**
 
 Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_endless_runtime.gd`
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_endless_integration.gd`
 Expected: `ENDLESS_RUNTIME_PASS`, `ENDLESS_INTEGRATION_PASS`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add game/scripts/endless/endless_runtime.gd game/tests/test_endless_runtime.gd game/tests/test_endless_integration.gd
@@ -172,13 +172,13 @@ git commit -m "refactor(endless): remove pre_candy_decider DDA prefill"
 - `BoardSolver.replay_solve(size: int, regions: Array, _solution: Array, givens: Array = []) -> Dictionary`: starts with empty board, `placed_count: int = 0`.
 - `PlaySession`: removes GIVEN setup loop in `_build_board()` and `restore()`. `is_preset(r, c)` returns `false`.
 
-- [ ] **Step 1: Modify `board_solver.gd`**
+- [x] **Step 1: Modify `board_solver.gd`**
 
 In `game/scripts/core/board_solver.gd`:
 - In `compute_cell_ranks`: make `givens: Array = []` optional, remove the loop filling `work_board` with `CellModel.CellKind.GIVEN`.
 - In `replay_solve`: make `givens: Array = []` optional, remove the loop placing `CellModel.CellKind.GIVEN`. Initialize `var placed_count: int = 0`.
 
-- [ ] **Step 2: Modify `play_session.gd`**
+- [x] **Step 2: Modify `play_session.gd`**
 
 In `game/scripts/input/play_session.gd`:
 - In `_build_board(level: Dictionary) -> Array`: remove `for g in level.get("givens", []): ... board[gr][gc] = CellModel.CellKind.GIVEN`.
@@ -187,7 +187,7 @@ In `game/scripts/input/play_session.gd`:
 - In `clear_cell(row, col)`: remove `CellModel.CellKind.GIVEN` from match arms.
 - In `restore(session_data, level_data)`: remove `for g in level_data.get("givens", []): ... session.board[gr][gc] = CellModel.CellKind.GIVEN`.
 
-- [ ] **Step 3: Update `test_board_solver.gd`, `test_play_session.gd`, `test_hint_engine.gd`, `test_session_store.gd`**
+- [x] **Step 3: Update `test_board_solver.gd`, `test_play_session.gd`, `test_hint_engine.gd`, `test_session_store.gd`**
 
 In `game/tests/test_board_solver.gd`:
 - Update `givens` usage in test cases.
@@ -198,7 +198,7 @@ In `game/tests/test_hint_engine.gd`:
 In `game/tests/test_session_store.gd`:
 - Update any GIVEN references.
 
-- [ ] **Step 4: Run tests to verify**
+- [x] **Step 4: Run tests to verify**
 
 Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_board_solver.gd`
@@ -206,7 +206,7 @@ Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_hint_engine.gd`
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_session_store.gd`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add game/scripts/core/board_solver.gd game/scripts/input/play_session.gd game/tests/test_board_solver.gd game/tests/test_play_session.gd game/tests/test_hint_engine.gd game/tests/test_session_store.gd
@@ -232,7 +232,7 @@ git commit -m "refactor(core): remove givens handling from board_solver and play
 - `puzzle_board._draw_cell_candy(rect, r, c)`: removes `is_given` argument.
 - `puzzle_board_painter.gd`: static pass checks only `k == CellModel.CellKind.CANDY`.
 
-- [ ] **Step 1: Modify `candy_cell_drawer.gd` and `puzzle_board.gd`**
+- [x] **Step 1: Modify `candy_cell_drawer.gd` and `puzzle_board.gd`**
 
 In `candy_cell_drawer.gd`:
 ```gdscript
@@ -246,7 +246,7 @@ func _draw_cell_candy(rect: Rect2, r: int = -1, c: int = -1) -> void:
 	CandyCellDrawer.draw(self, rect, _content_scale(), _candy_tex, candy_frame(r, c) if r >= 0 else [], _candy_anim.progress_of(Vector2i(r, c)) if _candy_anim != null and r >= 0 else 0.0)
 ```
 
-- [ ] **Step 2: Modify `puzzle_board_painter.gd` and `candy_anim_state.gd`**
+- [x] **Step 2: Modify `puzzle_board_painter.gd` and `candy_anim_state.gd`**
 
 In `puzzle_board_painter.gd`:
 - Line 165: `if k == CellModel.CellKind.CANDY:`
@@ -255,7 +255,7 @@ In `puzzle_board_painter.gd`:
 In `candy_anim_state.gd`:
 - Line 23: `if k == CellModel.CellKind.CANDY: rest(Vector2i(r, c))`
 
-- [ ] **Step 3: Clean up tokens in theme files**
+- [x] **Step 3: Clean up tokens in theme files**
 
 In `game/scripts/theme/layout_tokens.gd`:
 - Remove `const GIVEN_HALO_RATIO := 0.38` (or set unused).
@@ -264,7 +264,7 @@ In `game/scripts/theme/candy_palette.gd`:
 In `game/scripts/theme/palette.gd`:
 - Remove `GIVEN_CANDY`, `GIVEN_HALO`, `GIVEN_BG_TINT` and match arm `4: return GIVEN_BG_TINT`.
 
-- [ ] **Step 4: Update affected tests**
+- [x] **Step 4: Update affected tests**
 
 In `game/tests/test_candy_board.gd`:
 - Remove givens from test board level dict.
@@ -275,7 +275,7 @@ In `game/tests/test_board_entry.gd`:
 In `game/tests/test_screens.gd`:
 - Remove givens from mock level dicts.
 
-- [ ] **Step 5: Run tests to verify**
+- [x] **Step 5: Run tests to verify**
 
 Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_candy_board.gd`
@@ -283,7 +283,7 @@ Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_board_entry.gd`
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_screens.gd`
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add game/scripts/screens/ game/scripts/theme/ game/tests/test_candy_board.gd game/tests/test_candy_anim_state.gd game/tests/test_board_entry.gd game/tests/test_screens.gd
@@ -309,7 +309,7 @@ git commit -m "refactor(render): remove given halo drawing and theme tokens"
 - `TutorialTargets.resolve`: removes `"excluded_by_given"` branch.
 - `puzzle_screen.gd`: `required` candies to place is simply `int(session.level.get("size", 0))`.
 
-- [ ] **Step 1: Modify `tutorial_tips.gd` and `tutorial_targets.gd`**
+- [x] **Step 1: Modify `tutorial_tips.gd` and `tutorial_targets.gd`**
 
 In `tutorial_tips.gd`:
 - Remove lines 21-22:
@@ -320,7 +320,7 @@ In `tutorial_tips.gd`:
 In `tutorial_targets.gd`:
 - Remove `"excluded_by_given"` match case and unused helper logic for givens.
 
-- [ ] **Step 2: Modify `puzzle_screen.gd`, `puzzle_tutorial.gd`, and debug screens**
+- [x] **Step 2: Modify `puzzle_screen.gd`, `puzzle_tutorial.gd`, and debug screens**
 
 In `puzzle_screen.gd`:
 - Line 245: `var required: int = int(session.level.get("size", 0))`
@@ -331,14 +331,14 @@ In `puzzle_debug_bar.gd`:
 In `debug_endless_panel.gd` & `debug_level_picker.gd`:
 - Remove `giv_cnt` display.
 
-- [ ] **Step 3: Update remaining test suites**
+- [x] **Step 3: Update remaining test suites**
 
 - `test_tutorial_tips.gd`: remove assertion on `C-given`.
 - `test_tutorial_targets.gd`: remove `_test_excluded_by_given()`.
 - `test_candy_counter_animator.gd`: update test to not rely on given for zone reordering.
 - `test_touch_guard_integration.gd`, `test_integration.gd`, `test_sfx_gameplay.gd`, `test_snapshot_builder.gd`, `test_debug_features.gd`: remove `CellModel.CellKind.GIVEN` references.
 
-- [ ] **Step 4: Run all updated tests**
+- [x] **Step 4: Run all updated tests**
 
 Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_tutorial_tips.gd`
@@ -346,7 +346,7 @@ Run:
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_integration.gd`
 `& "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe" --headless --path game --script res://tests/test_sfx_gameplay.gd`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add game/scripts/campaign/ game/scripts/screens/ game/tests/
@@ -370,7 +370,7 @@ git commit -m "refactor(campaign): remove C-given tip and update gameplay UI"
 - `bank_4x4.json` Rank 1 Index 1: `"givens": []`, `"steps": 4`, `"profile": [4, 0, 0]`, `"pidHash": "7948b573"`, `"logicTrace"` with 4 S2 steps.
 - `level_validator.gd`: `_check_schema` does not enforce `givens`; removes given geometry validation loop.
 
-- [ ] **Step 1: Update `game/data/banks/bank_4x4.json` Rank 1 Index 1**
+- [x] **Step 1: Update `game/data/banks/bank_4x4.json` Rank 1 Index 1**
 
 Replace level at Rank 1 Index 1:
 ```json
@@ -392,11 +392,11 @@ Replace level at Rank 1 Index 1:
 }
 ```
 
-- [ ] **Step 2: Regenerate `bank_4x4.pace.json`**
+- [x] **Step 2: Regenerate `bank_4x4.pace.json`**
 
 Run: `python -B GDD/tools/generate_pace.py --bank game/data/banks/bank_4x4.json --output game/data/banks/bank_4x4.pace.json`
 
-- [ ] **Step 3: Modify `level_validator.gd` and `board_transform.gd`**
+- [x] **Step 3: Modify `level_validator.gd` and `board_transform.gd`**
 
 In `level_validator.gd`:
 - `_check_schema`: remove error for missing `givens` (optional).
@@ -404,11 +404,11 @@ In `level_validator.gd`:
 In `board_transform.gd`:
 - Keep `transform_givens` if `givens` present or clean up safely.
 
-- [ ] **Step 4: Modify `tools/validate_content.py` and `tools/validate_full_content.py`**
+- [x] **Step 4: Modify `tools/validate_content.py` and `tools/validate_full_content.py`**
 
 - Remove given validation error loops.
 
-- [ ] **Step 5: Run Python unit tests and content validators**
+- [x] **Step 5: Run Python unit tests and content validators**
 
 Run:
 `python -B -m unittest discover tools/tests -p "test_*.py"`
@@ -416,7 +416,7 @@ Run:
 `python -B tools/validate_content.py game/data/campaigns/demo_30.json --bank game/data/banks/bank_4x4.json --bank game/data/banks/bank_5x5.json --bank game/data/banks/bank_6x6.json`
 Expected: PASS, VALID
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add game/data/banks/bank_4x4.json game/data/banks/bank_4x4.pace.json game/scripts/content/ tools/
@@ -430,7 +430,7 @@ git commit -m "fix(content): update bank_4x4 rank 1 index 1 to 4-step trace and 
 **Files:**
 - Test: All suites via `tools/verify.py`
 
-- [ ] **Step 1: Run clean-room check (no reference names in scripts)**
+- [x] **Step 1: Run clean-room check (no reference names in scripts)**
 
 ```powershell
 python -c "import subprocess, sys
@@ -442,12 +442,12 @@ print('Clean-room check: PASS')
 "
 ```
 
-- [ ] **Step 2: Run full verification script**
+- [x] **Step 2: Run full verification script**
 
 Run: `python -B tools/verify.py --godot "C:/Users/khoat/AppData/Local/Microsoft/WinGet/Packages/GodotEngine.GodotEngine_Microsoft.Winget.Source_8wekyb3d8bbwe/Godot_v4.7.2-stable_win64_console.exe"`
 Expected: All checks PASS.
 
-- [ ] **Step 3: Commit any final cleanup and update STATUS**
+- [x] **Step 3: Commit any final cleanup and update STATUS**
 
 Update `docs/STATUS.md` recording the removal of GIVEN mechanics.
 ```bash
