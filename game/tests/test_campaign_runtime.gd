@@ -168,7 +168,7 @@ func _test_tutorial() -> void:
 	var runtime := _runtime("tutorial")
 	_check(runtime.boot().ok, "tutorial boot")
 	var guide := TutorialGuide.new(runtime.progress)
-	_check(guide.has_level("L01") and not guide.has_level("L03"), "L01 tutorial")
+	_check(not guide.has_level("L01"), "campaign boards come from the bank; onboarding has its own screen (RST-028)")
 	var seen: Array = []
 	guide.step_seen.connect(func(id): seen.append(id))
 	guide.mark_seen("L1-0")

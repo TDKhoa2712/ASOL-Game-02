@@ -4,13 +4,13 @@ extends Control
 signal play_pressed()
 signal endless_pressed()
 signal options_pressed()
-signal tutorial_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const DebugLevelPicker = preload("res://scripts/screens/debug_level_picker.gd")
 const HelpScreen = preload("res://scripts/screens/help_screen.gd")
+const TutorialScreen = preload("res://scripts/screens/tutorial_screen.gd")
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const ProgressBarWidget = preload("res://scripts/ui/progress_bar.gd")
@@ -186,6 +186,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	endless_runtime = endless_rt
 	_ensure_nodes()
 	_update_ui()
+	TutorialScreen.attach(self, rt) # mandatory until finished once (RST-028)
 	if debug_picker != null and rt != null:
 		var pl: Array = rt._playlist if "_playlist" in rt else []
 		var b: Variant = rt.bank if "bank" in rt else null
@@ -280,7 +281,7 @@ func _on_help() -> void:
 	_help_overlay = HelpScreen.new()
 	_help_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_help_overlay.back_pressed.connect(_close_help)
-	_help_overlay.replay_tutorial_pressed.connect(func() -> void: _close_help(); tutorial_pressed.emit())
+	_help_overlay.replay_tutorial_pressed.connect(func() -> void: _close_help(); TutorialScreen.attach(self, runtime, true))
 	add_child(_help_overlay)
 
 func _close_help() -> void:

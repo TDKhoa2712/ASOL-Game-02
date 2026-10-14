@@ -19,7 +19,7 @@ func _init() -> void:
 		quit(1)
 
 func _levels() -> Dictionary:
-	return TutorialTargets.load_script().get("levels", {})
+	return TutorialTargets.load_script("res://tests/fixtures/tutorial_inlevel.json").get("levels", {})
 
 func _test_script_levels_are_unique() -> void:
 	var levels := _levels()

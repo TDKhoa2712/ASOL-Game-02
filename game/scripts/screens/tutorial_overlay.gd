@@ -1,11 +1,12 @@
 # Draws tutorial-only marks over the board without touching the session:
-# faded X's that illustrate what a candy rules out, and number badges on the
-# board edge for the row/column the lesson names. Cells themselves are never
-# lit (RST-004); input always passes through.
+# faded X's, row/column number badges, and for the onboarding puzzle a dimmed
+# board with pulsing rings on the cells to touch (RST-028). Input always
+# passes through.
 extends Control
 
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 const X_COLOR := Color(0.35, 0.24, 0.12, 0.38)
 const X_WIDTH_RATIO := 0.07
@@ -17,11 +18,17 @@ var _cell_rect_fn: Callable = Callable()
 var _faded: Array = []
 var _rows: Array = []
 var _cols: Array = []
+var _lit: Array = []
+var _rings: Array = []
+var _pulse: float = 0.0
+const DIM_COLOR := Color(0.16, 0.13, 0.11, 0.72)
+const RING_COLOR := Color(1.0, 0.85, 0.4)
 
 func _init() -> void:
 	name = "TutorialOverlay"
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	clip_contents = false
+	set_process(false)
 
 func bind(cell_rect_fn: Callable) -> void:
 	_cell_rect_fn = cell_rect_fn
@@ -34,6 +41,27 @@ func show_marks(faded: Array, rows: Array, cols: Array) -> void:
 
 func clear() -> void:
 	show_marks([], [], [])
+	show_spotlight([], [])
+
+# Onboarding: every cell not in lit is darkened; rings pulse on the targets.
+func show_spotlight(lit: Array, rings: Array) -> void:
+	_lit = lit.duplicate()
+	_rings = rings.duplicate()
+	set_process(not _rings.is_empty() and LayoutTokens.motion_enabled)
+	queue_redraw()
+
+func dimmed_cells(size: int) -> Array:
+	var out: Array = []
+	if _lit.is_empty():
+		return out
+	for r in range(size):
+		for c in range(size):
+			if not _lit.has([r, c]): out.append([r, c])
+	return out
+
+func _process(delta: float) -> void:
+	_pulse = fmod(_pulse + delta, 1.2)
+	queue_redraw()
 
 func faded_cells() -> Array: return _faded.duplicate()
 func axis_rows() -> Array: return _rows.duplicate()
@@ -42,6 +70,15 @@ func axis_cols() -> Array: return _cols.duplicate()
 func _draw() -> void:
 	if not _cell_rect_fn.is_valid():
 		return
+	var board: Control = _cell_rect_fn.get_object() as Control
+	var n: int = int(board._session.level.get("size", 0)) if board != null and board.get("_session") != null else 0
+	for cell in dimmed_cells(n):
+		var rect := _local(_cell_rect_fn.call(int(cell[0]), int(cell[1])))
+		draw_style_box(_dim_box(rect.size.x), rect)
+	for cell in _rings:
+		var rect := _local(_cell_rect_fn.call(int(cell[0]), int(cell[1])))
+		var t := _pulse / 1.2
+		draw_arc(rect.get_center(), rect.size.x * (0.42 + 0.12 * t), 0.0, TAU, 48, Color(RING_COLOR, 1.0 - t), maxf(4.0, rect.size.x * 0.05), true)
 	for cell in _faded:
 		_draw_x(_local(_cell_rect_fn.call(int(cell[0]), int(cell[1]))))
 	for r in _rows:
@@ -59,6 +96,12 @@ func _local(board_rect: Rect2) -> Rect2:
 	if board == null:
 		return board_rect
 	return Rect2(board_rect.position + board.global_position - global_position, board_rect.size)
+
+func _dim_box(width: float) -> StyleBoxFlat:
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = DIM_COLOR
+	sb.set_corner_radius_all(int(width * 0.16))
+	return sb
 
 func _draw_x(rect: Rect2) -> void:
 	var inset := rect.size * X_INSET_RATIO

@@ -2,6 +2,17 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-028 — Tutorial bắt buộc trên màn riêng trước khi chơi
+
+Ngày 2026-10-14. Thay phần L01/L02 của RST-027; giữ gợi ý theo ngữ cảnh. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial).
+
+- **Bắt buộc:** lần đầu mở app, lớp tutorial phủ Home và chặn mọi thao tác cho tới khi xong; không có Bỏ qua. Xong thì ghi `ONBOARD` vào `tutorialSeenIds`, không hiện lại. Trợ giúp → Chơi lại hướng dẫn mở bản thực hành, không ghi progress.
+- **Bàn riêng 4×4** `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]` (`tutorial_flow.gd`), 7 bước: đặt kẹo ô duy nhất → luật luống (OK) → gạch hàng/cột → kẹo thứ 2 xuất hiện, vuốt gạch ô chạm → luống còn 1 ô → kẹo cuối (nút Gợi ý) → pháo giấy + Tiếp tục.
+- **Hiệu ứng:** ô ngoài bước bị làm tối, ô đích có vòng sáng nhịp và bàn tay động; nền tối khi chỉ sáng một phần. Đây là ngoại lệ của RST-004, chỉ trong tutorial.
+- **Không phạt:** chỉ ô đích nhận thao tác; thao tác khác bị bỏ qua và bàn rung nhẹ. Không tim, không lỗi.
+- **L01/L02 campaign** trở lại bàn từ bank với luật thường; kịch bản trong màn cũ chuyển thành fixture test.
+- **Nguồn tham khảo:** luồng/hiệu ứng tham khảo từ ảnh trong `scratch/img-tutor` (game khác); hình, câu chữ, bàn là của CanDoKu.
+
 ## RST-027 — Làm lại tutorial: bàn viết tay, dạy luật qua auto-mark, trải trên L01/L02
 
 Ngày 2026-10-13. Đặc tả: [GDD 03 §4](../GDD/03-luong-man-hinh-va-ux.md#4-tutorial). Thay bảng T1–T6 cũ.

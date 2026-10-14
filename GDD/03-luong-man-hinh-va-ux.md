@@ -71,32 +71,23 @@ Cửa sổ 350 ms đo từ lần nhấc thứ nhất đến lần chạm xuống
 
 ## 4. Tutorial
 
-Quyết định: RST-027 trong [DECISIONS](../docs/DECISIONS.md). Nguyên tắc: dạy luật qua hậu quả (auto-mark GR-34 sau kẹo đầu tiên), mỗi bước một câu ≤ 60 ký tự và một hành động, không tô sáng ô (RST-004).
+Quyết định: RST-028 (thay phần L01/L02 của RST-027) trong [DECISIONS](../docs/DECISIONS.md).
 
-**Bàn:** L01/L02 là bàn 4×4 viết tay trong `game/data/tutorial/`, không lấy từ bank, không transform. L01 (`ABCC/AACC/AADD/DDDD`) không có given, có một vùng 1 ô (vùng B); sau kẹo B còn vùng C là S2 thuần. L02 (`ADDD/ADDD/CDBB/CCBB`) không có given; bước đầu là S3 cần thiết theo GR-07: vùng A nằm gọn trong cột 1 nên hai ô liền nhau ở hàng 3–4 cột 1 bị loại, kéo một nét là đủ. 4×4 với 1 given không bao giờ cần S3, nên bài học given chuyển thành gợi ý C-given. Dữ liệu: `game/data/tutorial/tutorial.json`. Script trỏ mục tiêu theo nghĩa (`{"region":"B"}`, `{"trace_step":n}`, `{"s3_eliminated":k}`); runtime đổi ra (r,c). `{r}`/`{c}` trong lời nhắc là số 1-based.
+**Bắt buộc, màn riêng:** lần đầu mở app, lớp tutorial phủ Home, chặn mọi thao tác, không có Bỏ qua. Xong ghi `ONBOARD` vào progress và không hiện lại. Trợ giúp → “Chơi lại hướng dẫn” mở bản thực hành, không ghi progress. Campaign L01/L02 dùng bàn bank, luật thường.
 
-**Tiến trình:** bước hiện tại được **suy ra** từ trạng thái bàn + `tutorialSeenIds`, không phải chuỗi cứng. Hoàn thành `done_when` trước khi bước hiện ra thì bỏ qua bước đó. Mỗi bước đạt được lưu vào progress. Đóng app giữa chừng: khôi phục board/`tutorialSeenIds` rồi suy lại bước, không phát sinh thao tác ảo.
+**Bàn:** 4×4 `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]`, một nghiệm duy nhất (`tutorial_flow.gd`, `test_tutorial_flow.gd`).
 
-### L01
+| Bước | Ô sáng | Lời nhắc | Qua khi |
+| --- | --- | --- | --- |
+| 1 | ô (1,2) — luống 1 ô | “**Chạm nhanh 2 lần** vào ô để đặt kẹo.” + tay chạm đôi | đặt kẹo |
+| 2 | cả bàn | “Mỗi **luống màu** có đúng một viên kẹo.” | OK |
+| 3 | hàng 1 + cột 2 | “Mỗi **hàng và cột** cũng chỉ có một viên. Chạm vào các ô sáng để gạch bỏ.” | gạch hết 6 ô |
+| 4 | kẹo thứ 2 hiện ở (4,3) + 8 ô quanh | “Kẹo không bao giờ chạm nhau, **kể cả chạm góc**. Vuốt qua các ô sáng để gạch bỏ.” + tay vuốt | gạch hết ô chạm còn trống |
+| 5 | luống C | “Luống này **chỉ còn một ô**. Kẹo phải ở đó!” | đặt kẹo (2,4) |
+| 6 | cả bàn | “Tìm **viên kẹo cuối cùng**.” + nút “Chạm để xem gợi ý” (hiện tay) | đặt kẹo (3,1) |
+| 7 | cả bàn | “Giỏi lắm! Bạn đã sẵn sàng chơi thật rồi.” + pháo giấy | Tiếp tục |
 
-| Bước | Kích hoạt | Lời nhắc | Qua khi | Dạy |
-| --- | --- | --- | --- | --- |
-| L1-0 | Vào bàn | Thẻ mascot “Tìm 4 viên kẹo giấu trong vườn!”, 4 icon luật nháy lần lượt | Chạm “Bắt đầu” | Mục tiêu |
-| L1-1 | Sau L1-0 | “Luống B chỉ có 1 ô — kẹo ở đó! Chạm nhanh 2 lần: hàng {r}, cột {c}.” | Kẹo vùng B đúng | Chạm đôi, luật vùng |
-| L1-2 | Sau CandyFound | “Ô mờ cùng hàng, cột, luống và sát chéo không thể có kẹo.” X mờ minh họa (chỉ vẽ, không đổi state) + icon luật sáng | “Hiểu rồi” hoặc 4 s | Bốn luật |
-| L1-3 | Sau L1-2 | “Chạm 1 lần để đánh X ô chắc không có kẹo: hàng {r}, cột {c}.” | MarkX đúng ô (ô loại được, chưa locked) | Chạm đơn = X |
-| L1-4 | Sau L1-3 | “Chạm lần nữa để xóa X.” | ClearX ô đó | Xóa X |
-| L1-5 | Sau L1-4 | “Luống {region} chỉ còn 1 ô trống. Tìm kẹo đi!” (không nêu tọa độ) | Kẹo vùng đó đúng | S2 tự tìm |
-| L1-6 | — | Không nhắc | Thắng | Tự chơi |
-
-Miễn phạt chỉ áp dụng các ô được gọi tọa độ (L1-1, L1-3/L1-4), đến khi xong hoặc bỏ qua tutorial: thử sai ô đó không đặt `x_error`, không trừ tim/tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
-
-### L02
-
-| Bước | Kích hoạt | Lời nhắc | Qua khi | Dạy |
-| --- | --- | --- | --- | --- |
-| L2-1 | Vào bàn | “Luống trên cùng nằm gọn trong cột {c}, nên kẹo của cột {c} thuộc luống đó. Giữ và kéo từ hàng {r} xuống để đánh X phần còn lại.” | Một nét đánh X ≥ 2 ô thuộc tập loại S3; bỏ qua nếu đã đặt kẹo | Kéo X, S3 |
-| L2-2 | Sau L2-1 | “Bí? Bấm Gợi ý, nó chỉ dần từng bước.” Nút Hint nảy | Mở rồi đóng/áp dụng Hint | Hint |
+Ô không sáng bị làm tối; ô đích có vòng sáng nhịp; nền tối khi chỉ sáng một phần (ngoại lệ RST-004, chỉ tutorial). Chỉ ô đích nhận thao tác; thao tác khác bị bỏ qua, bàn rung nhẹ; không tim, không lỗi. Giảm chuyển động: tay đứng yên, không pháo giấy.
 
 ### Gợi ý theo ngữ cảnh (L03 trở đi, mỗi loại một lần)
 

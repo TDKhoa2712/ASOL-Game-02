@@ -23,7 +23,12 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
 
-## Tutorial L01/L02 + gợi ý ngữ cảnh (2026-10-14, `feat/v1.0.1/tutorial`)
+## Tutorial bắt buộc (2026-10-14, `feat/v1.0.1/tutorial`)
+
+- RST-028: màn tutorial riêng phủ Home cho tới khi xong (`tutorial_flow.gd`, `tutorial_screen.gd`), 7 bước theo luồng tham khảo `scratch/img-tutor`; Trợ giúp chơi lại dạng thực hành. L01/L02 về bàn bank. Suite `test_tutorial_flow`, `test_tutorial_screen`, `test_tutorial_campaign` PASS; đã chụp màn chạy thật 540×960.
+- Còn lại: QA thiết bị (độ to chữ, nhịp tay, rung) và duyệt bản dịch.
+
+## Tutorial L01/L02 + gợi ý ngữ cảnh (2026-10-14, `feat/v1.0.1/tutorial`) — thay bởi mục trên, giữ phần gợi ý ngữ cảnh
 
 - RST-027 / GDD 03 §4: bàn viết tay `game/data/tutorial/tutorial.json` (L01 `ABCC/AACC/AADD/DDDD`, L02 `ADDD/ADDD/CDBB/CCBB`), guide suy bước từ bàn, miễn phạt ô được gọi tọa độ, Bỏ qua, gợi ý C-err/heart1/undo/given/size5/s3/idle, Trợ giúp → Chơi lại hướng dẫn. Chuỗi 7 ngôn ngữ.
 - Suite mới PASS: `test_tutorial_targets`, `test_tutorial_guide`, `test_tutorial_tips`, `test_tutorial_campaign`, `test_tutorial_screen`; cập nhật `test_play_session`, `test_campaign_runtime`, `test_integration`.
