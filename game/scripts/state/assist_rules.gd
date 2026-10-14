@@ -22,7 +22,8 @@ static func sanitize(raw: Variant) -> Dictionary:
 	out.streakDays = _int_in(raw.get("streakDays"), 0, CYCLE_DAYS - 1, 0)
 	var date := str(raw.get("lastStreakDate", ""))
 	out.lastStreakDate = date if _unix(date) != INVALID_GAP else ""
-	out.totalStreak = _int_in(raw.get("totalStreak"), 0, 100000, 0)
+	# Saves from before totalStreak existed: the running cycle is a lower bound.
+	out.totalStreak = maxi(_int_in(raw.get("totalStreak"), 0, 100000, 0), out.streakDays)
 	out.bestStreak = maxi(_int_in(raw.get("bestStreak"), 0, 100000, 0), out.totalStreak)
 	return out
 
@@ -78,8 +79,11 @@ static func streak_view(data: Dictionary, today_date: String) -> Dictionary:
 	var gap := day_gap(last, today_date) if last != "" else INVALID_GAP
 	var alive := gap == 0 or gap == 1
 	var count := int(data.get("totalStreak", 0)) if alive else 0
+	var cycle := int(data.get("streakDays", 0)) if alive else 0
+	if gap == 0 and cycle == 0 and count > 0:
+		cycle = CYCLE_DAYS  # today's win completed the pack
 	return {"count": count, "best": int(data.get("bestStreak", 0)), "kept_today": gap == 0,
-		"at_risk": count > 0 and gap != 0, "cycle_done": int(data.get("streakDays", 0)) if alive else 0}
+		"at_risk": count > 0 and gap != 0, "cycle_done": cycle}
 
 static func day_gap(from_date: String, to_date: String) -> int:
 	var a := _unix(from_date)

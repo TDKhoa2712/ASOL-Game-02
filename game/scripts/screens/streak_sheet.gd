@@ -71,7 +71,7 @@ func open(view: Dictionary) -> void:
 	count_label.add_theme_color_override("font_color", ON_COLOR if kept else INK)
 	days_label.text = tr("streak.days")
 	best_label.text = tr("streak.best") % int(view.get("best", 0))
-	left_label.text = tr("streak.left") % (7 - done)
+	left_label.text = tr("streak.gift_got") if done >= 7 else tr("streak.left") % (7 - done)
 	if kept: status_label.text = tr("streak.kept")
 	elif count > 0: status_label.text = tr("streak.at_risk")
 	else: status_label.text = tr("streak.start")

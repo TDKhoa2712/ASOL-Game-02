@@ -42,6 +42,9 @@ func _init() -> void:
 	check(sheet.status_label.text == title.tr("streak.kept"), "kept status")
 	check(sheet.best_label.text == title.tr("streak.best") % 2, "best line")
 
+	sheet.open({"count": 7, "best": 7, "kept_today": true, "at_risk": false, "cycle_done": 7})
+	check(sheet.cells.filter(func(c): return c.get_meta("done", false)).size() == 7, "gift day fills all cells")
+	check(sheet.left_label.text == title.tr("streak.gift_got"), "gift received line")
 	var bare: Control = (load("res://scenes/title.tscn") as PackedScene).instantiate()
 	root.add_child(bare)
 	bare.setup(null)

@@ -101,3 +101,10 @@ func _test_total_and_view() -> void:
 	check(s.totalStreak == 4 and s.bestStreak == 4, "sanitize best >= total")
 	check(Rules.sanitize({"totalStreak": -3}).totalStreak == 0, "sanitize negative total")
 	check(Rules.streak_view(Rules.new_data(), "2026-05-01").count == 0, "fresh view zero")
+	var legacy := Rules.sanitize({"streakDays": 3, "lastStreakDate": "2026-05-01"})
+	check(legacy.totalStreak == 3 and legacy.bestStreak == 3, "legacy save: total covers the cycle")
+	var gift := Rules.new_data()
+	for day in range(1, 8): gift = Rules.record_win(gift, "2026-07-%02d" % day).data
+	var gv := Rules.streak_view(gift, "2026-07-07")
+	check(gv.cycle_done == 7, "gift day shows a full cycle")
+	check(Rules.streak_view(gift, "2026-07-08").cycle_done == 0, "next day starts an empty cycle")
