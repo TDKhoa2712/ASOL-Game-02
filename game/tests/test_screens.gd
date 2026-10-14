@@ -73,7 +73,7 @@ func _create_sample_level() -> Dictionary:
 		"size": 4,
 		"regions": ["AABB", "ABBB", "CCBB", "CCDB"],
 		"solution": [1, 3, 0, 2],
-		"givens": [{"r": 0, "c": 1}],
+		"givens": [],
 		"id": "1-1",
 		"hash": "test_sample_hash",
 	}

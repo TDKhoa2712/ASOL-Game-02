@@ -20,7 +20,7 @@ func sync(board: Array) -> void:
 	for r in board.size():
 		for c in board[r].size():
 			var k: int = int(board[r][c])
-			if k == 2 or k == 4: rest(Vector2i(r, c)) # CellKind.CANDY / GIVEN
+			if k == 2: rest(Vector2i(r, c)) # CellKind.CANDY
 
 func rest(cell: Vector2i) -> void:
 	var cycle: int = _cells[cell].cycle + 1 if _cells.has(cell) else 0

@@ -114,7 +114,7 @@ func _test_motion_off() -> void:
 func _test_sync_rests_placed_cells() -> void:
 	var s := CandyAnimState.new(META)
 	s.sync([[0, 2], [4, 3]])
-	_assert(s.frame_of(Vector2i(0, 1)) == ["idle", 0] and s.frame_of(Vector2i(1, 0)) == ["idle", 0], "sync rests candy+given")
+	_assert(s.frame_of(Vector2i(0, 1)) == ["idle", 0] and s.frame_of(Vector2i(1, 0)) == ["idle", 0], "sync rests placed candy")
 	_assert(not s._cells.has(Vector2i(1, 1)), "sync skips ERROR cells")
 
 func _test_motion_toggled_live() -> void:

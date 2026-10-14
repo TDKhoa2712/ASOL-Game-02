@@ -27,7 +27,7 @@ func _sample_level() -> Dictionary:
 		"size": 4,
 		"regions": ["AABB", "ABBB", "CCBB", "CCDB"],
 		"solution": [1, 3, 0, 2],
-		"givens": [{"r": 0, "c": 1}],
+		"givens": [],
 		"id": "touch-guard-integration",
 		"hash": "touch_guard_integration_hash",
 	}

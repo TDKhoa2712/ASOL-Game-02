@@ -156,17 +156,17 @@ static func draw(board: Variant) -> void:
 				if cell_scale != 1.0:
 					board.draw_set_transform(Vector2.ZERO)
 
-	# Pass 4a: Static candy (placed and givens)
+	# Pass 4a: Static candy (placed)
 	for r in range(count):
 		for c in range(count):
 			var cell_scale: float = board.cell_entry_scale(r, c)
 			if cell_scale <= 0.0: continue
 			var k: int = int(kinds[r][c])
-			if k == CellModel.CellKind.CANDY or k == CellModel.CellKind.GIVEN:
+			if k == CellModel.CellKind.CANDY:
 				var cell_rect: Rect2 = board._cell_rect(r, c)
 				if cell_scale != 1.0:
 					board.draw_set_transform(cell_rect.get_center() * (1.0 - cell_scale), 0.0, Vector2.ONE * cell_scale)
-				board._draw_cell_candy(cell_rect, k == CellModel.CellKind.GIVEN, r, c)
+				board._draw_cell_candy(cell_rect, r, c)
 				if cell_scale != 1.0:
 					board.draw_set_transform(Vector2.ZERO)
 
@@ -213,7 +213,7 @@ static func draw(board: Variant) -> void:
 			if r < sol.size():
 				var sol_c: int = int(sol[r])
 				var k: int = int(kinds[r][sol_c])
-				if k != CellModel.CellKind.CANDY and k != CellModel.CellKind.GIVEN:
+				if k != CellModel.CellKind.CANDY:
 					board._draw_solution_hint(board._cell_rect(r, sol_c))
 
 	if not board._highlight_set.is_empty():
