@@ -271,11 +271,12 @@ func _on_mistake(_row: int, _col: int, _clash: String) -> void:
 	if board != null:
 		board.redraw()
 func _on_level_won(hold: bool = true) -> void:
-	assist_ctl.on_level_won(session, _is_custom)
+	assist_ctl.on_round_finished(session, _is_custom)
 	if board != null: board.play_win_bounce()
 	if hold and not await _hold_result(RESULT_HOLD_WIN): return
 	level_done.emit(true)
 func _on_level_failed(hold: bool = true) -> void:
+	assist_ctl.on_round_finished(session, _is_custom)
 	if board != null: board.play_sad()
 	# Persist failure before waiting; closing the app during the fall must
 	# restore a failed session rather than an active round with zero hearts.

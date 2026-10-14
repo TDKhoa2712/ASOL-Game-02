@@ -12,7 +12,7 @@ func _init() -> void:
 	var yesterday := Time.get_date_string_from_unix_time(Rules._unix(today) - 86400)
 	var dir := OS.get_user_data_dir().path_join("streak_ui_%s" % Time.get_ticks_usec())
 	var inv := Inventory.new(dir)
-	inv.on_level_won(yesterday)  # streak 1, not kept today -> at risk
+	inv.on_round_finished(yesterday)  # streak 1, not kept today -> at risk
 
 	var title: Control = (load("res://scenes/title.tscn") as PackedScene).instantiate()
 	title.assists = inv
@@ -34,7 +34,7 @@ func _init() -> void:
 	sheet.close()
 	check(not sheet.visible, "sheet closes")
 
-	inv.on_level_won(today)
+	inv.on_round_finished(today)
 	chip.refresh()
 	check(chip.count_label.text == "2" and chip.icon_rect.modulate == StreakChip.ON_COLOR, "orange after today's win")
 	check(not chip.at_risk, "not at risk once kept")

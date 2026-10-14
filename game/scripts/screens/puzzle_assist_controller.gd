@@ -48,11 +48,11 @@ func on_place(session: Variant, coordinator: Variant) -> void:
 		return
 	coordinator.place_candy(session, cell)
 
-func on_level_won(session: Variant, is_custom: bool) -> Dictionary:
+func on_round_finished(session: Variant, is_custom: bool) -> Dictionary:
 	if inventory == null or is_custom or session == null:
 		return {}
 	burst_played = false
-	var reward: Dictionary = inventory.on_level_won()
+	var reward: Dictionary = inventory.on_round_finished()
 	if not reward.is_empty() and _screen != null:
 		AssistDock.show_toast(_screen, _screen.tr("assist.reward") % [int(reward.get("hint", 0)), int(reward.get("place", 0))], 0.9 if burst_played else 0.0)
 	return reward

@@ -31,7 +31,8 @@ func grant(kind: String, amount: int) -> int:
 	_commit(AssistRules.add(data, kind, amount), [kind])
 	return count(kind) - before
 
-func on_level_won(today: String = "") -> Dictionary:
+# Any finished round (won or lost) keeps the streak; future modes call this too.
+func on_round_finished(today: String = "") -> Dictionary:
 	var res := AssistRules.record_win(data, today if today != "" else AssistRules.today())
 	if res.data == data:
 		return {}

@@ -49,9 +49,23 @@ func _init() -> void:
 	check(screen2.assist_ctl.popup.visible, "empty place opens popup")
 	check(screen2.session.remaining_candies() == 4, "nothing placed when empty")
 	# Campaign-style win records streak once even if won handler runs twice
-	screen2.assist_ctl.on_level_won(screen2.session, false)
-	screen2.assist_ctl.on_level_won(screen2.session, false)
+	screen2.assist_ctl.on_round_finished(screen2.session, false)
+	screen2.assist_ctl.on_round_finished(screen2.session, false)
 	check(inv2.data.streakDays == 1, "resume won twice records once")
+	# A lost round also keeps the streak; restoring it does not count twice.
+	var screen3 := PuzzleScreen.new()
+	var inv3 := Inventory.new(dir + "_c")
+	screen3.assists = inv3
+	root.add_child(screen3)
+	screen3.setup(null, null, null, LEVEL, false)
+	screen3.assist_ctl.bind(inv3, screen3.hint_coordinator)
+	screen3._is_custom = false
+	screen3._on_level_failed(false)
+	check(inv3.data.totalStreak == 1, "failed round counts for streak")
+	screen3._on_level_failed(false)
+	check(inv3.data.totalStreak == 1, "failed twice same day counts once")
+	screen3.queue_free()
+	inv3._store.remove_all()
 	screen.queue_free(); screen2.queue_free()
 	inv._store.remove_all(); inv2._store.remove_all()
 	if failures.is_empty():
