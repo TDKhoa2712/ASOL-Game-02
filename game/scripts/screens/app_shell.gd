@@ -108,7 +108,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("play_pressed"): screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("endless_pressed"): screen.connect("endless_pressed", _on_title_endless)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
-			if screen.has_method("setup"): screen.call("setup", runtime, endless_runtime)
+			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", runtime, endless_runtime)
 		"puzzle":
 			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)

@@ -133,3 +133,9 @@ assist.empty_body,Finish a level on 7 different days in a row to earn a new pack
 assist.close,Close,閉じる,Đóng,Tutup,Fechar,Cerrar,닫기
 assist.coming_soon,Coming soon,近日公開,Sắp có,Segera hadir,Em breve,Próximamente,곧 만나요
 assist.reward,+%d hints  +%d candy drops,ヒント+%d　キャンディ配置+%d,+%d gợi ý  +%d đặt kẹo,+%d petunjuk  +%d taruh permen,+%d dicas  +%d doces extras,+%d pistas  +%d caramelos extra,힌트 +%d  사탕 놓기 +%d
+streak.days,days in a row,日連続,ngày liên tiếp,hari berturut-turut,dias seguidos,días seguidos,일 연속
+streak.best,Best: %d days,最高記録：%d日,Kỷ lục: %d ngày,Rekor: %d hari,Recorde: %d dias,Récord: %d días,최고 기록: %d일
+streak.left,%d more days to the gift,ギフトまであと%d日,Còn %d ngày để nhận quà,%d hari lagi menuju hadiah,Faltam %d dias para o presente,Faltan %d días para el regalo,선물까지 %d일 남았어요
+streak.kept,Streak kept for today,今日の連続記録をキープしました,Hôm nay đã giữ chuỗi,Rangkaian hari ini terjaga,Sequência mantida hoje,Racha mantenida hoy,오늘 연속 기록을 지켰어요
+streak.at_risk,Clear a level today to keep your streak before midnight,真夜中までにレベルをクリアして記録をキープしよう,Thắng 1 màn hôm nay để giữ chuỗi trước nửa đêm,Selesaikan satu level hari ini sebelum tengah malam agar rangkaian terjaga,Conclua uma fase hoje antes da meia-noite para manter a sequência,Completa un nivel hoy antes de medianoche para mantener la racha,자정 전에 레벨 하나를 깨서 기록을 지키세요
+streak.start,Clear a level to start a streak,レベルをクリアして連続記録を始めよう,Thắng 1 màn để bắt đầu chuỗi,Selesaikan satu level untuk memulai rangkaian,Conclua uma fase para começar uma sequência,Completa un nivel para empezar una racha,레벨을 깨서 연속 기록을 시작하세요

@@ -19,6 +19,7 @@ const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
 const HomeDecorations = preload("res://scripts/ui/home_decorations.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const StreakChip = preload("res://scripts/screens/streak_chip.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -35,6 +36,7 @@ var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
 var _hero_mascot: TitleHeroMascot = null
 var _play_label: Label = null
+var assists: Variant = null; var streak_chip: Button = null
 
 func _ensure_nodes() -> void:
 	if title_label != null: return
@@ -141,6 +143,7 @@ func _ensure_nodes() -> void:
 	var bottom_spacer := Control.new()
 	bottom_spacer.custom_minimum_size.y = 24
 	frame.add_child(bottom_spacer)
+	streak_chip = StreakChip.attach(self, safe)
 
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()
@@ -179,6 +182,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	runtime = rt
 	endless_runtime = endless_rt
 	_ensure_nodes()
+	streak_chip.bind(assists)
 	_update_ui()
 	TutorialScreen.attach(self, rt) # mandatory until finished once (RST-028)
 	if debug_picker != null and rt != null:
