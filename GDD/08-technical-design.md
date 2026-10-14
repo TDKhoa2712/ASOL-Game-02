@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-08 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-05](05-level-design.md), [GDD-07](07-audio.md), [GDD-09](09-qa-acceptance.md), [GDD-11](11-level-generation.md) |
@@ -93,7 +93,7 @@ Feature flag (`core/game_features.gd`): `ENABLE_CAMPAIGN = true`, `ENABLE_ENDLES
 
 | Schema | Cấu trúc |
 | --- | --- |
-| Size bank | `{bankVersion, size, ranks: {"1".."5": [level]}}` — 28 file (`bank_4x4..12x12`, `bank_gc_*`, `bank_lkstyle_*`, `bank_onefish_*`) |
+| Size bank | `{bankVersion, size, ranks: {"1".."5": [level]}}` — 25 file (`bank_4x4..12x12`, `bank_gc_*`, `bank_lkstyle_*`, `bank_onefish_*`) |
 | Typed bank | `{bankVersion, type, levels: [level]}` — `lk`, `lk_modified`, `single_region`, `sp`, `sp_tt`, `super_hard` |
 | Pace sidecar | `{bankVersion, size, pacing: {rank: [{rSeq, hintCosts}]}}` hoặc typed `{bankVersion, type, levels: [{rSeq, hintCosts}]}`; `hintCosts` chỉ được validate, runtime không trừ |
 | Playlist | `{campaignVersion: 1, id, playlist: [{label, size, rank, index, difficulty}]}` |
@@ -162,7 +162,7 @@ Hành vi người chơi thấy: [GDD-02](02-core-gameplay.md). Input bị chặn
 | TECH-33 | Render bàn lớn (N=7–12): X tĩnh vẽ từ texture pre-baked theo batch, tra preview/highlight bằng hash set O(1), solver dùng bitmask precompute ([RST-023](../docs/DECISIONS.md)) | `test_cell_animator.gd`, `test_board_solver.gd`; vuốt 12×12 không giật |
 | TECH-21 | Texture kẹo dùng chung và cache theo loại; asset lỗi có fallback và không đổi session | `test_candy_renderer.gd` |
 
-Các ngưỡng là mục tiêu; số đo thực ghi trong evidence QA (Track E), không ghi ở đây.
+Các ngưỡng là mục tiêu, **chưa đo**; số đo thực ghi trong evidence QA (Track E), không ghi ở đây.
 
 ## 10. Build và platform
 
@@ -207,10 +207,8 @@ Android là nền tảng chính; iOS cần máy Mac và signing; Web dùng cho x
 
 | ID | Yêu cầu | Tiêu chí kiểm |
 | --- | --- | --- |
-| TECH-34 | Không dùng tên, enum, class hay chuỗi từ code tham khảo trong `game/scripts/` | Lệnh `rg` clean-room trong [`AGENTS.md`](../AGENTS.md) §3 không có match |
-| TECH-35 | Không import từ `extracted_reusable/` trong `game/scripts/` và `game/tests/` | `rg -n "extracted_reusable" game/scripts/ game/tests/` không có match |
-
-Hai gate clean-room chạy thủ công cạnh `verify.py`.
+| TECH-34 | Không dùng tên, enum, class hay chuỗi từ code tham khảo trong `game/scripts/` | `tools/clean_room.py` không có match |
+| TECH-35 | Gate clean-room chạy tự động trong full verify | `tools/verify.py` gọi `tools/clean_room.py` (check `clean-room`) |
 
 ## 12. ID đã hủy
 
@@ -222,7 +220,6 @@ Hai gate clean-room chạy thủ công cạnh `verify.py`.
 
 | ID | Vấn đề | Tác động | Hướng xử lý |
 | --- | --- | --- | --- |
-| TECH-Q1 | `screens/win_screen.gd` có 357 dòng, vượt TECH-28 | Vi phạm giới hạn module | Tách phần animation/NEXT UP card thành module riêng |
 | TECH-Q2 | Chưa chốt thiết bị Android/iPhone mức thấp để đo TECH-13/14/19 | Không có số đo hiệu năng | Chốt trong Track E |
 | TECH-Q3 | Hằng `AUTO_MARK_STAGGER_MS`, `LOCK_FADE_MS`, `MAX_UNDO_DEPTH` còn trong `layout_tokens.gd` nhưng không dùng | Gây hiểu nhầm về auto-mark và undo stack | Dọn trong task refactor |
 | TECH-Q4 | Assist inventory (stock, place-candy, play streak) đang phát triển và sẽ mở rộng progress | Schema progress có thể đổi | Planned; cập nhật §6.3 khi merge |

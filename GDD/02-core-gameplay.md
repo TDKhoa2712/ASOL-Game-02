@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-02 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-01](01-game-overview.md), [GDD-03](03-game-systems.md), [GDD-04](04-ux-ui.md), [GDD-05](05-level-design.md), [GDD-08](08-technical-design.md), [GDD-10](10-reasoning-techniques.md) |
@@ -162,7 +162,7 @@ Công thức `max(0, 100 × correct − 25 × mistakes)` tồn tại trong `core
 
 | ID | Vấn đề | Tác động | Hướng xử lý |
 | --- | --- | --- | --- |
-| OQ-02-1 | Lý do lỗi không hiển thị | Người mới có thể không hiểu vì sao sai | Đo KPI-02 trong playtest; cân nhắc hiển thị |
+| OQ-02-1 | Lý do lỗi không hiển thị | Người mới có thể không hiểu vì sao sai | Quan sát trong playtest; cân nhắc hiển thị |
 | OQ-02-2 | Cửa sổ 350 ms làm tap X có độ trễ commit | Cảm giác chậm trên bàn lớn | Device QA, tinh chỉnh `touch_decoder.gd` |
 
 ## 13. ID đã hủy

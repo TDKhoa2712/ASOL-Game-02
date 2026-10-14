@@ -2,7 +2,7 @@
 
 ## 1. Bối cảnh dự án
 
-CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã merge vào `dev` (PR #1–#10). Bank và playlist playtest hiện có **30 level 4×4, 5×5, 6×6**; gameplay/UI realignment và last-mile tasks 1–6 đã trong `dev`. Đây chưa phải bản phát hành hay nghiệm thu thiết bị.
+CanDoKu là puzzle game Godot 4/GDScript chạy offline. Rebuild M01–M10 đã merge (PR #1–#10). Kho có **36.573 level trong 31 bank** (N=4–12); playlist `demo_30` có 30 màn 4×4–6×6, campaign mặc định theo `game/data/campaigns/active_campaign.json`. Nền tích hợp là nhánh version `release/vX.Y.Z` (hiện `release/v1.0.1`). Đây chưa phải bản phát hành hay nghiệm thu thiết bị.
 
 **Đọc trước khi làm:**
 1. [STATUS](docs/STATUS.md) — tiến độ thực tế và vấn đề còn mở
@@ -44,15 +44,10 @@ Chạy suite liên quan trước, rồi full gate trước khi bàn giao thay đ
 # 1. Tests pass
 rtk godot --headless --path game --script res://tests/test_<ten>.gd
 
-# 2. Clean-room — KHÔNG tên từ reference
-rtk proxy rg -n "(EventBus|EventName|GameState|SaveStore|SoundManager|BgmPauseReason|VibrateManager|BoardGestureRecognizer|CellAction|CellState|BoardInputScheme|BankData|BankSorter|LevelBankIO|BankPage|QueenDoku|queendoku|meowdoku)" game/scripts/
-# Expected: no matches
+# 2. Clean-room — KHÔNG tên từ reference (verify.py cũng tự chạy bước này)
+rtk python -B tools/clean_room.py
 
-# 3. Không import từ extracted_reusable
-rtk proxy rg -n "extracted_reusable" game/scripts/ game/tests/
-# Expected: no matches
-
-# 4. Full verify (trước merge/bàn giao)
+# 3. Full verify (trước merge/bàn giao)
 rtk python -B tools/verify.py --godot <executable>
 ```
 
@@ -60,13 +55,13 @@ rtk python -B tools/verify.py --godot <executable>
 
 ## 4. Code constraints
 
-- **Nguyên gốc hoàn toàn.** Tham khảo hành vi từ `extracted_reusable/`, KHÔNG sao chép code/tên/enum. Asset, level, câu chữ, mã nguồn phải là tác phẩm gốc; không sao chép tên thương mại, giao diện, âm thanh, nhân vật hoặc cấu trúc level của game thương mại khác.
+- **Nguyên gốc hoàn toàn.** KHÔNG sao chép code/tên/enum từ nguồn tham khảo; gate clean-room `tools/clean_room.py` chạy trong `verify.py`. Asset, level, câu chữ, mã nguồn phải là tác phẩm gốc; không sao chép tên thương mại, giao diện, âm thanh, nhân vật hoặc cấu trúc level của game thương mại khác.
 - **Module ≤ 300 dòng.** Một file, một trách nhiệm.
 - **Signals thay EventBus.** Dùng Godot signals native, không global bus.
 - **Không autoloads.** Composition root pattern — dependencies injected từ app_shell.
 - **Static cho pure logic.** cell_model, candy_rules, board_solver, board_transform — stateless, testable.
 - **Asset nguyên gốc.** Kiểm tra tài sản hiện có trước khi thêm; không sao chép giao diện hoặc tài sản thương mại.
-- **Phạm vi:** Hỗ trợ kích thước bàn N=4–12; bank chuẩn v1 phủ đầy đủ 100% các level hợp lệ từ nguồn tham khảo (`bank_4x4` đến `bank_12x12`), kèm fallback logic trace cho các bài kỹ thuật nâng cao. Campaign mặc định gồm 30 level playtest (4×4–6×6) và advanced campaign (7×7–12×12); hỗ trợ Endless level sequencing. Không tự mở IAP, ads, analytics.
+- **Phạm vi:** Hỗ trợ kích thước bàn N=4–12; bank chuẩn v1 phủ đầy đủ 100% các level hợp lệ từ nguồn tham khảo (`bank_4x4` đến `bank_12x12`), kèm fallback logic trace cho các bài kỹ thuật nâng cao. Playlist `demo_30`, `campaign_100`, `full_998` (4×4–6×6) và `advanced` (7×7–12×12); campaign mặc định theo `active_campaign.json`; hỗ trợ Endless level sequencing. Không tự mở IAP, ads, analytics.
 
 ## 5. Nhánh và tích hợp
 
@@ -98,7 +93,7 @@ rtk python -B tools/verify.py --godot <executable>
 | Core và input | `game/scripts/core/`, `game/scripts/input/` | `test_candy_rules.gd`, `test_board_solver.gd`, `test_play_session.gd`, `test_touch_decoder.gd` |
 | State, content, campaign | `game/scripts/state/`, `content/`, `campaign/` | các suite tương ứng trong `game/tests/` |
 | Feedback và UI | `game/scripts/feedback/`, `screens/`, `theme/` | `test_feedback.gd`, `test_screens.gd`, `test_integration.gd` |
-| Nội dung 30 level | `game/data/banks/`, `game/data/campaigns/` | `tools/validate_content.py`, `tools/verify.py` |
+| Nội dung (31 bank, playlist) | `game/data/banks/`, `game/data/campaigns/` | `tools/validate_content.py`, `tools/verify.py` |
 
 ## 8. Lịch sử
 
@@ -108,10 +103,10 @@ Hồ sơ vận hành cũ được bảo toàn tại tag `pre-reset-pipeline-2026
 rtk git show pre-reset-pipeline-2026-09-27 --stat
 rtk git log --oneline --decorate pre-reset-pipeline-2026-09-27
 rtk git show pre-reset-pipeline-2026-09-27:<duong-dan-file>
-rtk git diff pre-reset-pipeline-2026-09-27..dev -- <duong-dan-file>
+rtk git diff pre-reset-pipeline-2026-09-27..release/v1.0.1 -- <duong-dan-file>
 ```
 
 - Dùng `git show <tag>:<path>` để đọc một file tại mốc cũ mà không đổi working tree.
 - Dùng `git log <tag> -- <path>` để xem lịch sử riêng của file hoặc thư mục.
-- Dùng `git diff <tag>..dev -- <path>` để đối chiếu với nền tích hợp hiện tại.
+- Dùng `git diff <tag>..release/v<version> -- <path>` để đối chiếu với nền tích hợp hiện tại.
 - Không `checkout`, `reset`, cherry-pick hoặc phục hồi nội dung từ tag nếu chưa được giao rõ; mọi nội dung đưa trở lại phải vẫn tuân thủ quy tắc nguyên gốc và phạm vi module.

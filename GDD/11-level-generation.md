@@ -5,12 +5,12 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-11 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design · Level Design · Tools |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-05](05-level-design.md), [GDD-08](08-technical-design.md), [GDD-09](09-qa-acceptance.md), [GDD-10](10-reasoning-techniques.md), [GDD-12](12-glossary.md) |
 
-> **Tóm tắt:** Phụ lục này đặc tả pipeline offline tạo level CanDoKu: hồ sơ yêu cầu, sinh nghiệm và vùng, cổng uniqueness/trace, mô hình độ khó (rating-0, rank, `max_technique`), chống trùng, hiệu chỉnh bằng người chơi và hợp đồng đầu ra. Mọi level có `givens` rỗng. Mỗi mục ghi rõ phần Live (đã có công cụ) và Research.
+> **Tóm tắt:** Phụ lục này đặc tả pipeline offline tạo level CanDoKu: hồ sơ yêu cầu, sinh nghiệm và vùng, cổng uniqueness/trace, mô hình độ khó (rating-0, rank, `max_technique`), chống trùng, hiệu chỉnh bằng người chơi và hợp đồng đầu ra. Chính sách: mọi level có `givens` rỗng (bank game hiện tuân thủ; pilot generator còn lỗi đã biết, xem §4.3). Mỗi mục ghi rõ phần Live (đã có công cụ) và Research.
 
 ## 1. Mục đích và phạm vi
 
@@ -47,7 +47,7 @@ flowchart LR
 
 | Thành phần | Trách nhiệm | Trạng thái |
 | --- | --- | --- |
-| Request/profile | Số lượng, N, logic band, seed, budget | Live (profile CLI của `generate_levels.py`) |
+| Request/profile | Seed, danh sách slot (order, size, khoảng rating), budget | Live (`pilot_profile()` của `generate_levels.py`) |
 | Solution generator | Hoán vị cột thỏa không-kề | Live |
 | Region generator | N vùng liên thông, mỗi vùng chứa một ô nghiệm | Live |
 | Exact checker | Đếm tới 2 nghiệm, UNIQUE/MULTIPLE/INVALID/UNKNOWN | Live (`validate_levels.count_solutions`) |
@@ -65,43 +65,52 @@ Exact checker và proof checker độc lập với generator: dùng chung parser
 
 Profile là đầu vào công cụ, **không** thêm vào schema level.
 
+Profile duy nhất hiện có là `pilot_profile()` trong `GDD/tools/generate_levels.py` (pilot, không ghi vào campaign live):
+
 ```json
 {
-  "requestVersion": 1,
-  "profileId": "candoku-s3-pilot",
-  "count": 6,
-  "sizes": [5, 6],
-  "allowedTraceRules": ["S2", "S3"],
-  "requireS3": true,
-  "maxGivens": 0,
-  "seed": "candoku-content-0001",
-  "ratingVersion": "candoku-rating-0",
+  "profileVersion": 1,
+  "seed": "candoku-pilot-20260929",
+  "slots": [
+    {"order": 2, "size": 4, "minRating": 5, "maxRating": 10},
+    {"order": 4, "size": 4, "minRating": 6, "maxRating": 13},
+    {"order": 7, "size": 5, "minRating": 9, "maxRating": 16},
+    {"order": 10, "size": 5, "minRating": 7, "maxRating": 12},
+    {"order": 14, "size": 6, "minRating": 12, "maxRating": 16},
+    {"order": 18, "size": 6, "minRating": 17, "maxRating": 24},
+    {"order": 19, "size": 5, "minRating": 16, "maxRating": 25},
+    {"order": 22, "size": 6, "minRating": 20, "maxRating": 32}
+  ],
+  "maxGivens": 2,
+  "minPlayableCandies": 2,
   "maxAttempts": 5000,
-  "maxWallSeconds": 600,
-  "exactMaxNodesPerAttempt": 2000000,
-  "exactMaxSecondsPerAttempt": 5
+  "maxWallSeconds": 120,
+  "exactMaxNodes": 2000000,
+  "exactMaxSeconds": 5
 }
 ```
 
-| Quy tắc | Nội dung |
+| Quy tắc (`validate_profile`) | Nội dung |
 | --- | --- |
-| `count` | Số ứng viên **đạt**, không phải số lần thử. Hết budget trả số đạt thực và lý do thiếu |
-| `maxGivens` | Luôn 0. Parser từ chối giá trị khác (`bank_expansion_rules.BANDS` đặt trần given = 0 cho mọi rank) |
-| Từ chối | `count ≤ 0`, N ngoài 4..12, `requireS3` nhưng ruleset thiếu S3 |
-| Tái lập | Seed + phiên bản PRNG/generator + profile + thứ tự xử lý. Không dùng hash ngôn ngữ, thời gian hệ thống hay thứ tự duyệt set làm bộ phá hòa |
-| Budget | Mỗi `attemptIndex` tái lập cùng ứng viên trước kiểm; tập accepted chỉ cam kết giống nhau khi cùng danh sách attempt đã kiểm xong và không timeout |
+| Trường | Tập trường phải khớp đúng profile pilot v1; `profileVersion` = 1; `seed` là chuỗi không rỗng |
+| `slots` | Danh sách không rỗng; mỗi slot đúng 4 trường `order`, `size`, `minRating`, `maxRating`; `order` duy nhất trong 2..24; `size` 4..6; `0 ≤ minRating ≤ maxRating` |
+| Số nguyên | `maxGivens`, `maxAttempts`, `exactMaxNodes` ≥ 0; `minPlayableCandies` ≥ 2; `maxWallSeconds`, `exactMaxSeconds` > 0 và hữu hạn |
+| Ràng buộc given | `minPlayableCandies ≤ size` và `maxGivens ≤ size − minPlayableCandies` cho mỗi slot |
+| `maxGivens` | **Lỗi đã biết:** profile pilot mặc định `maxGivens = 2` và parser không từ chối giá trị > 0, nên pilot có thể sinh level có givens — trái chính sách givens rỗng. Chưa sửa. `expand_bank.py` dùng trần given từ `bank_expansion_rules.BANDS` (toàn 0), nên bank game có givens rỗng |
+| Slot → band | Slot `order ≥ 19` yêu cầu S3 (S2-only phải STUCK); ứng viên phải có `D_raw` trong `[minRating, maxRating]` của slot |
+| Tái lập | PRNG `random.Random` khởi tạo từ digest của (phiên bản, seed, attemptIndex, N); mỗi `attemptIndex` tái lập cùng ứng viên |
+| Budget | Dừng khi hết `maxAttempts` hoặc `maxWallSeconds`; exit 2 nếu chưa đủ slot |
 
 ## 4. Sinh nghiệm và vùng
 
 ### 4.1. Nghiệm nền
 
 ```text
-ở hàng r:
-    xáo các cột chưa dùng theo PRNG
-    nếu r > 0: bỏ cột c có |c − s[r−1]| ≤ 1
-    chọn c, sang hàng kế; ngõ cụt thì quay lui
-đủ N hàng → nghiệm nền s[0..N−1]
+solutions ← mọi hoán vị cột p của 0..N−1 thỏa |p[r] − p[r+1]| > 1 với mọi r
+s ← rng.choice(solutions)   # chọn đều; N ≤ 6 nên tối đa 720 hoán vị
 ```
+
+Đây là cách làm của `candidate()` trong `GDD/tools/generate_levels.py` (dùng chung cho `expand_bank.py`).
 
 Nghiệm nền chưa phải level: một hoán vị có vô số cách phân vùng. Không tráo hàng/cột tùy ý (phá không-kề). Xoay/lật toàn bàn là phép tương đương, không tính là nội dung mới.
 
@@ -109,17 +118,17 @@ Nghiệm nền chưa phải level: một hoán vị có vô số cách phân vù
 
 1. Mỗi ô (r, s[r]) là hạt giống của một vùng.
 2. Frontier của vùng = ô chưa gán, chung cạnh với vùng.
-3. Chọn cặp (vùng, ô frontier) theo PRNG và tiêu chí hình dạng; gán ô.
+3. Gom mọi cặp (ô chưa gán, nhãn vùng kề) thành frontier; chọn một cặp bằng `rng.choice(frontier)` (đều, không có tiêu chí hình dạng); gán ô.
 4. Lặp tới khi mọi ô được gán; không gán hạt giống của vùng khác.
 5. Chuẩn hóa nhãn `A..` theo thứ tự quét hàng.
 
-Kiểm lại liên thông bằng BFS độc lập. Hàm chọn có thể phạt chu vi lớn, nhánh hẹp và lệch diện tích. Vùng một ô tạo S2 ngay từ đầu; nhiều vùng một ô làm level gần như tự giải — đây là đặc tính độ khó, không phải lỗi dữ liệu.
+Kiểm lại liên thông bằng validator độc lập. Hàm chọn có trọng số (phạt chu vi lớn, nhánh hẹp, lệch diện tích) là Research, chưa có trong code. Vùng một ô tạo S2 ngay từ đầu; nhiều vùng một ô làm level gần như tự giải — đây là đặc tính độ khó, không phải lỗi dữ liệu.
 
 **Mutation (Research):** chỉ chuyển ô biên không phải ô nghiệm sang vùng kề; vùng cho phải còn liên thông và không rỗng. Mọi mutation làm mất hiệu lực uniqueness, trace và rating trước đó.
 
 ### 4.3. Không có givens
 
-Mọi kẹo do người chơi tìm. Khi ứng viên có nhiều nghiệm hoặc không đạt band, công cụ **sửa hoặc bỏ topology vùng**, không thêm given. Ưu tiên sửa: độ đọc vùng → uniqueness → logic band → tải suy luận → đa dạng.
+Chính sách: mọi kẹo do người chơi tìm; toàn bộ bank trong `game/data/banks/` hiện có 0 given. **Lỗi đã biết:** pilot `generate_levels.py` vẫn có thể thêm given (xem §3) và `GDD/tools/validate_levels.py` chấp nhận givens; fixture `GDD/data/levels.sample.json` có givens. Khi ứng viên có nhiều nghiệm hoặc không đạt band, công cụ **sửa hoặc bỏ topology vùng**, không thêm given. Ưu tiên sửa: độ đọc vùng → uniqueness → logic band → tải suy luận → đa dạng.
 
 ## 5. Cổng uniqueness và trace
 
@@ -133,7 +142,7 @@ Mọi kẹo do người chơi tìm. Khi ứng viên có nhiều nghiệm hoặc 
 | Nội dung | Không trùng theo policy; vùng dễ đọc | Biên tập hoặc sinh lại |
 | Người chơi | Giải mù + review Hint/UI | Chưa đủ điều kiện phát hành |
 
-Budget mặc định của bộ đếm: 2.000.000 nút, 5 giây. Đây là ngân sách kiểm, không phải ngưỡng độ khó. Một nghiệm rồi timeout vẫn là UNKNOWN. Trace lưu thứ tự chứng minh, không phải danh sách ô lấy từ `solution` rồi gắn rule.
+Budget mặc định của `count_solutions` (`validate_levels.py`) và profile pilot: 2.000.000 nút, 5 giây; `expand_bank.py` gọi với 200.000 nút, 2 giây. Đây là ngân sách kiểm, không phải ngưỡng độ khó. Một nghiệm rồi timeout vẫn là UNKNOWN. Trace lưu thứ tự chứng minh, không phải danh sách ô lấy từ `solution` rồi gắn rule.
 
 **Bank N≥7 (chuyển đổi):** bank 7×7–12×12 và các bank typed được chuyển đổi bằng `tools/convert_extracted_bank.py`; khi solver S2/S3 offline không giải trọn, level giữ **fallback logic trace** và `rating` dự phòng. Độ khó thực tế của các level này đo bằng `replay_solve` (S1–S7) ở runtime/test.
 
@@ -207,7 +216,7 @@ Nhãn `difficulty` trong playlist (`tutorial`, `easy`, `medium`, `hard`…) là 
 | --- | --- | --- |
 | GeometryKey | Vùng chuẩn hóa dưới 8 phép xoay/lật + đổi nhãn | Live (validator; `shape_fingerprint` runtime) |
 | PuzzleKey | `puzzle_key(rows, givens)` chuẩn hóa toàn bộ puzzle; với givens rỗng tương đương GeometryKey | Live; `pidHash` = 8 ký tự đầu |
-| Cửa sổ playlist | Không cùng hình vùng trong 8 level liền kề | Live (QA-06) |
+| Cửa sổ playlist | Không cùng hình vùng trong 8 level liền kề | Chỉ trong `GDD/tools/validate_levels.py` (QA-06); validator playlist game chưa kiểm |
 | LogicPattern | Chuỗi rule, đồ thị phụ thuộc, vị trí single đầu | Research |
 | VisualVector | Diện tích min/max, articulation cells, chu vi/diện tích | Research |
 
@@ -230,21 +239,25 @@ Không thu analytics mạng. Nếu nguyên nhân thua là đọc vùng khó ho�
 
 ## 9. Vòng tìm kiếm có ngân sách
 
+Vòng của `GDD/tools/expand_bank.py` (`expand_bank`):
+
 ```text
-accepted = []
-for attemptIndex in 0..maxAttempts−1:
-    nếu hết wall budget: dừng, báo thiếu
-    nghiệm nền ← seed dẫn xuất
-    vùng ← sinh quanh nghiệm
-    kiểm cấu trúc + uniqueness   (UNKNOWN → ghi budget failure)
-    closure + checker trace; kiểm band
-    rating + rank + chống trùng so kho và accepted
-    nếu đạt: lưu level + report
-    nếu đủ count: dừng
-trả accepted, rejected-summary, unmet-requirements
+needed[rank] = target[rank] − số level sẵn có trong bank
+while attempt < max_attempts và còn rank chưa đủ:
+    index = attempt; attempt += 1
+    maxGivens ← BANDS[size][1][index mod 4]          # luôn 0
+    rows, givens, solution ← candidate(seed, index, size, maxGivens)
+    geometry trùng (bank cũ + accepted) → loại duplicateGeometry
+    exact_check(200.000 nút, 2 s) ≠ UNIQUE → loại theo status
+    nghiệm EXACT ≠ nghiệm nền → lỗi (raise)
+    solve() S2/S3 ≠ SOLVED → loại logic_<status>
+    rank ← rank_for(size, D_raw, số S3); None hoặc rank đã đủ → loại bandFull
+    level_from_proof → prove_candidate → thêm vào accepted[rank]
+    mỗi 25 level accepted: ghi checkpoint
+ghi checkpoint cuối; ghi bank + pace
 ```
 
-`expand_bank.py` chạy vòng này có checkpoint để tiếp tục. Không tự tăng budget vô hạn, không bỏ uniqueness để đủ số, không âm thầm hạ profile. Cổng cứng: luật, uniqueness, band. Độ khó, đa dạng, độ đọc là lựa chọn trong tập đã hợp lệ — không dùng tổng điểm cho phép hình đẹp bù cho nhiều nghiệm.
+Checkpoint gắn với size, seed, targets, BANDS và hash bank/pace nguồn; không khớp thì từ chối tiếp tục. Không tự tăng budget vô hạn, không bỏ uniqueness để đủ số, không âm thầm hạ profile. Cổng cứng: luật, uniqueness, band. Độ khó, đa dạng, độ đọc là lựa chọn trong tập đã hợp lệ — không dùng tổng điểm cho phép hình đẹp bù cho nhiều nghiệm.
 
 ## 10. Hợp đồng đầu ra
 
@@ -255,7 +268,7 @@ trả accepted, rejected-summary, unmet-requirements
 | `seed` | Định danh attempt |
 | `regions` | N chuỗi nhãn |
 | `solution` | `solution[r] = c` |
-| `givens` | Luôn `[]` |
+| `givens` | `[]` trong mọi bank game (xem lỗi đã biết §4.3) |
 | `steps` | Số bước trace |
 | `profile` | `[count S2, count S3, count S4+]` |
 | `rating` | `D_raw` (hoặc giá trị dự phòng với bank chuyển đổi) |
@@ -353,6 +366,7 @@ tuyên bố đã chạy validator khi không có môi trường chạy.
 | R-11-01 | Bank N≥7 dùng fallback trace và rating dự phòng | Rank N≥7 chưa phản ánh tải suy luận đo được | Chấm lại bằng `replay_solve` và `ratingVersion` mới |
 | R-11-02 | Ngưỡng rating-0 chưa hiệu chỉnh bằng người chơi | Rank có thể lệch cảm nhận | Chạy vòng §8 sau playtest G4 |
 | R-11-03 | `hintCosts` trong pace được sinh và validate nhưng runtime không dùng | Dữ liệu thừa, dễ hiểu nhầm | Quyết định giữ cho assist inventory (Planned) hoặc bỏ |
+| R-11-04 | **Lỗi đã biết (chưa sửa):** `generate_levels.py` pilot mặc định `maxGivens = 2`, `validate_levels.py` chấp nhận givens, fixture `levels.sample.json` có 3 level có givens | Lệch chính sách givens rỗng; chỉ `validate_content.py`/`level_validator.gd` chặn | Đưa trần given về 0 và cho validator GDD từ chối givens trong task riêng |
 
 ## 15. Tham khảo
 

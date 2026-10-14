@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-12 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [README](README.md), [GDD-02](02-core-gameplay.md), [GDD-10](10-reasoning-techniques.md) |
@@ -30,14 +30,14 @@
 | Chạm (touching) | — | Hai ô có `max(|Δr|, |Δc|) = 1`, tức kề nhau theo cạnh hoặc theo góc |
 | Combo | `combo_tracker` | Chuỗi kẹo đúng liên tiếp do người chơi tự đặt, cấp tối đa 12 |
 | Hint | `hint_engine` | Gợi ý một bước suy luận kèm giải thích; xem [GDD-03](03-game-systems.md) |
-| Givens | `givens` | Kẹo cho sẵn. Đã bỏ khỏi toàn hệ thống: validator từ chối danh sách không rỗng. |
+| Givens | `givens` | Kẹo cho sẵn. Chính sách: luôn rỗng; mọi bank game có 0 given và `validate_content.py`/`level_validator.gd` từ chối danh sách không rỗng. Lỗi đã biết: pilot `GDD/tools/generate_levels.py` vẫn sinh được givens và `GDD/tools/validate_levels.py` chấp nhận chúng ([GDD-11](11-level-generation.md) R-11-04). |
 
 ## 2. Thuật ngữ nội dung
 
 | Thuật ngữ | Định nghĩa |
 | --- | --- |
 | Bank | File JSON chứa level, nhóm theo kích thước và rank (`bank_6x6.json`) hoặc theo loại (`bank_single_region.json`) |
-| Rank | Bậc độ khó 1–5 bên trong một bank |
+| Rank | Bậc độ khó 1–5 bên trong một bank theo kích thước (key `ranks` "1".."5"). Typed bank không có `ranks`: dùng mảng `levels`, mỗi level mang trường `rank` riêng |
 | Pace | File sidecar `.pace.json` đi kèm bank, chứa `rSeq` và `hintCosts` cho từng level |
 | Playlist / Campaign | File trong `game/data/campaigns/` tham chiếu tới level trong bank theo bộ `(size, rank, index)` |
 | Active campaign | Campaign được chọn trong `active_campaign.json` |
@@ -73,7 +73,7 @@
 
 CanDoKu thuộc họ puzzle "một mục tiêu mỗi hàng, cột và vùng, các mục tiêu không chạm nhau". Đây là cơ chế chung của thể loại.
 
-Mọi thành phần sau phải là tác phẩm gốc của dự án: chủ đề tìm kẹo ẩn sau ô màu, level, layout, câu chữ, logo, hình ảnh, âm thanh và mã nguồn. Code được tham khảo hành vi từ `extracted_reusable/`, nhưng không được sao chép code, tên định danh hay enum từ đó. Gate clean-room được mô tả ở [GDD-08](08-technical-design.md) và [AGENTS](../AGENTS.md).
+Mọi thành phần sau phải là tác phẩm gốc của dự án: chủ đề tìm kẹo ẩn sau ô màu, level, layout, câu chữ, logo, hình ảnh, âm thanh và mã nguồn. Không sao chép code, tên định danh hay enum từ code tham khảo; gate `tools/clean_room.py` (chạy trong `tools/verify.py`) kiểm tên cấm trong `game/scripts/`. Chi tiết ở [GDD-08](08-technical-design.md) và [AGENTS](../AGENTS.md).
 
 Tài liệu học thuật được dùng làm nền:
 

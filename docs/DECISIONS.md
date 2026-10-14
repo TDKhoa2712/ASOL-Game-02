@@ -31,7 +31,7 @@ Ngày 2026-10-13. Đặc tả: [GDD-04](../GDD/04-ux-ui.md). Thay bảng T1–T6
 - **Bỏ qua hướng dẫn:** có nút từ bước L1-1. Bấm thì ghi mọi mốc vào `tutorialSeenIds`, tắt miễn phạt và ẩn bong bóng.
 - **Miễn phạt:** chỉ các ô L01 được gọi rõ tọa độ (L1-1 và L1-3/L1-4), đến khi xong hoặc bỏ qua tutorial; thử sai ô đó không đặt `x_error`, không trừ tim, không tăng lỗi, chỉ nhắc lại. Ô khác theo GR-16.
 - **Auto-mark:** GR-34 chưa có trong code. L1-2 vẽ X mờ minh họa riêng cho tutorial (overlay, không đổi state/save/undo); auto-mark thật là việc riêng.
-- **L02 4×4, không given:** 4×4 có 1 given không bao giờ cần S3; giữ 4×4 để đường cong 10 màn 4×4 đầu không bị đứt. Bài học given chuyển thành gợi ý C-given.
+- **L02 4×4, không given:** 4×4 có 1 given không bao giờ cần S3; giữ 4×4 để đường cong 10 màn 4×4 đầu không bị đứt. *(Đính chính 2026-10-14: given đã bỏ toàn hệ thống; gợi ý C-given `tutorial.tip_given` đã xóa, không còn bài học given.)*
 - **Kỹ thuật:** bong bóng không chặn input bàn (chỉ nút nhận chạm); mọi chuỗi qua khóa `tr()`; guide do `CampaignRuntime` tạo từ progress được inject (composition root `app_shell`), không autoload; mỗi file ≤ 300 dòng.
 
 ## RST-026 — Combo đặt kẹo đúng liên tiếp (voice 12 cấp + chữ nghệ thuật)
@@ -43,7 +43,7 @@ Ngày 2026-10-10.
 - **Hình:** 12 chữ được bake offline bằng `tools/build_combo_atlas.py` (Nunito Bold, OFL) thành một atlas; `ComboPopup` dùng lại một sprite + một Tween, hạt lấp lánh từ cấp 9; reduced-motion chỉ fade.
 - **Hệ quả:** campaign 4×4–6×6 đạt tối đa cấp 6; cấp 7–12 chỉ có ở bàn ≥ 7×7.
 
-## RST-024 — Màn chơi theo mockup `screen/screenshot/board.png`, màu vùng tương phản và hint đồng bộ giao diện
+## RST-024 — Màn chơi theo mockup, màu vùng tương phản và hint đồng bộ giao diện
 
 Ngày 2026-10-10.
 
@@ -60,7 +60,8 @@ Ngày 2026-10-10.
 
 - **Config:** thêm key `music` (mặc định bật). Key `audio` giữ tên cũ nhưng từ nay chỉ điều khiển SFX; `music` điều khiển BGM. Profile cũ chưa có `music` sẽ lấy giá trị `audio` đã lưu, nên người đã tắt âm thanh không bị bật nhạc lại.
 - **Màn Settings:** lưới 2 cột gồm 6 tile — Nhạc nền | Âm thanh, Rung | Giảm chuyển động, Chữ lớn | Hỗ trợ phân biệt màu; Tương phản cao là hàng rộng (chưa có icon riêng). Icon nhạc dùng `button_music_on/off.png` có sẵn.
-- **Text:** thêm `settings.music` cho 8 ngôn ngữ.
+- **Đính chính 2026-10-14 (`b13edfc`):** Chữ lớn luôn bật (`LayoutTokens.LARGE_TEXT_TOGGLE = false`), nên tile Chữ lớn bị ẩn: lưới dùng `TILE_KEYS_GRID_COMPACT` (Nhạc nền | Âm thanh, Rung | Giảm chuyển động); Hỗ trợ phân biệt màu và Tương phản cao là hàng rộng (`WIDE_KEYS_COMPACT`).
+- **Text:** thêm `settings.music` cho 7 ngôn ngữ (en, ja, vi, id, pt_BR, es, ko trong `game/locale/strings.csv`).
 
 ## RST-023 — Tối ưu hóa hiệu năng render và đánh dấu X trên bàn cờ lớn (Batched GPU Mark Texture & O(1) Sets)
 
@@ -103,8 +104,8 @@ Ngày 2026-10-07. Chủ dự án yêu cầu xử lý triệt để việc chuy�
 Ngày 2026-10-05. Chủ dự án yêu cầu mở rộng theo quy mô tham khảo thành 998 level gốc, năm rank, đưa toàn bộ vào playlist và cho người phát triển đổi giữa chiến dịch đầy đủ với demo 30 màn qua file cấu hình.
 
 - Ba bank v1 có lần lượt 36 level 4×4 (`12/10/8/3/3`), 49 level 5×5 (`12/10/8/9/10`) và 913 level 6×6 (`199/196/193/167/158`). Dùng luật S1–S3 và hình vùng, nghiệm, trace do CanDoKu sinh/kiểm độc lập.
-- `full_998.json` giữ nguyên L01–L30 của `demo_30.json`, rồi phủ từng tham chiếu bank còn lại một lần. `active_campaign.json` có giá trị `full_998` mặc định hoặc `demo_30`; thay đổi có hiệu lực khi khởi động lại.
-- Giữ hình vùng, nghiệm, ô cho sẵn và index của 90 puzzle cũ. Ba cặp puzzle 5×5 cũ trùng hệt nhau được giữ vì yêu cầu giữ puzzle gốc.
+- `full_998.json` giữ nguyên L01–L30 của `demo_30.json`, rồi phủ từng tham chiếu bank còn lại một lần. `active_campaign.json` có giá trị `full_998` mặc định hoặc `demo_30`; thay đổi có hiệu lực khi khởi động lại. *(Hiện tại `active_campaign.json` là `campaign_100`, đổi tại `17e58d1` ngày 2026-10-07.)*
+- Giữ hình vùng, nghiệm và index của 90 puzzle cũ (ô cho sẵn đã bỏ toàn hệ thống 2026-10-14; mọi bank hiện không có given). Ba cặp puzzle 5×5 cũ trùng hệt nhau được giữ vì yêu cầu giữ puzzle gốc.
 
 ## RST-018 — Demo 30 màn tăng từ 4×4 đến 6×6
 

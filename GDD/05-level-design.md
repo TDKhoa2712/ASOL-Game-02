@@ -5,7 +5,7 @@
 | Dự án | CanDoKu |
 | Mã tài liệu | GDD-05 |
 | Phiên bản | 1.0.0 |
-| Trạng thái | Approved · Living document |
+| Trạng thái | Draft · Living document |
 | Cập nhật | 2026-10-14 |
 | Phụ trách | Game Design |
 | Liên quan | [GDD-02](02-core-gameplay.md), [GDD-03](03-game-systems.md), [GDD-08](08-technical-design.md), [GDD-09](09-qa-acceptance.md), [GDD-10](10-reasoning-techniques.md), [GDD-11](11-level-generation.md) |
@@ -119,11 +119,11 @@ Mỗi khối 10 màn một kích thước, gồm 5 rank 1, 3 rank 2, 2 rank 3 (L
 | LV-01 | N = 4–12; đúng N vùng không rỗng, liên thông 4 hướng; mỗi ô đúng một nhãn vùng. | `validate_content.py`, `validate_full_content.py` |
 | LV-02 | Đúng một nghiệm; nghiệm khai báo khớp solver độc lập. `givens` phải rỗng. | Validator từ chối givens không rỗng |
 | LV-03 | `logicTrace` tái dựng tuần tự đến đủ N kẹo bằng S1–S7 hoặc fallback trace; không bước đoán. | `level_reasoning`, validator |
-| LV-04 | Hai level cách nhau ≤ 8 vị trí campaign không trùng hình vùng sau 8 phép đối xứng + đổi nhãn. | `tools/playlist_checks` |
+| LV-04 | Hai level cách nhau ≤ 8 vị trí campaign không trùng hình vùng sau 8 phép đối xứng + đổi nhãn. | Chưa tự động cho `demo_30`/`full_998`/`campaign_100` (`tools/playlist_checks.py` chỉ kiểm cấu trúc); chỉ `GDD/tools/validate_levels.py --release` kiểm cửa sổ 8 màn cho định dạng MVP 24 level |
 | LV-05 | Mỗi slot playlist có `label`, `size`, `rank`, `index`, `difficulty` hợp lệ trỏ tới level tồn tại. | `validate_content.py` |
 | LV-06 | Vùng, dấu và kẹo đọc được ở thang xám, chữ lớn, màn nhỏ; màu không mang luật duy nhất. | QA giao diện |
 | LV-07 | Màn mốc (10, 20, 30…) được biên tập như điểm nhấn nhịp; puzzle/ID đã duyệt là bất biến. | Review biên tập |
-| LV-08 | Trình tự kỹ thuật theo band: màn đầu chỉ S1–S2; kỹ thuật cao hơn chỉ xuất hiện sau khi đã có tip/hint tương ứng (vd C-s3 ở L19). | `playlist_checks`, playtest |
+| LV-08 | Trình tự kỹ thuật theo band: màn đầu chỉ S1–S2; kỹ thuật cao hơn chỉ xuất hiện sau khi đã có tip/hint tương ứng (vd C-s3 ở L19). | Review biên tập, playtest (`playlist_checks` chưa kiểm trình tự kỹ thuật) |
 
 ### Reasoning bands
 
@@ -140,9 +140,9 @@ Mỗi khối 10 màn một kích thước, gồm 5 rank 1, 3 rank 2, 2 rank 3 (L
 
 1. **Nguồn:** sinh/chuyển đổi bằng công cụ trong `GDD/tools/` và `tools/` ([GDD-11](11-level-generation.md)). Không lấy bố cục từ game thương mại.
 2. **Kiểm máy:** uniqueness, liên thông, trace, givens rỗng (LV-01–03).
-3. **Lọc trùng:** chuẩn hóa ×8 và kiểm cửa sổ 8 màn (LV-04).
-4. **Xếp playlist:** chọn `size/rank/index` theo đường cong §6; chạy `playlist_checks`.
-5. **Giải mù:** ít nhất một lượt giải thủ công không xem nghiệm; ghi thời gian, số hint, điểm kẹt.
+3. **Lọc trùng:** chuẩn hóa ×8 và kiểm cửa sổ 8 màn (LV-04) — hiện chưa tự động cho playlist của game, cần kiểm tay.
+4. **Xếp playlist:** chọn `size/rank/index` theo đường cong §6; chạy `playlist_checks` (kiểm cấu trúc).
+5. **Giải mù (dự kiến, chưa thực hiện — chưa có bằng chứng):** ít nhất một lượt giải thủ công không xem nghiệm; ghi thời gian, số hint, điểm kẹt.
 6. **Gate:** `tools/verify.py` (full gate) trước merge; playtest ở [GDD-09](09-qa-acceptance.md).
 
 Level không qua cổng thì thay, không hạ tiêu chuẩn để đủ số lượng.
@@ -154,7 +154,7 @@ Level không qua cổng thì thay, không hạ tiêu chuẩn để đủ số l�
 | Campaign active | `campaign_100` | `game/data/campaigns/active_campaign.json` |
 | Số rank | 5 | bank JSON |
 | Phép biến đổi | 8 | `board_transform` |
-| Cửa sổ chống trùng | 8 màn | `tools/playlist_checks` |
+| Cửa sổ chống trùng | 8 màn (chưa tự động cho playlist game) | `GDD/tools/validate_levels.py --release` (chỉ MVP 24 level) |
 | Given cap | 0 | `GDD/tools/bank_expansion_rules` |
 
 ## 10. ID đã hủy

@@ -2,7 +2,7 @@
 
 ## 2026-10-02 — Chỉnh lại gameplay và giao diện (RST-015)
 
-Sau rebuild, chủ dự án yêu cầu bỏ auto-lock, đổi WRONG→ERROR vĩnh viễn, bật swipe và chỉnh UI. Plan ban đầu cũng yêu cầu bỏ Undo. Nhánh realignment đã có các thay đổi gameplay/UI nhưng còn giữ Undo giới hạn cho X; xem [STATUS](STATUS.md) để biết chênh lệch cần chốt và kết quả kiểm chứng.
+Sau rebuild, chủ dự án yêu cầu bỏ auto-lock, đổi WRONG→ERROR vĩnh viễn, bật swipe và chỉnh UI. Plan ban đầu cũng yêu cầu bỏ Undo. Nhánh realignment đã có các thay đổi gameplay/UI nhưng còn giữ Undo giới hạn cho X; Undo X sau đó được chốt giữ cố định tại RST-021 (xem [DECISIONS](DECISIONS.md)).
 
 ## 2026-10-02 — Rebuild hoàn tất (RST-012→RST-014)
 
@@ -35,4 +35,4 @@ Mở R1 campaign 4 level. Replay campaign MVP. Bỏ ô sáng tutorial.
 
 ## 2026-09-24 — Tạm ngưng và cải tổ (RST-001)
 
-Gom code về dev, cải tổ trên `refactor/project-reset`.
+Gom code về dev, cải tổ trên `refactor/project-reset` (nhánh này hiện không còn trong repo).
