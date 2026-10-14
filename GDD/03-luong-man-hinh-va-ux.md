@@ -75,17 +75,17 @@ Quyết định: RST-028 (thay phần L01/L02 của RST-027) trong [DECISIONS](.
 
 **Bắt buộc, màn riêng:** lần đầu mở app, lớp tutorial phủ Home, chặn mọi thao tác, không có Bỏ qua. Xong ghi `ONBOARD` vào progress và không hiện lại. Trợ giúp → “Chơi lại hướng dẫn” mở bản thực hành, không ghi progress. Campaign L01/L02 dùng bàn bank, luật thường.
 
-**Bàn:** 4×4 `ABCC/AAAC/ADDC/ADDD`, nghiệm `[1,3,0,2]`, một nghiệm duy nhất (`tutorial_flow.gd`, `test_tutorial_flow.gd`).
+**Bàn:** 4×4 `ABCC/AACC/AADD/DDDD`, nghiệm `[1,3,0,2]`, một nghiệm duy nhất (`tutorial_flow.gd`, `test_tutorial_flow.gd`). Mọi viên kẹo do người chơi tự đặt; game không tự thả kẹo.
 
 | Bước | Ô sáng | Lời nhắc | Qua khi |
 | --- | --- | --- | --- |
 | 1 | ô (1,2) — vùng 1 ô | “**Chạm nhanh 2 lần** vào ô để đặt kẹo.” + tay chạm đôi | đặt kẹo |
 | 2 | cả bàn | “Mỗi **vùng màu** có đúng một viên kẹo.” | OK (bàn không nhận thao tác) |
-| 3 | hàng 1 + cột 2 | “Mỗi **hàng và cột** cũng chỉ có một viên. Chạm hoặc vuốt qua các ô sáng để gạch bỏ.” + tay vuốt hàng rồi cột | gạch hết 6 ô |
-| 4 | kẹo thứ 2 hiện ở (4,3) + 8 ô quanh | “Kẹo không bao giờ chạm nhau, **kể cả chạm góc**. Vuốt qua các ô sáng để gạch bỏ.” + tay vuốt từ ô trống đầu tiên | gạch hết ô chạm còn trống |
+| 3 | kẹo đầu + 5 ô quanh nó | “Kẹo không bao giờ chạm nhau, **kể cả chạm góc**. Vuốt qua các ô sáng để gạch bỏ.” + tay vuốt vòng quanh kẹo | gạch hết 5 ô chạm |
+| 4 | hàng 1 + cột 2 | “Mỗi **hàng và cột** cũng chỉ có một viên. Chạm hoặc vuốt qua các ô sáng để gạch bỏ.” + tay vuốt từ ô trống đầu tiên | gạch hết ô còn trống |
 | 5 | vùng C | “Vùng này **chỉ còn một ô**. Kẹo phải ở đó!” | đặt kẹo (2,4) |
 | 6 | cả bàn + 3 tim dưới bàn (tim cuối vỡ minh họa) | “Bạn có **3 tim**. Đặt kẹo sai mất 1 tim, hết tim phải chơi lại màn. Gạch X thì không bao giờ mất tim.” | OK (bàn không nhận thao tác) |
-| 7 | cả bàn, chơi tự do | “Tìm **viên kẹo cuối cùng**.” + nút “Chạm để xem gợi ý” | đặt kẹo (3,1); X/xoá X/vuốt tự do; kẹo sai bị từ chối nhẹ, không phạt |
+| 7 | cả bàn, chơi tự do | “Tìm **những viên kẹo còn lại**.” + nút “Chạm để xem gợi ý” | đặt kẹo (3,1) và (4,3); X/xoá X/vuốt tự do; kẹo sai bị từ chối nhẹ, không phạt |
 | 8 | cả bàn | “Giỏi lắm! Bạn đã sẵn sàng chơi thật rồi.” + pháo giấy | Tiếp tục |
 
 Xong một bước: giữ kết quả 1,1 s (khoá thao tác) rồi chữ mờ sang bước mới. Bàn tay: lơ lửng nghiêng → ấn xuống (tâm ở đầu ngón) + gợn sóng; đánh dấu hàng loạt diễn bằng nét vuốt để lại X mờ.

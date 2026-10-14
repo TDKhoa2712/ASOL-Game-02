@@ -14,10 +14,11 @@ signal missed(row: int, col: int)
 
 const LEVEL := {
 	"id": "TUT", "size": 4,
-	"regions": ["ABCC", "AAAC", "ADDC", "ADDD"],
+	"regions": ["ABCC", "AACC", "AADD", "DDDD"],
 	"solution": [1, 3, 0, 2], "givens": [],
 }
-const DROPPED_CANDY := [3, 2]
+# Every candy is placed by the player; the touch rule is taught around the first one.
+const FIRST_CANDY := [0, 1]
 
 var level: Dictionary = LEVEL.duplicate(true)
 var session: PlaySession = PlaySession.new(level)
@@ -31,22 +32,22 @@ func _init() -> void:
 	var rowcol: Array = []
 	for cell in all:
 		if (cell[0] == 0 or cell[1] == 1) and cell != [0, 1]: rowcol.append(cell)
-	var touch: Array = [DROPPED_CANDY]
+	var touch: Array = [FIRST_CANDY]
 	for cell in all:
-		if cell != DROPPED_CANDY and absi(cell[0] - DROPPED_CANDY[0]) <= 1 and absi(cell[1] - DROPPED_CANDY[1]) <= 1: touch.append(cell)
+		if cell != FIRST_CANDY and absi(cell[0] - FIRST_CANDY[0]) <= 1 and absi(cell[1] - FIRST_CANDY[1]) <= 1: touch.append(cell)
 	var lone: Array = []
 	for cell in all:
 		if TutorialTargets.region_at(level, cell[0], cell[1]) == "C": lone.append(cell)
 	_steps = [
 		{"id": "place", "text": "tutorial.s_place", "lit": [[0, 1]], "targets": [[0, 1]], "gesture": "double"},
 		{"id": "regions", "text": "tutorial.s_regions", "lit": all, "button": "tutorial.ok"},
+		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe",
+			"demo": [[[0, 0], [1, 0], [1, 1], [1, 2], [0, 2]]]},
 		{"id": "rowcol", "text": "tutorial.s_rowcol", "lit": rowcol + [[0, 1]], "targets": rowcol, "gesture": "tap",
 			"demo": [[[0, 0], [0, 1], [0, 2], [0, 3]], [[1, 1], [2, 1], [3, 1]]]},
-		{"id": "touch", "text": "tutorial.s_touch", "lit": touch, "targets": touch.slice(1), "gesture": "swipe",
-			"demo": [[[2, 1], [2, 2], [2, 3], [3, 3]]]},
 		{"id": "lone", "text": "tutorial.s_lone", "lit": lone, "targets": [[1, 3]], "gesture": "double"},
 		{"id": "hearts", "text": "tutorial.s_hearts", "lit": all, "button": "tutorial.ok", "hearts": true},
-		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0]], "gesture": "double", "hint": true, "free": true},
+		{"id": "last", "text": "tutorial.s_last", "lit": all, "targets": [[2, 0], [3, 2]], "gesture": "double", "hint": true, "free": true},
 		{"id": "done", "text": "tutorial.s_done", "lit": all, "button": "tutorial.continue", "confetti": true},
 	]
 
@@ -146,8 +147,6 @@ func _after_input() -> void:
 
 func _advance() -> void:
 	_index += 1
-	if _index < _steps.size() and _steps[_index].id == "touch":
-		session.board[DROPPED_CANDY[0]][DROPPED_CANDY[1]] = CellModel.CellKind.CANDY
 	if _index >= _steps.size():
 		finished.emit()
 	changed.emit()
