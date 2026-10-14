@@ -144,7 +144,9 @@ func _refresh() -> void:
 	bubble_text.text = emphasize(tr(s.text))
 	var partial: bool = s.lit.size() < 16
 	_tween_bg(DIM_BG if partial else LIT_BG)
-	overlay.show_spotlight(s.lit, s.targets if s.gesture == "double" or (s.hint and _hint_shown) else [])
+	# Free play never reveals the answer; a hint rings only the next candy.
+	var rings: Array = s.targets.slice(0, 1) if s.hint and _hint_shown else (s.targets if s.gesture == "double" and not s.free else [])
+	overlay.show_spotlight(s.lit, rings)
 	action_button.visible = not s.button.is_empty()
 	action_button.text = tr(s.button) if not s.button.is_empty() else ""
 	hint_button.visible = s.hint and not _hint_shown

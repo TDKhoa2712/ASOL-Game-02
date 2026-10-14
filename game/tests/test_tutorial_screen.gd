@@ -62,9 +62,11 @@ func _test_mandatory_onboarding() -> void:
 	_assert(tut.flow.step().id == "hearts" and tut.hearts_row.visible, "hearts step shows the three hearts")
 	tut.action_button.pressed.emit()
 	_assert(tut.flow.step().id == "last" and tut.hint_button.visible and not tut.hand.visible, "last step offers a hint instead of the hand")
+	_assert(tut.overlay._rings.is_empty(), "free play does not ring the answer before a hint")
 	tut.hint_button.pressed.emit()
 	await process_frame
 	_assert(tut.hand.visible and not tut.hint_button.visible, "hint shows the hand on the answer")
+	_assert(tut.overlay._rings == [[2, 0]], "hint rings only the next candy")
 	b.cell_double_tapped.emit(2, 0)
 	b.cell_double_tapped.emit(3, 2)
 	_assert(tut.flow.step().id == "done" and tut.action_button.text == tr("tutorial.continue"), "celebration with continue")
