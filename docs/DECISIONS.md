@@ -78,7 +78,7 @@ Ngày 2026-10-10.
 - **Phân phối màu vùng — tô màu đồ thị tham lam (greedy graph coloring) theo CIELAB:** vùng là đỉnh, biên chung là cạnh; xếp vùng theo bậc giảm dần; màu chỉ hợp lệ khi ΔE76 tới mọi vùng kề đã tô ≥ `MIN_ADJACENT_CONTRAST` = 20; trong các màu hợp lệ chọn màu tối đa hóa ΔE nhỏ nhất tới láng giềng (ưu tiên màu chưa dùng). Bàn ≤ 9 vùng chỉ dùng `PRIMARY_COLOR_COUNT` = 9 màu chủ đạo của mockup; 3 màu dự phòng chỉ dùng khi thiếu. Kiểm bằng `test_region_contrast.gd` trên mẫu mọi bank 4×4–12×12.
 - **Ô màu trơn:** mặc định ô chỉ có màu, không họa tiết. Chế độ hỗ trợ mù màu giữ nguyên màu và chỉ phủ thêm họa tiết lên nửa số vùng tối hơn (vùng kề không trùng họa tiết).
 - **Thẻ luật:** icon 96, chữ 21 (`RULE_ICON_SIZE`, `RULE_FONT_SIZE` trong `puzzle_layout.gd`).
-- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-029).
+- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-030).
 - **Thanh Cheats** chỉ có trong bản debug (`OS.is_debug_build()`).
 
 ## RST-025 — Tách cài đặt Nhạc nền khỏi Âm thanh

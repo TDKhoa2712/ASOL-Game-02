@@ -49,7 +49,7 @@
 | `game/locale/strings.csv` | sửa | Key `assist.*` |
 | `game/tests/test_assist_rules.gd`, `test_assist_inventory.gd`, `test_place_candy_assist.gd`, `test_assist_hint_gate.gd`, `test_assist_ui.gd`, `test_assist_flow.gd` | mới | Test |
 | `game/tests/test_hint_overlay.gd` | sửa | Badge ẩn khi không có inventory (giữ nguyên ý) |
-| `docs/DECISIONS.md`, `docs/STATUS.md` | sửa | RST-029, tiến độ |
+| `docs/DECISIONS.md`, `docs/STATUS.md` | sửa | RST-030, tiến độ |
 
 Lệnh chạy test (từ repo root, `<godot>` = executable Godot của máy):
 
@@ -1161,7 +1161,7 @@ rtk git commit -m "feat(puzzle): wire assist stock, place-candy and streak rewar
 ### Task 7: Tài liệu và full gate
 
 **Files:**
-- Modify: `docs/DECISIONS.md` (thêm RST-029 trên RST-028; sửa câu badge trong RST-024)
+- Modify: `docs/DECISIONS.md` (thêm RST-030 trên RST-028; sửa câu badge trong RST-024)
 - Modify: `docs/STATUS.md` (mục mới đầu danh sách tiến độ)
 - Create: `scratch/verification/2026-10-14-assist-inventory.md`
 
@@ -1170,7 +1170,7 @@ rtk git commit -m "feat(puzzle): wire assist stock, place-candy and streak rewar
 Thêm ngay dưới `> Quản lý version: ...`:
 
 ```markdown
-## RST-029 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày
+## RST-030 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày
 
 Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc tả: [assist inventory](superpowers/specs/2026-10-14-assist-inventory-design.md).
 
@@ -1181,7 +1181,7 @@ Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc t�
 - **Quảng cáo:** chỉ có nút đỏ ▶ giữ chỗ trong popup, chưa cộng lượt; badge góc ẩn tới khi có tính năng.
 ```
 
-Trong RST-024 đổi câu `Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.` thành `Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-029).`
+Trong RST-024 đổi câu `Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.` thành `Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-030).`
 
 - [ ] **Step 2: STATUS**
 
@@ -1190,7 +1190,7 @@ Thêm trên mục `## Bỏ given toàn hệ thống`:
 ```markdown
 ## Kho trợ giúp và streak (2026-10-14, `feat/v1.0.1/assist-inventory`)
 
-- Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-029).
+- Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-030).
 - Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
 - Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).
 ```

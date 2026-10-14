@@ -42,7 +42,7 @@
 | `game/scripts/screens/streak_chip.gd`, `streak_sheet.gd` | sửa | Dùng `FlameFx` |
 | `game/scripts/screens/streak_burst.gd` | viết lại | Burst hoành tráng |
 | Tests: `test_assist_inventory.gd`, `test_assist_flow.gd`, `test_streak_ui.gd`, `test_streak_burst.gd` (sửa), `test_flame_fx.gd` (mới) | | |
-| `docs/DECISIONS.md`, `docs/STATUS.md` | sửa | RST-031 |
+| `docs/DECISIONS.md`, `docs/STATUS.md` | sửa | RST-032 |
 
 Chạy test: Godot 4.7.2 console exe (đường dẫn WinGet), `--headless --path game --script res://tests/<file>.gd`.
 
@@ -487,19 +487,19 @@ git commit -m "feat(streak): grand +1 burst with glow, ring and spark explosion"
 - [ ] **Step 1: DECISIONS** — thêm dưới `> Quản lý version: ...`:
 
 ```markdown
-## RST-031 — Chuỗi tính theo bàn chơi hoàn thành; lửa nhiều lớp
+## RST-032 — Chuỗi tính theo bàn chơi hoàn thành; lửa nhiều lớp
 
-Ngày 2026-10-14. Sửa RST-029 (luật ngày) và RST-030 (hiển thị). Đặc tả: [streak fire](superpowers/specs/2026-10-14-streak-fire-design.md).
+Ngày 2026-10-14. Sửa RST-030 (luật ngày) và RST-031 (hiển thị). Đặc tả: [streak fire](superpowers/specs/2026-10-14-streak-fire-design.md).
 
 - **Luật:** một ngày được tính khi ≥1 bàn chơi kết thúc (thắng hoặc thua); áp cho tổng chuỗi, kỷ lục và gói 7 ngày. Chế độ chơi mới gọi `on_round_finished` khi một bàn kết thúc.
 - **Lửa:** 3 lớp đỏ/cam/vàng cháy liên tục, có tàn lửa bay lên; xám một lớp khi hôm nay chưa chơi.
 - **Burst +1:** quầng sáng, lửa bung, vòng sáng lan, nổ tia lửa, số nảy, rung nhẹ; chạy cả khi thua.
 ```
 
-Trong RST-029 sửa `ngày tính khi thắng ≥1 level` → `ngày tính khi ≥1 bàn kết thúc (RST-031)`.
+Trong RST-030 sửa `ngày tính khi thắng ≥1 level` → `ngày tính khi ≥1 bàn kết thúc (RST-032)`.
 
 - [ ] **Step 2: STATUS** — trong mục `## Kho trợ giúp và streak ...` thêm dòng đầu:
-`- Chuỗi tính khi một bàn kết thúc (thắng hoặc thua); lửa 3 lớp có tàn và burst +1 (RST-031).`
+`- Chuỗi tính khi một bàn kết thúc (thắng hoặc thua); lửa 3 lớp có tàn và burst +1 (RST-032).`
 
 - [ ] **Step 3: Full gate** — clean-room search (không kết quả) và `python -B tools/verify.py --godot <godot>` → exit 0. Nếu báo "source inputs changed" vì Godot ghi lại line ending, chạy lại; sau cùng khôi phục `project.godot`/`.import` chỉ đổi line ending.
 

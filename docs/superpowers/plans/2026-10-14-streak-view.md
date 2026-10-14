@@ -714,15 +714,15 @@ git commit -m "feat(puzzle): burst the streak flame on the first win of the day"
 ### Task 4: Tài liệu và full gate
 
 **Files:**
-- Modify: `docs/DECISIONS.md` (thêm RST-030 trên RST-029)
+- Modify: `docs/DECISIONS.md` (thêm RST-031 trên RST-030)
 - Modify: `docs/STATUS.md` (thêm dòng vào mục "Kho trợ giúp và streak")
 
 - [ ] **Step 1: DECISIONS** — thêm ngay dưới `> Quản lý version: ...`:
 
 ```markdown
-## RST-030 — Xem chuỗi ngày chơi trên Home
+## RST-031 — Xem chuỗi ngày chơi trên Home
 
-Ngày 2026-10-14. Bổ sung RST-029. Đặc tả: [streak view](superpowers/specs/2026-10-14-streak-view-design.md).
+Ngày 2026-10-14. Bổ sung RST-030. Đặc tả: [streak view](superpowers/specs/2026-10-14-streak-view-design.md).
 
 - **Viên lửa** ở giữa phía trên Home: số ngày liên tiếp (`totalStreak`, không reset khi nhận gói 7 ngày); cam khi đã giữ hôm nay, xám khi chưa, nhấp nháy khi sắp mất.
 - **Bảng chuỗi** khi chạm: số ngày, kỷ lục (`bestStreak`), 7 ô chu kỳ với ô quà, trạng thái hôm nay.
@@ -731,7 +731,7 @@ Ngày 2026-10-14. Bổ sung RST-029. Đặc tả: [streak view](superpowers/spec
 ```
 
 - [ ] **Step 2: STATUS** — trong mục `## Kho trợ giúp và streak (2026-10-14, ...)`, thêm dòng đầu:
-`- Home có viên lửa chuỗi ở giữa phía trên, bảng chuỗi và hiệu ứng +1 (RST-030).`
+`- Home có viên lửa chuỗi ở giữa phía trên, bảng chuỗi và hiệu ứng +1 (RST-031).`
 
 - [ ] **Step 3: Full gate**
 

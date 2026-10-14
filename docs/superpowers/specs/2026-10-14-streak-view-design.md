@@ -8,7 +8,7 @@
 
 Cho người chơi thấy chuỗi ngày liên tiếp đã thắng ít nhất một màn, kỷ lục, tiến độ tới gói quà 7 ngày, và cảnh báo khi sắp mất chuỗi.
 
-Ngoài phạm vi: popup "Hết lượt" vẫn không hiển thị streak (RST-029); lịch tháng; thông báo đẩy.
+Ngoài phạm vi: popup "Hết lượt" vẫn không hiển thị streak (RST-030); lịch tháng; thông báo đẩy.
 
 ## 2. Dữ liệu
 
@@ -21,7 +21,7 @@ Thêm vào file `assists` (không migrate; thiếu → 0):
 
 Sanitize: số nguyên ≥ 0 (giới hạn 100000); `bestStreak = max(bestStreak, totalStreak)`.
 
-`record_win(data, today)` (bổ sung luật của RST-029):
+`record_win(data, today)` (bổ sung luật của RST-030):
 - Cùng ngày / ngày lùi → không đổi (như cũ).
 - Ngày kế tiếp → `totalStreak += 1`.
 - Lần đầu hoặc lỡ ngày → `totalStreak = 1`.
