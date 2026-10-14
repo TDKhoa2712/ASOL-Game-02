@@ -68,8 +68,7 @@ func _test_win_and_advance() -> void:
 	var sol: Array = session.level.get("solution", [])
 	for r in range(sol.size()):
 		var c: int = int(sol[r])
-		if session.cell_at(r, c) != 4: # CellModel.CellKind.GIVEN
-			session.try_candy(r, c)
+		session.try_candy(r, c)
 
 	_assert(session.phase == PlaySession.Phase.WON, "session phase is WON")
 

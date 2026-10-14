@@ -9,7 +9,6 @@ const ProgressManagerClass = preload("res://scripts/state/progress_manager.gd")
 const SessionStoreClass = preload("res://scripts/state/session_store.gd")
 const BankReaderClass = preload("res://scripts/content/bank_reader.gd")
 const PlaySessionClass = preload("res://scripts/input/play_session.gd")
-const PreCandyDeciderClass = preload("res://scripts/core/pre_candy_decider.gd")
 
 signal level_started(level_id: String)
 signal level_won(level_id: String, next_id: String)
@@ -71,9 +70,6 @@ func start_level(level_arg: Variant = null) -> PlaySessionClass:
 	var level: Dictionary = selector.select_next_level()
 	if level.is_empty():
 		return null
-
-	if PreCandyDeciderClass.should_prefill(PreCandyDeciderClass.Trigger.CONSECUTIVE_FAIL, fail_streak):
-		level = PreCandyDeciderClass.apply_prefill(level)
 
 	var label := current_level_label()
 	level["id"] = label

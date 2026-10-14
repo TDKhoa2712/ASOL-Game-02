@@ -68,8 +68,7 @@ func _test_endless_flow_win_and_progression() -> void:
 	var solution: Array = session.level["solution"]
 	for r in range(solution.size()):
 		var c: int = int(solution[r])
-		if session.cell_at(r, c) != CellModel.CellKind.GIVEN:
-			session.try_candy(r, c)
+		session.try_candy(r, c)
 
 	_assert(session.phase == PlaySession.Phase.WON, "session phase is WON")
 	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen")
