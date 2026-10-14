@@ -33,6 +33,7 @@ var overlay: TutorialOverlay
 var hand: TutorialHand
 var action_button: Button
 var hint_button: Button
+var skip_button: Button
 var hearts_row: HBoxContainer
 var _hearts_tween: Tween = null
 var _hint_shown: bool = false
@@ -107,6 +108,12 @@ func _build() -> void:
 	hint_button.add_theme_color_override("font_color", Color("#8A4F4A")); hint_button.pressed.connect(_on_hint)
 	row.add_child(hint_button)
 	hand = TutorialHand.new(); add_child(hand)
+	# Skip ends the onboarding at once; it counts as finished, like the last step.
+	skip_button = ActionButton.create(tr("tutorial.skip"), Color.WHITE, Color("#E7D3CC"), Color(0, 0, 0, 0), 40, 100, 6)
+	skip_button.name = "SkipButton"; skip_button.custom_minimum_size = Vector2(280, 100); skip_button.add_theme_color_override("font_color", Color("#8A4F4A"))
+	skip_button.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT); skip_button.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	skip_button.offset_top = 64; skip_button.offset_right = -56; skip_button.pressed.connect(_finish)
+	add_child(skip_button)
 
 # Turns **word** markers in the translated text into colored emphasis.
 static func emphasize(text: String) -> String:
@@ -238,6 +245,7 @@ func _on_hint() -> void:
 	_refresh()
 
 func _finish() -> void:
+	if is_queued_for_deletion(): return
 	if not practice and guide != null: guide.mark_seen(DONE_ID)
 	completed.emit()
 	queue_free()

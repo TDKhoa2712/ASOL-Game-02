@@ -15,6 +15,7 @@ func _init() -> void:
 	await process_frame
 	await _test_mandatory_onboarding()
 	await _test_help_replay()
+	await _test_skip()
 	await _test_pacing_and_free_play()
 	if _fails.is_empty():
 		print("TUTORIAL_SCREEN_PASS")
@@ -34,6 +35,25 @@ func _shell(tag: String, dir: String = "") -> AppShell:
 	await process_frame
 	return shell
 
+func _test_skip() -> void:
+	var dir := OS.get_user_data_dir().path_join("test_tutorial_screen_skip_%s" % Time.get_ticks_usec())
+	var shell := await _shell("skip", dir)
+	var title: Control = shell.screen_host.get_child(0)
+	var tut: Control = title.get_node_or_null("TutorialScreen")
+	_assert(tut != null, "skip: onboarding shown on first launch")
+	if tut == null:
+		shell.queue_free(); return
+	tut.skip_button.pressed.emit()
+	await process_frame
+	_assert(title.get_node_or_null("TutorialScreen") == null, "skip closes the onboarding")
+	_assert(title.runtime.tutorial.has_seen(TutorialScreen.DONE_ID), "skip counts as finished")
+	shell.queue_free()
+	await process_frame
+	var again := await _shell("skip2", dir)
+	_assert(again.screen_host.get_child(0).get_node_or_null("TutorialScreen") == null, "skipped onboarding stays gone after restart")
+	again.queue_free()
+	await process_frame
+
 func _test_mandatory_onboarding() -> void:
 	var dir := OS.get_user_data_dir().path_join("test_tutorial_screen_flow_%s" % Time.get_ticks_usec())
 	var shell := await _shell("flow", dir)
@@ -43,7 +63,7 @@ func _test_mandatory_onboarding() -> void:
 	if tut == null:
 		shell.queue_free(); return
 	_assert(tut.mouse_filter == Control.MOUSE_FILTER_STOP, "onboarding blocks Home until finished")
-	_assert(tut.find_child("Skip*", true, false) == null, "onboarding has no skip")
+	_assert(tut.skip_button != null and tut.skip_button.visible, "onboarding offers a skip button")
 	_assert(tut.bubble_text.text == TutorialScreen.emphasize(tr("tutorial.s_place")), "step 1 text shown")
 	_assert(tut.overlay.dimmed_cells(4).size() == 15, "only the first target cell is lit")
 	var b: Control = tut.board

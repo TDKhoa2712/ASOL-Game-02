@@ -112,7 +112,7 @@ Hành vi input chi tiết ở [GDD-02](02-core-gameplay.md). Bảng dưới ch�
 
 ### 6.1 Onboarding bắt buộc (RST-028)
 
-Lần đầu mở app, tutorial phủ trước Home, không có nút Bỏ qua. Hoàn tất ghi `ONBOARD` vào `progress.tutorialSeenIds`. Help → “Chơi lại hướng dẫn” mở practice run, không ghi progress.
+Lần đầu mở app, tutorial phủ trước Home, có nút Bỏ qua (`tutorial.skip`) ở góc trên phải. Hoàn tất hoặc Bỏ qua đều ghi `ONBOARD`; ở bản practice, Bỏ qua chỉ đóng màn vào `progress.tutorialSeenIds`. Help → “Chơi lại hướng dẫn” mở practice run, không ghi progress.
 
 Bàn 4×4 `ABCC / AACC / AADD / DDDD`, nghiệm `[1,3,0,2]` (`campaign/tutorial_flow.gd`). Bước có hướng dẫn chỉ nhận input trên ô sáng.
 
