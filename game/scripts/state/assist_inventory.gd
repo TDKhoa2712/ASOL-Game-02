@@ -6,7 +6,6 @@ const AssistRules = preload("res://scripts/state/assist_rules.gd")
 
 signal changed(kind: String, count: int)
 signal save_failed(reason: String)
-signal streak_extended(total: int)
 
 var data: Dictionary = AssistRules.new_data()
 var _store: DualSlotStore
@@ -32,13 +31,14 @@ func grant(kind: String, amount: int) -> int:
 	return count(kind) - before
 
 # Any finished round (won or lost) keeps the streak; future modes call this too.
+# Returns {extended, view, reward}; reward is {hint, place} on day 7, else {}.
 func on_round_finished(today: String = "") -> Dictionary:
-	var res := AssistRules.record_win(data, today if today != "" else AssistRules.today())
-	if res.data == data:
-		return {}
-	_commit(res.data, res.reward.keys())
-	streak_extended.emit(int(data.get("totalStreak", 0)))
-	return res.reward
+	var day := today if today != "" else AssistRules.today()
+	var res := AssistRules.record_win(data, day)
+	var extended: bool = res.data != data
+	if extended:
+		_commit(res.data, res.reward.keys())
+	return {"extended": extended, "view": AssistRules.streak_view(data, day), "reward": res.reward}
 
 func streak_view(today: String = "") -> Dictionary:
 	return AssistRules.streak_view(data, today if today != "" else AssistRules.today())
