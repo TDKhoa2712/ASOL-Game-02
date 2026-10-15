@@ -19,7 +19,7 @@ func setup(campaign_rt: Variant, endless_rt: Variant) -> void:
 
 func _build_ui() -> void:
 	var title := Label.new()
-	title.text = "🔄 Đặt lại tiến trình chơi (Reset Progress):"
+	title.text = "Dat lai tien trinh choi (Reset Progress):"
 	title.add_theme_font_size_override("font_size", 26)
 	title.add_theme_color_override("font_color", Palette.INK)
 	add_child(title)
@@ -34,7 +34,7 @@ func _build_ui() -> void:
 	var btn_end := _create_btn("Reset Endless", reset_endless)
 	row.add_child(btn_end)
 
-	var btn_all := _create_btn("Reset Cả hai", reset_all)
+	var btn_all := _create_btn("Reset Ca hai", reset_all)
 	row.add_child(btn_all)
 
 	_status_lbl = Label.new()
@@ -51,38 +51,47 @@ func _create_btn(text: String, action: Callable) -> Button:
 	btn.pressed.connect(action)
 	return btn
 
-func reset_campaign() -> void:
-	if _campaign_rt != null and _campaign_rt.progress != null:
-		var order: Array = _campaign_rt.playlist_order() if _campaign_rt.has_method("playlist_order") else []
-		var first: String = str(order[0]) if not order.is_empty() else "L01"
-		var endless_data: Dictionary = _campaign_rt.progress.get_endless_data()
-		_campaign_rt.progress.current = _campaign_rt.progress.new_progress(first)
-		if not endless_data.is_empty():
-			_campaign_rt.progress.set_endless_data(endless_data)
-		_campaign_rt.progress.save()
-		if _campaign_rt.sessions != null: _campaign_rt.sessions.clear()
-		_campaign_rt.current_session = null
-		if _campaign_rt.has_method("reload"): _campaign_rt.reload()
-	_set_status("✓ Đã reset tiến trình Campaign!")
-	progress_reset.emit("campaign")
+func reset_campaign(emit_signal: bool = true) -> void:
+	if _campaign_rt == null or _campaign_rt.progress == null:
+		_set_status("Khong co runtime Campaign de reset")
+		return
+	var order: Array = _campaign_rt.playlist_order() if _campaign_rt.has_method("playlist_order") else []
+	var first: String = str(order[0]) if not order.is_empty() else "L01"
+	var endless_data: Dictionary = _campaign_rt.progress.get_endless_data()
+	_campaign_rt.progress.current = _campaign_rt.progress.new_progress(first)
+	if not endless_data.is_empty():
+		_campaign_rt.progress.set_endless_data(endless_data)
+	_campaign_rt.progress.save()
+	if _campaign_rt.sessions != null: _campaign_rt.sessions.clear()
+	_campaign_rt.current_session = null
+	if _campaign_rt.has_method("reload"): _campaign_rt.reload()
+	_set_status("Da reset tien trinh Campaign!")
+	if emit_signal:
+		progress_reset.emit("campaign")
 
-func reset_endless() -> void:
-	if _endless_rt != null:
-		if _endless_rt.progress != null:
-			_endless_rt.progress.set_level_num(1)
-		if _endless_rt.progress_manager != null:
-			_endless_rt.progress_manager.set_endless_data({})
-			_endless_rt.progress_manager.save()
-		if _endless_rt.sessions != null:
-			_endless_rt.sessions.clear()
-		_endless_rt.current_session = null
-	_set_status("✓ Đã reset tiến trình Endless!")
-	progress_reset.emit("endless")
+func reset_endless(emit_signal: bool = true) -> void:
+	if _endless_rt == null:
+		_set_status("Khong co runtime Endless de reset")
+		return
+	if _endless_rt.progress != null:
+		_endless_rt.progress.set_level_num(1)
+	if _endless_rt.progress_manager != null:
+		_endless_rt.progress_manager.set_endless_data({})
+		_endless_rt.progress_manager.save()
+	if _endless_rt.sessions != null:
+		_endless_rt.sessions.clear()
+	_endless_rt.current_session = null
+	_set_status("Da reset tien trinh Endless!")
+	if emit_signal:
+		progress_reset.emit("endless")
 
 func reset_all() -> void:
-	reset_campaign()
-	reset_endless()
-	_set_status("✓ Đã reset toàn bộ tiến trình!")
+	if _campaign_rt == null and _endless_rt == null:
+		_set_status("Khong co runtime de reset")
+		return
+	reset_campaign(false)
+	reset_endless(false)
+	_set_status("Da reset toan bo tien trinh!")
 	progress_reset.emit("all")
 
 func _set_status(msg: String) -> void:

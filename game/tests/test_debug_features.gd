@@ -86,9 +86,24 @@ func _run_tests() -> void:
 	# Advance both and Reset All
 	camp_rt.progress.current.currentLevelId = "L10"
 	endless_rt.progress.set_level_num(99)
+	var reset_emits: Array[String] = []
+	var emit_conn := func(m: String): reset_emits.append(m)
+	reset_bar.progress_reset.connect(emit_conn)
 	reset_bar.reset_all()
+	reset_bar.progress_reset.disconnect(emit_conn)
 	_assert(camp_rt.progress.current.currentLevelId == "L01", "Reset all resets campaign to L01")
 	_assert(endless_rt.progress.get_level_num() == 1, "Reset all resets endless to 1")
+	_assert(reset_emits == ["all"], "Reset all emits progress_reset exactly once with 'all', got: %s" % str(reset_emits))
+
+	# Test B07: Reset status when runtimes are null
+	var null_reset_bar := DebugResetBar.new()
+	root.add_child(null_reset_bar)
+	null_reset_bar.setup(null, null)
+	null_reset_bar.reset_campaign()
+	_assert(null_reset_bar._status_lbl.text.contains("Khong co runtime"), "Null campaign runtime shows appropriate warning, got: %s" % null_reset_bar._status_lbl.text)
+	null_reset_bar.reset_endless()
+	_assert(null_reset_bar._status_lbl.text.contains("Khong co runtime"), "Null endless runtime shows appropriate warning, got: %s" % null_reset_bar._status_lbl.text)
+	null_reset_bar.queue_free()
 
 	picker.queue_free()
 	await process_frame
