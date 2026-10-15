@@ -22,6 +22,7 @@ func _run() -> void:
 	await _test_app_shell_boot_and_wiring()
 	await _test_screen_flow_win_and_progression()
 	await _test_screen_flow_fail_and_retry()
+	await _test_streak_day_seven_gift()
 	await _test_options_navigation_and_settings()
 	await _test_session_autosave_and_reboot_recovery()
 	await _test_save_error_dialog()
@@ -113,11 +114,16 @@ func _test_screen_flow_win_and_progression() -> void:
 		session.try_candy(r, c)
 
 	_assert(session.phase == PlaySession.Phase.WON, "session phase is WON")
-	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen")
+	_assert(shell.nav.current() == NavController.Screen.STREAK_ACTIVATE, "first round of the day opens activate")
+	var activate = shell.screen_host.get_child(0)
+	_assert(activate.name == "StreakActivateScreen" and activate.count_label.text == "1", "activate shows day 1")
+	activate.continue_btn.pressed.emit()
+	_assert(shell.nav.current() == NavController.Screen.WIN, "continue leads to WIN screen")
 
 	var win_screen = shell.screen_host.get_child(0)
 	_assert(win_screen != null and win_screen.name == "WinScreen", "screen host holds WinScreen")
 	_assert(shell._last_won_level == "L01", "recorded won level is L01")
+	_assert(int(win_screen.get("_hearts_left")) == shell._last_won_hearts, "win keeps original hearts arg")
 	_assert(win_screen.message_label != null and (win_screen.message_label.text.containsn(tr("result.win.title")) or win_screen.ribbon.text == tr("result.win.title")), "win screen message shown")
 	_assert(win_screen.next_btn != null and win_screen.next_btn.visible, "next button visible")
 
@@ -178,6 +184,8 @@ func _test_screen_flow_fail_and_retry() -> void:
 	var saved := shell.runtime.sessions.load_session(session.level.id, session.level.hash)
 	_assert(saved.ok and saved.data.status == "failed", "failure saved before final fall finishes")
 	await create_timer(1.0).timeout
+	_assert(shell.nav.current() == NavController.Screen.STREAK_ACTIVATE, "lost first round also activates")
+	shell.screen_host.get_child(0).continue_btn.pressed.emit()
 	_assert(shell.nav.current() == NavController.Screen.FAIL, "nav moved to FAIL screen")
 
 	var fail_screen = shell.screen_host.get_child(0)
@@ -192,6 +200,38 @@ func _test_screen_flow_fail_and_retry() -> void:
 	_assert(retry_session.phase == PlaySession.Phase.ACTIVE, "retry session is active")
 	_assert(retry_session.hearts == 3, "retry session has 3 fresh hearts")
 
+	root.remove_child(shell)
+	shell.free()
+	_clean_dir(pdir)
+
+func _test_streak_day_seven_gift() -> void:
+	var pdir := _create_test_profile("streak_gift")
+	var shell: AppShell = load("res://scenes/main.tscn").instantiate()
+	shell.profile_dir = pdir
+	shell.assists = load("res://scripts/state/assist_inventory.gd").new(pdir)
+	var yesterday := Time.get_date_string_from_unix_time(int(Time.get_unix_time_from_system()) - 86400)
+	shell.assists.data.streakDays = 6; shell.assists.data.totalStreak = 6; shell.assists.data.lastStreakDate = yesterday
+	root.add_child(shell)
+	await process_frame
+	shell.screen_host.get_child(0)._on_play()
+	var session: PlaySession = shell.runtime.current_session
+	var solution: Array = session.level["solution"]
+	for r in range(solution.size()):
+		session.try_candy(r, int(solution[r]))
+	_assert(shell.nav.current() == NavController.Screen.STREAK_ACTIVATE, "day 7: activate first")
+	shell.screen_host.get_child(0).continue_btn.pressed.emit()
+	_assert(shell.nav.current() == NavController.Screen.STREAK_GIFT, "day 7: gift second")
+	var gift = shell.screen_host.get_child(0)
+	_assert(gift.name == "StreakGiftScreen" and gift.reward.has("hint"), "gift got reward")
+	gift.continue_btn.pressed.emit()
+	_assert(shell.nav.current() == NavController.Screen.WIN, "day 7: win last")
+	_assert(shell._last_won_level == "L01", "win label unchanged after detour")
+	# Debug-picker level: custom, never activates
+	shell._on_debug_level_selected(session.level.duplicate(true), "L01")
+	var dsess: PlaySession = shell.runtime.current_session if shell.screen_host.get_child(0).get("session") == null else shell.screen_host.get_child(0).session
+	for r in range(solution.size()):
+		dsess.try_candy(r, int(solution[r]))
+	_assert(shell.nav.current() == NavController.Screen.WIN, "debug level skips activate")
 	root.remove_child(shell)
 	shell.free()
 	_clean_dir(pdir)

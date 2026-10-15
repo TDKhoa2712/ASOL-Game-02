@@ -61,6 +61,8 @@ func _test_new_level_and_resume() -> void:
 	var sess = puzzle.session
 	for r in range(int(sess.level.size)):
 		puzzle._on_board_double_tap(r, int(sess.level.solution[r]))
+	if shell.screen_host.get_child_count() > 0 and shell.screen_host.get_child(0).get("continue_btn") != null:
+		shell.screen_host.get_child(0).continue_btn.pressed.emit()
 	shell._on_next_level()
 	puzzle = shell.screen_host.get_child(0)
 	_assert(_entering(puzzle.board), "next level after a win starts another wave")

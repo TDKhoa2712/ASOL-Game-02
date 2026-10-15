@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-14
+> Cập nhật: 2026-10-15
 > Quản lý version: [VERSIONING](VERSIONING.md). Nền tích hợp: nhánh version `release/vX.Y.Z`.
 
 ## Mục tiêu hiện tại: Chuẩn bị release v1.0.1 (nhánh `release/v1.0.1`)
@@ -26,7 +26,9 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 ## Kho trợ giúp và streak (2026-10-14, `feat/v1.0.1/assist-inventory`)
 
 - Home có viên lửa chuỗi ở giữa phía trên; nhấn mở **màn Chuỗi** riêng (`scenes/streak.tscn`): title, nút back, lửa + số ngày, dải 7 ô (`StreakCycleStrip`), hộp quà placeholder (`GiftBoxView`, chờ animation chủ dự án), dòng "Kỷ lục". Đã gỡ popup `streak_sheet` và các câu trạng thái. Mất chuỗi (lỡ ≥1 ngày) hiển thị 0 ngay (Plan B, `feat/v1.0.1/streak-screen`).
+- Chuỗi tính khi một bàn kết thúc (thắng hoặc thua); lửa 3 lớp có tàn (RST-032). Bàn đầu tiên trong ngày mở màn Kích hoạt chuỗi, ngày 7 thêm màn Nhận quà, rồi Win/Fail (`feat/v1.0.1/streak-activation`, Plan A). Burst +1 và toast `assist.reward` đã gỡ.
 - Kiểm chứng Plan B: `test_streak_strip`, `test_streak_screen`, `test_streak_ui`, full verify rev `dea458f` (log `scratch/verification/20261015T041725.466908Z.txt`). Còn mở: QA giao diện/thiết bị màn Chuỗi; animation hộp quà thật.
+- Plan A kiểm chứng: `test_streak_activation`, `test_assist_flow`, `test_assist_inventory`, `test_integration`; full verify rev `3b2bbdd` (`scratch/verification/20261015T074818.099766Z.txt`). Chưa QA giao diện/thiết bị cho màn Kích hoạt và Nhận quà; hộp quà vẫn là placeholder (Q7).
 - Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-030).
 - Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
 - Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).

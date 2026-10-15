@@ -71,6 +71,8 @@ func _test_endless_flow_win_and_progression() -> void:
 		session.try_candy(r, c)
 
 	_assert(session.phase == PlaySession.Phase.WON, "session phase is WON")
+	if shell.nav.current() == NavController.Screen.STREAK_ACTIVATE:
+		shell.screen_host.get_child(0).continue_btn.pressed.emit()
 	_assert(shell.nav.current() == NavController.Screen.WIN, "nav moved to WIN screen")
 
 	var win_screen = shell.screen_host.get_child(0)
@@ -109,6 +111,8 @@ func _test_endless_flow_fail_and_retry() -> void:
 
 	_assert(session.phase == PlaySession.Phase.FAILED, "session is FAILED")
 	await create_timer(1.0).timeout
+	if shell.nav.current() == NavController.Screen.STREAK_ACTIVATE:
+		shell.screen_host.get_child(0).continue_btn.pressed.emit()
 	_assert(shell.nav.current() == NavController.Screen.FAIL, "nav moved to FAIL screen")
 
 	var fail_screen = shell.screen_host.get_child(0)

@@ -8,7 +8,7 @@ Ngày 2026-10-14. Sửa RST-030 (luật ngày) và RST-031 (hiển thị). Đặ
 
 - **Luật:** một ngày được tính khi ≥1 bàn chơi kết thúc (thắng hoặc thua); áp cho tổng chuỗi, kỷ lục và gói 7 ngày. Chế độ chơi mới gọi `on_round_finished` khi một bàn kết thúc.
 - **Lửa:** 3 lớp đỏ/cam/vàng cháy liên tục, có tàn lửa bay lên; xám một lớp khi hôm nay chưa chơi.
-- **Burst +1:** quầng sáng, lửa bung, vòng sáng lan, nổ tia lửa, số nảy, rung nhẹ; chạy cả khi thua.
+- **Kích hoạt chuỗi (sửa 2026-10-15, đặc tả [streak screens](superpowers/specs/2026-10-15-streak-screens-debug-design.md) §3.3):** bàn kết thúc đầu tiên trong ngày (thắng hoặc thua, không tính level custom/debug/tutorial) mở màn Kích hoạt chuỗi (lửa sáng, ô hôm nay được điền, nút Tiếp tục) → ngày 7: màn Nhận quà (hộp quà mở, +hint/+đặt kẹo) → Win/Fail như cũ. Bỏ burst +1 trên bàn.
 
 ## RST-031 — Xem chuỗi ngày chơi trên Home
 
@@ -16,7 +16,7 @@ Ngày 2026-10-14. Bổ sung RST-030. Đặc tả: [streak view](superpowers/spec
 
 - **Viên lửa** ở giữa phía trên Home: số ngày liên tiếp (`totalStreak`, không reset khi nhận gói 7 ngày); cam khi đã giữ hôm nay, xám khi chưa, nhấp nháy khi sắp mất.
 - **Bảng chuỗi** khi chạm: số ngày, kỷ lục (`bestStreak`), 7 ô chu kỳ với ô quà, trạng thái hôm nay.
-- **Hiệu ứng +1** trên bàn chơi ở lần thắng đầu tiên trong ngày; toast gói 7 ngày hiện sau.
+- **Hiệu ứng ngày mới:** thay bằng màn Kích hoạt chuỗi và màn Nhận quà ngày 7 (RST-032, 2026-10-15); bỏ toast gói 7 ngày.
 - Popup "Hết lượt" vẫn không hiển thị streak.
 
 ## RST-030 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày

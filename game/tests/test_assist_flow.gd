@@ -27,7 +27,7 @@ func _init() -> void:
 	screen.place_btn.pressed.emit()
 	check(inv.count("place") == 6, "no charge after win")
 	check(inv.data.streakDays == 0, "custom win does not count for streak")
-	check(screen.get_node_or_null("StreakBurst") == null, "custom win shows no burst")
+	check(screen.assist_ctl.round_result.is_empty(), "custom win records no streak result")
 	# Custom/debug levels never touch the real stock
 	var custom := PuzzleScreen.new()
 	custom.assists = inv
@@ -52,6 +52,8 @@ func _init() -> void:
 	screen2.assist_ctl.on_round_finished(screen2.session, false)
 	screen2.assist_ctl.on_round_finished(screen2.session, false)
 	check(inv2.data.streakDays == 1, "resume won twice records once")
+	check(screen2.assist_ctl.on_round_finished(screen2.session, false).extended == false, "same day result not extended")
+	check(not FileAccess.file_exists("res://scripts/screens/streak_burst.gd"), "burst removed")
 	# A lost round also keeps the streak; restoring it does not count twice.
 	var screen3 := PuzzleScreen.new()
 	var inv3 := Inventory.new(dir + "_c")
@@ -62,8 +64,10 @@ func _init() -> void:
 	screen3._is_custom = false
 	screen3._on_level_failed(false)
 	check(inv3.data.totalStreak == 0, "restored finished round is not counted again")
+	check(screen3.assist_ctl.round_result.is_empty(), "restored round has no result to show")
 	screen3._on_level_failed(true)
 	check(inv3.data.totalStreak == 1, "failed round counts for streak")
+	check(screen3.assist_ctl.round_result.extended, "failed round result is extended")
 	screen3._on_level_failed(true)
 	check(inv3.data.totalStreak == 1, "failed twice same day counts once")
 	screen3.queue_free()

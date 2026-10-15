@@ -5,7 +5,7 @@ const AppShell = preload("res://scripts/screens/app_shell.gd")
 var failures: Array[String] = []
 
 func _init() -> void:
-	for key in ["title", "puzzle", "win", "fail", "options", "streak"]:
+	for key in ["title", "puzzle", "win", "fail", "options", "streak", "streak_activate", "streak_gift"]:
 		check(ScreenRouter.scene_path(key) == "res://scenes/%s.tscn" % key, "path for " + key)
 	check(ScreenRouter.scene_path("nope") == "", "unknown key has no path")
 	check(ScreenRouter.instantiate("nope") == null, "unknown key builds nothing")
