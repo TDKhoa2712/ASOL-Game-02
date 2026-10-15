@@ -77,7 +77,7 @@ func setup(rt: Variant, sfx_player: Variant, cfg: Variant = null, custom_lvl: Di
 			session = runtime.start_level(runtime.current_level_label())
 			new_level = session != null
 	_ensure_nodes()
-	if board != null: combo.bind(board, sfx); assist_ctl.bind(null if _is_custom else assists, hint_coordinator)
+	if board != null: combo.bind(board, sfx); assist_ctl.bind(null if _is_custom else assists, hint_coordinator, assists)
 	if session != previous_session: combo.reset()
 	if board != null and session != null:
 		if config != null:

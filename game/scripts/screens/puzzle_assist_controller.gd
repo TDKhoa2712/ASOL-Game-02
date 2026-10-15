@@ -8,6 +8,7 @@ const PlaySession = preload("res://scripts/input/play_session.gd")
 
 var inventory: Variant = null
 var round_result: Dictionary = {}  # last recorded round on this screen; read by app_shell's StreakFlow
+var streak_source: Variant = null  # inventory that records the streak; set even for custom levels
 var popup: AssistEmptyPopup = null
 var _screen: Control = null
 var _hint_btn: Button = null
@@ -20,8 +21,9 @@ func setup(screen: Control, hint_btn: Button, place_btn: Button) -> void:
 		screen.add_child(popup)
 		popup.ad_pressed.connect(func(): AssistDock.show_toast(_screen, _screen.tr("assist.coming_soon")))
 
-func bind(inv: Variant, coordinator: Variant) -> void:
+func bind(inv: Variant, coordinator: Variant, streak_inv: Variant = null) -> void:
 	inventory = inv
+	streak_source = streak_inv if streak_inv != null else inv
 	if _place_btn != null: _place_btn.visible = inventory != null
 	if coordinator != null: coordinator.inventory = inventory
 	if inventory == null:
@@ -46,11 +48,13 @@ func on_place(session: Variant, coordinator: Variant) -> void:
 	coordinator.place_candy(session, cell)
 
 # Records the finished round; returns {extended, view, reward} for the streak screens, {} when skipped.
+# Custom/debug levels are skipped unless the session-only debug switch is on.
 func on_round_finished(session: Variant, is_custom: bool) -> Dictionary:
 	round_result = {}
-	if inventory == null or is_custom or session == null:
+	var inv: Variant = streak_source if streak_source != null else inventory
+	if inv == null or session == null or (is_custom and not inv.debug_counts_custom):
 		return round_result
-	round_result = inventory.on_round_finished()
+	round_result = inv.on_round_finished()
 	return round_result
 
 func _on_changed(kind: String, count: int) -> void:
