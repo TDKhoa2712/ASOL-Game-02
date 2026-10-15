@@ -64,9 +64,10 @@ func _run() -> void:
 			_expect_effect(shell.sfx, SfxCatalog.Effect.PROGRESS_COMPLETE, "halfway progress")
 		elif session.phase == 0:
 			_expect_effect(shell.sfx, SfxCatalog.combo_effect(found), "correct candy combo voice")
-	if shell.screen_host.get_child(0).name != &"WinScreen":
-		await shell.screen_host.child_entered_tree
-	_expect_effect(shell.sfx, SfxCatalog.Effect.STAGE_CLEAR, "win melody on result screen")
+	if shell.nav.current_name() == "streak_activate":
+		shell.screen_host.get_child(0).continue_btn.pressed.emit()
+	_check(shell.sfx._last_play_ms.has(SfxCatalog.Effect.STAGE_CLEAR), "win melody on result screen")
+	_observed_voice_index = shell.sfx._pool_idx
 	shell._on_next_level()
 	puzzle = shell.screen_host.get_child(0)
 	for mistake in range(3):
