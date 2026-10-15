@@ -165,6 +165,45 @@ func _run_tests() -> void:
 			all_solved = false
 	_assert(all_solved, "All solution candies placed on board during auto-solve")
 
+	# 3e. Test B11: update_session syncs solution button text
+	board.set_show_solution(true)
+	debug_bar.update_session(session)
+	_assert(debug_bar._solution_btn.text == "An nghiem", "update_session syncs solution button text to 'An nghiem', got: %s" % debug_bar._solution_btn.text)
+	board.set_show_solution(false)
+	debug_bar.update_session(session)
+	_assert(debug_bar._solution_btn.text == "Hien nghiem", "update_session syncs solution button text to 'Hien nghiem', got: %s" % debug_bar._solution_btn.text)
+
+	# 3f. Test B12: _on_fail_pressed emits state_changed
+	session = PlaySession.new(sample_level)
+	board.configure(session)
+	debug_bar.setup(null, session, board)
+	var state_changed_on_fail := [false]
+	session.state_changed.connect(func(): state_changed_on_fail[0] = true)
+	debug_bar._on_fail_pressed()
+	_assert(state_changed_on_fail[0], "_on_fail_pressed emits session.state_changed so HUD updates")
+
+	# 3g. Test B13: _on_solve_pressed clears any marks and errors before placing candies
+	session = PlaySession.new(sample_level)
+	# Dirty the board with marks
+	session.board[0][0] = CellModel.CellKind.MARK
+	session.board[1][1] = CellModel.CellKind.MARK
+	board.configure(session)
+	debug_bar.setup(null, session, board)
+	debug_bar._on_solve_pressed()
+	for r in range(session.board.size()):
+		for c in range(session.board.size()):
+			if c == int(sol[r]):
+				_assert(session.board[r][c] == CellModel.CellKind.CANDY, "Cell [%d, %d] is CANDY" % [r, c])
+			else:
+				_assert(session.board[r][c] == CellModel.CellKind.BLANK, "Non-solution cell [%d, %d] is cleared to BLANK, got %d" % [r, c, session.board[r][c]])
+
+	# 3h. Test B14 & B10: Responsive layout and no emojis
+	_assert(debug_bar._toggle_btn.text == "Cheats", "Toggle button has no emoji, got: %s" % debug_bar._toggle_btn.text)
+	_assert(not debug_bar._win_btn.text.contains("✓"), "Win button has no emoji, got: %s" % debug_bar._win_btn.text)
+	_assert(not debug_bar._fail_btn.text.contains("✕"), "Fail button has no emoji, got: %s" % debug_bar._fail_btn.text)
+	_assert(not debug_bar._solve_btn.text.contains("⏩"), "Solve button has no emoji, got: %s" % debug_bar._solve_btn.text)
+	_assert(debug_bar._tools_container is GridContainer, "Tools container is GridContainer, got: %s" % debug_bar._tools_container.get_class())
+
 	board.queue_free()
 	debug_bar.queue_free()
 	await process_frame
