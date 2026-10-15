@@ -20,15 +20,15 @@ func _init() -> void:
 	add_theme_constant_override("separation", 12)
 	_build_ui()
 
-func setup(bank: RefCounted, endless_rt: Variant = null) -> void:
+func setup(bank: RefCounted, endless_rt: Variant = null, emit_change: bool = false) -> void:
 	_bank = bank
 	_endless_rt = endless_rt
 	_config = endless_rt.config if (endless_rt != null and "config" in endless_rt) else EndlessConfigClass.default_config()
 	if _endless_rt != null and _endless_rt.progress != null:
-		_spin_level.value = _endless_rt.progress.get_level_num()
+		_spin_level.set_value_no_signal(_endless_rt.progress.get_level_num())
 	else:
-		_spin_level.value = 1
-	_update_selection()
+		_spin_level.set_value_no_signal(1)
+	_update_selection(emit_change)
 
 func get_selected_level() -> Dictionary: return _selected_level
 func get_selected_label() -> String: return _selected_label
@@ -79,11 +79,15 @@ func _build_ui() -> void:
 	info_panel.add_child(_info_label)
 	add_child(info_panel)
 
-func _update_selection() -> void:
+func _update_selection(emit_change: bool = true) -> void:
 	var lvl_num: int = int(_spin_level.value)
 	var label := "Endless %d" % lvl_num
 	if _bank == null:
-		_info_label.text = "Chưa có bank dữ liệu"
+		_info_label.text = "Chua co bank du lieu"
+		_selected_level = {}
+		_selected_label = ""
+		if emit_change:
+			level_changed.emit(_selected_level, _selected_label)
 		return
 
 	var prog := EndlessProgressClass.new()
@@ -93,9 +97,11 @@ func _update_selection() -> void:
 	var lvl := selector.select_next_level()
 
 	if lvl.is_empty():
-		_info_label.text = "Không tìm thấy level phù hợp cho số level %d" % lvl_num
+		_info_label.text = "Khong tim thay level phu hop cho so level %d" % lvl_num
 		_selected_level = {}
 		_selected_label = ""
+		if emit_change:
+			level_changed.emit(_selected_level, _selected_label)
 		return
 
 	_selected_level = lvl.duplicate(true)
@@ -108,7 +114,8 @@ func _update_selection() -> void:
 	var diff: String = str(_selected_level.get("difficulty", "normal"))
 	var reg_cnt: int = _selected_level.get("regions", []).size()
 
-	_info_label.text = "Endless Level #%d | Size: %dx%d | Rank %d (%s)\nSố vùng: %d" % [
+	_info_label.text = "Endless Level #%d | Size: %dx%d | Rank %d (%s)\nSo vung: %d" % [
 		lvl_num, sz, sz, rank, diff, reg_cnt
 	]
-	level_changed.emit(_selected_level, _selected_label)
+	if emit_change:
+		level_changed.emit(_selected_level, _selected_label)
