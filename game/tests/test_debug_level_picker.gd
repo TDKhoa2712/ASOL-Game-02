@@ -95,6 +95,37 @@ func _run_tests() -> void:
 	picker_b05.setup(bank, sample_playlist)
 	_assert(picker_b05._selected_label == "L01", "Initial selection after setup remains L01, got: %s" % picker_b05._selected_label)
 	_assert(picker_b05._mode == 0, "Picker starts in playlist mode (0)")
+
+	# Test B01: Empty filter disables play button and clears selection
+	picker_b05._diff_filter_btn.clear()
+	picker_b05._diff_filter_btn.add_item("All")
+	picker_b05._diff_filter_btn.add_item("nonexistent_diff")
+	picker_b05._diff_filter_btn.selected = 1
+	picker_b05._apply_playlist_filters()
+	_assert(picker_b05._play_btn.disabled, "Play button is disabled when filter yields no levels")
+	_assert(picker_b05._selected_level.is_empty(), "Selected level is empty when filter yields no levels")
+
+	# Test B02: Tab switch preserves selection
+	picker_b05._diff_filter_btn.selected = 0
+	picker_b05._apply_playlist_filters()
+	picker_b05.select_playlist_entry("L11")
+	_assert(picker_b05._selected_label == "L11", "Selected L11")
+	picker_b05._switch_mode(1) # Bank tab
+	_assert(picker_b05._mode == 1, "Switched to bank tab")
+	picker_b05._switch_mode(0) # Back to playlist tab
+	_assert(picker_b05._selected_label == "L11", "Selection L11 preserved after switching back, got: %s" % picker_b05._selected_label)
+
+	# Test B03: Missing bank level disables play button
+	picker_b05.select_custom_bank_level(4, 1, 999999, 0)
+	_assert(picker_b05._play_btn.disabled, "Play button disabled when bank level does not exist")
+	_assert(picker_b05._selected_level.is_empty(), "Selected level dictionary is empty when bank level does not exist")
+
+	# Test B09: Bank row control flags expand
+	_assert(picker_b05._bank_size_btn.size_flags_horizontal == Control.SIZE_EXPAND_FILL, "Bank size btn has SIZE_EXPAND_FILL")
+
+	# Test B08: Responsive minimum size
+	_assert(picker_b05.custom_minimum_size.x <= 540, "Picker custom_minimum_size width fits narrow width <= 540, got: %f" % picker_b05.custom_minimum_size.x)
+
 	picker_b05.queue_free()
 	await process_frame
 
