@@ -25,6 +25,8 @@ Hoàn thiện trải nghiệm chuỗi ngày (streak) và assist inventory:
 | Q9 | Debug khác: rà soát bug ở chọn level (picker, endless, reset) và tính năng debug trong màn chơi (thanh Cheats); lập danh sách để chủ dự án duyệt trước khi sửa. |
 | Q11 | Khi mất chuỗi (lỡ ≥1 ngày), số chuỗi hiển thị về **0 ngay** (không chờ chơi màn mới); dòng "Kỷ lục: N" luôn hiện, giữ giá trị cao nhất từng đạt. |
 | Q12 | Ngày giả và công tắc "level debug tính chuỗi" chỉ sống trong phiên, không ghi save. Xem trước màn dùng dữ liệu giả, không đổi save thật. |
+| Q13 | Bật công tắc "Level debug tính chuỗi" → level debug đi đủ luồng Kích hoạt → (Quà) → Win/Fail. |
+| Q14 | Tab Streak/Assist trong debug picker ẩn nút ▶, vẫn hiện khung info và thanh Reset. |
 | Q10 | Mọi nhánh con tạo từ `feat/v1.0.1/assist-inventory` và merge về nhánh này. |
 
 ## 3. Thiết kế
