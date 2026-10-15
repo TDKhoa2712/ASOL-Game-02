@@ -9,6 +9,8 @@ signal save_failed(reason: String)
 
 var data: Dictionary = AssistRules.new_data()
 var _store: DualSlotStore
+var clock: Variant = null  # DayClock injected by app_shell; null -> real date
+var debug_counts_custom: bool = false  # session-only debug switch, never saved
 
 func _init(profile_dir: String) -> void:
 	_store = DualSlotStore.new(profile_dir, "assists")
@@ -33,7 +35,7 @@ func grant(kind: String, amount: int) -> int:
 # Any finished round (won or lost) keeps the streak; future modes call this too.
 # Returns {extended, view, reward}; reward is {hint, place} on day 7, else {}.
 func on_round_finished(today: String = "") -> Dictionary:
-	var day := today if today != "" else AssistRules.today()
+	var day := today if today != "" else current_day()
 	var res := AssistRules.record_win(data, day)
 	var extended: bool = res.data != data
 	if extended:
@@ -41,7 +43,13 @@ func on_round_finished(today: String = "") -> Dictionary:
 	return {"extended": extended, "view": AssistRules.streak_view(data, day), "reward": res.reward}
 
 func streak_view(today: String = "") -> Dictionary:
-	return AssistRules.streak_view(data, today if today != "" else AssistRules.today())
+	return AssistRules.streak_view(data, today if today != "" else current_day())
+
+func current_day() -> String:
+	return clock.today() if clock != null else AssistRules.today()
+
+func replace_data(next: Dictionary) -> void:
+	_commit(AssistRules.sanitize(next), AssistRules.KINDS)
 
 func _commit(next: Dictionary, kinds: Array) -> void:
 	data = next

@@ -7,6 +7,7 @@ const CampaignSelector = preload("res://scripts/campaign/campaign_selector.gd")
 const BankReader = preload("res://scripts/content/bank_reader.gd")
 const PaceReader = preload("res://scripts/content/pace_reader.gd")
 const ProgressManager = preload("res://scripts/state/progress_manager.gd"); const AssistInventory = preload("res://scripts/state/assist_inventory.gd")
+const DayClock = preload("res://scripts/state/day_clock.gd")
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
@@ -40,6 +41,7 @@ var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label
 var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 var _options_overlay: Control = null
 var streak_flow := StreakFlow.new()
+var day_clock := DayClock.new()
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
@@ -49,6 +51,7 @@ func _ready() -> void:
 	if not sel.ok: _on_boot_error(str(sel.error)); return
 	if config == null: config = ConfigStore.new(profile_dir); config.option_changed.connect(_apply_setting)
 	if assists == null: assists = AssistInventory.new(profile_dir); assists.save_failed.connect(_on_save_failed)
+	if assists.clock == null: assists.clock = day_clock
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
