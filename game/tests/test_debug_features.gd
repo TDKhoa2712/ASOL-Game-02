@@ -13,6 +13,7 @@ const EndlessRuntime = preload("res://scripts/endless/endless_runtime.gd")
 const PlaySession = preload("res://scripts/input/play_session.gd")
 const CellModel = preload("res://scripts/core/cell_model.gd")
 const PuzzleBoard = preload("res://scripts/screens/puzzle_board.gd")
+const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 
 var _fails: Array[String] = []
 
@@ -203,6 +204,27 @@ func _run_tests() -> void:
 	_assert(not debug_bar._fail_btn.text.contains("✕"), "Fail button has no emoji, got: %s" % debug_bar._fail_btn.text)
 	_assert(not debug_bar._solve_btn.text.contains("⏩"), "Solve button has no emoji, got: %s" % debug_bar._solve_btn.text)
 	_assert(debug_bar._tools_container is GridContainer, "Tools container is GridContainer, got: %s" % debug_bar._tools_container.get_class())
+
+	# 3i. Test Cheats layout visibility in puzzle screen (no overflow when activated)
+	var screen_ctrl := Control.new()
+	screen_ctrl.custom_minimum_size = Vector2(1080, 1920)
+	screen_ctrl.size = Vector2(1080, 1920)
+	root.add_child(screen_ctrl)
+	var layout_nodes := PuzzleLayout.build(screen_ctrl)
+	var screen_dbg: PuzzleDebugBar = layout_nodes.get("debug_bar")
+	if screen_dbg != null:
+		await process_frame
+		await process_frame
+		screen_dbg._on_toggle_pressed()
+		await process_frame
+		await process_frame
+		_assert(screen_dbg._tools_container.visible, "Tools container is visible when cheats toggled")
+		var dbg_bottom: float = screen_dbg.global_position.y + screen_dbg.size.y
+		_assert(dbg_bottom <= 1920.0, "Cheats bar bottom (%f) is within screen height (1920)" % dbg_bottom)
+		for btn in [screen_dbg._solution_btn, screen_dbg._win_btn, screen_dbg._fail_btn, screen_dbg._solve_btn]:
+			var btn_bottom: float = btn.global_position.y + btn.size.y
+			_assert(btn_bottom <= 1920.0, "Cheat button %s bottom (%f) is within screen height (1920)" % [btn.text, btn_bottom])
+	screen_ctrl.queue_free()
 
 	board.queue_free()
 	debug_bar.queue_free()

@@ -229,7 +229,9 @@ static func build(root: Control) -> Dictionary:
 		if dbg_cls != null:
 			debug_bar = dbg_cls.new()
 			debug_bar.name = "DebugBar"
-			stack.add_child(debug_bar)
+			debug_bar.size_flags_vertical = Control.SIZE_SHRINK_END
+			debug_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			safe.add_child(debug_bar)
 
 	var confirm := ConfirmationDialog.new()
 	confirm.name = "RestartConfirm"
