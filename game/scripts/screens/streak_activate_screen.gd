@@ -9,6 +9,7 @@ const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
 const GlowBurst = preload("res://scripts/ui/glow_burst.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
+const FitLabel = preload("res://scripts/ui/fit_label.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
@@ -179,8 +180,12 @@ func _ensure_nodes() -> void:
 	flash.modulate.a = 0.0
 	add_child(flash)
 
+# Text labels shrink to fit long translations; the big count stays a plain label.
 func _label(parent: Control, text: String, font_size: int, color: Color, font: Font) -> Label:
-	var l := Label.new(); l.text = text
+	var l: Label = Label.new() if font_size >= 200 else FitLabel.new()
+	if l is FitLabel:
+		l.max_font_size = font_size; l.min_font_size = int(font_size * 0.6); l.max_lines = 2  # 2: CJK fallback glyphs are taller than one Latin line
+	l.text = text
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.add_theme_font_size_override("font_size", font_size)
 	l.add_theme_color_override("font_color", color)

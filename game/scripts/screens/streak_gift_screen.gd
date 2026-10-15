@@ -9,6 +9,7 @@ const GlowBurst = preload("res://scripts/ui/glow_burst.gd")
 const ConfettiLayer = preload("res://scripts/ui/confetti_layer.gd")
 const ActionButton = preload("res://scripts/ui/action_button.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
+const FitLabel = preload("res://scripts/ui/fit_label.gd")
 const Palette = preload("res://scripts/theme/palette.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
@@ -16,6 +17,7 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 signal continued()
 
 const BOX_SIZE := 500.0
+const CARD_WIDTH := 440.0
 const CENTER_UV := Vector2(0.5, 0.38)
 const TITLE_COLOR := Color("#C02C52")
 const BG_MID := Color("#FFF1F4")
@@ -128,9 +130,7 @@ func _ensure_nodes() -> void:
 	box.offset_top = 220; box.offset_bottom = -120; box.offset_left = 60; box.offset_right = -60
 	box.add_theme_constant_override("separation", 40)
 	add_child(box)
-	title_label = Label.new(); title_label.text = tr("streak.gift_title")
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.add_theme_font_size_override("font_size", 92)
+	title_label = _fit(92, 56, 2); title_label.text = tr("streak.gift_title")
 	title_label.add_theme_color_override("font_color", TITLE_COLOR)
 	title_label.add_theme_color_override("font_shadow_color", Color.WHITE)
 	title_label.add_theme_constant_override("shadow_offset_y", 8)
@@ -164,7 +164,7 @@ func _ensure_nodes() -> void:
 
 func _card(parent: Control, icon_path: String, icon_bg: Color, edge: Color) -> PanelContainer:
 	var card := PanelContainer.new()
-	card.custom_minimum_size = Vector2(400, 0)
+	card.custom_minimum_size = Vector2(CARD_WIDTH, 0)
 	var sb := StyleBoxFlat.new()
 	sb.bg_color = Color.WHITE; sb.set_corner_radius_all(64)
 	sb.border_width_bottom = 14; sb.border_color = edge
@@ -189,11 +189,18 @@ func _card(parent: Control, icon_path: String, icon_bg: Color, edge: Color) -> P
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	if icon_path == HINT_ICON: icon.modulate = Palette.BOARD_HINT_ICON
 	badge.add_child(icon)
-	var l := Label.new()
-	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", 48)
+	var l := _fit(48, 30, 2)
+	l.custom_minimum_size = Vector2(CARD_WIDTH - 72.0, 0)
 	l.add_theme_color_override("font_color", Palette.WIN_TEXT_PRIMARY)
 	if FontTokens.body_bold() != null: l.add_theme_font_override("font", FontTokens.body_bold())
 	col.add_child(l)
 	card.set_meta("label", l)
 	return card
+
+# Wrapped label that shrinks for long translations (fit_label.gd).
+func _fit(max_size: int, min_size: int, lines: int) -> Label:
+	var l := FitLabel.new()
+	l.max_font_size = max_size; l.min_font_size = min_size; l.max_lines = lines
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.add_theme_font_size_override("font_size", max_size)
+	return l

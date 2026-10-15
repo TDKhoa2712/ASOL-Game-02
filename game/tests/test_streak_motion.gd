@@ -17,6 +17,7 @@ func _initialize() -> void:
 	await _test_gift_screen()
 	_test_sfx()
 	await _test_router_order()
+	await _test_long_text_layout()
 	LayoutTokens.motion_enabled = true
 	if failures.is_empty():
 		print("STREAK_MOTION_PASS")
@@ -118,6 +119,39 @@ func _test_router_order() -> void:
 	check(st.flame.is_flickering(), "streak flame flickers when shown before entering the tree")
 	check(st._glow_tween != null and st._glow_tween.is_valid(), "streak glow breathes when shown before entering the tree")
 	st.free()
+
+# Long translations must shrink or wrap inside the screen, and both reward cards keep one width.
+func _test_long_text_layout() -> void:
+	LayoutTokens.motion_enabled = false
+	root.size = Vector2i(1080, 1920)
+	TranslationServer.set_locale("pt_BR")
+	var gift := GiftScreen.new()
+	gift.setup({"hint": 10, "place": 10})
+	root.add_child(gift)
+	for i in 3: await process_frame
+	check(is_equal_approx(gift.hint_card.size.x, gift.place_card.size.x), "reward cards share one width")
+	for l in [gift.title_label, gift.hint_label, gift.place_label]:
+		check(_fits(l), "gift text fits: " + l.text)
+	gift.free()
+	var act := ActivateScreen.new()
+	act.setup(VIEW)
+	root.add_child(act)
+	for i in 3: await process_frame
+	for l in [act.title_label, act.days_label]:
+		check(_fits(l), "activate text fits: " + l.text)
+	act.free()
+	TranslationServer.set_locale("en")
+
+func _fits(l: Label) -> bool:
+	var font := l.get_theme_font("font")
+	var fs := l.get_theme_font_size("font_size")
+	var lines := maxi(1, l.get_line_count())
+	var widest := 0.0
+	for line in l.text.split("
+"):
+		widest = maxf(widest, font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x)
+	var r := l.get_global_rect()
+	return r.position.x >= 0.0 and r.end.x <= 1080.0 and (widest <= r.size.x + 1.0 or lines > 1) and lines <= 2
 
 func check(cond: bool, label: String) -> void:
 	if not cond: failures.append(label)

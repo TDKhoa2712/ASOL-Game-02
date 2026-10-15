@@ -12,6 +12,7 @@ const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const GlowBurst = preload("res://scripts/ui/glow_burst.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const FitLabel = preload("res://scripts/ui/fit_label.gd")
 const INK := Color("#23365E")
 const ON_COLOR := Color("#FF7A1A")
 const ON_SHADOW := Color("#C24A10")
@@ -45,6 +46,13 @@ func _init() -> void:
 	back_btn.pressed.connect(func(): back_pressed.emit())
 	title_label = _label(72, FontTokens.heading())
 	col.add_child(BackButton.make_header(back_btn, title_label))
+	# Everything under the header sits centred in the remaining height.
+	var body := VBoxContainer.new()
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	body.alignment = BoxContainer.ALIGNMENT_CENTER
+	body.add_theme_constant_override("separation", 20)
+	col.add_child(body)
+	col = body
 	var stage := Control.new()
 	stage.custom_minimum_size = Vector2(FLAME_SIZE, FLAME_SIZE)
 	stage.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -77,7 +85,7 @@ func _init() -> void:
 	psb.content_margin_left = 48; psb.content_margin_right = 48
 	psb.content_margin_top = 18; psb.content_margin_bottom = 18
 	pill.add_theme_stylebox_override("panel", psb)
-	best_label = _label(46, FontTokens.body_bold())
+	best_label = _label(46, FontTokens.body_bold(), false)  # sized by its pill, so no wrapping
 	best_label.add_theme_color_override("font_color", BEST_INK)
 	pill.add_child(best_label)
 	col.add_child(_centered(pill))
@@ -125,8 +133,11 @@ func _centered(child: Control) -> CenterContainer:
 	c.add_child(child)
 	return c
 
-func _label(font_size: int, font: Font) -> Label:
-	var l := Label.new()
+# Text labels shrink to fit long translations; the big count stays a plain label.
+func _label(font_size: int, font: Font, fit: bool = true) -> Label:
+	var l: Label = FitLabel.new() if fit and font_size < 200 else Label.new()
+	if l is FitLabel:
+		l.max_font_size = font_size; l.min_font_size = int(font_size * 0.6); l.max_lines = 2  # 2: CJK fallback glyphs are taller than one Latin line
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.add_theme_font_size_override("font_size", font_size)
