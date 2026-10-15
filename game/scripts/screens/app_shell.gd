@@ -94,6 +94,7 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("play_pressed"): screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("endless_pressed"): screen.connect("endless_pressed", _on_title_endless)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
+			if screen.has_signal("streak_pressed"): screen.connect("streak_pressed", func(): nav.go_to(NavController.Screen.STREAK))
 			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", runtime, endless_runtime)
 		"puzzle":
 			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)
@@ -111,6 +112,9 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("retry_pressed"): screen.connect("retry_pressed", _on_retry_level)
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
+		"streak":
+			if screen.has_signal("back_pressed"): screen.connect("back_pressed", func(): nav.go_to(NavController.Screen.TITLE))
+			if screen.has_method("setup"): screen.call("setup", assists)
 	if screen_host != null: screen_host.add_child(screen)
 	# Result melodies start with the result screen, not when the board resolves.
 	if sfx != null and to_name in ["win", "fail"]:

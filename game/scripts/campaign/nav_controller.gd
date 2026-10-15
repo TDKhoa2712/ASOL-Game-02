@@ -2,17 +2,18 @@ extends RefCounted
 
 signal screen_changed(from_screen: String, to_screen: String)
 
-enum Screen { TITLE, PUZZLE, WIN, FAIL }
+enum Screen { TITLE, PUZZLE, WIN, FAIL, STREAK }
 
 const SCREEN_NAMES := {
 	Screen.TITLE: "title", Screen.PUZZLE: "puzzle", Screen.WIN: "win",
-	Screen.FAIL: "fail",
+	Screen.FAIL: "fail", Screen.STREAK: "streak",
 }
 const ROUTES := {
-	Screen.TITLE: [Screen.PUZZLE],
+	Screen.TITLE: [Screen.PUZZLE, Screen.STREAK],
 	Screen.PUZZLE: [Screen.WIN, Screen.FAIL, Screen.TITLE],
 	Screen.WIN: [Screen.PUZZLE, Screen.TITLE],
 	Screen.FAIL: [Screen.PUZZLE, Screen.TITLE],
+	Screen.STREAK: [Screen.TITLE],
 }
 
 var _current: int = Screen.TITLE

@@ -7,6 +7,7 @@ const SCENE_MAP := {
 	"win": "res://scenes/win.tscn",
 	"fail": "res://scenes/fail.tscn",
 	"options": "res://scenes/options.tscn",
+	"streak": "res://scenes/streak.tscn",
 }
 
 static func scene_path(screen_name: String) -> String:

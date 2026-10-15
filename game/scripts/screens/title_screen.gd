@@ -4,6 +4,7 @@ extends Control
 signal play_pressed()
 signal endless_pressed()
 signal options_pressed()
+signal streak_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
@@ -144,6 +145,7 @@ func _ensure_nodes() -> void:
 	bottom_spacer.custom_minimum_size.y = 24
 	frame.add_child(bottom_spacer)
 	streak_chip = StreakChip.attach(self, safe)
+	streak_chip.pressed.connect(func(): streak_pressed.emit())
 
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()

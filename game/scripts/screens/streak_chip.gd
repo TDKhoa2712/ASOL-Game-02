@@ -1,22 +1,20 @@
-# Home streak chip: flame + day count; grey until today's win, pulses when at risk.
+# Home streak chip: flame + day count; grey until today's play, pulses when at risk. Tap → streak screen (wired by title_screen).
 extends Button
 
-const StreakSheet = preload("res://scripts/screens/streak_sheet.gd")
 const FlameFx = preload("res://scripts/screens/flame_fx.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
-const ON_COLOR := StreakSheet.ON_COLOR
-const OFF_COLOR := StreakSheet.OFF_COLOR
+const ON_COLOR := Color("#FF7A1A")
+const OFF_COLOR := Color("#B9B4AC")
 const ROW_HEIGHT := 84
 
 var inventory: Variant = null
-var sheet: StreakSheet = null
 var at_risk := false
 var count_label: Label
 var flame: Control
 var _pulse: Tween = null
 
-static func attach(screen: Control, safe: Control) -> Button:
+static func attach(_screen: Control, safe: Control) -> Button:
 	var row := CenterContainer.new()
 	row.name = "StreakChipRow"
 	row.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
@@ -25,8 +23,6 @@ static func attach(screen: Control, safe: Control) -> Button:
 	var chip := new()
 	row.add_child(chip)
 	safe.add_child(row)
-	chip.sheet = StreakSheet.new()
-	screen.add_child(chip.sheet)
 	return chip
 
 func _init() -> void:
@@ -54,7 +50,6 @@ func _init() -> void:
 	var font := FontTokens.heading()
 	if font != null: count_label.add_theme_font_override("font", font)
 	row.add_child(count_label)
-	pressed.connect(_on_pressed)
 
 func bind(inv: Variant) -> void:
 	inventory = inv
@@ -82,7 +77,3 @@ func _set_pulse(on: bool) -> void:
 	_pulse = create_tween().set_loops()
 	_pulse.tween_property(self, "scale", Vector2(1.08, 1.08), 0.5).set_trans(Tween.TRANS_SINE)
 	_pulse.tween_property(self, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_SINE)
-
-func _on_pressed() -> void:
-	if sheet != null and inventory != null:
-		sheet.open(inventory.streak_view())
