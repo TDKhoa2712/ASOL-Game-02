@@ -17,7 +17,6 @@ var _fail_btn: Button
 var _solve_btn: Button
 
 func _init() -> void:
-	custom_minimum_size = Vector2(0, 68)
 	_build_ui()
 
 func setup(screen: Variant, session: Variant, board: Variant) -> void:
@@ -37,6 +36,26 @@ func _build_ui() -> void:
 	var root_vbox := VBoxContainer.new()
 	root_vbox.add_theme_constant_override("separation", 8)
 	add_child(root_vbox)
+
+	_tools_container = GridContainer.new()
+	_tools_container.columns = 2
+	_tools_container.add_theme_constant_override("h_separation", 8)
+	_tools_container.add_theme_constant_override("v_separation", 8)
+	_tools_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tools_container.visible = false
+	root_vbox.add_child(_tools_container)
+
+	_solution_btn = _create_btn("Hien nghiem", _on_solution_pressed)
+	_tools_container.add_child(_solution_btn)
+
+	_win_btn = _create_btn("Thang", _on_win_pressed)
+	_tools_container.add_child(_win_btn)
+
+	_fail_btn = _create_btn("Thua", _on_fail_pressed)
+	_tools_container.add_child(_fail_btn)
+
+	_solve_btn = _create_btn("Tu giai", _on_solve_pressed)
+	_tools_container.add_child(_solve_btn)
 
 	_toggle_btn = Button.new()
 	_toggle_btn.text = "Cheats"
@@ -67,32 +86,23 @@ func _build_ui() -> void:
 	_toggle_btn.pressed.connect(_on_toggle_pressed)
 	root_vbox.add_child(_toggle_btn)
 
-	_tools_container = GridContainer.new()
-	_tools_container.columns = 2
-	_tools_container.add_theme_constant_override("h_separation", 8)
-	_tools_container.add_theme_constant_override("v_separation", 8)
-	_tools_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_tools_container.visible = false
-	root_vbox.add_child(_tools_container)
-
-	_solution_btn = _create_btn("Hien nghiem", _on_solution_pressed)
-	_tools_container.add_child(_solution_btn)
-
-	_win_btn = _create_btn("Thang", _on_win_pressed)
-	_tools_container.add_child(_win_btn)
-
-	_fail_btn = _create_btn("Thua", _on_fail_pressed)
-	_tools_container.add_child(_fail_btn)
-
-	_solve_btn = _create_btn("Tu giai", _on_solve_pressed)
-	_tools_container.add_child(_solve_btn)
-
 func _create_btn(text: String, action: Callable) -> Button:
 	var btn := Button.new()
 	btn.text = text
 	btn.custom_minimum_size = Vector2(0, 52)
 	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn.add_theme_font_size_override("font_size", 22)
+	btn.add_theme_color_override("font_color", Color.WHITE)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Palette.BOARD_CHEATS_BG.darkened(0.18)
+	sb.set_corner_radius_all(10)
+	sb.border_width_bottom = 3
+	sb.border_color = Palette.BOARD_CHEATS_EDGE
+	for s in ["normal", "focus", "disabled"]:
+		btn.add_theme_stylebox_override(s, sb)
+	var hsb := sb.duplicate() as StyleBoxFlat
+	hsb.bg_color = Palette.BOARD_CHEATS_BG.darkened(0.1)
+	btn.add_theme_stylebox_override("hover", hsb)
 	btn.pressed.connect(action)
 	return btn
 

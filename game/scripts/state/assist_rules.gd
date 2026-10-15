@@ -46,11 +46,17 @@ static func reward_for(used: int) -> int:
 	if used >= 2: return 3
 	return 2
 
+# Returns {data, reward, extended}; extended is true only when today adds a streak day.
 static func record_win(data: Dictionary, today_date: String) -> Dictionary:
 	var last: String = data.get("lastStreakDate", "")
 	var gap := day_gap(last, today_date) if last != "" else 2
-	if gap == 0 or gap < 0:
-		return {"data": data, "reward": {}}
+	if gap == 0:
+		return {"data": data, "reward": {}, "extended": false}
+	if gap < 0 and gap != INVALID_GAP:
+		# Saved date is ahead of today (debug day clock, device clock moved back): today already counts.
+		var clamped := data.duplicate(true)
+		clamped.lastStreakDate = today_date
+		return {"data": clamped, "reward": {}, "extended": false}
 	var next := data.duplicate(true)
 	next.lastStreakDate = today_date
 	if gap == 1:
@@ -63,7 +69,7 @@ static func record_win(data: Dictionary, today_date: String) -> Dictionary:
 		next.usedPlace = 0
 	next.bestStreak = maxi(int(next.get("bestStreak", 0)), int(next.totalStreak))
 	if int(next.streakDays) < CYCLE_DAYS:
-		return {"data": next, "reward": {}}
+		return {"data": next, "reward": {}, "extended": true}
 	var reward := {}
 	for kind in KINDS:
 		var before := int(next[kind])
@@ -72,11 +78,13 @@ static func record_win(data: Dictionary, today_date: String) -> Dictionary:
 	next.streakDays = 0
 	next.usedHint = 0
 	next.usedPlace = 0
-	return {"data": next, "reward": reward}
+	return {"data": next, "reward": reward, "extended": true}
 
 static func streak_view(data: Dictionary, today_date: String) -> Dictionary:
 	var last: String = data.get("lastStreakDate", "")
 	var gap := day_gap(last, today_date) if last != "" else INVALID_GAP
+	if gap < 0 and gap != INVALID_GAP:
+		gap = 0  # saved date ahead of today: same clamp as record_win
 	var alive := gap == 0 or gap == 1
 	var count := int(data.get("totalStreak", 0)) if alive else 0
 	var cycle := int(data.get("streakDays", 0)) if alive else 0

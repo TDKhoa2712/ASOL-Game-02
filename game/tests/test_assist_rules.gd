@@ -53,8 +53,14 @@ func _test_streak() -> void:
 	check(r.data.streakDays == 1 and r.reward.is_empty(), "first win day 1")
 	var same := Rules.record_win(r.data, "2026-10-01")
 	check(same.data == r.data and same.reward.is_empty(), "same day twice no change")
+	check(r.extended and not same.extended, "extended only when the streak moves")
+	# Saved date ahead of today (debug day clock, phone clock moved back): clamp to today.
 	var back := Rules.record_win(r.data, "2026-09-20")
-	check(back.data == r.data, "clock rollback ignored")
+	check(back.data.lastStreakDate == "2026-09-20" and back.data.streakDays == r.data.streakDays, "future date clamps to today")
+	check(back.data.totalStreak == r.data.totalStreak and not back.extended and back.reward.is_empty(), "clamp keeps the count, no new day")
+	check(Rules.record_win(back.data, "2026-09-21").data.totalStreak == r.data.totalStreak + 1, "next day continues after clamp")
+	var ahead := Rules.streak_view(r.data, "2026-09-20")
+	check(ahead.count == r.data.totalStreak and ahead.kept_today, "future date still shows the streak")
 	var used: Dictionary = Rules.consume(r.data, "hint").data
 	var missed := Rules.record_win(used, "2026-10-03")
 	check(missed.data.streakDays == 1 and missed.data.usedHint == 0, "missed day resets streak and counters")
@@ -101,7 +107,7 @@ func _test_total_and_view() -> void:
 	var broken := cur.duplicate(true)
 	broken.lastStreakDate = "not-a-date"
 	check(Rules.streak_view(broken, "2026-05-09").count == 0, "corrupt last date shows 0")
-	check(Rules.streak_view(cur, "2026-04-01").count == 0, "future date view")
+	check(Rules.streak_view(cur, "2026-04-01").count == int(cur.totalStreak), "future date view keeps the count (clamp)")
 	var restarted: Dictionary = Rules.record_win(cur, "2026-05-12").data
 	check(restarted.totalStreak == 1 and restarted.bestStreak == 9, "missed day restarts total, keeps best")
 	var s := Rules.sanitize({"totalStreak": 4, "bestStreak": 2})
