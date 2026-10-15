@@ -94,6 +94,13 @@ func _test_total_and_view() -> void:
 	check(v.count == 9 and not v.kept_today and v.at_risk, "view at risk next day")
 	v = Rules.streak_view(cur, "2026-05-12")
 	check(v.count == 0 and not v.at_risk and v.cycle_done == 0 and v.best == 9, "view broken streak")
+	v = Rules.streak_view(cur, "2026-05-11")  # gap 2 = missed exactly one day
+	check(v.count == 0 and v.cycle_done == 0 and not v.kept_today and v.best == 9, "gap 2 zeroes count (Q11)")
+	v = Rules.streak_view(cur, "2026-06-08")  # gap 30
+	check(v.count == 0 and not v.at_risk and v.best == 9, "long gap zeroes count, keeps best")
+	var broken := cur.duplicate(true)
+	broken.lastStreakDate = "not-a-date"
+	check(Rules.streak_view(broken, "2026-05-09").count == 0, "corrupt last date shows 0")
 	check(Rules.streak_view(cur, "2026-04-01").count == 0, "future date view")
 	var restarted: Dictionary = Rules.record_win(cur, "2026-05-12").data
 	check(restarted.totalStreak == 1 and restarted.bestStreak == 9, "missed day restarts total, keeps best")

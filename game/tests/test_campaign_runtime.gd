@@ -162,6 +162,10 @@ func _test_navigation() -> void:
 	nav.screen_changed.connect(func(before, after): changes.append([before, after]))
 	_check(not nav.go_to(NavController.Screen.WIN), "invalid route refused")
 	_check(nav.go_to(NavController.Screen.PUZZLE), "title to puzzle")
+	var nav2 := NavController.new()
+	_check(nav2.go_to(NavController.Screen.STREAK) and nav2.current_name() == "streak", "title to streak")
+	_check(not nav2.go_to(NavController.Screen.PUZZLE), "streak cannot jump to puzzle")
+	_check(nav2.go_to(NavController.Screen.TITLE), "streak back to title")
 	_check(changes == [["title", "puzzle"]], "navigation signal")
 
 func _test_tutorial() -> void:
