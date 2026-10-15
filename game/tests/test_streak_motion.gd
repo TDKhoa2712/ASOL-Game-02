@@ -16,6 +16,7 @@ func _initialize() -> void:
 	await _test_gift_box()
 	await _test_gift_screen()
 	_test_sfx()
+	await _test_router_order()
 	LayoutTokens.motion_enabled = true
 	if failures.is_empty():
 		print("STREAK_MOTION_PASS")
@@ -97,6 +98,26 @@ func _test_sfx() -> void:
 	check(SfxCatalog.screen_effect("win") == SfxCatalog.Effect.STAGE_CLEAR, "win melody kept")
 	check(SfxCatalog.screen_effect("fail") == SfxCatalog.Effect.STAGE_FAIL, "fail melody kept")
 	check(SfxCatalog.screen_effect("title") == -1, "other screens silent")
+
+# app_shell and the debug preview call setup() before the screen joins the tree.
+func _test_router_order() -> void:
+	LayoutTokens.motion_enabled = true
+	var act := ActivateScreen.new()
+	act.setup(VIEW)
+	root.add_child(act)
+	check(act.is_animating(), "activate animates when set up before entering the tree")
+	act.free()
+	var gift := GiftScreen.new()
+	gift.setup({"hint": 1, "place": 2})
+	root.add_child(gift)
+	check(gift.is_animating() and not gift.gift.is_open, "gift animates when set up before entering the tree")
+	gift.free()
+	var st: Control = load("res://scenes/streak.tscn").instantiate()
+	st.show_view({"count": 3, "best": 5, "kept_today": true, "cycle_done": 3})
+	root.add_child(st)
+	check(st.flame.is_flickering(), "streak flame flickers when shown before entering the tree")
+	check(st._glow_tween != null and st._glow_tween.is_valid(), "streak glow breathes when shown before entering the tree")
+	st.free()
 
 func check(cond: bool, label: String) -> void:
 	if not cond: failures.append(label)

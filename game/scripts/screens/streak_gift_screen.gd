@@ -35,6 +35,7 @@ var hint_label: Label
 var place_label: Label
 var continue_btn: Button
 var _timeline: Tween = null
+var _pending_play := false
 var _fx: Tween = null
 
 func setup(r: Dictionary) -> void:
@@ -42,10 +43,13 @@ func setup(r: Dictionary) -> void:
 	_ensure_nodes()
 	hint_label.text = tr("streak.gift_hint") % maxi(0, int(reward.get("hint", 0)))
 	place_label.text = tr("streak.gift_place") % maxi(0, int(reward.get("place", 0)))
-	if LayoutTokens.motion_enabled and is_inside_tree():
+	_pending_play = false
+	if not LayoutTokens.motion_enabled:
+		finish()
+	elif is_inside_tree():
 		_play()
 	else:
-		finish()
+		_pending_play = true  # the router sets screens up before adding them
 
 func is_animating() -> bool:
 	return _timeline != null and _timeline.is_valid() and _timeline.is_running()
@@ -63,6 +67,9 @@ func finish() -> void:
 
 func _ready() -> void:
 	_ensure_nodes()
+	if _pending_play:
+		_pending_play = false
+		_play()
 
 func _play() -> void:
 	for n in [title_label, hint_card, place_card, continue_btn, rays]:

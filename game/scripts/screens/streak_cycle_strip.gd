@@ -51,6 +51,10 @@ func show_view(view: Dictionary) -> void:
 		elif not kept and i == done: state = "today"
 		_apply(i, state)
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_ENTER_TREE and today_index() >= 0:
+		_pulse(cells[today_index()])
+
 func cell_state(i: int) -> String:
 	return _states[i] if i >= 0 and i < DAYS else ""
 

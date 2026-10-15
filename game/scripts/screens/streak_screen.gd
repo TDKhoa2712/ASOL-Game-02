@@ -30,6 +30,7 @@ var strip: StreakCycleStrip
 var gift_box: GiftBoxView
 var best_label: Label
 var _glow_tween: Tween = null
+var _kept := false
 
 func _init() -> void:
 	name = "StreakScreen"
@@ -97,8 +98,15 @@ func show_view(view: Dictionary) -> void:
 	best_label.text = tr("streak.best") % int(view.get("best", 0))
 	best_label.visible = true
 	strip.show_view(view)
+	_kept = kept
 	gift_box.play_idle()
 	_breathe(kept)
+
+# The router shows the view before the screen joins the tree; start the loops once it does.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_ENTER_TREE and title_label.text != "":
+		gift_box.play_idle()
+		_breathe(_kept)
 
 # Lit flame sits in a slow breathing glow; a grey flame has none.
 func _breathe(on: bool) -> void:
