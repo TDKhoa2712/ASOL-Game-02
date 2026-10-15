@@ -133,6 +133,7 @@ assist.empty_body,Finish a level on 7 different days in a row to earn a new pack
 assist.close,Close,閉じる,Đóng,Tutup,Fechar,Cerrar,닫기
 assist.coming_soon,Coming soon,近日公開,Sắp có,Segera hadir,Em breve,Próximamente,곧 만나요
 assist.reward,+%d hints  +%d candy drops,ヒント+%d　キャンディ配置+%d,+%d gợi ý  +%d đặt kẹo,+%d petunjuk  +%d taruh permen,+%d dicas  +%d doces extras,+%d pistas  +%d caramelos extra,힌트 +%d  사탕 놓기 +%d
+streak.title,Streak,連続記録,Chuỗi ngày,Rangkaian,Sequência,Racha,연속 기록
 streak.days,days in a row,日連続,ngày liên tiếp,hari berturut-turut,dias seguidos,días seguidos,일 연속
 streak.best,Best: %d days,最高記録：%d日,Kỷ lục: %d ngày,Rekor: %d hari,Recorde: %d dias,Récord: %d días,최고 기록: %d일
 streak.left,%d more days to the gift,ギフトまであと%d日,Còn %d ngày để nhận quà,%d hari lagi menuju hadiah,Faltam %d dias para o presente,Faltan %d días para el regalo,선물까지 %d일 남았어요
