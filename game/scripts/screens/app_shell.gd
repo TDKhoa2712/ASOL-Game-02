@@ -10,6 +10,7 @@ const ProgressManager = preload("res://scripts/state/progress_manager.gd"); cons
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
+const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
@@ -18,14 +19,6 @@ const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const TextScaler = preload("res://scripts/theme/text_scaler.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
-
-const SCENE_MAP := {
-	"title": "res://scenes/title.tscn",
-	"puzzle": "res://scenes/puzzle.tscn",
-	"win": "res://scenes/win.tscn",
-	"fail": "res://scenes/fail.tscn",
-	"options": "res://scenes/options.tscn",
-}
 
 var runtime: CampaignRuntime
 var endless_runtime: RefCounted
@@ -83,22 +76,15 @@ func _start_bgm() -> void:
 
 func _swap_screen(from_name: String, to_name: String) -> void:
 	if from_name != "": _previous_screen_name = from_name
-	if screen_host != null:
-		for child in screen_host.get_children():
-			child.queue_free(); screen_host.remove_child(child)
+	ScreenRouter.clear(screen_host)
 	_instantiate_screen(to_name)
 
 func _active_runtime() -> Variant:
 	return endless_runtime if _mode == "endless" else runtime
 
 func _instantiate_screen(to_name: String) -> void:
-	var scene_path: String = SCENE_MAP.get(to_name, "")
-	if scene_path == "" or not ResourceLoader.exists(scene_path): return
-	var packed := load(scene_path) as PackedScene
-	if packed == null: return
-	var screen := packed.instantiate() as Control
+	var screen := ScreenRouter.instantiate(to_name)
 	if screen == null: return
-	screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
 	if screen.has_signal("home_pressed"): screen.connect("home_pressed", _on_puzzle_home)
@@ -231,13 +217,8 @@ func _on_replay_campaign() -> void:
 
 func _show_options_overlay() -> void:
 	if _options_overlay != null: return
-	var p: String = SCENE_MAP.get("options", "")
-	if p == "" or not ResourceLoader.exists(p): return
-	var packed := load(p) as PackedScene
-	if packed == null: return
-	_options_overlay = packed.instantiate() as Control
+	_options_overlay = ScreenRouter.instantiate("options")
 	if _options_overlay == null: return
-	_options_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	if _options_overlay.has_signal("back_pressed"): _options_overlay.connect("back_pressed", _on_options_back)
 	if _options_overlay.has_method("setup"): _options_overlay.call("setup", config)
 	add_child(_options_overlay)
