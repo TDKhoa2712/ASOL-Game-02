@@ -194,6 +194,22 @@ func _run_tests() -> void:
 	app_shell.queue_free()
 	await process_frame
 
+	var sdir := OS.get_user_data_dir().path_join("picker_streak_%s" % Time.get_ticks_usec())
+	var s_inv = load("res://scripts/state/assist_inventory.gd").new(sdir)
+	var streak_test_picker := DebugLevelPicker.new()
+	root.add_child(streak_test_picker)
+	streak_test_picker.setup(bank, [], null, null, s_inv)
+	streak_test_picker._switch_mode(3)
+	_assert(streak_test_picker._streak_panel != null and streak_test_picker._streak_panel.visible, "streak tab visible in mode 3")
+	_assert(not streak_test_picker._playlist_container.visible and not streak_test_picker._bank_container.visible and not streak_test_picker._endless_panel.visible, "other tabs hidden")
+	_assert(not streak_test_picker._play_btn.visible, "play button hidden on streak tab")
+	_assert(streak_test_picker._streak_panel.find_child("DateLabel", true, false).text.contains(s_inv.current_day()), "panel bound to inventory")
+	streak_test_picker._switch_mode(0)
+	_assert(not streak_test_picker._streak_panel.visible and streak_test_picker._play_btn.visible, "back to playlist")
+	streak_test_picker.queue_free()
+	await process_frame
+	s_inv._store.remove_all()
+
 	if _fails.is_empty():
 		print("DEBUG_LEVEL_PICKER_PASS")
 		quit(0)

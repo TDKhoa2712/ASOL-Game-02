@@ -155,6 +155,7 @@ func _ensure_nodes() -> void:
 		debug_picker.level_selected.connect(func(lvl: Dictionary, lbl: String): debug_picker.visible = false; debug_level_selected.emit(lvl, lbl))
 		debug_picker.close_requested.connect(func(): debug_picker.visible = false)
 		debug_picker.progress_reset.connect(func(_m): _update_ui())
+		debug_picker._streak_panel.changed.connect(func(): if streak_chip != null: streak_chip.refresh())
 		add_child(debug_picker)
 
 func _make_round_top_btn(btn_name: String, icon_path: String) -> Button:
@@ -190,7 +191,7 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	if debug_picker != null and rt != null:
 		var pl: Array = rt._playlist if "_playlist" in rt else []
 		var b: Variant = rt.bank if "bank" in rt else null
-		debug_picker.setup(b, pl, endless_rt, rt)
+		debug_picker.setup(b, pl, endless_rt, rt, assists)
 
 func _on_debug_pressed() -> void:
 	if debug_picker != null: debug_picker.visible = not debug_picker.visible
