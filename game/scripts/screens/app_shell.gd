@@ -11,6 +11,7 @@ const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
 const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")
+const StreakFlow = preload("res://scripts/campaign/streak_flow.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
@@ -38,6 +39,7 @@ var _next_level_label: String = ""; var _next_level_size: int = 0; var _next_lev
 var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label: String = ""
 var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 var _options_overlay: Control = null
+var streak_flow := StreakFlow.new()
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
@@ -101,6 +103,9 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
 			if screen.has_signal("level_done"): screen.connect("level_done", _on_level_done)
 			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", cur_rt, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
+		"streak_activate", "streak_gift":
+			if screen.has_method("setup"): screen.call("setup", streak_flow.view if to_name == "streak_activate" else streak_flow.reward)
+			if screen.has_signal("continued"): screen.connect("continued", func(): nav.go_to(streak_flow.next()))
 		"win":
 			if screen.has_signal("next_pressed"): screen.connect("next_pressed", _on_next_level)
 			if screen.has_signal("replay_pressed"): screen.connect("replay_pressed", _on_replay_campaign)
@@ -176,6 +181,7 @@ func _on_level_done(won: bool) -> void:
 	_last_won_level = label
 	var cur_sc := screen_host.get_child(0) if screen_host != null and screen_host.get_child_count() > 0 else null
 	var sess = cur_sc.get("session") if (cur_sc != null and cur_sc.get("session") != null) else (cur_rt.current_session if cur_rt != null else null)
+	var streak_src: Variant = cur_sc.get("assist_ctl") if cur_sc != null else null
 	var elapsed: int = sess.elapsed_ms if sess != null else 0
 	_last_won_elapsed = elapsed
 	_last_won_hearts = sess.hearts if (sess != null and won) else 0
@@ -183,7 +189,7 @@ func _on_level_done(won: bool) -> void:
 	_next_level_label = ""; _next_level_size = 0; _next_level_difficulty = ""
 	if _debug_mode:
 		_last_won_is_last = _debug_next.is_empty()
-		nav.go_to(NavController.Screen.WIN if won else NavController.Screen.FAIL)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN if won else NavController.Screen.FAIL))
 		return
 	if won:
 		_last_won_is_last = (_mode == "campaign" and runtime.completed_count() + 1 >= runtime.playlist_order().size())
@@ -196,11 +202,11 @@ func _on_level_done(won: bool) -> void:
 					_next_level_size = int(nxt_entry.get("size", 0)); _next_level_difficulty = str(nxt_entry.get("difficulty", ""))
 		var score_data := {"time_ms": elapsed, "mistakes": _last_won_mistakes, "hints_used": sess.hints_used if sess != null else 0}
 		cur_rt.on_level_won(label, score_data)
-		nav.go_to(NavController.Screen.WIN)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN))
 	else:
 		_last_won_is_last = false
 		cur_rt.on_level_lost(label)
-		nav.go_to(NavController.Screen.FAIL)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.FAIL))
 
 func _on_next_level() -> void:
 	if _debug_mode:
