@@ -124,9 +124,9 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("back_pressed"): screen.connect("back_pressed", func(): nav.go_to(NavController.Screen.TITLE))
 			if screen.has_method("setup"): screen.call("setup", assists)
 	if screen_host != null: screen_host.add_child(screen)
-	# Result melodies start with the result screen, not when the board resolves.
-	if sfx != null and to_name in ["win", "fail"]:
-		sfx.play(SfxCatalog.Effect.STAGE_CLEAR if to_name == "win" else SfxCatalog.Effect.STAGE_FAIL)
+	# Result and streak sounds start with their screen, not when the board resolves.
+	var screen_sfx := SfxCatalog.screen_effect(to_name)
+	if sfx != null and screen_sfx >= 0: sfx.play(screen_sfx)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 	_debug_mode = true; _debug_lvl = level_data.duplicate(true); _debug_label = label
