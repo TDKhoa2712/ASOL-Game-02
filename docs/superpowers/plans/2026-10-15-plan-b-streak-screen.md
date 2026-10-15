@@ -4,7 +4,7 @@
 
 **Goal:** Replace the Home streak popup (`streak_sheet`) with a full Streak screen (title, back, flame + count, 7-day cycle strip with a gift box slot, "Kỷ lục" line), reachable from the Home flame chip.
 
-**Architecture:** Two reusable view components (`StreakCycleStrip`, `GiftBoxView`) built in code like the existing `streak_sheet`, composed by a new `streak_screen.gd` loaded through `scenes/streak.tscn`. `NavController` gains `Screen.STREAK`; `app_shell` instantiates it and wires `title_screen.streak_pressed` / `streak_screen.back_pressed` with signals (no autoload). Data comes only from `AssistRules.streak_view`, which already zeroes the count when the streak is broken (gap ≥ 2) — this plan pins that with tests.
+**Architecture:** Two reusable view components (`StreakCycleStrip`, `GiftBoxView`) built in code like the existing `streak_sheet`, composed by a new `streak_screen.gd` loaded through `scenes/streak.tscn`. Task 0 first extracts scene lookup/instantiation out of `app_shell.gd` (exactly 300 lines today) into `game/scripts/campaign/screen_router.gd` (pure refactor), so every later screen is registered in `ScreenRouter.SCENE_MAP` instead of compressing `app_shell` lines. `NavController` gains `Screen.STREAK`; `app_shell` wires `title_screen.streak_pressed` / `streak_screen.back_pressed` with signals (no autoload). Data comes only from `AssistRules.streak_view`, which already zeroes the count when the streak is broken (gap ≥ 2) — this plan pins that with tests.
 
 **Tech Stack:** Godot 4 / GDScript, headless SceneTree test scripts, CSV translations (`game/locale/strings.csv`), Python gate tools.
 
@@ -12,14 +12,17 @@
 
 ## Global Constraints
 
-- Branch `feat/v1.0.1/streak-screen` created FROM `feat/v1.0.1/assist-inventory`; merged back into `feat/v1.0.1/assist-inventory` only (Q10). Never into `release/*`, `dev` or `main`.
+- Branch `feat/v1.0.1/streak-screen` created FROM `feat/v1.0.1/assist-inventory` (Task 0); merged back with `git merge --no-ff` into `feat/v1.0.1/assist-inventory` only (Q10). Never into `release/*`, `dev` or `main`. Do not push.
 - No autoloads; Godot signals; dependencies injected from `app_shell` (AGENTS.md §4).
-- Every `.gd` module ≤ 300 lines. `app_shell.gd` is at exactly 300 and `title_screen.gd` at 289 today — check `wc -l` after each edit.
+- Every `.gd` module ≤ 300 lines. `app_shell.gd` is at exactly 300 and `title_screen.gd` at 289 today — check `wc -l` after each edit. Never join statements/declarations onto shared lines to save space: new scenes go into `ScreenRouter.SCENE_MAP` (Task 0); if a file would pass 300, extract a helper instead.
+- Scene keys (fixed across Plans A/B/C): `"streak"` (this plan), `"streak_activate"`, `"streak_gift"` (Plan A). They equal `NavController.SCREEN_NAMES` values.
 - Clean-room: original code, names and assets only; the gift placeholder is an original SVG under `game/assets/ui/streak/`.
 - Fixed interface names (other plans depend on them, do not rename):
   - `screens/streak_cycle_strip.gd` `class_name StreakCycleStrip`, `func show_view(view: Dictionary) -> void`, `func fill_today_animated() -> void`.
   - `screens/gift_box_view.gd` `class_name GiftBoxView`, `func play_idle() -> void`, `func play_open() -> void`, `signal opened`. Single swap point for the owner's future animation.
-  - `NavController.Screen.STREAK`, scene `scenes/streak.tscn`, script `screens/streak_screen.gd`.
+  - `NavController.Screen.STREAK` (enum order `TITLE, PUZZLE, WIN, FAIL, STREAK`; Plan A appends `STREAK_ACTIVATE, STREAK_GIFT`), scene `scenes/streak.tscn`, script `screens/streak_screen.gd` with `setup(inv: Variant, today: String = "")` and `show_view(view: Dictionary)`.
+  - `campaign/screen_router.gd` (preloaded as `ScreenRouter`): `const SCENE_MAP`, `static func scene_path(screen_name: String) -> String`, `static func instantiate(screen_name: String) -> Control`, `static func clear(host: Node) -> void`.
+  - `today` convention: production callers pass no date (`""`); `AssistInventory` resolves the day itself (today `AssistRules.today()`, after Plan C its injected `DayClock`). Explicit dates are only for tests.
 - Q5: the "frame" is the 7 day cells of the cycle (done / today / remaining).
 - Q6: Streak screen = title on top, back button, 7-cell strip, gift box at the end of the strip. No "Còn … ngày" / "Hôm nay đã …" lines; remove `streak.left`, `streak.kept` and the similar status keys.
 - Q7: the gift box is a replaceable placeholder (one scene/slot).
@@ -35,6 +38,177 @@
 3. Day 7 of the cycle (`cycle_done == 7`, kept today) — all 7 cells done including the gift cell; no out-of-range "today" index (test in Task 2).
 4. `app_shell` with `assists == null` reaching STREAK — screen must render zeros, not crash (test in Task 3: `setup(null)`).
 5. Back from the Streak screen goes to Home and the chip is still bound/visible (test in Task 4).
+6. Router refactor is behaviour-neutral: options overlay, `_rebuild_current_screen`, result SFX and every existing screen test pass unchanged (Task 0).
+
+---
+
+### Task 0: Branch and extract screen routing from `app_shell`
+
+`app_shell.gd` is at exactly 300 lines. Scene lookup, loading, full-rect anchoring and host clearing move to `game/scripts/campaign/screen_router.gd` (static, stateless). The per-screen signal/`setup` wiring stays in `app_shell._instantiate_screen` (it needs the shell's runtimes, callbacks and `_last_won_*` state). Pure refactor: no behaviour change.
+
+**Files:**
+- Create: `game/scripts/campaign/screen_router.gd`
+- Modify: `game/scripts/screens/app_shell.gd` (`SCENE_MAP` block lines 22-29, `_swap_screen` lines 86-88, `_instantiate_screen` lines 95-101, `_show_options_overlay` lines 234-240, const block line 12)
+- Test: `game/tests/test_screen_router.gd`
+
+**Interfaces:**
+- Produces: `ScreenRouter` (`extends RefCounted`, no `class_name`; preload it):
+  - `const SCENE_MAP := {"title", "puzzle", "win", "fail", "options"}` → `res://scenes/<name>.tscn` (same values as today's `AppShell.SCENE_MAP`). Plans B/A add `"streak"`, `"streak_activate"`, `"streak_gift"` here.
+  - `static func scene_path(screen_name: String) -> String` (`""` if unknown).
+  - `static func instantiate(screen_name: String) -> Control` — `null` if unknown, missing or not a `Control`; otherwise the instance with `PRESET_FULL_RECT` anchors. Not added to any parent.
+  - `static func clear(host: Node) -> void` — frees and detaches every child; no-op on `null`.
+- `AppShell.SCENE_MAP` is removed (no caller outside `app_shell.gd`: `rtk grep -rn "SCENE_MAP" game` shows only app_shell before this task).
+
+- [ ] **Step 1: Branch**
+
+```bash
+rtk git checkout feat/v1.0.1/assist-inventory
+rtk git status --short          # unrelated .import / .gitignore / project.godot edits stay unstaged
+rtk git checkout -b feat/v1.0.1/streak-screen
+```
+
+- [ ] **Step 2: Write the failing test** `game/tests/test_screen_router.gd`
+
+```gdscript
+extends SceneTree
+
+const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")
+const AppShell = preload("res://scripts/screens/app_shell.gd")
+var failures: Array[String] = []
+
+func _init() -> void:
+	for key in ["title", "puzzle", "win", "fail", "options"]:
+		check(ScreenRouter.scene_path(key) == "res://scenes/%s.tscn" % key, "path for " + key)
+	check(ScreenRouter.scene_path("nope") == "", "unknown key has no path")
+	check(ScreenRouter.instantiate("nope") == null, "unknown key builds nothing")
+
+	var fail_screen := ScreenRouter.instantiate("fail")
+	check(fail_screen != null and fail_screen.get_parent() == null, "fail scene built, not parented")
+	if fail_screen != null:
+		check(fail_screen.anchor_right == 1.0 and fail_screen.anchor_bottom == 1.0, "full-rect anchors")
+		fail_screen.free()
+
+	var host := Control.new()
+	root.add_child(host)
+	host.add_child(Control.new()); host.add_child(Control.new())
+	ScreenRouter.clear(host)
+	check(host.get_child_count() == 0, "clear detaches all children")
+	ScreenRouter.clear(null)
+	host.queue_free()
+
+	check(not AppShell.get_script_constant_map().has("SCENE_MAP"), "scene map lives only in the router")
+
+	if failures.is_empty():
+		print("SCREEN_ROUTER_PASS"); quit(0)
+	else:
+		for f in failures: printerr(f)
+		quit(1)
+
+func check(cond: bool, label: String) -> void:
+	if not cond: failures.append(label)
+```
+
+- [ ] **Step 3: Run to verify it fails**
+
+Run: `rtk godot --headless --path game --script res://tests/test_screen_router.gd`
+Expected: FAIL — `screen_router.gd` not found.
+
+- [ ] **Step 4: Implement** `game/scripts/campaign/screen_router.gd`
+
+```gdscript
+# Screen name -> scene lookup and instantiation; per-screen wiring stays in app_shell.
+extends RefCounted
+
+const SCENE_MAP := {
+	"title": "res://scenes/title.tscn",
+	"puzzle": "res://scenes/puzzle.tscn",
+	"win": "res://scenes/win.tscn",
+	"fail": "res://scenes/fail.tscn",
+	"options": "res://scenes/options.tscn",
+}
+
+static func scene_path(screen_name: String) -> String:
+	return SCENE_MAP.get(screen_name, "")
+
+static func instantiate(screen_name: String) -> Control:
+	var path := scene_path(screen_name)
+	if path == "" or not ResourceLoader.exists(path):
+		return null
+	var packed := load(path) as PackedScene
+	if packed == null:
+		return null
+	var screen := packed.instantiate() as Control
+	if screen != null:
+		screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	return screen
+
+static func clear(host: Node) -> void:
+	if host == null:
+		return
+	for child in host.get_children():
+		child.queue_free()
+		host.remove_child(child)
+```
+
+- [ ] **Step 5: Use the router in `app_shell.gd`**
+
+1. After `const NavController = preload("res://scripts/campaign/nav_controller.gd")` add its own line:
+
+```gdscript
+const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")
+```
+
+2. Delete the whole `const SCENE_MAP := { ... }` block and the blank line after it.
+
+3. In `_swap_screen`, replace
+
+```gdscript
+	if screen_host != null:
+		for child in screen_host.get_children():
+			child.queue_free(); screen_host.remove_child(child)
+```
+
+with
+
+```gdscript
+	ScreenRouter.clear(screen_host)
+```
+
+4. In `_instantiate_screen`, replace the first seven lines (from `var scene_path: String = SCENE_MAP.get(to_name, "")` through `screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)`) with
+
+```gdscript
+	var screen := ScreenRouter.instantiate(to_name)
+	if screen == null: return
+```
+
+5. In `_show_options_overlay`, replace the seven lines from `var p: String = SCENE_MAP.get("options", "")` through `_options_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)` with
+
+```gdscript
+	_options_overlay = ScreenRouter.instantiate("options")
+	if _options_overlay == null: return
+```
+
+Run: `wc -l game/scripts/screens/app_shell.gd`
+Expected: `281` (19 lines of headroom for Plans B, A, C).
+
+- [ ] **Step 6: Run to verify it passes and nothing regressed**
+
+Run each; expected PASS marker / exit 0:
+- `rtk godot --headless --path game --script res://tests/test_screen_router.gd` → `SCREEN_ROUTER_PASS`
+- `rtk godot --headless --path game --script res://tests/test_integration.gd` → `INTEGRATION_PASS`
+- `rtk godot --headless --path game --script res://tests/test_settings_apply.gd`
+- `rtk godot --headless --path game --script res://tests/test_screens.gd`
+- `rtk godot --headless --path game --script res://tests/test_streak_ui.gd`
+
+- [ ] **Step 7: Commit**
+
+```bash
+rtk git add game/scripts/campaign/screen_router.gd game/scripts/screens/app_shell.gd game/tests/test_screen_router.gd
+# plus game/scripts/campaign/screen_router.gd.uid / game/tests/test_screen_router.gd.uid if Godot generated them
+rtk git commit -m "refactor(shell): extract screen routing into screen_router
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+```
 
 ---
 
@@ -598,7 +772,8 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 
 **Files:**
 - Modify: `game/scripts/campaign/nav_controller.gd`
-- Modify: `game/scripts/screens/app_shell.gd:22-28` (SCENE_MAP), `:106-111` (title branch), add `"streak"` branch
+- Modify: `game/scripts/campaign/screen_router.gd` (`SCENE_MAP`: add `"streak"`)
+- Modify: `game/scripts/screens/app_shell.gd` (`_instantiate_screen`: title branch + new `"streak"` branch)
 - Modify: `game/scripts/screens/title_screen.gd:4-7` (signal), `:146` (chip wiring)
 - Modify: `game/scripts/screens/streak_chip.gd`
 - Delete: `game/scripts/screens/streak_sheet.gd` (and `streak_sheet.gd.uid` if present)
@@ -607,7 +782,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `game/tests/test_campaign_runtime.gd` (~line 163, add route checks)
 
 **Interfaces:**
-- Consumes: `scenes/streak.tscn` / `streak_screen.gd` (`setup(inv)`, `signal back_pressed`) from Task 3.
+- Consumes: `scenes/streak.tscn` / `streak_screen.gd` (`setup(inv, today = "")`, `signal back_pressed`) from Task 3; `ScreenRouter` from Task 0.
 - Produces: `NavController.Screen.STREAK` (appended after `FAIL`; Plan A appends `STREAK_ACTIVATE`/`STREAK_GIFT` after it), `SCREEN_NAMES[STREAK] == "streak"`, routes `TITLE → STREAK`, `STREAK → TITLE`; `title_screen` `signal streak_pressed()`; `streak_chip` exposes `ON_COLOR`/`OFF_COLOR` constants itself and no longer has `sheet`.
 
 - [ ] **Step 1: Write the failing tests**
@@ -761,15 +936,15 @@ const OFF_COLOR := Color("#B9B4AC")
 	streak_chip.pressed.connect(func(): streak_pressed.emit())
 ```
 
-- [ ] **Step 5: app_shell wiring (stay ≤ 300 lines)**
+- [ ] **Step 5: Router entry and app_shell wiring (stay ≤ 300 lines, one statement per line)**
 
-Replace the 7-line `SCENE_MAP` block with:
+In `game/scripts/campaign/screen_router.gd`, add as the last entry of `SCENE_MAP`:
 
 ```gdscript
-const SCENE_MAP := {"title": "res://scenes/title.tscn", "puzzle": "res://scenes/puzzle.tscn",
-	"win": "res://scenes/win.tscn", "fail": "res://scenes/fail.tscn", "options": "res://scenes/options.tscn",
-	"streak": "res://scenes/streak.tscn"}
+	"streak": "res://scenes/streak.tscn",
 ```
+
+Extend `game/tests/test_screen_router.gd`: change the key loop to `for key in ["title", "puzzle", "win", "fail", "options", "streak"]:`.
 
 In the `"title":` branch of `_instantiate_screen`, after the `options_pressed` line add:
 
@@ -785,8 +960,10 @@ After the `"fail":` branch add:
 			if screen.has_method("setup"): screen.call("setup", assists)
 ```
 
+(`setup` gets no date: the inventory resolves today itself, and after Plan C through its `DayClock`.)
+
 Run: `wc -l game/scripts/screens/app_shell.gd game/scripts/screens/title_screen.gd`
-Expected: both ≤ 300 (app_shell 300, title_screen 291).
+Expected: app_shell 285, title_screen 291.
 
 - [ ] **Step 6: Remove the sheet and dead keys**
 
@@ -815,7 +992,7 @@ Run each; expected PASS markers / exit 0:
 - [ ] **Step 8: Commit**
 
 ```bash
-rtk git add game/scripts/campaign/nav_controller.gd game/scripts/screens/app_shell.gd game/scripts/screens/title_screen.gd game/scripts/screens/streak_chip.gd game/locale/strings.csv game/locale/strings.*.translation game/tests/test_streak_ui.gd game/tests/test_campaign_runtime.gd
+rtk git add game/scripts/campaign/nav_controller.gd game/scripts/campaign/screen_router.gd game/tests/test_screen_router.gd game/scripts/screens/app_shell.gd game/scripts/screens/title_screen.gd game/scripts/screens/streak_chip.gd game/locale/strings.csv game/locale/strings.*.translation game/tests/test_streak_ui.gd game/tests/test_campaign_runtime.gd
 rtk git commit -m "feat(streak): open streak screen from home chip and drop the popup sheet
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
@@ -836,11 +1013,11 @@ Expected: exit 0.
 - [ ] **Step 2: Full verify**
 
 Run: `rtk python -B tools/verify.py --godot <godot executable>`
-Expected: every `godot:test_*` line PASS (including `test_streak_strip`, `test_streak_screen`, `test_streak_ui`). Note the log path under `scratch/verification/` and the revision (`rtk git rev-parse --short HEAD`). If a failure is unrelated to this plan (e.g. a pre-existing one recorded in STATUS), record it verbatim; do not fix it here.
+Expected: every `godot:test_*` line PASS (including `test_screen_router`, `test_streak_strip`, `test_streak_screen`, `test_streak_ui`). Note the log path under `scratch/verification/` and the revision (`rtk git rev-parse --short HEAD`). If a failure is unrelated to this plan (e.g. a pre-existing one recorded in STATUS), record it verbatim; do not fix it here.
 
 - [ ] **Step 3: Module size check**
 
-Run: `wc -l game/scripts/screens/*.gd game/scripts/campaign/nav_controller.gd | sort -n | tail -5`
+Run: `wc -l game/scripts/screens/*.gd game/scripts/campaign/*.gd | sort -n | tail -5`
 Expected: no file above 300.
 
 - [ ] **Step 4: Update STATUS**

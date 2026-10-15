@@ -4,7 +4,7 @@
 
 **Goal:** After the first finished (won or lost, non-custom) round of the day, show a full-screen "streak activated" step, then (on day 7) a "gift received" step, then the original Win/Fail screen with unchanged setup args; remove the on-board `StreakBurst` and the `assist.reward` toast.
 
-**Architecture:** `AssistInventory.on_round_finished` returns a result dictionary `{extended, view, reward}`. `PuzzleScreen` keeps it in `round_result`. A new pure helper `StreakFlow` (RefCounted, owned by `app_shell`) turns that result plus the final screen (WIN/FAIL) into a queue of nav targets; `app_shell` walks the queue on each screen's `continued` signal. Two new screens (`streak_activate_screen.gd`, `streak_gift_screen.gd`) only render the data passed to `setup()` and never touch save, so Plan C can preview them with fake data.
+**Architecture:** `AssistInventory.on_round_finished` returns a result dictionary `{extended, view, reward}`. `PuzzleAssistController` keeps it in `round_result` (so the 300-line `puzzle_screen.gd` is not touched). A new pure helper `StreakFlow` (`game/scripts/campaign/streak_flow.gd`, RefCounted, owned by `app_shell`) turns that result plus the final screen (WIN/FAIL) into a queue of nav targets; `app_shell` walks the queue on each screen's `continued` signal. The two scenes are registered in `ScreenRouter.SCENE_MAP` (Plan B Task 0), not in `app_shell`. Two new screens (`streak_activate_screen.gd`, `streak_gift_screen.gd`) only render the data passed to `setup()` and never touch save, so Plan C can preview them with fake data.
 
 **Tech Stack:** Godot 4, GDScript, headless SceneTree test scripts (`godot --headless --path game --script res://tests/test_<x>.gd`), `tools/verify.py`, `tools/clean_room.py`.
 
@@ -12,10 +12,11 @@
 
 ## Global Constraints
 
-- Branch `feat/v1.0.1/streak-activation` created FROM `feat/v1.0.1/assist-inventory`; merge back into `feat/v1.0.1/assist-inventory` only (Q10).
-- PREREQUISITE: Plan B is merged into `feat/v1.0.1/assist-inventory`. Use exactly: `StreakCycleStrip` (`res://scripts/screens/streak_cycle_strip.gd`: `show_view(view: Dictionary)`, `fill_today_animated()`), `GiftBoxView` (`res://scripts/screens/gift_box_view.gd`: `play_idle()`, `play_open()`, `signal opened`), `NavController.Screen.STREAK`. Both views are `Control` subclasses creatable with `.new()`. If any of these is missing, stop and report a blocker; do not re-implement them.
+- Branch `feat/v1.0.1/streak-activation` created FROM `feat/v1.0.1/assist-inventory`; merge back with `git merge --no-ff` into `feat/v1.0.1/assist-inventory` only (Q10). Do not push.
+- PREREQUISITE: Plan B is merged into `feat/v1.0.1/assist-inventory`. Use exactly: `class_name StreakCycleStrip` (`res://scripts/screens/streak_cycle_strip.gd`, `extends HBoxContainer`, create with `StreakCycleStrip.new()`: `show_view(view: Dictionary)`, `fill_today_animated()`), `class_name GiftBoxView` (`res://scripts/screens/gift_box_view.gd`, create ONLY with `GiftBoxView.create()` — the single swap point: `play_idle()`, `play_open()`, `signal opened`), `NavController.Screen.STREAK` (`res://scripts/campaign/nav_controller.gd`), `ScreenRouter` (`res://scripts/campaign/screen_router.gd`, `SCENE_MAP`). Refer to the two views by their global class names; do not add `const StreakCycleStrip = preload(...)` / `const GiftBoxView = preload(...)` (shadows the global class). If any of these is missing, stop and report a blocker; do not re-implement them.
 - No autoloads; Godot signals only; composition root is `app_shell.gd`.
-- Every module ≤ 300 lines (`app_shell.gd` is at 300 now — check `wc -l` after every edit).
+- Every module ≤ 300 lines. After Plan B `app_shell.gd` is at 285 and `puzzle_screen.gd` at 300 — check `wc -l` after every edit. Never join statements/declarations onto shared lines to save space; this plan does not edit `puzzle_screen.gd`.
+- Scene keys / nav names (fixed across Plans A/B/C): `"streak"` (Plan B), `"streak_activate"`, `"streak_gift"` (this plan). Enum order: `TITLE, PUZZLE, WIN, FAIL, STREAK, STREAK_ACTIVATE, STREAK_GIFT`.
 - Clean-room: original names, text and visuals only; `tools/clean_room.py` must pass.
 - TDD: failing test first, then implementation.
 - Q2: every finished round (won or lost) counts (RST-032); custom/debug/tutorial levels are excluded (RST-030).
@@ -43,9 +44,10 @@
 | `game/scripts/campaign/nav_controller.gd` | Modify | Add `STREAK_ACTIVATE`, `STREAK_GIFT` + routes |
 | `game/scripts/screens/streak_activate_screen.gd` + `game/scenes/streak_activate.tscn` | Create | Flame lights, today cell fills, Continue |
 | `game/scripts/screens/streak_gift_screen.gd` + `game/scenes/streak_gift.tscn` | Create | Gift box opens, +hint/+place, Continue |
-| `game/scripts/screens/puzzle_assist_controller.gd` | Modify | Return result, no burst, no toast |
-| `game/scripts/screens/puzzle_screen.gd` | Modify | Store `round_result` |
+| `game/scripts/screens/puzzle_assist_controller.gd` | Modify | Return and keep `round_result`, no burst, no toast |
+| `game/scripts/campaign/screen_router.gd` | Modify | `SCENE_MAP` += `streak_activate`, `streak_gift` |
 | `game/scripts/screens/app_shell.gd` | Modify | Route through `StreakFlow` |
+| `game/tests/test_screen_router.gd` | Modify | New keys |
 | `game/scripts/screens/streak_burst.gd`, `game/tests/test_streak_burst.gd` | Delete | Replaced (Q3) |
 | `game/locale/strings.csv` | Modify | New keys, remove `assist.reward` |
 | `game/tests/test_streak_activation.gd` | Create | Flow + screens tests |
@@ -62,12 +64,12 @@
 rtk git checkout feat/v1.0.1/assist-inventory
 rtk git status --short          # unrelated edits stay unstaged; do not reset them
 rtk git log --oneline -5        # confirm Plan B merge commit is present
-ls game/scripts/screens/streak_cycle_strip.gd game/scripts/screens/gift_box_view.gd
+ls game/scripts/screens/streak_cycle_strip.gd game/scripts/screens/gift_box_view.gd game/scripts/campaign/screen_router.gd
 grep -n "STREAK" game/scripts/campaign/nav_controller.gd
 rtk git checkout -b feat/v1.0.1/streak-activation
 ```
 
-Expected: both files exist and `Screen.STREAK` is present. Otherwise stop: blocker "Plan B not merged".
+Expected: the three files exist and `Screen.STREAK` is present. Otherwise stop: blocker "Plan B not merged".
 
 ---
 
@@ -154,7 +156,7 @@ rtk git commit -m "feat(streak): return round result from inventory" -m "Co-Auth
 - Consumes: Task 1 result dictionary.
 - Produces:
   - `NavController.Screen.STREAK_ACTIVATE`, `NavController.Screen.STREAK_GIFT`, names `"streak_activate"`, `"streak_gift"`.
-  - `StreakFlow.start(source: Variant, final_screen: int) -> int` — `source` is the finished screen (reads `source.get("round_result")`, tolerates `null` or missing) or a result `Dictionary`; returns the first nav target. `StreakFlow.next() -> int` pops the next target (returns `final_screen` when queue empty). Vars `view: Dictionary`, `reward: Dictionary` hold data for the screens.
+  - `StreakFlow.start(source: Variant, final_screen: int) -> int` — `source` is the finished puzzle screen's `assist_ctl` (a `PuzzleAssistController`; reads `source.get("round_result")`, tolerates `null` or missing) or a result `Dictionary`; returns the first nav target. `StreakFlow.next() -> int` pops the next target (returns `final_screen` when queue empty). Vars `view: Dictionary`, `reward: Dictionary` hold data for the screens.
 
 - [ ] **Step 1: Write the failing test** — create `game/tests/test_streak_activation.gd`:
 
@@ -229,7 +231,7 @@ var reward: Dictionary = {}
 var _queue: Array[int] = []
 var _final: int = NavController.Screen.WIN
 
-# source: the finished screen (exposes round_result) or a result Dictionary.
+# source: the finished screen's PuzzleAssistController (exposes round_result) or a result Dictionary.
 func start(source: Variant, final_screen: int) -> int:
 	var result: Variant = source
 	if source is Object:
@@ -251,19 +253,25 @@ func next() -> int:
 	return _queue.pop_front() if not _queue.is_empty() else _final
 ```
 
-In `nav_controller.gd` (after Plan B, the enum already ends with `STREAK`), append the two values, names and routes; also let `PUZZLE` route to `STREAK_ACTIVATE`:
+In `nav_controller.gd` (after Plan B, the enum already ends with `STREAK`), replace the enum, `SCREEN_NAMES` and `ROUTES` with (Plan B's `STREAK` entries unchanged; `PUZZLE` may now route to `STREAK_ACTIVATE`):
 
 ```gdscript
 enum Screen { TITLE, PUZZLE, WIN, FAIL, STREAK, STREAK_ACTIVATE, STREAK_GIFT }
-```
 
-Add to `SCREEN_NAMES`: `Screen.STREAK_ACTIVATE: "streak_activate", Screen.STREAK_GIFT: "streak_gift",`
-Change/add in `ROUTES` (keep Plan B's `STREAK` entries unchanged):
-
-```gdscript
+const SCREEN_NAMES := {
+	Screen.TITLE: "title", Screen.PUZZLE: "puzzle", Screen.WIN: "win",
+	Screen.FAIL: "fail", Screen.STREAK: "streak",
+	Screen.STREAK_ACTIVATE: "streak_activate", Screen.STREAK_GIFT: "streak_gift",
+}
+const ROUTES := {
+	Screen.TITLE: [Screen.PUZZLE, Screen.STREAK],
 	Screen.PUZZLE: [Screen.WIN, Screen.FAIL, Screen.TITLE, Screen.STREAK_ACTIVATE],
+	Screen.WIN: [Screen.PUZZLE, Screen.TITLE],
+	Screen.FAIL: [Screen.PUZZLE, Screen.TITLE],
+	Screen.STREAK: [Screen.TITLE],
 	Screen.STREAK_ACTIVATE: [Screen.STREAK_GIFT, Screen.WIN, Screen.FAIL],
 	Screen.STREAK_GIFT: [Screen.WIN, Screen.FAIL],
+}
 ```
 
 - [ ] **Step 4: Run to verify it passes**
@@ -344,7 +352,6 @@ Expected: FAIL — preload of `streak_activate_screen.gd` not found.
 extends Control
 
 const FlameFx = preload("res://scripts/screens/flame_fx.gd")
-const StreakCycleStrip = preload("res://scripts/screens/streak_cycle_strip.gd")
 
 signal continued()
 
@@ -406,8 +413,6 @@ func _ensure_nodes() -> void:
 # Renders only what setup() receives; never reads or writes save (debug previews reuse it).
 extends Control
 
-const GiftBoxView = preload("res://scripts/screens/gift_box_view.gd")
-
 signal continued()
 
 var reward: Dictionary = {}
@@ -441,7 +446,7 @@ func _ensure_nodes() -> void:
 	box.add_theme_constant_override("separation", 20)
 	add_child(box)
 	title_label = _label(box, tr("streak.gift_title"), 40)
-	gift = GiftBoxView.new()
+	gift = GiftBoxView.create()
 	gift.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	box.add_child(gift)
 	hint_label = _label(box, "", 32)
@@ -489,7 +494,7 @@ streak.gift_hint,+%d hints,ヒント+%d,+%d gợi ý,+%d petunjuk,+%d dicas,+%d 
 streak.gift_place,+%d candy drops,キャンディ配置+%d,+%d đặt kẹo,+%d taruh permen,+%d doces extras,+%d caramelos extra,사탕 놓기 +%d
 ```
 
-Then reimport translations: `rtk godot --headless --path game --import` (regenerates `strings.*.translation`; stage the regenerated `game/locale/strings.*.translation` files if they are tracked — check with `rtk git status --short game/locale`).
+Then reimport translations: `rtk godot --headless --path game --import` (regenerates `game/locale/strings.*.translation`, which are committed — same as Plan B).
 
 - [ ] **Step 4: Run to verify it passes**
 
@@ -499,8 +504,8 @@ Expected: `STREAK_ACTIVATION_PASS`; localization suite passes.
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add game/scripts/screens/streak_activate_screen.gd game/scripts/screens/streak_gift_screen.gd game/scenes/streak_activate.tscn game/scenes/streak_gift.tscn game/locale/strings.csv game/tests/test_streak_activation.gd
-# plus tracked game/locale/*.translation and new *.gd.uid files if Godot created them for these scripts
+rtk git add game/scripts/screens/streak_activate_screen.gd game/scripts/screens/streak_gift_screen.gd game/scenes/streak_activate.tscn game/scenes/streak_gift.tscn game/locale/strings.csv game/locale/strings.*.translation game/tests/test_streak_activation.gd
+# plus the new *.gd.uid files if Godot created them for these scripts
 rtk git commit -m "feat(streak): add activate and gift screens" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
@@ -510,22 +515,23 @@ rtk git commit -m "feat(streak): add activate and gift screens" -m "Co-Authored-
 
 **Files:**
 - Modify: `game/scripts/screens/puzzle_assist_controller.gd`
-- Modify: `game/scripts/screens/puzzle_screen.gd:23,273-290`
-- Modify: `game/scripts/screens/app_shell.gd` (SCENE_MAP, consts, `_instantiate_screen`, `_on_level_done`)
+- Modify: `game/scripts/campaign/screen_router.gd` (`SCENE_MAP`), `game/tests/test_screen_router.gd`
+- Modify: `game/scripts/screens/app_shell.gd` (const block, var block, `_instantiate_screen`, `_on_level_done`)
+- Not modified: `game/scripts/screens/puzzle_screen.gd` (300 lines; its existing `assist_ctl.on_round_finished(session, _is_custom)` calls stay as they are)
 - Delete: `game/scripts/screens/streak_burst.gd` (+ `.uid`), `game/tests/test_streak_burst.gd`
 - Modify: `game/locale/strings.csv` (remove `assist.reward`)
 - Test: `game/tests/test_assist_flow.gd`, `game/tests/test_integration.gd`
 
 **Interfaces:**
 - Consumes: `AssistInventory.on_round_finished() -> {extended, view, reward}` (Task 1); `StreakFlow.start/next`, `view`, `reward` (Task 2); screens' `setup` + `continued` (Task 3).
-- Produces: `PuzzleScreen.round_result: Dictionary` (last result, `{}` when not recorded); `PuzzleAssistController.on_round_finished(session, is_custom) -> Dictionary` returns the Task 1 result (or `{}`); `AppShell.streak_flow: StreakFlow`.
+- Produces: `PuzzleAssistController.round_result: Dictionary` (result of the last recorded round on this screen, `{}` when skipped or never recorded); `PuzzleAssistController.on_round_finished(session: Variant, is_custom: bool) -> Dictionary` stores and returns the Task 1 result (or `{}`); `AppShell.streak_flow` (a `StreakFlow`).
 
 - [ ] **Step 1: Write the failing tests**
 
 In `test_assist_flow.gd`: replace `check(screen.get_node_or_null("StreakBurst") == null, "custom win shows no burst")` with
 
 ```gdscript
-	check(screen.round_result.is_empty(), "custom win records no streak result")
+	check(screen.assist_ctl.round_result.is_empty(), "custom win records no streak result")
 ```
 
 and after `check(inv2.data.streakDays == 1, "resume won twice records once")` add
@@ -538,13 +544,13 @@ and after `check(inv2.data.streakDays == 1, "resume won twice records once")` ad
 and after `check(inv3.data.totalStreak == 0, "restored finished round is not counted again")` add
 
 ```gdscript
-	check(screen3.round_result.is_empty(), "restored round has no result to show")
+	check(screen3.assist_ctl.round_result.is_empty(), "restored round has no result to show")
 ```
 
 and after `check(inv3.data.totalStreak == 1, "failed round counts for streak")` add
 
 ```gdscript
-	check(screen3.round_result.extended, "failed round result is extended")
+	check(screen3.assist_ctl.round_result.extended, "failed round result is extended")
 ```
 
 In `test_integration.gd`, `_test_screen_flow_win_and_progression`: replace
@@ -566,10 +572,10 @@ with
 (the later "nav moved to WIN screen for campaign complete" stays: L02 is the same day, so no activate). After `_assert(shell._last_won_level == "L01", ...)` add
 
 ```gdscript
-	_assert(win_screen.get("_hearts") == null or int(win_screen.get("_hearts")) == 3, "win keeps original hearts arg")
+	_assert(int(win_screen.get("_hearts_left")) == shell._last_won_hearts, "win keeps original hearts arg")
 ```
 
-(If `win_screen.gd` stores hearts under another name, use that field — read `win_screen.gd` `setup` first and assert on its stored hearts.)
+(`win_screen.gd` stores the hearts argument of `setup` in `_hearts_left`.)
 
 In `_test_screen_flow_fail_and_retry`: replace
 
@@ -634,55 +640,71 @@ Expected: FAIL (`round_result` missing; nav goes straight to WIN/FAIL).
 
 - [ ] **Step 3: Implement**
 
-`puzzle_assist_controller.gd`: delete the `StreakBurst` preload, `var burst_played`, the `streak_extended` connect lines in `bind`, and `_on_streak_extended`. Update the header comment to "badges, place-candy, empty popup." Replace `on_round_finished`:
+`puzzle_assist_controller.gd`: delete the `StreakBurst` preload, `var burst_played`, the two `streak_extended` connect lines in `bind`, and `_on_streak_extended`. Update the header comment to `# Binds the assist stock to the puzzle dock: badges, place-candy, empty popup; records finished rounds.` Below `var inventory: Variant = null` add:
+
+```gdscript
+var round_result: Dictionary = {}  # last recorded round on this screen; read by app_shell's StreakFlow
+```
+
+Replace `on_round_finished`:
 
 ```gdscript
 # Records the finished round; returns {extended, view, reward} for the streak screens, {} when skipped.
 func on_round_finished(session: Variant, is_custom: bool) -> Dictionary:
+	round_result = {}
 	if inventory == null or is_custom or session == null:
-		return {}
-	return inventory.on_round_finished()
+		return round_result
+	round_result = inventory.on_round_finished()
+	return round_result
 ```
 
-`puzzle_screen.gd`: on line 23 append `var round_result: Dictionary = {}` (same line, after `_is_custom`, to stay ≤300):
+`puzzle_screen.gd` is not edited: its `if hold: assist_ctl.on_round_finished(session, _is_custom)` calls already skip restored rounds, so `assist_ctl.round_result` stays `{}` for them (the screen, and its controller, is re-instantiated per level).
+
+`game/scripts/campaign/screen_router.gd`: add after the `"streak"` entry of `SCENE_MAP`:
 
 ```gdscript
-var session: Variant = null; var _is_custom: bool = false; var round_result: Dictionary = {}
+	"streak_activate": "res://scenes/streak_activate.tscn",
+	"streak_gift": "res://scenes/streak_gift.tscn",
 ```
 
-and in `_on_level_won` / `_on_level_failed` change both `if hold: assist_ctl.on_round_finished(session, _is_custom)` to
+`game/tests/test_screen_router.gd`: change the key loop to `for key in ["title", "puzzle", "win", "fail", "options", "streak", "streak_activate", "streak_gift"]:`.
+
+`app_shell.gd` (one statement per line; must stay ≤ 300):
+1. After `const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")` add:
 
 ```gdscript
-	if hold: round_result = assist_ctl.on_round_finished(session, _is_custom)  # hold == false: restored round, already counted
+const StreakFlow = preload("res://scripts/campaign/streak_flow.gd")
 ```
 
-(keep each existing trailing comment). `round_result` stays `{}` for restored rounds because the screen is re-instantiated per level.
-
-`app_shell.gd` (must stay ≤300 lines):
-1. Compress `SCENE_MAP` and add the two scenes (keep Plan B's `"streak"` entry if it added one; put it on these lines too):
+2. After `var _options_overlay: Control = null` add:
 
 ```gdscript
-const SCENE_MAP := {"title": "res://scenes/title.tscn", "puzzle": "res://scenes/puzzle.tscn", "win": "res://scenes/win.tscn",
-	"fail": "res://scenes/fail.tscn", "options": "res://scenes/options.tscn",
-	"streak_activate": "res://scenes/streak_activate.tscn", "streak_gift": "res://scenes/streak_gift.tscn"}
+var streak_flow := StreakFlow.new()
 ```
 
-2. Same line as `NavController` const: `const NavController = preload("res://scripts/campaign/nav_controller.gd"); const StreakFlow = preload("res://scripts/campaign/streak_flow.gd")`
-3. Same line as `_options_overlay`: `var _options_overlay: Control = null; var streak_flow := StreakFlow.new()`
-4. In `_instantiate_screen` `match to_name:` add before `"win":`
+3. In `_instantiate_screen` `match to_name:` add before `"win":`
 
 ```gdscript
-		"streak_activate", "streak_gift": screen.call("setup", streak_flow.view if to_name == "streak_activate" else streak_flow.reward); screen.connect("continued", func(): nav.go_to(streak_flow.next()))
+		"streak_activate", "streak_gift":
+			if screen.has_method("setup"): screen.call("setup", streak_flow.view if to_name == "streak_activate" else streak_flow.reward)
+			if screen.has_signal("continued"): screen.connect("continued", func(): nav.go_to(streak_flow.next()))
 ```
 
-5. In `_on_level_done` replace the three result jumps:
-   - debug branch: `nav.go_to(streak_flow.start(cur_sc, NavController.Screen.WIN if won else NavController.Screen.FAIL))`
-   - won branch: `nav.go_to(streak_flow.start(cur_sc, NavController.Screen.WIN))`
-   - lost branch: `nav.go_to(streak_flow.start(cur_sc, NavController.Screen.FAIL))`
+4. In `_on_level_done` (where `cur_sc` is already the finished puzzle screen) add, directly after the `var sess = ...` line:
+
+```gdscript
+	var streak_src: Variant = cur_sc.get("assist_ctl") if cur_sc != null else null
+```
+
+and replace the three result jumps (edit the existing lines in place):
+   - debug branch: `nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN if won else NavController.Screen.FAIL))`
+   - won branch: `nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN))`
+   - lost branch: `nav.go_to(streak_flow.start(streak_src, NavController.Screen.FAIL))`
 
 The Win/Fail setup args are read from `_last_won_*` / `_next_level_*` fields set before these calls and untouched by the detour, so they are unchanged. The result SFX stays tied to entering `win`/`fail`.
 
-Run `wc -l game/scripts/screens/app_shell.gd game/scripts/screens/puzzle_screen.gd` — both must be ≤ 300.
+Run `wc -l game/scripts/screens/app_shell.gd game/scripts/screens/puzzle_screen.gd`
+Expected: app_shell 291, puzzle_screen 300 (unchanged).
 
 Remove burst and toast:
 
@@ -707,14 +729,15 @@ rtk godot --headless --path game --script res://tests/test_streak_activation.gd
 rtk godot --headless --path game --script res://tests/test_integration.gd
 rtk godot --headless --path game --script res://tests/test_screens.gd
 rtk godot --headless --path game --script res://tests/test_localization.gd
+rtk godot --headless --path game --script res://tests/test_screen_router.gd
 ```
 Expected: each prints its PASS marker, exit 0.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-rtk git add game/scripts/screens/puzzle_assist_controller.gd game/scripts/screens/puzzle_screen.gd game/scripts/screens/app_shell.gd game/locale/strings.csv game/tests/test_assist_flow.gd game/tests/test_integration.gd
-# plus regenerated tracked game/locale/*.translation if changed; the git rm deletions are already staged
+rtk git add game/scripts/screens/puzzle_assist_controller.gd game/scripts/campaign/screen_router.gd game/tests/test_screen_router.gd game/scripts/screens/app_shell.gd game/locale/strings.csv game/locale/strings.*.translation game/tests/test_assist_flow.gd game/tests/test_integration.gd
+# the git rm deletions are already staged
 rtk git commit -m "feat(streak)!: show activate and gift screens before the result" -m "BREAKING CHANGE: AssistInventory.on_round_finished returns {extended, view, reward}; streak_extended signal and StreakBurst removed." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 

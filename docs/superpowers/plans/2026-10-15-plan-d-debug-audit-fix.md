@@ -14,7 +14,8 @@
 
 - D1 không sửa code, test, asset hay tài liệu. Chỉ tạo file báo cáo trong `scratch/verification/`.
 - D2 chỉ sửa bug có trong danh sách đã duyệt. Bug nào chưa duyệt thì không sửa.
-- Mỗi file ≤ 300 dòng. `game/scripts/screens/app_shell.gd` đang có đúng **300 dòng**. Nếu bản sửa làm tăng số dòng, phải tách luồng nối màn debug (`_on_debug_level_selected`) sang helper mới, ví dụ `game/scripts/screens/debug_chain.gd`, là static và có test riêng.
+- Mỗi file ≤ 300 dòng, mỗi dòng một câu lệnh — không gộp lệnh/khai báo lên cùng dòng để tiết kiệm dòng. `game/scripts/screens/app_shell.gd` hiện có đúng **300 dòng**; Plan B Task 0 tách định tuyến màn sang `game/scripts/campaign/screen_router.gd` (còn 281 dòng), sau Plan B là 285, sau Plan A là 291. Nếu bản sửa D2 làm `app_shell.gd` vượt 300 (hoặc chạy trước Plan B khi file còn 300 dòng), phải tách luồng nối màn debug (`_on_debug_level_selected` và tính `_debug_next`) sang helper static mới `game/scripts/campaign/debug_chain.gd` (cùng thư mục và cùng kiểu với `screen_router.gd`), có test riêng `game/tests/test_debug_chain.gd`, rồi mới sửa.
+- Nhánh: D1 `fix/v1.0.1/debug-audit`, D2 `fix/v1.0.1/debug-fixes`, đều tạo từ `feat/v1.0.1/assist-inventory`. Chỉ D2 merge về `feat/v1.0.1/assist-inventory` bằng `git merge --no-ff`. Không push.
 - Không autoload, không EventBus. Dependency được inject từ app_shell.
 - Câu chữ phải là câu chữ gốc. Không thêm ký tự mà font của game không có.
 - Debug chỉ hoạt động khi `OS.is_debug_build()`. Không bật debug trong bản release (spec §5).
@@ -24,7 +25,7 @@
 
 - D1 chỉ đọc nên chạy song song được với Plan A/B/C.
 - D2 phải merge vào `feat/v1.0.1/assist-inventory` **trước Plan C** nếu D2 sửa `debug_level_picker.gd` (hoặc `debug_endless_panel.gd`/`debug_reset_bar.gd`). Lý do: Plan C cũng chạm vào picker, và cả hai cùng sửa một file sẽ gây conflict. Nếu Plan C đã bắt đầu, báo người phụ trách Plan C rebase lên nhánh cha sau khi D2 merge.
-- `app_shell.gd` cũng là điểm nóng: các plan streak cũng sửa file này. Trước khi merge D2, rebase lên nhánh cha mới nhất.
+- `app_shell.gd` cũng là điểm nóng: Plan B (tách `screen_router.gd`), Plan A (`StreakFlow`) và Plan C (`DayClock`) cùng sửa file này. Số dòng `app_shell.gd:<n>` trong plan này theo revision lúc viết (trước Plan B); khi rà, dùng số dòng của revision hiện tại. Trước khi merge D2, rebase lên nhánh cha mới nhất.
 
 ---
 
@@ -232,7 +233,7 @@ func _test_play_disabled_when_level_missing() -> void:
 rtk godot --headless --path game --script res://tests/test_debug_level_picker.gd
 ```
 
-- [ ] **Step 3: Sửa tối thiểu.** Giữ file ≤ 300 dòng. Nếu phải sửa `app_shell.gd` (đang 300 dòng), tách logic sang helper trước rồi mới sửa. Không gộp thêm cải tiến chưa được duyệt.
+- [ ] **Step 3: Sửa tối thiểu.** Giữ file ≤ 300 dòng, không gộp lệnh lên cùng dòng. Nếu sửa `app_shell.gd` làm file vượt 300 dòng, tách luồng nối màn debug sang `game/scripts/campaign/debug_chain.gd` (xem Global Constraints) trước rồi mới sửa. Không gộp thêm cải tiến chưa được duyệt.
 - [ ] **Step 4: Chạy lại để test PASS, rồi chạy cả hai suite debug cùng `test_screens.gd`.**
 - [ ] **Step 5: Commit riêng cho bug này.**
 
@@ -268,8 +269,10 @@ Ghi revision, lệnh và kết quả vào `scratch/verification/`.
 
 ```bash
 rtk git checkout feat/v1.0.1/assist-inventory
-rtk git merge --no-ff fix/v1.0.1/debug-fixes
+rtk git merge --no-ff fix/v1.0.1/debug-fixes -m "merge: debug audit fixes (plan D2)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
+
+Không push trừ khi chủ dự án yêu cầu.
 
 Nếu Plan C đang mở và chạm vào `debug_level_picker.gd`, báo người phụ trách Plan C rebase lên nhánh cha mới.
 
