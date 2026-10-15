@@ -41,9 +41,10 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
   - B01–B03, B08–B10: `debug_level_picker.gd` (299 dòng) hỗ trợ lọc rỗng an toàn, tab switch an toàn, xử lý bài không tồn tại, layout co giãn theo khung hình và cờ trạng thái.
   - B04–B05: `debug_endless_panel.gd` (121 dòng) kiểm tra bài rỗng trước khi phát tín hiệu, không ghi đè cấu hình ngoài ý muốn.
   - B06–B07, B10: `debug_reset_bar.gd` (99 dòng) loại bỏ nhân đôi tín hiệu reset, kiểm tra an toàn null status.
-  - B11–B14, B10: `puzzle_debug_bar.gd` (142 dòng) đồng bộ checkbox cheat, trạng thái thua/thắng chính xác, dọn dẹp bộ giải khi đổi bàn và co giãn màn hình hẹp.
+  - B11–B14, B10: `puzzle_debug_bar.gd` đồng bộ checkbox cheat, trạng thái thua/thắng chính xác, dọn dẹp bộ giải khi đổi bàn và co giãn màn hình hẹp.
+  - S16: `puzzle_layout.gd` (269 dòng) và `puzzle_debug_bar.gd` (152 dòng) gắn thanh Cheats vào `SafeArea` với `SIZE_SHRINK_END` và bố trí `_tools_container` mở hướng lên trên nút toggle, đảm bảo toàn bộ công cụ cheat xuất hiện đầy đủ trong màn hình khi kích hoạt (kiểm chứng `test_debug_features` 3i; full verify PASS `scratch/verification/20261015T093854.174323Z.txt`).
 - Mọi module sửa đổi đều tuân thủ nghiêm ngặt giới hạn $\le 300$ dòng.
-- Full verification gate PASS 100% (`scratch/verification/20261015T060137.089386Z.txt`).
+- Full verification gate PASS 100% (`scratch/verification/20261015T093854.174323Z.txt`).
 
 ## Bỏ given toàn hệ thống (2026-10-14, `feat/v1.0.1/tutorial`)
 
