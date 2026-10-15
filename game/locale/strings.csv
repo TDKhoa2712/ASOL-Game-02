@@ -136,3 +136,8 @@ assist.reward,+%d hints  +%d candy drops,ヒント+%d　キャンディ配置+%d
 streak.title,Streak,連続記録,Chuỗi ngày,Rangkaian,Sequência,Racha,연속 기록
 streak.days,days in a row,日連続,ngày liên tiếp,hari berturut-turut,dias seguidos,días seguidos,일 연속
 streak.best,Best: %d days,最高記録：%d日,Kỷ lục: %d ngày,Rekor: %d hari,Recorde: %d dias,Récord: %d días,최고 기록: %d일
+common.continue,Continue,つづける,Tiếp tục,Lanjut,Continuar,Continuar,계속
+streak.activate_title,Streak lit!,連続記録スタート！,Chuỗi đã bừng sáng!,Rentetan menyala!,Sequência acesa!,¡Racha encendida!,연속 기록 점화!
+streak.gift_title,Weekly gift!,今週のギフト！,Quà tuần này!,Hadiah mingguan!,Presente da semana!,¡Regalo semanal!,이번 주 선물!
+streak.gift_hint,+%d hints,ヒント+%d,+%d gợi ý,+%d petunjuk,+%d dicas,+%d pistas,힌트 +%d
+streak.gift_place,+%d candy drops,キャンディ配置+%d,+%d đặt kẹo,+%d taruh permen,+%d doces extras,+%d caramelos extra,사탕 놓기 +%d
