@@ -10,6 +10,7 @@ const BankReader = preload("res://scripts/content/bank_reader.gd")
 const BoardTransform = preload("res://scripts/content/board_transform.gd")
 const DebugEndlessPanel = preload("res://scripts/screens/debug_endless_panel.gd")
 const DebugResetBar = preload("res://scripts/screens/debug_reset_bar.gd")
+const DebugStreakPanel = preload("res://scripts/screens/debug_streak_panel.gd")
 
 var _bank: BankReader
 var _playlist: Array = []
@@ -22,6 +23,7 @@ var _is_dragging: bool = false
 var _drag_offset: Vector2 = Vector2.ZERO
 
 var _tab_playlist_btn: Button; var _tab_bank_btn: Button; var _tab_endless_btn: Button
+var _streak_panel: DebugStreakPanel; var _tab_streak_btn: Button
 var _playlist_container: VBoxContainer; var _bank_container: VBoxContainer
 var _endless_panel: DebugEndlessPanel; var _reset_bar: DebugResetBar
 var _size_filter_btn: OptionButton; var _diff_filter_btn: OptionButton
@@ -60,11 +62,12 @@ func _init() -> void:
 	custom_minimum_size = Vector2(480, 900)
 	_build_ui()
 
-func setup(bank: BankReader, playlist: Array = [], endless_rt: Variant = null, campaign_rt: Variant = null) -> void:
+func setup(bank: BankReader, playlist: Array = [], endless_rt: Variant = null, campaign_rt: Variant = null, assists: Variant = null) -> void:
 	_bank = bank; _playlist = playlist.duplicate(true)
 	_populate_filters(); _populate_bank_sizes()
 	if _endless_panel != null: _endless_panel.setup(_bank, endless_rt)
 	if _reset_bar != null: _reset_bar.setup(campaign_rt, endless_rt)
+	if _streak_panel != null: _streak_panel.setup(assists)
 	if not _playlist.is_empty(): select_playlist_entry(str(_playlist[0].get("label", "")))
 	elif not _discovered_sizes.is_empty(): select_custom_bank_level(_discovered_sizes[0], 1, 0, 0)
 
@@ -87,17 +90,14 @@ func select_playlist_entry(label: String) -> void:
 	for item in _playlist:
 		if str(item.get("label", "")) == label: entry = item; break
 	if entry.is_empty():
-		_clear_selection("")
-		return
+		_clear_selection(""); return
 	var s: int = int(entry.get("size", 4)); var r: int = int(entry.get("rank", 1))
 	var idx: int = int(entry.get("index", 0)); var tf_id: int = int(entry.get("transform", 0))
 	var raw: Dictionary = {}
 	if _bank != null:
-		_bank.load_bank(s)
-		raw = _bank.get_level(s, r, idx)
+		_bank.load_bank(s); raw = _bank.get_level(s, r, idx)
 	if raw.is_empty():
-		_clear_selection(label)
-		return
+		_clear_selection(label); return
 	_selected_level = BoardTransform.apply(raw, tf_id) if tf_id > 0 else raw.duplicate(true)
 	_selected_level["id"] = label; _selected_level["_playlist_label"] = label; _selected_label = label
 	_last_playlist_label = label
@@ -127,13 +127,9 @@ func confirm_selection() -> void:
 
 func _update_info_display(lbl: String, s: int, diff: String, rank: int, lvl: Dictionary) -> void:
 	if lvl.is_empty():
-		_info_label.text = "Chua chon man nao hoac man khong hop le"
-		_play_btn.disabled = true
-		return
+		_info_label.text = "Chua chon man nao hoac man khong hop le"; _play_btn.disabled = true; return
 	var reg_cnt: int = lvl.get("regions", []).size()
-	_info_label.text = "Man: %s | Size: %dx%d | %s (Rank %d)\nSo vung: %d" % [
-		lbl, s, s, diff, rank, reg_cnt
-	]
+	_info_label.text = "Man: %s | Size: %dx%d | %s (Rank %d)\nSo vung: %d" % [lbl, s, s, diff, rank, reg_cnt]
 	_play_btn.disabled = false
 
 func _build_ui() -> void:
@@ -159,6 +155,7 @@ func _build_ui() -> void:
 
 	var tabs := HBoxContainer.new(); tabs.add_theme_constant_override("separation", 10)
 	_tab_playlist_btn = _tab_btn("Chien dich", 0, tabs); _tab_bank_btn = _tab_btn("Ngan hang (Bank)", 1, tabs); _tab_endless_btn = _tab_btn("Vo tan (Endless)", 2, tabs)
+	_tab_streak_btn = _tab_btn("Streak/Assist", 3, tabs)
 	root_vbox.add_child(tabs)
 
 	_playlist_container = VBoxContainer.new(); _playlist_container.size_flags_vertical = Control.SIZE_EXPAND_FILL; _playlist_container.add_theme_constant_override("separation", 10); root_vbox.add_child(_playlist_container)
@@ -189,6 +186,11 @@ func _build_ui() -> void:
 		_selected_level = lvl; _selected_label = lbl; var s: int = int(lvl.get("size", 4)); var r: int = int(lvl.get("rank", 1))
 		_update_info_display(lbl, s, str(lvl.get("difficulty", "normal")), r, lvl)
 	); root_vbox.add_child(_endless_panel)
+
+	_streak_panel = DebugStreakPanel.new()
+	_streak_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_streak_panel.visible = false
+	root_vbox.add_child(_streak_panel)
 
 	var info_panel := PanelContainer.new(); var ip_style := StyleBoxFlat.new()
 	ip_style.bg_color = Color(0.9, 0.88, 0.84, 0.8); ip_style.set_corner_radius_all(14); ip_style.set_content_margin_all(14)
@@ -225,6 +227,8 @@ func _add_row(parent: Container, lbl_text: String, ctrl: Control) -> void:
 
 func _switch_mode(m: int) -> void:
 	_mode = m; _playlist_container.visible = (_mode == 0); _bank_container.visible = (_mode == 1); _endless_panel.visible = (_mode == 2)
+	_streak_panel.visible = (_mode == 3)
+	_play_btn.visible = (_mode != 3)
 	if _mode == 0:
 		if _last_playlist_label != "":
 			select_playlist_entry(_last_playlist_label)
@@ -258,24 +262,19 @@ func _apply_playlist_filters() -> void:
 	var target_diff: String = _diff_filter_btn.get_item_text(_diff_filter_btn.selected) if _diff_filter_btn.selected > 0 else ""
 	for entry in _playlist:
 		var s: int = int(entry.get("size", 0)); var d: String = str(entry.get("difficulty", ""))
-		if target_size > 0 and s != target_size: continue
-		if target_diff != "" and d != target_diff: continue
+		if (target_size > 0 and s != target_size) or (target_diff != "" and d != target_diff): continue
 		var label: String = str(entry.get("label", ""))
 		_playlist_list.add_item("[%s] Size %dx%d | %s (Rank %d)" % [label, s, s, d, int(entry.get("rank", 1))])
 		_playlist_list.set_item_metadata(_playlist_list.item_count - 1, label)
 	if _playlist_list.item_count == 0:
-		_clear_selection("")
-		return
+		_clear_selection(""); return
 	var target_lbl := _last_playlist_label if _last_playlist_label != "" else _selected_label
 	var found_idx: int = -1
 	if target_lbl != "":
 		for i in range(_playlist_list.item_count):
-			if str(_playlist_list.get_item_metadata(i)) == target_lbl:
-				found_idx = i
-				break
+			if str(_playlist_list.get_item_metadata(i)) == target_lbl: found_idx = i; break
 	var chosen: int = found_idx if found_idx >= 0 else 0
-	_playlist_list.select(chosen)
-	select_playlist_entry(str(_playlist_list.get_item_metadata(chosen)))
+	_playlist_list.select(chosen); select_playlist_entry(str(_playlist_list.get_item_metadata(chosen)))
 
 func _populate_bank_sizes() -> void:
 	_bank_size_btn.clear()

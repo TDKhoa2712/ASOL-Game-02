@@ -43,6 +43,16 @@ func _init() -> void:
 	w_inv._store.remove_all()
 	check(s_inv.streak_view("2026-06-03").kept_today, "inventory view")
 	s_inv._store.remove_all()
+	var rdir := dir + "_replace"
+	var r_inv := Inventory.new(rdir)
+	var seen: Array = []
+	r_inv.changed.connect(func(k, c): seen.append(k))
+	r_inv.replace_data({"hint": 999, "place": -4})
+	check(r_inv.count("hint") == 10 and r_inv.count("place") == 0, "replace_data sanitizes")
+	check(seen == ["hint", "place"], "replace_data emits both kinds")
+	check(Inventory.new(rdir).count("hint") == 10, "replace_data persists")
+	check(r_inv.current_day() == Time.get_date_string_from_system(), "no clock -> real date")
+	r_inv._store.remove_all()
 	DirAccess.remove_absolute(dir)
 	if failures.is_empty():
 		print("ASSIST_INVENTORY_PASS")
