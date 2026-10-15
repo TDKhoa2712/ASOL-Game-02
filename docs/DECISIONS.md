@@ -26,7 +26,7 @@ Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc t�
 - **Kho:** Hint và Đặt kẹo lưu bền, khởi đầu 3/1, tối đa 10 mỗi loại.
 - **Hint:** trừ 1 khi gợi ý hiện ra; `WRONG_MARK` miễn phí; hết lượt → popup.
 - **Đặt kẹo:** đặt ngay một kẹo đúng (ưu tiên ô suy luận duy nhất, sau đó vùng ít ô trống nhất); viên cuối thắng level; reset combo.
-- **Streak:** ngày tính khi ≥1 bàn kết thúc (RST-032) (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
+- **Streak:** ngày tính khi ≥1 bàn kết thúc (RST-032) (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; ngày lưu nằm sau hôm nay (tua ngày debug, đổi giờ máy) → kẹp về hôm nay, giữ số ngày, coi như hôm nay đã tính (2026-10-15); đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
 - **Quảng cáo:** chỉ có nút đỏ ▶ giữ chỗ trong popup, chưa cộng lượt; badge góc ẩn tới khi có tính năng.
 
 ## RST-029 — Bỏ bối cảnh vườn, chủ đề là tìm kẹo ẩn sau ô màu

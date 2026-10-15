@@ -42,6 +42,11 @@ func _init() -> void:
 	check(not w_inv.has_signal("streak_extended"), "burst signal removed")
 	w_inv._store.remove_all()
 	check(s_inv.streak_view("2026-06-03").kept_today, "inventory view")
+	# Save written under a debug day ahead of the real date: clamped and saved, no activate step.
+	var back: Dictionary = s_inv.on_round_finished("2026-05-25")
+	check(not back.extended and back.view.count == 1 and back.view.kept_today, "future save date: no new day, count kept")
+	check(Inventory.new(sdir).data.lastStreakDate == "2026-05-25", "clamped date is saved")
+	check(Inventory.new(sdir).on_round_finished("2026-05-26").extended, "next real day extends again")
 	s_inv._store.remove_all()
 	var rdir := dir + "_replace"
 	var r_inv := Inventory.new(rdir)

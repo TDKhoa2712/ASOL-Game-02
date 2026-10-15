@@ -37,10 +37,9 @@ func grant(kind: String, amount: int) -> int:
 func on_round_finished(today: String = "") -> Dictionary:
 	var day := today if today != "" else current_day()
 	var res := AssistRules.record_win(data, day)
-	var extended: bool = res.data != data
-	if extended:
+	if res.data != data:
 		_commit(res.data, res.reward.keys())
-	return {"extended": extended, "view": AssistRules.streak_view(data, day), "reward": res.reward}
+	return {"extended": res.extended, "view": AssistRules.streak_view(data, day), "reward": res.reward}
 
 func streak_view(today: String = "") -> Dictionary:
 	return AssistRules.streak_view(data, today if today != "" else current_day())
