@@ -72,6 +72,32 @@ func _run_tests() -> void:
 	picker.queue_free()
 	await process_frame
 
+	# Test B04: EndlessPanel emits level_changed({}, "") when level not found
+	var endless_panel := preload("res://scripts/screens/debug_endless_panel.gd").new()
+	root.add_child(endless_panel)
+	endless_panel.setup(bank, null)
+	var endl_emits: Array[Dictionary] = []
+	endless_panel.level_changed.connect(func(lvl: Dictionary, lbl: String):
+		endl_emits.append({"level": lvl, "label": lbl})
+	)
+	endless_panel._bank = null # simulate missing bank or impossible level
+	endless_panel._update_selection()
+	_assert(not endl_emits.is_empty(), "level_changed emitted when level not found")
+	if not endl_emits.is_empty():
+		_assert(endl_emits[0]["level"].is_empty(), "Level is empty on not found")
+		_assert(endl_emits[0]["label"] == "", "Label is empty string on not found")
+	endless_panel.queue_free()
+	await process_frame
+
+	# Test B05: Setup with playlist maintains playlist selection (not overwritten by endless)
+	var picker_b05 := DebugLevelPicker.new()
+	root.add_child(picker_b05)
+	picker_b05.setup(bank, sample_playlist)
+	_assert(picker_b05._selected_label == "L01", "Initial selection after setup remains L01, got: %s" % picker_b05._selected_label)
+	_assert(picker_b05._mode == 0, "Picker starts in playlist mode (0)")
+	picker_b05.queue_free()
+	await process_frame
+
 	# Test 7: TitleScreen contains debug button and picker in debug mode
 	var title_packed := load("res://scenes/title.tscn") as PackedScene
 	var title_scene = title_packed.instantiate()
