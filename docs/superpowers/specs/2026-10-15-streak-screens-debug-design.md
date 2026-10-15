@@ -23,6 +23,8 @@ Hoàn thiện trải nghiệm chuỗi ngày (streak) và assist inventory:
 | Q7 | Hộp quà là **animation** do chủ dự án cung cấp sau; hiện dùng placeholder thay thế được (một scene/slot duy nhất). |
 | Q8 | Debug chuỗi/assist: giả ngày/nhảy ngày, chỉnh kho assist, xem trước các màn mới, công tắc "level debug được tính chuỗi" (mặc định tắt) trong menu debug. |
 | Q9 | Debug khác: rà soát bug ở chọn level (picker, endless, reset) và tính năng debug trong màn chơi (thanh Cheats); lập danh sách để chủ dự án duyệt trước khi sửa. |
+| Q11 | Khi mất chuỗi (lỡ ≥1 ngày), số chuỗi hiển thị về **0 ngay** (không chờ chơi màn mới); dòng "Kỷ lục: N" luôn hiện, giữ giá trị cao nhất từng đạt. |
+| Q12 | Ngày giả và công tắc "level debug tính chuỗi" chỉ sống trong phiên, không ghi save. Xem trước màn dùng dữ liệu giả, không đổi save thật. |
 | Q10 | Mọi nhánh con tạo từ `feat/v1.0.1/assist-inventory` và merge về nhánh này. |
 
 ## 3. Thiết kế
@@ -35,7 +37,7 @@ Hoàn thiện trải nghiệm chuỗi ngày (streak) và assist inventory:
 ### 3.2 Màn Chuỗi (Plan B)
 
 - Thêm `NavController.Screen.STREAK`, scene `scenes/streak.tscn`, script `screens/streak_screen.gd`.
-- Nội dung: title, nút back (về Home), ngọn lửa + số ngày (`flame_fx`), dải 7 ô, hộp quà; giữ "best" nếu có sẵn trong view. Không có câu "Còn … ngày", "Hôm nay đã …".
+- Nội dung: title, nút back (về Home), ngọn lửa + số ngày (`flame_fx`), dải 7 ô, hộp quà, dòng "Kỷ lục: N" (Q11). `AssistRules.streak_view` trả `count = 0` khi khoảng cách từ `lastStreakDate` tới hôm nay ≥ 2 (áp dụng cả `streak_chip` ở Home); có test. Không có câu "Còn … ngày", "Hôm nay đã …".
 - `streak_chip` khi nhấn → `nav.go_to(STREAK)` thay vì mở `streak_sheet`. Gỡ `streak_sheet.gd` và các key locale không còn dùng.
 
 ### 3.3 Màn Kích hoạt và Nhận quà (Plan A)
@@ -55,7 +57,7 @@ Hoàn thiện trải nghiệm chuỗi ngày (streak) và assist inventory:
   - Đặt vị trí chu kỳ 0–6, reset chuỗi.
   - Kho: +/− hint, +/− place, reset kho.
   - Xem trước: mở màn Chuỗi, Kích hoạt, Nhận quà với dữ liệu giả, không ghi save.
-  - Công tắc "Level debug tính chuỗi" (mặc định tắt, không lưu qua phiên trừ khi chủ dự án yêu cầu).
+  - Công tắc "Level debug tính chuỗi" (mặc định tắt, chỉ sống trong phiên).
 - Offset ngày chỉ tồn tại trong phiên, không ghi vào save.
 
 ### 3.5 Rà soát và sửa debug (Plan D1/D2)
