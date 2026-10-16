@@ -2,6 +2,7 @@ extends SceneTree
 
 const PuzzleLayout = preload("res://scripts/screens/puzzle_layout.gd")
 const FitLabel = preload("res://scripts/ui/fit_label.gd")
+const CoachBubble = preload("res://scripts/screens/coach_bubble.gd")
 const TextScaler = preload("res://scripts/theme/text_scaler.gd")
 
 var _fails: Array[String] = []
@@ -13,6 +14,7 @@ func _run() -> void:
 	await _test_long_caption_fits_two_lines()
 	await _test_hidden_rules_keep_board_in_place()
 	await _test_hint_card_never_moves_board()
+	await _test_coach_bubble_spans_rule_slot_and_never_squishes()
 	if _fails.is_empty():
 		print("RULE_CARDS_PASS")
 		quit(0)
@@ -62,6 +64,25 @@ func _test_hint_card_never_moves_board() -> void:
 	_assert(is_equal_approx(board_card.global_position.y, before), "board stays put when a long hint shows (%s -> %s)" % [before, board_card.global_position.y])
 	var card: Control = n["hint_overlay"]
 	_assert(card.get_global_rect().end.y <= board_card.global_position.y + 0.5, "hint card ends above the board")
+	host.queue_free()
+
+func _test_coach_bubble_spans_rule_slot_and_never_squishes() -> void:
+	var host := Control.new()
+	host.size = Vector2(1080, 1920)
+	root.add_child(host)
+	var n: Dictionary = PuzzleLayout.build(host)
+	var rule_slot: Control = n["rules"].get_parent()
+	var bubble := CoachBubble.new()
+	bubble.visible = false
+	rule_slot.add_child(bubble)
+	rule_slot.move_child(bubble, n["rules"].get_index() + 1)
+	for i in 3: await process_frame
+	n["rules"].visible = false
+	bubble.visible = true
+	bubble.show_message("Find the candies hidden behind the colored cells! Each row, column and zone has exactly one, and candies never touch.", "", false)
+	for i in 3: await process_frame
+	_assert(bubble.size.x >= 500.0, "coach bubble fills horizontal slot instead of squishing (got %s)" % bubble.size.x)
+	_assert(bubble.size.y <= PuzzleLayout.RULE_SLOT_HEIGHT + 1.0, "coach bubble fits inside rule slot height (got %s)" % bubble.size.y)
 	host.queue_free()
 
 func _assert(cond: bool, msg: String) -> void:

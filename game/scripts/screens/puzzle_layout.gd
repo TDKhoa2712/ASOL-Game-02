@@ -125,10 +125,8 @@ static func build(root: Control) -> Dictionary:
 
 	# 3. Rule cards
 	# The hint card overlaps the rule cards so it never covers the board.
-	var rule_slot := Control.new()
-	rule_slot.name = "RuleSlot"
+	var rule_slot := _overlap_slot("RuleSlot")
 	rule_slot.custom_minimum_size.y = RULE_SLOT_HEIGHT
-	rule_slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stack.add_child(rule_slot)
 	var rules := PanelContainer.new()
 	rules.name = "RuleCard"
