@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-15
+> Cập nhật: 2026-10-16
 > Quản lý version: [VERSIONING](VERSIONING.md). Nền tích hợp: nhánh version `release/vX.Y.Z`.
 
 ## Mục tiêu hiện tại: Chuẩn bị release v1.0.1 (nhánh `release/v1.0.1`)
@@ -34,6 +34,16 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 - Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-030).
 - Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
 - Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).
+
+## Sửa lỗi Rule Slot & Coach Bubble co cụm dọc (2026-10-16, `feat/v1.0.1/assist-inventory`)
+
+- Khắc phục lỗi thanh luật bị sập co cụm dọc (dài 4000+ px) và ép sát mép trái màn hình khi tutorial tip (`CoachBubble`) kích hoạt:
+  - `puzzle_layout.gd`: chuyển `RuleSlot` từ plain `Control` sang container `_overlap_slot("RuleSlot")` (`PanelContainer`), giúp các thành phần con (`RuleCard`, `CoachBubble`, `HintOverlay`) tự động mở rộng toàn khung slot.
+  - `coach_bubble.gd`: thêm `size_flags_vertical = SIZE_EXPAND_FILL` và gọi `set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)`.
+  - `puzzle_tutorial.gd`: gán anchor preset `PRESET_FULL_RECT` cho `bubble` khi khởi tạo.
+- Module tuân thủ $\le 300$ dòng: `puzzle_layout.gd` (268 dòng), `puzzle_tutorial.gd` (211 dòng), `coach_bubble.gd` (118 dòng).
+- TDD suite: thêm `_test_coach_bubble_spans_rule_slot_and_never_squishes()` vào `game/tests/test_rule_cards.gd` (90 dòng).
+- Full gate verify PASS 100% (`scratch/verification/20261016T020335.824750Z.txt`).
 
 ## Sửa lỗi Debug Overlay & Picker (2026-10-15, Plan D2, `fix/v1.0.1/debug-fixes`)
 
