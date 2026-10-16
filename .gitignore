@@ -15,6 +15,7 @@ htmlcov/
 meowdoku-clone.xml
 docs_analysis/
 *.repomix.xml
+.agents/
 .codegraph/
 .codex-remote-attachments/
 .claude/
@@ -25,6 +26,7 @@ memory/
 IDENTITY.md
 SOUL.md
 USER.md
+GEMINI.md
 
 # Private clean-room reference material — never commit or publish
 extracted_reusable/
