@@ -16,6 +16,7 @@ const CandyCounterAnimator = preload("res://scripts/screens/candy_counter_animat
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const FitLabel = preload("res://scripts/ui/fit_label.gd")
 const BoardButtons = preload("res://scripts/ui/board_buttons.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 const RULE_ICON_SIZE := 84
 const RULE_FONT_SIZE := 28  # upper bound; captions shrink to fit two lines
@@ -35,8 +36,7 @@ static func build(root: Control) -> Dictionary:
 	var safe := MarginContainer.new()
 	safe.name = "SafeArea"
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for side in ["left", "right"]:
-		safe.add_theme_constant_override("margin_" + side, 38)
+	LayoutTokens.bind_responsive_margins(safe, 38, LayoutTokens.MAX_CONTENT_WIDTH)
 	safe.add_theme_constant_override("margin_top", 44)
 	safe.add_theme_constant_override("margin_bottom", 36)
 	root.add_child(safe)
@@ -170,8 +170,8 @@ static func build(root: Control) -> Dictionary:
 	# 4. Board card
 	var board_card := PanelContainer.new()
 	board_card.name = "BoardCard"
-	# Square card sized to its width; the leftover height goes to the dock area.
-	board_card.resized.connect(func(): board_card.custom_minimum_size.y = board_card.size.x)
+	# Square card sized to its width; capped to max content width so wide screens never blow up height.
+	board_card.resized.connect(func(): board_card.custom_minimum_size.y = minf(board_card.size.x, LayoutTokens.MAX_CONTENT_WIDTH))
 	board_card.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	stack.add_child(board_card)
 

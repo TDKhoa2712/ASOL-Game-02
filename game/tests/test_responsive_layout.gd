@@ -96,6 +96,44 @@ func _run_tests() -> void:
 	screen.queue_free()
 	await process_frame
 
+	# Test 3: Wide/Web layout never overflows vertically or horizontally
+	var wide_screen := PuzzleScreen.new()
+	wide_screen.size = Vector2(3413, 1920)
+	root.add_child(wide_screen)
+	var wide_session := PlaySession.new(_create_level(5))
+	wide_screen.session = wide_session
+	wide_screen.board.configure(wide_session)
+	for i in 3: await process_frame
+
+	var wide_root_vbox: VBoxContainer = wide_screen.get_node_or_null("SafeArea/Root") as VBoxContainer
+	var wide_board_card: PanelContainer = wide_screen.get_node_or_null("SafeArea/Root/BoardCard") as PanelContainer
+	_assert(wide_root_vbox.size.x <= 1005.0, "Root VBox width %f <= 1005.0 on wide screen" % wide_root_vbox.size.x)
+	_assert(wide_root_vbox.get_combined_minimum_size().y <= 1920.0, "Root VBox min height %f <= 1920.0 (no vertical overflow/zoom)" % wide_root_vbox.get_combined_minimum_size().y)
+	_assert(wide_board_card.size.y <= 1005.0, "BoardCard height %f <= 1005.0 on wide screen" % wide_board_card.size.y)
+	wide_screen.queue_free()
+	await process_frame
+
+	# Test 4: FailScreen and StreakScreen responsive margins on wide screen
+	var fail_screen: Control = (load("res://scenes/fail.tscn") as PackedScene).instantiate()
+	fail_screen.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	fail_screen.size = Vector2(3413, 1920)
+	root.add_child(fail_screen)
+	await process_frame
+	var fail_safe: MarginContainer = fail_screen.get_child(1) as MarginContainer
+	_assert(fail_safe != null and fail_safe.get_theme_constant("margin_left") >= 1000, "FailScreen margin_left >= 1000 on 3413w")
+	fail_screen.queue_free()
+	await process_frame
+
+	var streak_screen: Control = (load("res://scenes/streak.tscn") as PackedScene).instantiate()
+	streak_screen.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	streak_screen.size = Vector2(3413, 1920)
+	root.add_child(streak_screen)
+	await process_frame
+	var streak_safe: MarginContainer = streak_screen.get_child(1) as MarginContainer
+	_assert(streak_safe != null and streak_safe.get_theme_constant("margin_left") >= 1000, "StreakScreen margin_left >= 1000 on 3413w")
+	streak_screen.queue_free()
+	await process_frame
+
 	if _fails.is_empty():
 		print("RESPONSIVE_LAYOUT_PASS")
 		quit(0)

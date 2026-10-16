@@ -89,3 +89,15 @@ static func set_large_text(on: bool) -> void:
 
 static func tile_font_size() -> int:
 	return 30  # large text is applied globally by TextScaler
+
+const DESIGN_WIDTH := 1080.0
+const MAX_CONTENT_WIDTH := 1004.0
+
+static func bind_responsive_margins(safe: MarginContainer, base_margin: int, max_w: float = MAX_CONTENT_WIDTH) -> void:
+	var update := func() -> void:
+		var w: float = safe.size.x if safe.size.x > 0 else (safe.get_viewport_rect().size.x if safe.is_inside_tree() else DESIGN_WIDTH)
+		var side_margin: int = maxi(base_margin, int((w - max_w) * 0.5))
+		safe.add_theme_constant_override("margin_left", side_margin)
+		safe.add_theme_constant_override("margin_right", side_margin)
+	update.call()
+	safe.resized.connect(update)

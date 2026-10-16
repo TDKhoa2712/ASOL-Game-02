@@ -37,11 +37,15 @@ func _init() -> void:
 	name = "StreakScreen"
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(GradientBg.new(Palette.HOME_BG_CENTER, Palette.HOME_BG_MID, Palette.HOME_BG_EDGE, Vector2(0.5, 0.26)))
+	var safe := MarginContainer.new()
+	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	LayoutTokens.bind_responsive_margins(safe, 48, 984.0)
+	safe.add_theme_constant_override("margin_top", 48)
+	safe.add_theme_constant_override("margin_bottom", 48)
+	add_child(safe)
 	var col := VBoxContainer.new()
-	col.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	col.offset_top = 48; col.offset_left = 48; col.offset_right = -48; col.offset_bottom = -48
 	col.add_theme_constant_override("separation", 20)
-	add_child(col)
+	safe.add_child(col)
 	back_btn = BackButton.make()
 	back_btn.pressed.connect(func(): back_pressed.emit())
 	title_label = _label(72, FontTokens.heading())
