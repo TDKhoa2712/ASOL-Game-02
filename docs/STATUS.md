@@ -45,6 +45,20 @@ Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 - TDD suite: thêm `_test_coach_bubble_spans_rule_slot_and_never_squishes()` vào `game/tests/test_rule_cards.gd` (90 dòng).
 - Full gate verify PASS 100% (`scratch/verification/20261016T020335.824750Z.txt`).
 
+## Sửa lỗi Web Viewport bị phóng to và tràn màn hình (2026-10-16, `feat/v1.0.1/assist-inventory`)
+
+- Khắc phục lỗi trên bản Web/desktop widescreen: màn hình bị phóng to và chỉ hiển thị một góc trên:
+  - **Nguyên nhân**: Chế độ stretch `canvas_items` + `expand` trên màn hình ngang (ví dụ 16:9 widescreen, canvas width nở ra 3413px+ với height 1920px) khiến `board_card.resized` gán `custom_minimum_size.y = board_card.size.x` (3337px), làm tổng chiều cao stack UI bùng nổ lên 4127px so với khung nhìn 1920px. Toàn bộ 60% bàn cờ bên dưới và dock controls bị đẩy văng ra ngoài khung nhìn phía dưới. Đồng thời các màn hình dùng lề biên cố định (38–48px) khiến nội dung bị kéo dạt rộng toàn màn hình thay vì căn giữa.
+  - **Giải pháp**:
+    - `layout_tokens.gd` (103 dòng): thêm `MAX_CONTENT_WIDTH = 1004.0` và static helper `bind_responsive_margins(safe, base_margin, max_w)` tự động tính toán margin trái/phải đối xứng `maxi(base_margin, int((w - max_w) * 0.5))` khi kích thước màn hình thay đổi.
+    - `puzzle_layout.gd` (267 dòng): dùng `bind_responsive_margins` cho `SafeArea` và giới hạn `board_card.custom_minimum_size.y = minf(board_card.size.x, LayoutTokens.MAX_CONTENT_WIDTH)` ngăn bàn cờ đội trần chiều cao.
+    - `title_screen.gd` (292 dòng), `win_screen.gd` (284 dòng), `fail_screen.gd` (217 dòng), `streak_screen.gd` (150 dòng): áp dụng `bind_responsive_margins` căn giữa nội dung gọn gàng trên mọi tỷ lệ màn hình (mobile dọc, tablet, desktop widescreen).
+- **Kiểm chứng**:
+  - `game/tests/test_responsive_layout.gd` (143 dòng): Test 3 & Test 4 xác minh trên canvas 3413×1920 chiều rộng $\le 1005$px, tổng chiều cao stack $\le 1920$px (không tràn dọc), margin bên $\ge 1000$px căn giữa hoàn toàn.
+  - `test_screens.gd`, `test_title_screen_v2.gd`, `test_streak_screen.gd`, `test_integration.gd` PASS 100%.
+  - Clean-room: `clean_room.py` PASS 0 violation.
+  - Full gate: `verify.py` PASS 100% (`scratch/verification/20261016T024028.469485Z.txt`).
+
 ## Sửa lỗi Debug Overlay & Picker (2026-10-15, Plan D2, `fix/v1.0.1/debug-fixes`)
 
 - Khắc phục triệt để 14 lỗi kiểm toán (B01–B14) trên Debug UI:
