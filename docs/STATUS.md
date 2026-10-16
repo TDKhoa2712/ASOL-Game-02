@@ -1,6 +1,6 @@
 # Trạng thái dự án
 
-> Cập nhật: 2026-10-14
+> Cập nhật: 2026-10-16
 > Quản lý version: [VERSIONING](VERSIONING.md). Nền tích hợp: nhánh version `release/vX.Y.Z`.
 
 ## Mục tiêu hiện tại: Chuẩn bị release v1.0.1 (nhánh `release/v1.0.1`)
@@ -22,6 +22,53 @@
 Chi tiết Track D/E/F: [REMAINING_TASKS](REMAINING_TASKS.md)
 
 ---
+
+## Kho trợ giúp và streak (2026-10-14, `feat/v1.0.1/assist-inventory`)
+
+- Home có viên lửa chuỗi ở giữa phía trên; nhấn mở **màn Chuỗi** riêng (`scenes/streak.tscn`): title, nút back, lửa + số ngày, dải 7 ô (`StreakCycleStrip`), hộp quà placeholder (`GiftBoxView`, chờ animation chủ dự án), dòng "Kỷ lục". Đã gỡ popup `streak_sheet` và các câu trạng thái. Mất chuỗi (lỡ ≥1 ngày) hiển thị 0 ngay (Plan B, `feat/v1.0.1/streak-screen`).
+- Chuỗi tính khi một bàn kết thúc (thắng hoặc thua); lửa 3 lớp có tàn (RST-032). Bàn đầu tiên trong ngày mở màn Kích hoạt chuỗi, ngày 7 thêm màn Nhận quà, rồi Win/Fail (`feat/v1.0.1/streak-activation`, Plan A). Burst +1 và toast `assist.reward` đã gỡ.
+- Plan C (2026-10-15, `feat/v1.0.1/debug-streak-assist`): Thêm tab "Streak/Assist" vào Debug Picker; `DayClock` inject từ `app_shell` cho phép tua/nhảy ngày giả lập; chỉnh sửa chuỗi/chu kỳ/kho trợ giúp; bật cờ "Level debug tính chuỗi (chỉ phiên này)"; overlay xem thử 3 màn chuỗi với dữ liệu giả không can thiệp kho lưu; tự động refresh chip Chuỗi ngoài Home. Kiểm chứng: `test_day_clock`, `test_debug_streak_panel`, `test_debug_level_picker`; full verify rev `81ba436` (log `scratch/verification/20261015T081507.903878Z.txt` PASS 100%). Giới hạn: kiểm chứng headless, chưa QA giao diện/thiết bị cho tab debug.
+- Chuyển động streak (2026-10-15, `feat/v1.0.1/streak-motion`): lửa hoạt hình vẽ bằng code (3 lớp có viền, đổi hình liên tục, lưỡi lửa và lấp lánh; `flame_fx.gd`, `flame_shapes.gd`); màn Kích hoạt có timeline bùng lửa, chớp sáng, tia lửa, rung, số ngày nảy; hộp quà vẽ bằng code thay placeholder SVG (rung, bật nắp, confetti, thẻ phần thưởng); màn Chuỗi đổi nền, quầng sáng thở, ô hôm nay nhấp nháy. Hai âm thanh tổng hợp gốc `assets/audio/sfx/streak/` sinh bằng `tools/build_streak_sfx.py`, phát khi mở màn Kích hoạt/Nhận quà (`SfxCatalog.screen_effect`). Thiết kế tham chiếu: canvas Claude Design "CanDoKu Streak Motion". Kiểm chứng: `test_flame_fx`, `test_streak_motion`, các suite streak; full verify rev `0ef05b8` (log `scratch/verification/20261015T091948.449084Z.txt` PASS). Giới hạn: đã xem ảnh chụp render từ Godot trên desktop; chưa QA thiết bị, chưa nghe thử trên thiết bị; `assets/ui/streak/gift_box.svg` không còn được dùng (chưa xóa).
+- Kiểm chứng Plan B: `test_streak_strip`, `test_streak_screen`, `test_streak_ui`, full verify rev `dea458f` (log `scratch/verification/20261015T041725.466908Z.txt`). Còn mở: QA giao diện/thiết bị màn Chuỗi; animation hộp quà thật.
+- Plan A kiểm chứng: `test_streak_activation`, `test_assist_flow`, `test_assist_inventory`, `test_integration`; full verify rev `3b2bbdd` (`scratch/verification/20261015T074818.099766Z.txt`). Chưa QA giao diện/thiết bị cho màn Kích hoạt và Nhận quà; hộp quà vẫn là placeholder (Q7).
+- Hint giới hạn theo kho; thêm trợ giúp Đặt kẹo; streak 7 ngày thắng level phát gói theo mức dùng (RST-030).
+- Kiểm chứng: suite `test_assist_*`, `test_place_candy_assist`, full `tools/verify.py`. Chưa QA thiết bị cho popup/toast.
+- Còn mở: nguồn quảng cáo có thưởng (chờ quyết định SDK).
+
+## Sửa lỗi Rule Slot & Coach Bubble co cụm dọc (2026-10-16, `feat/v1.0.1/assist-inventory`)
+
+- Khắc phục lỗi thanh luật bị sập co cụm dọc (dài 4000+ px) và ép sát mép trái màn hình khi tutorial tip (`CoachBubble`) kích hoạt:
+  - `puzzle_layout.gd`: chuyển `RuleSlot` từ plain `Control` sang container `_overlap_slot("RuleSlot")` (`PanelContainer`), giúp các thành phần con (`RuleCard`, `CoachBubble`, `HintOverlay`) tự động mở rộng toàn khung slot.
+  - `coach_bubble.gd`: thêm `size_flags_vertical = SIZE_EXPAND_FILL` và gọi `set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)`.
+  - `puzzle_tutorial.gd`: gán anchor preset `PRESET_FULL_RECT` cho `bubble` khi khởi tạo.
+- Module tuân thủ $\le 300$ dòng: `puzzle_layout.gd` (268 dòng), `puzzle_tutorial.gd` (211 dòng), `coach_bubble.gd` (118 dòng).
+- TDD suite: thêm `_test_coach_bubble_spans_rule_slot_and_never_squishes()` vào `game/tests/test_rule_cards.gd` (90 dòng).
+- Full gate verify PASS 100% (`scratch/verification/20261016T020335.824750Z.txt`).
+
+## Sửa lỗi Web Viewport bị phóng to và tràn màn hình (2026-10-16, `feat/v1.0.1/assist-inventory`)
+
+- Khắc phục lỗi trên bản Web/desktop widescreen: màn hình bị phóng to và chỉ hiển thị một góc trên:
+  - **Nguyên nhân**: Chế độ stretch `canvas_items` + `expand` trên màn hình ngang (ví dụ 16:9 widescreen, canvas width nở ra 3413px+ với height 1920px) khiến `board_card.resized` gán `custom_minimum_size.y = board_card.size.x` (3337px), làm tổng chiều cao stack UI bùng nổ lên 4127px so với khung nhìn 1920px. Toàn bộ 60% bàn cờ bên dưới và dock controls bị đẩy văng ra ngoài khung nhìn phía dưới. Đồng thời các màn hình dùng lề biên cố định (38–48px) khiến nội dung bị kéo dạt rộng toàn màn hình thay vì căn giữa.
+  - **Giải pháp**:
+    - `layout_tokens.gd` (103 dòng): thêm `MAX_CONTENT_WIDTH = 1004.0` và static helper `bind_responsive_margins(safe, base_margin, max_w)` tự động tính toán margin trái/phải đối xứng `maxi(base_margin, int((w - max_w) * 0.5))` khi kích thước màn hình thay đổi.
+    - `puzzle_layout.gd` (267 dòng): dùng `bind_responsive_margins` cho `SafeArea` và giới hạn `board_card.custom_minimum_size.y = minf(board_card.size.x, LayoutTokens.MAX_CONTENT_WIDTH)` ngăn bàn cờ đội trần chiều cao.
+    - `title_screen.gd` (292 dòng), `win_screen.gd` (284 dòng), `fail_screen.gd` (217 dòng), `streak_screen.gd` (150 dòng): áp dụng `bind_responsive_margins` căn giữa nội dung gọn gàng trên mọi tỷ lệ màn hình (mobile dọc, tablet, desktop widescreen).
+- **Kiểm chứng**:
+  - `game/tests/test_responsive_layout.gd` (143 dòng): Test 3 & Test 4 xác minh trên canvas 3413×1920 chiều rộng $\le 1005$px, tổng chiều cao stack $\le 1920$px (không tràn dọc), margin bên $\ge 1000$px căn giữa hoàn toàn.
+  - `test_screens.gd`, `test_title_screen_v2.gd`, `test_streak_screen.gd`, `test_integration.gd` PASS 100%.
+  - Clean-room: `clean_room.py` PASS 0 violation.
+  - Full gate: `verify.py` PASS 100% (`scratch/verification/20261016T024028.469485Z.txt`).
+
+## Sửa lỗi Debug Overlay & Picker (2026-10-15, Plan D2, `fix/v1.0.1/debug-fixes`)
+
+- Khắc phục triệt để 14 lỗi kiểm toán (B01–B14) trên Debug UI:
+  - B01–B03, B08–B10: `debug_level_picker.gd` (299 dòng) hỗ trợ lọc rỗng an toàn, tab switch an toàn, xử lý bài không tồn tại, layout co giãn theo khung hình và cờ trạng thái.
+  - B04–B05: `debug_endless_panel.gd` (121 dòng) kiểm tra bài rỗng trước khi phát tín hiệu, không ghi đè cấu hình ngoài ý muốn.
+  - B06–B07, B10: `debug_reset_bar.gd` (99 dòng) loại bỏ nhân đôi tín hiệu reset, kiểm tra an toàn null status.
+  - B11–B14, B10: `puzzle_debug_bar.gd` đồng bộ checkbox cheat, trạng thái thua/thắng chính xác, dọn dẹp bộ giải khi đổi bàn và co giãn màn hình hẹp.
+  - S16: `puzzle_layout.gd` (269 dòng) và `puzzle_debug_bar.gd` (152 dòng) gắn thanh Cheats vào `SafeArea` với `SIZE_SHRINK_END` và bố trí `_tools_container` mở hướng lên trên nút toggle, đảm bảo toàn bộ công cụ cheat xuất hiện đầy đủ trong màn hình khi kích hoạt (kiểm chứng `test_debug_features` 3i; full verify PASS `scratch/verification/20261015T093854.174323Z.txt`).
+- Mọi module sửa đổi đều tuân thủ nghiêm ngặt giới hạn $\le 300$ dòng.
+- Full verification gate PASS 100% (`scratch/verification/20261015T093854.174323Z.txt`).
 
 ## Bỏ given toàn hệ thống (2026-10-14, `feat/v1.0.1/tutorial`)
 

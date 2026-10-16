@@ -127,3 +127,16 @@ tutorial.s_last,Find the **remaining candies**.,**残りのキャンディ**を�
 tutorial.s_done,Well done! You're ready for the real puzzles.,よくできました！本番のパズルへ進もう。,Giỏi lắm! Bạn đã sẵn sàng chơi thật rồi.,Hebat! Kamu siap main sungguhan.,Muito bem! Você está pronto para os desafios.,¡Muy bien! Ya estás listo para jugar de verdad.,잘했어요! 이제 진짜 퍼즐을 풀어 봐요.
 tutorial.s_miss,Not quite — that cell can't hold the candy. Try another!,そのマスではないみたい。別のマスを試そう！,Chưa đúng — kẹo không thể ở ô này. Thử ô khác nhé!,Belum tepat — permen tak bisa di kotak itu. Coba yang lain!,Quase — o doce não pode ficar nessa casa. Tente outra!,Casi — el dulce no puede ir en esa casilla. ¡Prueba otra!,아직이에요 — 사탕은 그 칸에 있을 수 없어요. 다른 칸을 시도해요!
 tutorial.s_hearts,You have **3 hearts**. A wrong candy costs one; with no hearts left you replay the level. Crossing cells with X is always free.,ハートは**3つ**。キャンディを間違えると1つ減り、なくなるとやり直し。Xをつけるのはいつでも無料。,"Bạn có **3 tim**. Đặt kẹo sai mất 1 tim, hết tim phải chơi lại màn. Gạch X thì không bao giờ mất tim.","Kamu punya **3 nyawa**. Permen salah mengurangi satu; jika habis, ulangi level. Mencoret X selalu gratis.","Você tem **3 corações**. Um doce errado custa um; sem corações, a fase recomeça. Marcar X é sempre grátis.",Tienes **3 corazones**. Un dulce equivocado cuesta uno; sin corazones repites el nivel. Marcar X siempre es gratis.,"하트는 **3개**예요. 사탕을 잘못 놓으면 1개가 줄고, 다 잃으면 다시 해요. X 표시는 언제나 무료예요."
+assist.empty_title_hint,Out of hints,ヒントがありません,Hết lượt gợi ý,Petunjuk habis,Sem dicas,Sin pistas,힌트가 없어요
+assist.empty_title_place,Out of candy drops,キャンディ配置がありません,Hết lượt đặt kẹo,Taruh permen habis,Sem doces extras,Sin caramelos extra,사탕 놓기가 없어요
+assist.empty_body,Finish a level on 7 different days in a row to earn a new pack.,7日連続でレベルをクリアすると新しいパックがもらえます。,Hoàn thành một màn mỗi ngày trong 7 ngày liên tiếp để nhận gói mới.,Selesaikan satu level setiap hari selama 7 hari berturut-turut untuk paket baru.,Conclua uma fase por dia durante 7 dias seguidos para ganhar um novo pacote.,Completa un nivel al día durante 7 días seguidos para ganar un paquete nuevo.,7일 연속으로 매일 한 레벨을 깨면 새 꾸러미를 받아요.
+assist.close,Close,閉じる,Đóng,Tutup,Fechar,Cerrar,닫기
+assist.coming_soon,Coming soon,近日公開,Sắp có,Segera hadir,Em breve,Próximamente,곧 만나요
+streak.title,Streak,連続記録,Chuỗi ngày,Rangkaian,Sequência,Racha,연속 기록
+streak.days,days in a row,日連続,ngày liên tiếp,hari berturut-turut,dias seguidos,días seguidos,일 연속
+streak.best,Best: %d days,最高記録：%d日,Kỷ lục: %d ngày,Rekor: %d hari,Recorde: %d dias,Récord: %d días,최고 기록: %d일
+common.continue,Continue,つづける,Tiếp tục,Lanjut,Continuar,Continuar,계속
+streak.activate_title,Streak lit!,連続記録スタート！,Chuỗi đã bừng sáng!,Rentetan menyala!,Sequência acesa!,¡Racha encendida!,연속 기록 점화!
+streak.gift_title,Weekly gift!,今週のギフト！,Quà tuần này!,Hadiah mingguan!,Presente da semana!,¡Regalo semanal!,이번 주 선물!
+streak.gift_hint,+%d hints,ヒント+%d,+%d gợi ý,+%d petunjuk,+%d dicas,+%d pistas,힌트 +%d
+streak.gift_place,+%d candy drops,キャンディ配置+%d,+%d đặt kẹo,+%d taruh permen,+%d doces extras,+%d caramelos extra,사탕 놓기 +%d

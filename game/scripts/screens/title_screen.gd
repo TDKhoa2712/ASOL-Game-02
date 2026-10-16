@@ -4,6 +4,7 @@ extends Control
 signal play_pressed()
 signal endless_pressed()
 signal options_pressed()
+signal streak_pressed()
 signal debug_level_selected(level_data: Dictionary, label: String)
 
 const Palette = preload("res://scripts/theme/palette.gd")
@@ -19,6 +20,7 @@ const SunburstRays = preload("res://scripts/ui/sunburst_rays.gd")
 const HomeDecorations = preload("res://scripts/ui/home_decorations.gd")
 const TweenHelpers = preload("res://scripts/ui/tween_helpers.gd")
 const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
+const StreakChip = preload("res://scripts/screens/streak_chip.gd")
 
 var runtime: Variant = null
 var endless_runtime: Variant = null
@@ -35,6 +37,7 @@ var _help_overlay: Control = null
 var debug_picker: DebugLevelPicker
 var _hero_mascot: TitleHeroMascot = null
 var _play_label: Label = null
+var assists: Variant = null; var streak_chip: Button = null
 
 func _ensure_nodes() -> void:
 	if title_label != null: return
@@ -47,7 +50,7 @@ func _ensure_nodes() -> void:
 	var safe := MarginContainer.new()
 	safe.name = "SafeArea"
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for s in ["left", "right"]: safe.add_theme_constant_override("margin_" + s, 48)
+	LayoutTokens.bind_responsive_margins(safe, 48, 984.0)
 	safe.add_theme_constant_override("margin_top", 44)
 	safe.add_theme_constant_override("margin_bottom", 48)
 	add_child(safe)
@@ -141,6 +144,8 @@ func _ensure_nodes() -> void:
 	var bottom_spacer := Control.new()
 	bottom_spacer.custom_minimum_size.y = 24
 	frame.add_child(bottom_spacer)
+	streak_chip = StreakChip.attach(self, safe)
+	streak_chip.pressed.connect(func(): streak_pressed.emit())
 
 	if OS.is_debug_build():
 		debug_picker = DebugLevelPicker.new()
@@ -150,6 +155,7 @@ func _ensure_nodes() -> void:
 		debug_picker.level_selected.connect(func(lvl: Dictionary, lbl: String): debug_picker.visible = false; debug_level_selected.emit(lvl, lbl))
 		debug_picker.close_requested.connect(func(): debug_picker.visible = false)
 		debug_picker.progress_reset.connect(func(_m): _update_ui())
+		debug_picker._streak_panel.changed.connect(func(): if streak_chip != null: streak_chip.refresh())
 		add_child(debug_picker)
 
 func _make_round_top_btn(btn_name: String, icon_path: String) -> Button:
@@ -179,12 +185,13 @@ func setup(rt: Variant, endless_rt: Variant = null) -> void:
 	runtime = rt
 	endless_runtime = endless_rt
 	_ensure_nodes()
+	streak_chip.bind(assists)
 	_update_ui()
 	TutorialScreen.attach(self, rt) # mandatory until finished once (RST-028)
 	if debug_picker != null and rt != null:
 		var pl: Array = rt._playlist if "_playlist" in rt else []
 		var b: Variant = rt.bank if "bank" in rt else null
-		debug_picker.setup(b, pl, endless_rt, rt)
+		debug_picker.setup(b, pl, endless_rt, rt, assists)
 
 func _on_debug_pressed() -> void:
 	if debug_picker != null: debug_picker.visible = not debug_picker.visible

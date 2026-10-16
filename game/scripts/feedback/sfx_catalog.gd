@@ -26,6 +26,8 @@ enum Effect {
 	HINT_WRONG_MARK,   # warning tone for wrong mark detection
 	COMBO_1, COMBO_2, COMBO_3, COMBO_4, COMBO_5, COMBO_6,     # combo voice, levels 1–6
 	COMBO_7, COMBO_8, COMBO_9, COMBO_10, COMBO_11, COMBO_12,  # combo voice, levels 7–12
+	STREAK_ACTIVATE,   # streak lights: ignite, crackle, pop, fanfare
+	STREAK_GIFT,       # day-7 gift: land, rattle, pop, sparkle, fanfare
 }
 
 const UI_TICK := {
@@ -40,6 +42,10 @@ const SHARED_UI_EFFECTS := [Effect.HINT_SHOW, Effect.BTN_PRESS, Effect.RESTART,
 	Effect.DIALOG_CLOSE, Effect.UNDO_X]
 
 const COMBO_DIR := "res://assets/audio/sfx/sfx-combo/"
+const STREAK_DIR := "res://assets/audio/sfx/streak/"
+# Sound that starts with a full-screen step; -1 means the screen opens silently.
+const SCREEN_EFFECTS := {"win": Effect.STAGE_CLEAR, "fail": Effect.STAGE_FAIL,
+	"streak_activate": Effect.STREAK_ACTIVATE, "streak_gift": Effect.STREAK_GIFT}
 
 const PRESETS := {
 	Effect.MARK: {
@@ -133,6 +139,8 @@ const PRESETS := {
 	Effect.COMBO_10: {"type": "file", "path": COMBO_DIR + "10-divine.ogg"},
 	Effect.COMBO_11: {"type": "file", "path": COMBO_DIR + "11-unstoppable.ogg"},
 	Effect.COMBO_12: {"type": "file", "path": COMBO_DIR + "12-legendary.ogg"},
+	Effect.STREAK_ACTIVATE: {"type": "file", "path": STREAK_DIR + "streak-activate.ogg"},
+	Effect.STREAK_GIFT: {"type": "file", "path": STREAK_DIR + "streak-gift.ogg"},
 }
 
 # Procedural melodies (tuner-supported); win/lose now use authored OGG files.
@@ -165,3 +173,6 @@ const MIN_INTERVAL_MS := {
 
 static func combo_effect(level: int) -> int:
 	return Effect.COMBO_1 + clampi(level, 1, 12) - 1
+
+static func screen_effect(screen_name: String) -> int:
+	return int(SCREEN_EFFECTS.get(screen_name, -1))

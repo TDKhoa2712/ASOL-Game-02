@@ -7,6 +7,7 @@ const CellModel = preload("res://scripts/core/cell_model.gd")
 const CandyRules = preload("res://scripts/core/candy_rules.gd")
 const RegionPainter = preload("res://scripts/content/region_painter.gd")
 const HintOverlay = preload("res://scripts/screens/hint_overlay.gd")
+const AssistDock = preload("res://scripts/screens/assist_dock.gd")
 const HintHighlightLayer = preload("res://scripts/screens/hint_highlight_layer.gd")
 const FontTokens = preload("res://scripts/theme/font_tokens.gd")
 const HeartsDisplay = preload("res://scripts/screens/hearts_display.gd")
@@ -15,6 +16,7 @@ const CandyCounterAnimator = preload("res://scripts/screens/candy_counter_animat
 const GradientBg = preload("res://scripts/ui/gradient_bg.gd")
 const FitLabel = preload("res://scripts/ui/fit_label.gd")
 const BoardButtons = preload("res://scripts/ui/board_buttons.gd")
+const LayoutTokens = preload("res://scripts/theme/layout_tokens.gd")
 
 const RULE_ICON_SIZE := 84
 const RULE_FONT_SIZE := 28  # upper bound; captions shrink to fit two lines
@@ -34,8 +36,7 @@ static func build(root: Control) -> Dictionary:
 	var safe := MarginContainer.new()
 	safe.name = "SafeArea"
 	safe.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	for side in ["left", "right"]:
-		safe.add_theme_constant_override("margin_" + side, 38)
+	LayoutTokens.bind_responsive_margins(safe, 38, LayoutTokens.MAX_CONTENT_WIDTH)
 	safe.add_theme_constant_override("margin_top", 44)
 	safe.add_theme_constant_override("margin_bottom", 36)
 	root.add_child(safe)
@@ -124,10 +125,8 @@ static func build(root: Control) -> Dictionary:
 
 	# 3. Rule cards
 	# The hint card overlaps the rule cards so it never covers the board.
-	var rule_slot := Control.new()
-	rule_slot.name = "RuleSlot"
+	var rule_slot := _overlap_slot("RuleSlot")
 	rule_slot.custom_minimum_size.y = RULE_SLOT_HEIGHT
-	rule_slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	stack.add_child(rule_slot)
 	var rules := PanelContainer.new()
 	rules.name = "RuleCard"
@@ -171,8 +170,8 @@ static func build(root: Control) -> Dictionary:
 	# 4. Board card
 	var board_card := PanelContainer.new()
 	board_card.name = "BoardCard"
-	# Square card sized to its width; the leftover height goes to the dock area.
-	board_card.resized.connect(func(): board_card.custom_minimum_size.y = board_card.size.x)
+	# Square card sized to its width; capped to max content width so wide screens never blow up height.
+	board_card.resized.connect(func(): board_card.custom_minimum_size.y = minf(board_card.size.x, LayoutTokens.MAX_CONTENT_WIDTH))
 	board_card.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	stack.add_child(board_card)
 
@@ -211,25 +210,10 @@ static func build(root: Control) -> Dictionary:
 	dock.add_child(undo)
 
 	var hint := BoardButtons.make_3d_btn("HintBtn", "res://assets/ui/board/icon_hint.svg", Palette.BOARD_HINT_BG, Palette.BOARD_HINT_EDGE, Palette.BOARD_HINT_ICON, Vector2(DOCK_BTN_SIZE, DOCK_BTN_SIZE), 30, 8, Vector2(58, 58))
-	var badge := PanelContainer.new()
-	badge.name = "Badge"
-	badge.add_theme_stylebox_override("panel", BoardButtons.card_sb(Palette.BOARD_BLUE, Palette.BOARD_BLUE_EDGE, 999, 2, 8, 2))
-	badge.position = Vector2(DOCK_BTN_SIZE - 32, -8)
-	badge.custom_minimum_size = Vector2(34, 34)
-	badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	badge.visible = false  # Hints are unlimited; show only once a real hint quota exists.
-	var bl := Label.new()
-	bl.name = "HintCount"
-	bl.text = "3"
-	bl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	bl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	bl.add_theme_font_size_override("font_size", 18)
-	bl.add_theme_color_override("font_color", Color.WHITE)
-	var hbf := FontTokens.body_bold()
-	if hbf != null: bl.add_theme_font_override("font", hbf)
-	badge.add_child(bl)
-	hint.add_child(badge)
+	AssistDock.attach_badge(hint, "HintCount")
 	dock.add_child(hint)
+	var place := AssistDock.make_place_button()
+	dock.add_child(place)
 
 	var ad_slot := Control.new()
 	ad_slot.name = "AdSlot"
@@ -243,7 +227,9 @@ static func build(root: Control) -> Dictionary:
 		if dbg_cls != null:
 			debug_bar = dbg_cls.new()
 			debug_bar.name = "DebugBar"
-			stack.add_child(debug_bar)
+			debug_bar.size_flags_vertical = Control.SIZE_SHRINK_END
+			debug_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			safe.add_child(debug_bar)
 
 	var confirm := ConfirmationDialog.new()
 	confirm.name = "RestartConfirm"
@@ -254,7 +240,7 @@ static func build(root: Control) -> Dictionary:
 	root.add_child(confirm)
 
 	return {"board": board, "back": back, "help": help, "restart": restart,
-		"settings": settings, "hint": hint, "undo": undo, "confirm": confirm, "level": level_value,
+		"settings": settings, "hint": hint, "place": place, "undo": undo, "confirm": confirm, "level": level_value,
 		"regions": region_row, "lives": lives_row, "rules": rules, "hint_overlay": hint_overlay,
 		"hint_highlight": hint_highlight, "debug_bar": debug_bar, "ad_slot": ad_slot, "dock_area": dock_area}
 

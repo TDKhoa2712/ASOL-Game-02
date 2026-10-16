@@ -10,14 +10,13 @@ var _session: Variant = null
 var _board: Variant = null
 
 var _toggle_btn: Button
-var _tools_row: HBoxContainer
+var _tools_container: GridContainer
 var _solution_btn: Button
 var _win_btn: Button
 var _fail_btn: Button
 var _solve_btn: Button
 
 func _init() -> void:
-	custom_minimum_size = Vector2(0, 68)
 	_build_ui()
 
 func setup(screen: Variant, session: Variant, board: Variant) -> void:
@@ -38,8 +37,28 @@ func _build_ui() -> void:
 	root_vbox.add_theme_constant_override("separation", 8)
 	add_child(root_vbox)
 
+	_tools_container = GridContainer.new()
+	_tools_container.columns = 2
+	_tools_container.add_theme_constant_override("h_separation", 8)
+	_tools_container.add_theme_constant_override("v_separation", 8)
+	_tools_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tools_container.visible = false
+	root_vbox.add_child(_tools_container)
+
+	_solution_btn = _create_btn("Hien nghiem", _on_solution_pressed)
+	_tools_container.add_child(_solution_btn)
+
+	_win_btn = _create_btn("Thang", _on_win_pressed)
+	_tools_container.add_child(_win_btn)
+
+	_fail_btn = _create_btn("Thua", _on_fail_pressed)
+	_tools_container.add_child(_fail_btn)
+
+	_solve_btn = _create_btn("Tu giai", _on_solve_pressed)
+	_tools_container.add_child(_solve_btn)
+
 	_toggle_btn = Button.new()
-	_toggle_btn.text = "🔧 Cheats"
+	_toggle_btn.text = "Cheats"
 	_toggle_btn.custom_minimum_size = Vector2(0, 48)
 	_toggle_btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_toggle_btn.add_theme_font_size_override("font_size", 22)
@@ -67,38 +86,34 @@ func _build_ui() -> void:
 	_toggle_btn.pressed.connect(_on_toggle_pressed)
 	root_vbox.add_child(_toggle_btn)
 
-	_tools_row = HBoxContainer.new()
-	_tools_row.add_theme_constant_override("separation", 10)
-	_tools_row.alignment = BoxContainer.ALIGNMENT_CENTER
-	_tools_row.visible = false
-	root_vbox.add_child(_tools_row)
-
-	_solution_btn = _create_btn("👁 Hiện nghiệm", _on_solution_pressed)
-	_tools_row.add_child(_solution_btn)
-
-	_win_btn = _create_btn("✓ Thắng", _on_win_pressed)
-	_tools_row.add_child(_win_btn)
-
-	_fail_btn = _create_btn("✕ Thua", _on_fail_pressed)
-	_tools_row.add_child(_fail_btn)
-
-	_solve_btn = _create_btn("⏩ Tự giải", _on_solve_pressed)
-	_tools_row.add_child(_solve_btn)
-
 func _create_btn(text: String, action: Callable) -> Button:
 	var btn := Button.new()
 	btn.text = text
-	btn.custom_minimum_size = Vector2(140, 54)
-	btn.add_theme_font_size_override("font_size", 24)
+	btn.custom_minimum_size = Vector2(0, 52)
+	btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	btn.add_theme_font_size_override("font_size", 22)
+	btn.add_theme_color_override("font_color", Color.WHITE)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Palette.BOARD_CHEATS_BG.darkened(0.18)
+	sb.set_corner_radius_all(10)
+	sb.border_width_bottom = 3
+	sb.border_color = Palette.BOARD_CHEATS_EDGE
+	for s in ["normal", "focus", "disabled"]:
+		btn.add_theme_stylebox_override(s, sb)
+	var hsb := sb.duplicate() as StyleBoxFlat
+	hsb.bg_color = Palette.BOARD_CHEATS_BG.darkened(0.1)
+	btn.add_theme_stylebox_override("hover", hsb)
 	btn.pressed.connect(action)
 	return btn
 
 func _on_toggle_pressed() -> void:
-	_tools_row.visible = not _tools_row.visible
+	_tools_container.visible = not _tools_container.visible
 
 func _sync_ui_state() -> void:
-	if _board != null and _solution_btn != null:
-		_solution_btn.text = "Ẩn nghiệm" if _board.is_showing_solution() else "👁 Hiện nghiệm"
+	if _solution_btn == null:
+		return
+	var showing: bool = _board != null and bool(_board.is_showing_solution())
+	_solution_btn.text = "An nghiem" if showing else "Hien nghiem"
 
 func _on_solution_pressed() -> void:
 	if _board != null:
@@ -114,6 +129,7 @@ func _on_win_pressed() -> void:
 func _on_fail_pressed() -> void:
 	if _session != null and _session.phase == PlaySession.Phase.ACTIVE:
 		_session.hearts = 0
+		_session.state_changed.emit()
 		_session.phase = PlaySession.Phase.FAILED
 		_session.level_failed.emit()
 
@@ -122,6 +138,9 @@ func _on_solve_pressed() -> void:
 		return
 	var sol: Array = _session.level.get("solution", [])
 	var sz: int = _session.board.size()
+	for r in range(sz):
+		for c in range(sz):
+			_session.board[r][c] = CellModel.CellKind.BLANK
 	for r in range(sz):
 		if r < sol.size():
 			var c: int = int(sol[r])

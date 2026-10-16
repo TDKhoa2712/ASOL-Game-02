@@ -74,6 +74,7 @@ func _ensure_ui() -> void:
 		var rules: Control = screen.rules_card
 		rules.get_parent().add_child(bubble)
 		rules.get_parent().move_child(bubble, rules.get_index() + 1)
+		bubble.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 		bubble.primary_pressed.connect(_on_primary)
 		bubble.skip_pressed.connect(_on_skip)
 	if overlay == null:

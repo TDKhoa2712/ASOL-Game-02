@@ -17,6 +17,9 @@ var _sfx: Variant = null
 var _applying: bool = false
 func is_applying() -> bool: return _applying
 var _session: Variant = null
+# Assist stock; null keeps hints unlimited (tutorial, tests).
+var inventory: Variant = null
+signal stock_empty(kind: String)
 
 func setup(board_node: Variant, overlay: HintOverlay, highlight: HintHighlightLayer, sfx_player: Variant) -> void:
 	_board = board_node
@@ -39,8 +42,11 @@ func request_hint(session: Variant) -> void:
 	if session == null or session.phase != PlaySession.Phase.ACTIVE:
 		return
 	_session = session
-	if is_hint_showing():
+	if is_hint_showing() or not _current_hint.is_empty():
 		dismiss_hint()
+		return
+	if inventory != null and inventory.count("hint") <= 0:
+		stock_empty.emit("hint")
 		return
 	if not _mutex.try_acquire("hint"):
 		return
@@ -62,6 +68,7 @@ func request_hint(session: Variant) -> void:
 		if _sfx != null: _sfx.play(SfxCatalog.Effect.HINT_SHOW)
 	if hint.get("strategy") != "WRONG_MARK":
 		session.use_hint()
+		if inventory != null: inventory.try_consume("hint")
 
 func apply_hint(session: Variant = null) -> void:
 	_applying = false
@@ -85,6 +92,17 @@ func apply_hint(session: Variant = null) -> void:
 				_applying = true
 				target_session.try_candy(cell[0], cell[1])
 				_applying = false
+	if _sfx != null: _sfx.play(SfxCatalog.Effect.HINT_APPLY)
+	Vibration.pulse(Vibration.Strength.SOFT)
+	if _board != null: _board.redraw()
+
+func place_candy(session: Variant, cell: Array) -> void:
+	if session == null or cell.size() != 2:
+		return
+	dismiss_hint(false)
+	_applying = true
+	session.try_candy(int(cell[0]), int(cell[1]))
+	_applying = false
 	if _sfx != null: _sfx.play(SfxCatalog.Effect.HINT_APPLY)
 	Vibration.pulse(Vibration.Strength.SOFT)
 	if _board != null: _board.redraw()

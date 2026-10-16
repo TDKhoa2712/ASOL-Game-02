@@ -2,6 +2,33 @@
 
 > Quản lý version: [VERSIONING](VERSIONING.md)
 
+## RST-032 — Chuỗi tính theo bàn chơi hoàn thành; lửa nhiều lớp
+
+Ngày 2026-10-14. Sửa RST-030 (luật ngày) và RST-031 (hiển thị). Đặc tả: [streak fire](superpowers/specs/2026-10-14-streak-fire-design.md).
+
+- **Luật:** một ngày được tính khi ≥1 bàn chơi kết thúc (thắng hoặc thua); áp cho tổng chuỗi, kỷ lục và gói 7 ngày. Chế độ chơi mới gọi `on_round_finished` khi một bàn kết thúc.
+- **Lửa:** 3 lớp đỏ/cam/vàng cháy liên tục, có tàn lửa bay lên; xám một lớp khi hôm nay chưa chơi.
+- **Kích hoạt chuỗi (sửa 2026-10-15, đặc tả [streak screens](superpowers/specs/2026-10-15-streak-screens-debug-design.md) §3.3):** bàn kết thúc đầu tiên trong ngày (thắng hoặc thua, không tính level custom/debug/tutorial) mở màn Kích hoạt chuỗi (lửa sáng, ô hôm nay được điền, nút Tiếp tục) → ngày 7: màn Nhận quà (hộp quà mở, +hint/+đặt kẹo) → Win/Fail như cũ. Bỏ burst +1 trên bàn.
+
+## RST-031 — Xem chuỗi ngày chơi trên Home
+
+Ngày 2026-10-14. Bổ sung RST-030. Đặc tả: [streak view](superpowers/specs/2026-10-14-streak-view-design.md).
+
+- **Viên lửa** ở giữa phía trên Home: số ngày liên tiếp (`totalStreak`, không reset khi nhận gói 7 ngày); cam khi đã giữ hôm nay, xám khi chưa, nhấp nháy khi sắp mất.
+- **Bảng chuỗi** khi chạm: số ngày, kỷ lục (`bestStreak`), 7 ô chu kỳ với ô quà, trạng thái hôm nay.
+- **Hiệu ứng ngày mới:** thay bằng màn Kích hoạt chuỗi và màn Nhận quà ngày 7 (RST-032, 2026-10-15); bỏ toast gói 7 ngày.
+- Popup "Hết lượt" vẫn không hiển thị streak.
+
+## RST-030 — Kho trợ giúp (Hint + Đặt kẹo) và streak 7 ngày
+
+Ngày 2026-10-14. Thay câu "hint không giới hạn" của RST-024. Đặc tả: [assist inventory](superpowers/specs/2026-10-14-assist-inventory-design.md).
+
+- **Kho:** Hint và Đặt kẹo lưu bền, khởi đầu 3/1, tối đa 10 mỗi loại.
+- **Hint:** trừ 1 khi gợi ý hiện ra; `WRONG_MARK` miễn phí; hết lượt → popup.
+- **Đặt kẹo:** đặt ngay một kẹo đúng (ưu tiên ô suy luận duy nhất, sau đó vùng ít ô trống nhất); viên cuối thắng level; reset combo.
+- **Streak:** ngày tính khi ≥1 bàn kết thúc (RST-032) (level custom/debug và tutorial không tính streak và không trừ kho); lỡ ngày → về ngày 1; ngày lưu nằm sau hôm nay (tua ngày debug, đổi giờ máy) → kẹp về hôm nay, giữ số ngày, coi như hôm nay đã tính (2026-10-15); đủ 7 ngày → gói theo mức dùng (0–1 → 2, 2–4 → 3, ≥5 → 4 mỗi loại).
+- **Quảng cáo:** chỉ có nút đỏ ▶ giữ chỗ trong popup, chưa cộng lượt; badge góc ẩn tới khi có tính năng.
+
 ## RST-029 — Bỏ bối cảnh vườn, chủ đề là tìm kẹo ẩn sau ô màu
 
 Ngày 2026-10-14. Thay phần bối cảnh vườn của RST-008/D-10. Đặc tả: [GDD-01 §2.1](../GDD/01-game-overview.md).
@@ -51,7 +78,7 @@ Ngày 2026-10-10.
 - **Phân phối màu vùng — tô màu đồ thị tham lam (greedy graph coloring) theo CIELAB:** vùng là đỉnh, biên chung là cạnh; xếp vùng theo bậc giảm dần; màu chỉ hợp lệ khi ΔE76 tới mọi vùng kề đã tô ≥ `MIN_ADJACENT_CONTRAST` = 20; trong các màu hợp lệ chọn màu tối đa hóa ΔE nhỏ nhất tới láng giềng (ưu tiên màu chưa dùng). Bàn ≤ 9 vùng chỉ dùng `PRIMARY_COLOR_COUNT` = 9 màu chủ đạo của mockup; 3 màu dự phòng chỉ dùng khi thiếu. Kiểm bằng `test_region_contrast.gd` trên mẫu mọi bank 4×4–12×12.
 - **Ô màu trơn:** mặc định ô chỉ có màu, không họa tiết. Chế độ hỗ trợ mù màu giữ nguyên màu và chỉ phủ thêm họa tiết lên nửa số vùng tối hơn (vùng kề không trùng họa tiết).
 - **Thẻ luật:** icon 96, chữ 21 (`RULE_ICON_SIZE`, `RULE_FONT_SIZE` trong `puzzle_layout.gd`).
-- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint ẩn vì hint không giới hạn; chỉ hiện khi có quota thật.
+- **Hint:** engine giữ nguyên; phần hiển thị đổi theo giao diện mới: thẻ trắng viền vàng, nút 3D (Áp dụng vàng, Chi tiết/Đóng trắng), scrim spotlight tông nâu ấm. Badge số lượt trên nút Hint hiển thị theo kho trợ giúp (RST-030).
 - **Thanh Cheats** chỉ có trong bản debug (`OS.is_debug_build()`).
 
 ## RST-025 — Tách cài đặt Nhạc nền khỏi Âm thanh

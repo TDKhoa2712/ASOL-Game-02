@@ -6,10 +6,13 @@ const EndlessRuntimeClass = preload("res://scripts/endless/endless_runtime.gd")
 const CampaignSelector = preload("res://scripts/campaign/campaign_selector.gd")
 const BankReader = preload("res://scripts/content/bank_reader.gd")
 const PaceReader = preload("res://scripts/content/pace_reader.gd")
-const ProgressManager = preload("res://scripts/state/progress_manager.gd")
+const ProgressManager = preload("res://scripts/state/progress_manager.gd"); const AssistInventory = preload("res://scripts/state/assist_inventory.gd")
+const DayClock = preload("res://scripts/state/day_clock.gd")
 const SessionStore = preload("res://scripts/state/session_store.gd")
 const ConfigStore = preload("res://scripts/state/config_store.gd")
 const NavController = preload("res://scripts/campaign/nav_controller.gd")
+const ScreenRouter = preload("res://scripts/campaign/screen_router.gd")
+const StreakFlow = preload("res://scripts/campaign/streak_flow.gd")
 const SfxPlayer = preload("res://scripts/feedback/sfx_player.gd")
 const SfxCatalog = preload("res://scripts/feedback/sfx_catalog.gd")
 const BgmPlayer = preload("res://scripts/feedback/bgm_player.gd")
@@ -19,14 +22,6 @@ const LocaleResolver = preload("res://scripts/core/locale_resolver.gd")
 const TextScaler = preload("res://scripts/theme/text_scaler.gd")
 const BGM_TRACK := "res://assets/audio/bgm/bgm-candoku-melody.ogg"
 
-const SCENE_MAP := {
-	"title": "res://scenes/title.tscn",
-	"puzzle": "res://scenes/puzzle.tscn",
-	"win": "res://scenes/win.tscn",
-	"fail": "res://scenes/fail.tscn",
-	"options": "res://scenes/options.tscn",
-}
-
 var runtime: CampaignRuntime
 var endless_runtime: RefCounted
 var _mode: String = "campaign"
@@ -34,7 +29,7 @@ var config: ConfigStore
 var nav: NavController
 var sfx: SfxPlayer
 var bgm: BgmPlayer
-var profile_dir: String = "user://profile"
+var profile_dir: String = "user://profile"; var assists: Variant = null
 var selector_path: String = "res://data/campaigns/active_campaign.json"
 var _previous_screen_name: String = "title"
 var _last_won_level: String = ""
@@ -45,6 +40,8 @@ var _next_level_label: String = ""; var _next_level_size: int = 0; var _next_lev
 var _debug_mode: bool = false; var _debug_lvl: Dictionary = {}; var _debug_label: String = ""
 var _debug_next: Dictionary = {}; var _debug_next_lbl: String = ""
 var _options_overlay: Control = null
+var streak_flow := StreakFlow.new()
+var day_clock := DayClock.new()
 
 @onready var screen_host: Control = get_node_or_null("ScreenHost")
 @onready var save_error_dialog: AcceptDialog = get_node_or_null("SaveErrorDialog")
@@ -53,6 +50,8 @@ func _ready() -> void:
 	var sel := CampaignSelector.load_config(selector_path, profile_dir)
 	if not sel.ok: _on_boot_error(str(sel.error)); return
 	if config == null: config = ConfigStore.new(profile_dir); config.option_changed.connect(_apply_setting)
+	if assists == null: assists = AssistInventory.new(profile_dir); assists.save_failed.connect(_on_save_failed)
+	if assists.clock == null: assists.clock = day_clock
 	if sfx == null: sfx = SfxPlayer.new(); sfx.name = "SfxPlayer"; add_child(sfx)
 	if bgm == null: bgm = BgmPlayer.new(); bgm.name = "BgmPlayer"; add_child(bgm)
 	_apply_all_settings()
@@ -82,22 +81,15 @@ func _start_bgm() -> void:
 
 func _swap_screen(from_name: String, to_name: String) -> void:
 	if from_name != "": _previous_screen_name = from_name
-	if screen_host != null:
-		for child in screen_host.get_children():
-			child.queue_free(); screen_host.remove_child(child)
+	ScreenRouter.clear(screen_host)
 	_instantiate_screen(to_name)
 
 func _active_runtime() -> Variant:
 	return endless_runtime if _mode == "endless" else runtime
 
 func _instantiate_screen(to_name: String) -> void:
-	var scene_path: String = SCENE_MAP.get(to_name, "")
-	if scene_path == "" or not ResourceLoader.exists(scene_path): return
-	var packed := load(scene_path) as PackedScene
-	if packed == null: return
-	var screen := packed.instantiate() as Control
+	var screen := ScreenRouter.instantiate(to_name)
 	if screen == null: return
-	screen.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 
 	if screen.has_signal("debug_level_selected"): screen.connect("debug_level_selected", _on_debug_level_selected)
 	if screen.has_signal("home_pressed"): screen.connect("home_pressed", _on_puzzle_home)
@@ -107,12 +99,16 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("play_pressed"): screen.connect("play_pressed", _on_title_play)
 			if screen.has_signal("endless_pressed"): screen.connect("endless_pressed", _on_title_endless)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
-			if screen.has_method("setup"): screen.call("setup", runtime, endless_runtime)
+			if screen.has_signal("streak_pressed"): screen.connect("streak_pressed", func(): nav.go_to(NavController.Screen.STREAK))
+			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", runtime, endless_runtime)
 		"puzzle":
 			if screen.has_signal("go_home"): screen.connect("go_home", _on_puzzle_home)
 			if screen.has_signal("options_pressed"): screen.connect("options_pressed", _show_options_overlay)
 			if screen.has_signal("level_done"): screen.connect("level_done", _on_level_done)
-			if screen.has_method("setup"): screen.call("setup", cur_rt, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
+			if screen.has_method("setup"): screen.set("assists", assists); screen.call("setup", cur_rt, sfx, config, _debug_lvl if _debug_mode else {}, _previous_screen_name != "options")
+		"streak_activate", "streak_gift":
+			if screen.has_method("setup"): screen.call("setup", streak_flow.view if to_name == "streak_activate" else streak_flow.reward)
+			if screen.has_signal("continued"): screen.connect("continued", func(): nav.go_to(streak_flow.next()))
 		"win":
 			if screen.has_signal("next_pressed"): screen.connect("next_pressed", _on_next_level)
 			if screen.has_signal("replay_pressed"): screen.connect("replay_pressed", _on_replay_campaign)
@@ -124,10 +120,13 @@ func _instantiate_screen(to_name: String) -> void:
 			if screen.has_signal("retry_pressed"): screen.connect("retry_pressed", _on_retry_level)
 			var label: String = _last_won_level if _last_won_level != "" else cur_rt.current_level_label()
 			if screen.has_method("setup"): screen.call("setup", false, _last_won_elapsed, label, false)
+		"streak":
+			if screen.has_signal("back_pressed"): screen.connect("back_pressed", func(): nav.go_to(NavController.Screen.TITLE))
+			if screen.has_method("setup"): screen.call("setup", assists)
 	if screen_host != null: screen_host.add_child(screen)
-	# Result melodies start with the result screen, not when the board resolves.
-	if sfx != null and to_name in ["win", "fail"]:
-		sfx.play(SfxCatalog.Effect.STAGE_CLEAR if to_name == "win" else SfxCatalog.Effect.STAGE_FAIL)
+	# Result and streak sounds start with their screen, not when the board resolves.
+	var screen_sfx := SfxCatalog.screen_effect(to_name)
+	if sfx != null and screen_sfx >= 0: sfx.play(screen_sfx)
 
 func _on_debug_level_selected(level_data: Dictionary, label: String) -> void:
 	_debug_mode = true; _debug_lvl = level_data.duplicate(true); _debug_label = label
@@ -185,6 +184,7 @@ func _on_level_done(won: bool) -> void:
 	_last_won_level = label
 	var cur_sc := screen_host.get_child(0) if screen_host != null and screen_host.get_child_count() > 0 else null
 	var sess = cur_sc.get("session") if (cur_sc != null and cur_sc.get("session") != null) else (cur_rt.current_session if cur_rt != null else null)
+	var streak_src: Variant = cur_sc.get("assist_ctl") if cur_sc != null else null
 	var elapsed: int = sess.elapsed_ms if sess != null else 0
 	_last_won_elapsed = elapsed
 	_last_won_hearts = sess.hearts if (sess != null and won) else 0
@@ -192,7 +192,7 @@ func _on_level_done(won: bool) -> void:
 	_next_level_label = ""; _next_level_size = 0; _next_level_difficulty = ""
 	if _debug_mode:
 		_last_won_is_last = _debug_next.is_empty()
-		nav.go_to(NavController.Screen.WIN if won else NavController.Screen.FAIL)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN if won else NavController.Screen.FAIL))
 		return
 	if won:
 		_last_won_is_last = (_mode == "campaign" and runtime.completed_count() + 1 >= runtime.playlist_order().size())
@@ -205,11 +205,11 @@ func _on_level_done(won: bool) -> void:
 					_next_level_size = int(nxt_entry.get("size", 0)); _next_level_difficulty = str(nxt_entry.get("difficulty", ""))
 		var score_data := {"time_ms": elapsed, "mistakes": _last_won_mistakes, "hints_used": sess.hints_used if sess != null else 0}
 		cur_rt.on_level_won(label, score_data)
-		nav.go_to(NavController.Screen.WIN)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.WIN))
 	else:
 		_last_won_is_last = false
 		cur_rt.on_level_lost(label)
-		nav.go_to(NavController.Screen.FAIL)
+		nav.go_to(streak_flow.start(streak_src, NavController.Screen.FAIL))
 
 func _on_next_level() -> void:
 	if _debug_mode:
@@ -230,13 +230,8 @@ func _on_replay_campaign() -> void:
 
 func _show_options_overlay() -> void:
 	if _options_overlay != null: return
-	var p: String = SCENE_MAP.get("options", "")
-	if p == "" or not ResourceLoader.exists(p): return
-	var packed := load(p) as PackedScene
-	if packed == null: return
-	_options_overlay = packed.instantiate() as Control
+	_options_overlay = ScreenRouter.instantiate("options")
 	if _options_overlay == null: return
-	_options_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	if _options_overlay.has_signal("back_pressed"): _options_overlay.connect("back_pressed", _on_options_back)
 	if _options_overlay.has_method("setup"): _options_overlay.call("setup", config)
 	add_child(_options_overlay)
